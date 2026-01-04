@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/widget/buildAppBar.dart';
+import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/widget/buildDashboardScreenPeriodSelector.dart';
 import '../../config/theme.dart';
 import '../../config/responsive.dart';
 import '../../controllers/dashboard_controller.dart';
@@ -55,7 +56,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       onRetry: () => controller.retryConnection(),
                     ),
 
-                  _buildPeriodSelector(context, isDark),
+                  buildDashboardScreenPeriodSelector(),
 
                   if (controller.orders.isEmpty && !controller.isLoading.value)
                     Padding(
@@ -66,7 +67,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                     )
                   else
-                    _buildStatsCards(context),
+                    buildDashboardScreenStatsCards(context),
 
                   if (controller.orders.isNotEmpty) ...[
                     SizedBox(height: context.responsive.itemSpacing * 3),
@@ -113,46 +114,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
     );
   }
-  Widget _buildPeriodSelector(BuildContext context, bool isDark) {
-    final responsive = context.responsive;
-    final spacing = responsive.itemSpacing;
 
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: responsive.defaultPadding.left,
-        vertical: responsive.defaultPadding.top / 2,
-      ),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: [
-            PeriodButton(
-              label: 'هذا الأسبوع',
-              value: 'week',
-              isSelected: controller.selectedPeriod.value == 'week',
-              onTap: () => controller.changePeriod('week'),
-            ),
-            SizedBox(width: spacing),
-            PeriodButton(
-              label: 'هذا الشهر',
-              value: 'month',
-              isSelected: controller.selectedPeriod.value == 'month',
-              onTap: () => controller.changePeriod('month'),
-            ),
-            SizedBox(width: spacing),
-            PeriodButton(
-              label: 'هذا العام',
-              value: 'year',
-              isSelected: controller.selectedPeriod.value == 'year',
-              onTap: () => controller.changePeriod('year'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatsCards(BuildContext context) {
+  
+  Widget buildDashboardScreenStatsCards(BuildContext context) {
     final responsive = context.responsive;
     final spacing = responsive.itemSpacing;
     final isMobile = responsive.isMobile;
