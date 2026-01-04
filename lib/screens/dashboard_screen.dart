@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../config/theme.dart';
+import '../config/responsive.dart';
 import '../controllers/dashboard_controller.dart';
 import '../components/index.dart';
 
@@ -16,11 +17,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      appBar: _buildAppBar(context),
+      appBar: _buildAppBar(context, isDark),
       body: Obx(
         () {
-          // عرض شاشة الخطأ إذا كان هناك فشل في الاتصال
           if (!controller.isConnected.value && controller.isLoading.value) {
             return ErrorScreen(
               title: 'فشل الاتصال',
@@ -32,91 +34,88 @@ class _DashboardScreenState extends State<DashboardScreen> {
             );
           }
 
-          // عرض شاشة التحميل
           if (controller.isLoading.value && controller.orders.isEmpty) {
-            return const Center(
-              child: CircularProgressIndicator(),
+            return const EnhancedLoadingWidget(
+              message: 'جاري تحميل لوحة التحكم...',
             );
           }
 
-          return SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // شريط حالة الاتصال
-                if (!controller.isConnected.value || controller.errorMessage.value.isNotEmpty)
-                  ConnectionStatusBar(
-                    isConnected: controller.isConnected.value,
-                    errorMessage: controller.errorMessage.value,
-                    onRetry: () => controller.retryConnection(),
-                  ),
-
-                // الفترة الزمنية
-                _buildPeriodSelector(context),
-
-                // بطاقات الإحصائيات الرئيسية
-                if (controller.orders.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.all(16),
-                    child: NoDataScreen(
-                      title: 'لا توجد بيانات',
-                      message: 'لم نتمكن من جلب أي بيانات من قاعدة البيانات. تأكد من وجود بيانات متاحة.',
+          return RefreshIndicator(
+            onRefresh: () => controller.fetchDashboardData(),
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (!controller.isConnected.value || controller.errorMessage.value.isNotEmpty)
+                    ConnectionStatusBar(
+                      isConnected: controller.isConnected.value,
+                      errorMessage: controller.errorMessage.value,
+                      onRetry: () => controller.retryConnection(),
                     ),
-                  )
-                else
-                  _buildStatsCards(context),
 
-                if (controller.orders.isNotEmpty) ...[
-                  const SizedBox(height: 24),
+                  _buildPeriodSelector(context, isDark),
 
-                  // الطلبات الأخيرة
-                  RecentOrdersList(
-                    orders: controller.orders.take(3).toList(),
-                    onSeeAll: () {
-                      Get.toNamed('/orders');
-                    },
-                  ),
+                  if (controller.orders.isEmpty && !controller.isLoading.value)
+                    const Padding(
+                      padding: EdgeInsets.all(16),
+                      child: NoDataScreen(
+                        title: 'لا توجد بيانات',
+                        message: 'لم نتمكن من جلب أي بيانات من قاعدة البيانات. تأكد من وجود بيانات متاحة.',
+                      ),
+                    )
+                  else
+                    _buildStatsCards(context),
 
-                  const SizedBox(height: 24),
-
-                  // توزيع حالات الطلبات
-                  Card(
-                    margin: const EdgeInsets.symmetric(horizontal: 16),
-                    child: OrderStatusChart(
-                      pending: controller.pendingOrders.value,
-                      processing: controller.processingOrders.value,
-                      shipped: controller.shippedOrders.value,
-                      delivered: controller.deliveredOrders.value,
-                      cancelled: controller.cancelledOrders.value,
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // التصنيفات
-                  if (controller.categories.isNotEmpty)
-                    CategoriesGrid(
-                      categories: controller.categories,
+                  if (controller.orders.isNotEmpty) ...[
+                    const SizedBox(height: 24),
+                    RecentOrdersList(
+                      orders: controller.orders.take(3).toList(),
                       onSeeAll: () {
-                        Get.toNamed('/categories');
+                        // Assuming index 3 is Orders in main.dart
+                        // In main.dart, Categories is index 1, Products is 2, Orders is 3.
+                        // However, we should use a proper navigation method.
+                        Get.snackbar('تنبیه', 'سيتم تحويلك لصفحة الطلبات قريباً');
                       },
                     ),
-
-                  const SizedBox(height: 24),
-
-                  // حالة المخزون
-                  Card(
-                    margin: const EdgeInsets.symmetric(horizontal: 16),
-                    child: StockStatusChart(
-                      inStock: controller.productsInStock.value,
-                      lowStock: controller.productsLowStock.value,
-                      outOfStock: controller.productsOutOfStock.value,
+                    const SizedBox(height: 24),
+                    Card(
+                      margin: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: OrderStatusChart(
+                          pending: controller.pendingOrders.value,
+                          processing: controller.processingOrders.value,
+                          shipped: controller.shippedOrders.value,
+                          delivered: controller.deliveredOrders.value,
+                          cancelled: controller.cancelledOrders.value,
+                        ),
+                      ),
                     ),
-                  ),
-
-                  const SizedBox(height: 24),
+                    const SizedBox(height: 24),
+                    if (controller.categories.isNotEmpty)
+                      CategoriesGrid(
+                        categories: controller.categories,
+                        onSeeAll: () {
+                          // Categories is index 1
+                        },
+                      ),
+                    const SizedBox(height: 24),
+                    Card(
+                      margin: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: StockStatusChart(
+                          inStock: controller.productsInStock.value,
+                          lowStock: controller.productsLowStock.value,
+                          outOfStock: controller.productsOutOfStock.value,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
                 ],
-              ],
+              ),
             ),
           );
         },
@@ -124,14 +123,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  PreferredSizeWidget _buildAppBar(BuildContext context) {
+  PreferredSizeWidget _buildAppBar(BuildContext context, bool isDark) {
     return AppBar(
       elevation: 0,
-      backgroundColor: Colors.white,
-      title: const Text(
+      backgroundColor: Colors.transparent,
+      title: Text(
         'لوحة التحكم',
         style: TextStyle(
-          color: AppColors.textDark,
+          color: isDark ? Colors.white : AppColors.textDark,
           fontWeight: FontWeight.bold,
           fontSize: 20,
         ),
@@ -139,15 +138,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
       centerTitle: true,
       actions: [
         Padding(
-          padding: const EdgeInsets.only(right: 16),
+          padding: const EdgeInsets.only(right: 16, left: 16),
           child: Obx(
             () => Center(
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: controller.isConnected.value
-                      ? AppColors.success.withValues(alpha: 0.1)
-                      : AppColors.danger.withValues(alpha: 0.1),
+                  color: (controller.isConnected.value ? AppColors.success : AppColors.danger).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(
@@ -157,9 +154,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       width: 8,
                       height: 8,
                       decoration: BoxDecoration(
-                        color: controller.isConnected.value
-                            ? AppColors.success
-                            : AppColors.danger,
+                        color: controller.isConnected.value ? AppColors.success : AppColors.danger,
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -167,9 +162,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     Text(
                       controller.isConnected.value ? 'متصل' : 'غير متصل',
                       style: TextStyle(
-                        color: controller.isConnected.value
-                            ? AppColors.success
-                            : AppColors.danger,
+                        color: controller.isConnected.value ? AppColors.success : AppColors.danger,
                         fontWeight: FontWeight.w600,
                         fontSize: 12,
                       ),
@@ -184,7 +177,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildPeriodSelector(BuildContext context) {
+  Widget _buildPeriodSelector(BuildContext context, bool isDark) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: SingleChildScrollView(
@@ -225,7 +218,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Row(
             children: [
               Expanded(
-                child: DashboardStatCard(
+                child: AnimatedStatCard(
                   title: 'إجمالي الإيرادات',
                   value: '${controller.totalRevenue.value.toStringAsFixed(2)} ر.س',
                   icon: Icons.trending_up,
@@ -236,7 +229,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: DashboardStatCard(
+                child: AnimatedStatCard(
                   title: 'إجمالي الطلبات',
                   value: controller.totalOrders.value.toString(),
                   icon: Icons.shopping_bag_outlined,
@@ -251,7 +244,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Row(
             children: [
               Expanded(
-                child: DashboardStatCard(
+                child: AnimatedStatCard(
                   title: 'إجمالي المستخدمين',
                   value: controller.totalUsers.value.toString(),
                   icon: Icons.people_outline,
@@ -262,7 +255,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: DashboardStatCard(
+                child: AnimatedStatCard(
                   title: 'إجمالي المنتجات',
                   value: controller.totalProducts.value.toString(),
                   icon: Icons.inventory_2_outlined,
@@ -293,6 +286,8 @@ class _PeriodButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -301,13 +296,13 @@ class _PeriodButton extends StatelessWidget {
           color: isSelected ? AppColors.primary : Colors.transparent,
           border: isSelected
               ? null
-              : Border.all(color: AppColors.backgroundLight),
+              : Border.all(color: isDark ? Colors.grey.shade800 : AppColors.backgroundLight),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
           label,
           style: TextStyle(
-            color: isSelected ? Colors.white : AppColors.textDark,
+            color: isSelected ? Colors.white : (isDark ? Colors.grey.shade400 : AppColors.textDark),
             fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
             fontSize: 13,
           ),

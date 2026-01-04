@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/components/animated_category_card.dart';
 import '../config/theme.dart';
+import '../config/responsive.dart';
 import '../models/index.dart';
 
 class CategoriesGrid extends StatelessWidget {
@@ -16,11 +18,18 @@ class CategoriesGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final responsive = context.responsive;
+    final crossAxisCount = responsive.getGridColumns();
+    final spacing = responsive.itemSpacing;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: EdgeInsets.symmetric(
+            horizontal: responsive.defaultPadding.left,
+            vertical: responsive.defaultPadding.top / 2,
+          ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -28,6 +37,7 @@ class CategoriesGrid extends StatelessWidget {
                 'التصنيفات',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
+                      fontSize: responsive.getTitleFontSize(),
                     ),
               ),
               if (onSeeAll != null)
@@ -38,7 +48,7 @@ class CategoriesGrid extends StatelessWidget {
                     style: TextStyle(
                       color: AppColors.primary,
                       fontWeight: FontWeight.w600,
-                      fontSize: 12,
+                      fontSize: responsive.getBodyFontSize() - 1,
                     ),
                   ),
                 ),
@@ -46,20 +56,24 @@ class CategoriesGrid extends StatelessWidget {
           ),
         ),
         GridView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.symmetric(
+            horizontal: responsive.defaultPadding.left,
+            vertical: spacing / 2,
+          ),
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 1.2,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+            childAspectRatio: responsive.getCardAspectRatio(),
+            crossAxisSpacing: spacing,
+            mainAxisSpacing: spacing,
           ),
           itemCount: categories.length,
           itemBuilder: (context, index) {
             final category = categories[index];
-            return CategoryCard(
+            return AnimatedCategoryCard(
               category: category,
+              index: index,
               onTap: () => onCategoryTap?.call(category),
             );
           },

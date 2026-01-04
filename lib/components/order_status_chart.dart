@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../config/theme.dart';
+import 'enhanced_status_chart.dart';
 
 class OrderStatusChart extends StatelessWidget {
   final int pending;
@@ -21,63 +22,44 @@ class OrderStatusChart extends StatelessWidget {
   Widget build(BuildContext context) {
     final total = pending + processing + shipped + delivered + cancelled;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: Text(
-            'توزيع حالات الطلبات',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
+    return EnhancedStatusChart(
+      title: 'توزيع حالات الطلبات',
+      items: [
+        StatusChartItem(
+          label: 'معلقة',
+          count: pending,
+          total: total,
+          color: AppColors.pending,
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            children: [
-              _StatusBar(
-                label: 'معلقة',
-                count: pending,
-                total: total,
-                color: AppColors.pending,
-              ),
-              const SizedBox(height: 12),
-              _StatusBar(
-                label: 'تحت المعالجة',
-                count: processing,
-                total: total,
-                color: AppColors.processing,
-              ),
-              const SizedBox(height: 12),
-              _StatusBar(
-                label: 'مرسلة',
-                count: shipped,
-                total: total,
-                color: AppColors.shipped,
-              ),
-              const SizedBox(height: 12),
-              _StatusBar(
-                label: 'تم التسليم',
-                count: delivered,
-                total: total,
-                color: AppColors.delivered,
-              ),
-              const SizedBox(height: 12),
-              _StatusBar(
-                label: 'ملغاة',
-                count: cancelled,
-                total: total,
-                color: AppColors.cancelled,
-              ),
-            ],
-          ),
+        StatusChartItem(
+          label: 'تحت المعالجة',
+          count: processing,
+          total: total,
+          color: AppColors.processing,
+        ),
+        StatusChartItem(
+          label: 'مرسلة',
+          count: shipped,
+          total: total,
+          color: AppColors.shipped,
+        ),
+        StatusChartItem(
+          label: 'تم التسليم',
+          count: delivered,
+          total: total,
+          color: AppColors.delivered,
+        ),
+        StatusChartItem(
+          label: 'ملغاة',
+          count: cancelled,
+          total: total,
+          color: AppColors.cancelled,
         ),
       ],
     );
   }
-}
+  }
+
 
 class _StatusBar extends StatelessWidget {
   final String label;

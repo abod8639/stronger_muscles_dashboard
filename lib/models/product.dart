@@ -63,12 +63,10 @@ class ProductModel {
       'description': description,
       'category_id': categoryId,
       'stock_quantity': stockQuantity,
-      'average_rating': averageRating,
-      'review_count': reviewCount,
       'brand': brand,
       'serving_size': servingSize,
       'servings_per_container': servingsPerContainer,
-      'is_active': isActive,
+      'is_active': isActive ? 1 : 0,
     };
   }
 

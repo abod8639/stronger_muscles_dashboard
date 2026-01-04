@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/components/animated_order_list_tile.dart';
 import '../config/theme.dart';
 import '../models/index.dart';
 
@@ -49,7 +50,10 @@ class RecentOrdersList extends StatelessWidget {
           itemCount: orders.length,
           itemBuilder: (context, index) {
             final order = orders[index];
-            return OrderListTile(order: order);
+            return AnimatedOrderListTile(
+              order: order,
+              index: index,
+            );
           },
         ),
       ],

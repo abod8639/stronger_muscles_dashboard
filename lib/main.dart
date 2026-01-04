@@ -40,14 +40,15 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         index: _selectedIndex,
         children: const [
           DashboardScreen(),
-          Center(child: Text('الطلبات')),
+          CategoriesScreen(),
           ProductsScreen(),
-          Center(child: Text('المستخدمون')),
-          Center(child: Text('الإعدادات')),
+          Center(child: Text('الطلبات (قريباً)')),
+          Center(child: Text('المستخدمون (قريباً)')),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
+        type: BottomNavigationBarType.fixed,
         onTap: (index) {
           setState(() {
             _selectedIndex = index;
@@ -55,24 +56,29 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         },
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'لوحة التحكم',
+            icon: Icon(Icons.dashboard_outlined),
+            activeIcon: Icon(Icons.dashboard),
+            label: 'الرئيسية',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_bag_outlined),
-            label: 'الطلبات',
+            icon: Icon(Icons.category_outlined),
+            activeIcon: Icon(Icons.category),
+            label: 'الأقسام',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.inventory_2_outlined),
+            activeIcon: Icon(Icons.inventory_2),
             label: 'المنتجات',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.people_outline),
-            label: 'المستخدمون',
+            icon: Icon(Icons.shopping_bag_outlined),
+            activeIcon: Icon(Icons.shopping_bag),
+            label: 'الطلبات',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'الإعدادات',
+            icon: Icon(Icons.people_outline),
+            activeIcon: Icon(Icons.people),
+            label: 'المستخدمون',
           ),
         ],
       ),

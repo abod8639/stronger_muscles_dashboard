@@ -21,7 +21,7 @@ class OrderRepository {
   Future<OrderModel> getOrderDetail(String orderId) async {
     try {
       final data = await _apiService.fetchOrderDetail(orderId);
-      return OrderModel.fromJson(data);
+      return OrderModel.fromJson(data );
     } catch (e) {
       print('خطأ في جلب تفاصيل الطلب: $e');
       rethrow;

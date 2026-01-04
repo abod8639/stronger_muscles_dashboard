@@ -1,8 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../models/index.dart';
-import '../services/api_service.dart';
 import '../repositories/index.dart';
-import '../components/index.dart';
+import '../services/api_service.dart';
 
 class ProductsController extends GetxController {
   late final ProductRepository _productRepository;
@@ -10,8 +10,9 @@ class ProductsController extends GetxController {
 
   final isLoading = true.obs;
   final products = <ProductModel>[].obs;
-  final filteredProducts = <ProductModel>[].obs;
   final categories = <CategoryModel>[].obs;
+  final filteredProducts = <ProductModel>[].obs;
+  
   final searchQuery = ''.obs;
   final selectedCategoryId = 'all'.obs;
 
@@ -27,14 +28,11 @@ class ProductsController extends GetxController {
   Future<void> fetchData() async {
     try {
       isLoading.value = true;
+      final cats = await _categoryRepository.getCategories();
+      categories.assignAll(cats);
       
-      final results = await Future.wait([
-        _productRepository.getProducts(),
-        _categoryRepository.getCategories(),
-      ]);
-
-      products.assignAll(results[0] as List<ProductModel>);
-      categories.assignAll(results[1] as List<CategoryModel>);
+      final prods = await _productRepository.getProducts();
+      products.assignAll(prods);
       
       _applyFiltering();
       isLoading.value = false;
@@ -55,7 +53,7 @@ class ProductsController extends GetxController {
   }
 
   void _applyFiltering() {
-    List<ProductModel> filtered = products;
+    List<ProductModel> filtered = products.toList();
 
     // تصفية حسب القسم
     if (selectedCategoryId.value != 'all') {
@@ -78,7 +76,16 @@ class ProductsController extends GetxController {
   Future<void> addProduct(ProductModel product) async {
     try {
       isLoading.value = true;
+      
+      // توليد معرف إذا كان فارغاً (Backend requires ID)
+      String productId = product.id;
+      if (productId.isEmpty) {
+        productId = 'PROD-${DateTime.now().millisecondsSinceEpoch}';
+      }
+
       final productData = product.toJson();
+      productData['id'] = productId;
+
       final newProduct = await _productRepository.addProduct(productData);
       products.insert(0, newProduct);
       _applyFiltering();
@@ -87,7 +94,19 @@ class ProductsController extends GetxController {
       Get.snackbar('نجاح', 'تم إضافة المنتج بنجاح');
     } catch (e) {
       isLoading.value = false;
-      Get.snackbar('خطأ', 'فشل في إضافة المنتج: ${e.toString()}');
+      print('Error adding product: $e');
+      String errorMsg = e.toString().replaceAll('Exception: ', '');
+      Get.snackbar(
+        'خطأ في التحقق', 
+        errorMsg,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 7),
+        margin: const EdgeInsets.all(12),
+        borderRadius: 8,
+        icon: const Icon(Icons.error_outline, color: Colors.white),
+      );
     }
   }
 
@@ -109,32 +128,33 @@ class ProductsController extends GetxController {
     } catch (e) {
       isLoading.value = false;
       print('Error updating product: $e');
-      Get.snackbar('خطأ', 'فشل في تحديث المنتج. يرجى التأكد من أن جميع الحقول صحيحة.');
+      String errorMsg = e.toString().replaceAll('Exception: ', '');
+      Get.snackbar(
+        'خطأ في التحقق', 
+        errorMsg,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 7),
+        margin: const EdgeInsets.all(12),
+        borderRadius: 8,
+        icon: const Icon(Icons.error_outline, color: Colors.white),
+      );
     }
   }
 
   Future<void> deleteProduct(String id) async {
     try {
-      Get.dialog(
-        ConfirmDialog(
-          title: 'حذف المنتج',
-          message: 'هل أنت متأكد من رغبتك في حذف هذا المنتج؟ لا يمكن التراجع عن هذا الإجراء.',
-          confirmText: 'حذف',
-          onConfirm: () async {
-            Get.back(); // Close confirm dialog
-            isLoading.value = true;
-            final success = await _productRepository.deleteProduct(id);
-            if (success) {
-              products.removeWhere((p) => p.id == id);
-              _applyFiltering();
-              Get.snackbar('نجاح', 'تم حذف المنتج بنجاح');
-            } else {
-              Get.snackbar('خطأ', 'فشل في حذف المنتج من الخادم');
-            }
-            isLoading.value = false;
-          },
-        ),
-      );
+      isLoading.value = true;
+      final success = await _productRepository.deleteProduct(id);
+      if (success) {
+        products.removeWhere((p) => p.id == id);
+        _applyFiltering();
+        Get.snackbar('نجاح', 'تم حذف المنتج بنجاح');
+      } else {
+        Get.snackbar('خطأ', 'فشل في حذف المنتج من الخادم');
+      }
+      isLoading.value = false;
     } catch (e) {
       isLoading.value = false;
       Get.snackbar('خطأ', 'فشل في حذف المنتج: ${e.toString()}');
