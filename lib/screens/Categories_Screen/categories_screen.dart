@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/categories_controller.dart';
-import '../models/index.dart';
-import '../config/theme.dart';
-import '../components/index.dart';
+import 'package:stronger_muscles_dashboard/screens/Categories_Screen/widgets/CategoryGridItem.dart';
+import '../../controllers/categories_controller.dart';
+import '../../models/index.dart';
+import '../../config/theme.dart';
+import '../../config/responsive.dart';
+import '../../components/index.dart';
 
 class CategoriesScreen extends StatelessWidget {
   const CategoriesScreen({super.key});
@@ -11,24 +13,31 @@ class CategoriesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(CategoriesController());
+    final responsive = context.responsive;
+    final padding = responsive.defaultPadding;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('إدارة التصنيفات'),
+        title: Text(
+          'إدارة التصنيفات',
+          style: TextStyle(
+            fontSize: responsive.getTitleFontSize(),
+          ),
+        ),
         actions: [
           IconButton(
             onPressed: () => _showCategoryForm(context, controller),
-            icon: const Icon(Icons.add_circle_outline),
+            icon: Icon(Icons.add_circle_outline, size: responsive.iconSize),
             tooltip: 'إضافة تصنيف جديد',
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: responsive.itemSpacing),
         ],
       ),
       body: Column(
         children: [
           // شريط البحث
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: padding,
             child: TextField(
               onChanged: controller.onSearchChanged,
               decoration: InputDecoration(
@@ -37,7 +46,10 @@ class CategoriesScreen extends StatelessWidget {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: padding.left,
+                  vertical: padding.top / 2,
+                ),
               ),
             ),
           ),
@@ -62,18 +74,42 @@ class CategoriesScreen extends StatelessWidget {
                 );
               }
 
-              return ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: controller.filteredCategories.length,
-                itemBuilder: (context, index) {
-                  final category = controller.filteredCategories[index];
-                  return _CategoryListItem(
-                    category: category,
-                    onEdit: () => _showCategoryForm(context, controller, category: category),
-                    onDelete: () => controller.deleteCategory(category.id),
-                  );
-                },
-              );
+              return responsive.isMobile
+                  ? ListView.builder(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: padding.left,
+                        vertical: padding.top / 2,
+                      ),
+                      itemCount: controller.filteredCategories.length,
+                      itemBuilder: (context, index) {
+                        final category = controller.filteredCategories[index];
+                        return _CategoryListItem(
+                          category: category,
+                          onEdit: () =>
+                              _showCategoryForm(context, controller, category: category),
+                          onDelete: () => controller.deleteCategory(category.id),
+                        );
+                      },
+                    )
+                  : GridView.builder(
+                      padding: padding,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: responsive.isTablet ? 2 : 3,
+                        crossAxisSpacing: responsive.itemSpacing,
+                        mainAxisSpacing: responsive.itemSpacing,
+                        childAspectRatio: 1.0,
+                      ),
+                      itemCount: controller.filteredCategories.length,
+                      itemBuilder: (context, index) {
+                        final category = controller.filteredCategories[index];
+                        return CategoryGridItem(
+                          category: category,
+                          onEdit: () =>
+                              _showCategoryForm(context, controller, category: category),
+                          onDelete: () => controller.deleteCategory(category.id),
+                        );
+                      },
+                    );
             }),
           ),
         ],
