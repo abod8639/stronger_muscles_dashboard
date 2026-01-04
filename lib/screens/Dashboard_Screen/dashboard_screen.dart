@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../config/theme.dart';
-import '../config/responsive.dart';
-import '../controllers/dashboard_controller.dart';
-import '../components/index.dart';
+import '../../config/theme.dart';
+import '../../config/responsive.dart';
+import '../../controllers/dashboard_controller.dart';
+import '../../components/index.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -180,21 +180,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
         scrollDirection: Axis.horizontal,
         child: Row(
           children: [
-            _PeriodButton(
+            PeriodButton(
               label: 'هذا الأسبوع',
               value: 'week',
               isSelected: controller.selectedPeriod.value == 'week',
               onTap: () => controller.changePeriod('week'),
             ),
             SizedBox(width: spacing),
-            _PeriodButton(
+            PeriodButton(
               label: 'هذا الشهر',
               value: 'month',
               isSelected: controller.selectedPeriod.value == 'month',
               onTap: () => controller.changePeriod('month'),
             ),
             SizedBox(width: spacing),
-            _PeriodButton(
+            PeriodButton(
               label: 'هذا العام',
               value: 'year',
               isSelected: controller.selectedPeriod.value == 'year',
@@ -381,13 +381,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 }
 
-class _PeriodButton extends StatelessWidget {
+class PeriodButton extends StatelessWidget {
   final String label;
   final String value;
   final bool isSelected;
   final VoidCallback onTap;
 
-  const _PeriodButton({
+  const PeriodButton({
     required this.label,
     required this.value,
     required this.isSelected,

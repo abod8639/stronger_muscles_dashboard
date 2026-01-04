@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import '../models/index.dart';
-import '../controllers/products_controller.dart';
-import '../config/theme.dart';
-import '../components/index.dart';
+import '../../models/index.dart';
+import '../../controllers/products_controller.dart';
+import '../../config/theme.dart';
+import '../../components/index.dart';
 
 class ProductsScreen extends StatelessWidget {
   const ProductsScreen({super.key});
