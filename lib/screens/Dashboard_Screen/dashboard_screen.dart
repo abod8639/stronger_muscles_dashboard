@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/widget/buildAppBar.dart';
 import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/widget/buildDashboardScreenPeriodSelector.dart';
+import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/widget/buildDashboardScreenStatsCards.dart';
 import '../../config/theme.dart';
 import '../../config/responsive.dart';
 import '../../controllers/dashboard_controller.dart';
@@ -67,7 +68,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                     )
                   else
-                    buildDashboardScreenStatsCards(context),
+                    buildDashboardScreenStatsCards(),
 
                   if (controller.orders.isNotEmpty) ...[
                     SizedBox(height: context.responsive.itemSpacing * 3),
@@ -116,179 +117,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   
-  Widget buildDashboardScreenStatsCards(BuildContext context) {
-    final responsive = context.responsive;
-    final spacing = responsive.itemSpacing;
-    final isMobile = responsive.isMobile;
-    final isTablet = responsive.isTablet;
-
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: responsive.defaultPadding.left,
-      ),
-      child: isMobile
-          ? Column(
-              children: [
-                // صف أول
-                Row(
-                  children: [
-                    Expanded(
-                      child: AnimatedStatCard(
-                        title: 'إجمالي الإيرادات',
-                        value: '${controller.totalRevenue.value.toStringAsFixed(2)} ر.س',
-                        icon: Icons.trending_up,
-                        color: AppColors.primary,
-                        showTrendIcon: true,
-                        isTrendPositive: true,
-                      ),
-                    ),
-                    SizedBox(width: spacing),
-                    Expanded(
-                      child: AnimatedStatCard(
-                        title: 'إجمالي الطلبات',
-                        value: controller.totalOrders.value.toString(),
-                        icon: Icons.shopping_bag_outlined,
-                        color: AppColors.secondary,
-                        showTrendIcon: true,
-                        isTrendPositive: false,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: spacing),
-                // صف ثاني
-                Row(
-                  children: [
-                    Expanded(
-                      child: AnimatedStatCard(
-                        title: 'إجمالي المستخدمين',
-                        value: controller.totalUsers.value.toString(),
-                        icon: Icons.people_outline,
-                        color: AppColors.success,
-                        showTrendIcon: true,
-                        isTrendPositive: true,
-                      ),
-                    ),
-                    SizedBox(width: spacing),
-                    Expanded(
-                      child: AnimatedStatCard(
-                        title: 'إجمالي المنتجات',
-                        value: controller.totalProducts.value.toString(),
-                        icon: Icons.inventory_2_outlined,
-                        color: AppColors.warning,
-                        showTrendIcon: false,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            )
-          : isTablet
-              ? Column(
-                  children: [
-                    // صف أول - 3 كارتات
-                    Row(
-                      children: [
-                        Expanded(
-                          child: AnimatedStatCard(
-                            title: 'إجمالي الإيرادات',
-                            value: '${controller.totalRevenue.value.toStringAsFixed(2)} ر.س',
-                            icon: Icons.trending_up,
-                            color: AppColors.primary,
-                            showTrendIcon: true,
-                            isTrendPositive: true,
-                          ),
-                        ),
-                        SizedBox(width: spacing),
-                        Expanded(
-                          child: AnimatedStatCard(
-                            title: 'إجمالي الطلبات',
-                            value: controller.totalOrders.value.toString(),
-                            icon: Icons.shopping_bag_outlined,
-                            color: AppColors.secondary,
-                            showTrendIcon: true,
-                            isTrendPositive: false,
-                          ),
-                        ),
-                        SizedBox(width: spacing),
-                        Expanded(
-                          child: AnimatedStatCard(
-                            title: 'إجمالي المستخدمين',
-                            value: controller.totalUsers.value.toString(),
-                            icon: Icons.people_outline,
-                            color: AppColors.success,
-                            showTrendIcon: true,
-                            isTrendPositive: true,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: spacing),
-                    // صف ثاني - كارت واحد
-                    Row(
-                      children: [
-                        Expanded(
-                          child: AnimatedStatCard(
-                            title: 'إجمالي المنتجات',
-                            value: controller.totalProducts.value.toString(),
-                            icon: Icons.inventory_2_outlined,
-                            color: AppColors.warning,
-                            showTrendIcon: false,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                )
-              : // سطح المكتب - 4 كارتات في صف واحد
-              Row(
-                  children: [
-                    Expanded(
-                      child: AnimatedStatCard(
-                        title: 'إجمالي الإيرادات',
-                        value: '${controller.totalRevenue.value.toStringAsFixed(2)} ر.س',
-                        icon: Icons.trending_up,
-                        color: AppColors.primary,
-                        showTrendIcon: true,
-                        isTrendPositive: true,
-                      ),
-                    ),
-                    SizedBox(width: spacing),
-                    Expanded(
-                      child: AnimatedStatCard(
-                        title: 'إجمالي الطلبات',
-                        value: controller.totalOrders.value.toString(),
-                        icon: Icons.shopping_bag_outlined,
-                        color: AppColors.secondary,
-                        showTrendIcon: true,
-                        isTrendPositive: false,
-                      ),
-                    ),
-                    SizedBox(width: spacing),
-                    Expanded(
-                      child: AnimatedStatCard(
-                        title: 'إجمالي المستخدمين',
-                        value: controller.totalUsers.value.toString(),
-                        icon: Icons.people_outline,
-                        color: AppColors.success,
-                        showTrendIcon: true,
-                        isTrendPositive: true,
-                      ),
-                    ),
-                    SizedBox(width: spacing),
-                    Expanded(
-                      child: AnimatedStatCard(
-                        title: 'إجمالي المنتجات',
-                        value: controller.totalProducts.value.toString(),
-                        icon: Icons.inventory_2_outlined,
-                        color: AppColors.warning,
-                        showTrendIcon: false,
-                      ),
-                    ),
-                  ],
-                ),
-    );
-  }
 }
 
 class PeriodButton extends StatelessWidget {
