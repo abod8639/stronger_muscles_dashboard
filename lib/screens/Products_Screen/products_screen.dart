@@ -5,6 +5,8 @@ import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/Produ
 import '../../models/index.dart';
 import '../../controllers/products_controller.dart';
 import '../../config/theme.dart';
+import '../../config/responsive.dart';
+import '../../components/index.dart';
 
 class ProductsScreen extends StatelessWidget {
   const ProductsScreen({super.key});
@@ -12,43 +14,61 @@ class ProductsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(ProductsController());
+    final responsive = context.responsive;
+    final padding = responsive.defaultPadding;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('إدارة المنتجات'),
-        actions: [
-          IconButton(
-            onPressed: () => _showProductForm(context, controller),
-            icon: const Icon(Icons.add_circle_outline),
-            tooltip: 'إضافة منتج جديد',
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        title: Text(
+          'إدارة المنتجات',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: responsive.getTitleFontSize() + 2,
           ),
-          const SizedBox(width: 8),
+        ),
+        centerTitle: true,
+        actions: [
+          Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.3),
+                  blurRadius: 12,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: Material(
+              shape: const CircleBorder(),
+              color: AppColors.primary.withValues(alpha: 0.1),
+              child: IconButton(
+                onPressed: () => _showProductForm(context, controller),
+                icon: Icon(
+                  Icons.add_circle_outline,
+                  size: responsive.iconSize + 2,
+                  color: AppColors.primary,
+                ),
+                tooltip: 'إضافة منتج جديد',
+              ),
+            ),
+          ),
+          SizedBox(width: responsive.itemSpacing),
         ],
       ),
       body: Column(
         children: [
-          // شريط البحث
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              onChanged: controller.onSearchChanged,
-              decoration: InputDecoration(
-                hintText: 'ابحث عن منتج بالاسم، الماركة، أو الكود...',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              ),
-            ),
-          ),
+          // شريط البحث المحسّن
 
-          // اختيار القسم
+          // اختيار التصنيفات المحسّن
+          SizedBox(height: responsive.itemSpacing),
           SizedBox(
             height: 50,
             child: Obx(() => ListView.builder(
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: EdgeInsets.symmetric(horizontal: padding.left),
               itemCount: controller.categories.length + 1,
               itemBuilder: (context, index) {
                 final isAll = index == 0;
@@ -58,56 +78,83 @@ class ProductsScreen extends StatelessWidget {
                 final isSelected = controller.selectedCategoryId.value == id;
 
                 return Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
-                  child: FilterChip(
-                    label: Text(name),
-                    selected: isSelected,
-                    onSelected: (selected) => controller.setCategory(id),
-                    selectedColor: AppColors.primary.withOpacity(0.2),
-                    checkmarkColor: AppColors.primary,
-                    labelStyle: TextStyle(
-                      color: isSelected ? AppColors.primary : null,
-                      fontWeight: isSelected ? FontWeight.bold : null,
+                  padding: EdgeInsets.only(left: responsive.itemSpacing),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      gradient: isSelected
+                          ? LinearGradient(
+                              colors: [
+                                AppColors.primary.withValues(alpha: 0.8),
+                                AppColors.secondary.withValues(alpha: 0.6),
+                              ],
+                            )
+                          : null,
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () => controller.setCategory(id),
+                        borderRadius: BorderRadius.circular(12),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: padding.left,
+                            vertical: padding.top / 3,
+                          ),
+                          child: Center(
+                            child: Text(
+                              name,
+                              style: TextStyle(
+                                color: isSelected ? Colors.white : AppColors.textDark,
+                                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                                fontSize: responsive.getBodyFontSize(),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 );
               },
             )),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: responsive.itemSpacing),
 
           // قائمة المنتجات
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value && controller.products.isEmpty) {
-                return const Center(child: CircularProgressIndicator());
+                return const EnhancedLoadingWidget(
+                  message: 'جاري تحميل المنتجات...',
+                );
               }
 
               if (controller.filteredProducts.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.inventory_2_outlined, size: 64, color: Colors.grey.shade400),
-                      const SizedBox(height: 16),
-                      Text(
-                        controller.searchQuery.isEmpty && controller.selectedCategoryId.value == 'all'
-                            ? 'لا يوجد منتجات حالياً'
-                            : 'لم يتم العثور على نتائج للبحث',
-                        style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
-                      ),
-                    ],
-                  ),
+                return EnhancedErrorWidget(
+                  title: 'لا توجد منتجات',
+                  message: controller.searchQuery.isEmpty &&
+                          controller.selectedCategoryId.value == 'all'
+                      ? 'لا يوجد منتجات حالياً'
+                      : 'لم يتم العثور على نتائج للبحث',
+                  icon: Icons.inventory_2_outlined,
+                  onRetry: () => controller.fetchData(),
+                  // onRetry: () => controller.fetchProducts(),
                 );
               }
 
               return ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.only(
+                  // top: responsive.itemSpacing / 2,
+                  // bottom: responsive.itemSpacing * 2,
+                ),
                 itemCount: controller.filteredProducts.length,
                 itemBuilder: (context, index) {
                   final product = controller.filteredProducts[index];
                   return ProductListItem(
                     product: product,
+                    index: index,
                     onEdit: () => _showProductForm(context, controller, product: product),
                     onDelete: () => controller.deleteProduct(product.id),
                   );

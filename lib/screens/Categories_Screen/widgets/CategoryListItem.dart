@@ -1,39 +1,43 @@
 
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
+import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/models/category.dart';
 
 class CategoryListItem extends StatefulWidget {
   final CategoryModel category;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
+  final int index;
 
   const CategoryListItem({
     required this.category,
     required this.onEdit,
     required this.onDelete,
+    this.index = 0,
   });
 
   @override
-  State<CategoryListItem> createState() => CategoryListItemState();
+  State<CategoryListItem> createState() => _CategoryListItemState();
 }
 
-class CategoryListItemState extends State<CategoryListItem>
+class _CategoryListItemState extends State<CategoryListItem>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<Offset> _slideAnimation;
   late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+  bool _isHovered = false;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 500),
       vsync: this,
     );
 
     _slideAnimation = Tween<Offset>(
-      begin: const Offset(0.3, 0),
+      begin: const Offset(0.2, 0),
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
@@ -41,7 +45,9 @@ class CategoryListItemState extends State<CategoryListItem>
       CurvedAnimation(parent: _controller, curve: Curves.easeIn),
     );
 
-    _controller.forward();
+    Future.delayed(Duration(milliseconds: 50 * widget.index), () {
+      if (mounted) _controller.forward();
+    });
   }
 
   @override
@@ -53,32 +59,52 @@ class CategoryListItemState extends State<CategoryListItem>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final responsive = context.responsive;
+    // final padding = responsive.defaultPadding;
 
     return SlideTransition(
       position: _slideAnimation,
       child: FadeTransition(
         opacity: _fadeAnimation,
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-            elevation: 1,
-            child: Material(
-              color: Colors.transparent,
+        child: MouseRegion(
+          onEnter: (_) => setState(() => _isHovered = true),
+          onExit: (_) => setState(() => _isHovered = false),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            margin: const EdgeInsets.only(bottom: 12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: _isHovered
+                      ? AppColors.primary.withValues(alpha: 0.2)
+                      : Colors.transparent,
+                  blurRadius: 15,
+                  offset: const Offset(0, 5),
+                ),
+              ],
+            ),
+            child: Card(
+              margin: EdgeInsets.zero,
+              elevation: _isHovered ? 8 : 1,
+              color: isDark ? const Color(0xFF2C2C2C) : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: BorderSide(
+                  color: isDark 
+                    ? Colors.white.withValues(alpha: 0.05) 
+                    : Colors.black.withValues(alpha: 0.05),
+                  width: 1,
+                ),
+              ),
               child: InkWell(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(16),
                 onTap: widget.onEdit,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(
-                      color: AppColors.backgroundLight,
-                      width: 0.5,
-                    ),
-                  ),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
                   child: Row(
                     children: [
+                      // أيقونة/صورة التصنيف
                       Container(
                         width: 60,
                         height: 60,
@@ -108,23 +134,26 @@ class CategoryListItemState extends State<CategoryListItem>
                               ),
                       ),
                       const SizedBox(width: 16),
+                      
+                      // معلومات التصنيف
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               widget.category.name,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 14,
+                                fontSize: responsive.getBodyFontSize() + 1,
+                                color: isDark ? Colors.white : AppColors.textDark,
                               ),
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'كود: ${widget.category.id}',
+                              'ID: ${widget.category.id}',
                               style: TextStyle(
-                                color: Colors.grey.shade600,
-                                fontSize: 12,
+                                color: isDark ? Colors.white54 : Colors.grey.shade600,
+                                fontSize: 11,
                               ),
                             ),
                             if (!widget.category.isActive) ...[
@@ -132,10 +161,10 @@ class CategoryListItemState extends State<CategoryListItem>
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 8,
-                                  vertical: 3,
+                                  vertical: 2,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: AppColors.danger.withValues(alpha: 0.15),
+                                  color: AppColors.danger.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: const Text(
@@ -151,43 +180,25 @@ class CategoryListItemState extends State<CategoryListItem>
                           ],
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.blue.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: IconButton(
-                          onPressed: widget.onEdit,
-                          icon: const Icon(
-                            Icons.edit_outlined,
-                            size: 18,
+                      
+                      // أزرار التحكم
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _buildActionBtn(
+                            icon: Icons.edit_outlined,
                             color: Colors.blue,
+                            onPressed: widget.onEdit,
+                            isDark: isDark,
                           ),
-                          constraints: const BoxConstraints(
-                            minWidth: 40,
-                            minHeight: 40,
+                          const SizedBox(width: 8),
+                          _buildActionBtn(
+                            icon: Icons.delete_outline,
+                            color: AppColors.danger,
+                            onPressed: widget.onDelete,
+                            isDark: isDark,
                           ),
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.red.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: IconButton(
-                          onPressed: widget.onDelete,
-                          icon: const Icon(
-                            Icons.delete_outline,
-                            size: 18,
-                            color: Colors.red,
-                          ),
-                          constraints: const BoxConstraints(
-                            minWidth: 40,
-                            minHeight: 40,
-                          ),
-                        ),
+                        ],
                       ),
                     ],
                   ),
@@ -196,6 +207,29 @@ class CategoryListItemState extends State<CategoryListItem>
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildActionBtn({
+    required IconData icon,
+    required Color color,
+    required VoidCallback onPressed,
+    required bool isDark,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: IconButton(
+        onPressed: onPressed,
+        icon: Icon(icon, size: 20, color: color),
+        constraints: const BoxConstraints(
+          minWidth: 38,
+          minHeight: 38,
+        ),
+        padding: EdgeInsets.zero,
       ),
     );
   }

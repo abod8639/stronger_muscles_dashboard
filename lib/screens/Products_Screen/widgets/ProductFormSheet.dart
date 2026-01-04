@@ -4,6 +4,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:stronger_muscles_dashboard/components/image_gallery_editor.dart';
 import 'package:stronger_muscles_dashboard/controllers/products_controller.dart';
 import 'package:stronger_muscles_dashboard/models/product.dart';
+import 'package:stronger_muscles_dashboard/config/theme.dart';
+import 'package:stronger_muscles_dashboard/config/responsive.dart';
 
 class ProductFormSheet extends StatefulWidget {
   final ProductsController controller;
@@ -83,102 +85,193 @@ class ProductFormSheetState extends State<ProductFormSheet> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final responsive = context.responsive;
+    final padding = responsive.defaultPadding;
 
     return Container(
-      height: MediaQuery.of(context).size.height * 0.85,
+      height: MediaQuery.of(context).size.height * 0.9,
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.15),
+            blurRadius: 24,
+            spreadRadius: 4,
+          ),
+        ],
       ),
       padding: EdgeInsets.only(
-        left: 20,
-        right: 20,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-        top: 20,
+        left: padding.left,
+        right: padding.right,
+        bottom: MediaQuery.of(context).viewInsets.bottom + padding.bottom,
+        top: padding.top,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // مؤشر الجرجرة
           Center(
             child: Container(
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.grey.shade400,
+                color: AppColors.primary.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: padding.top),
+
+          // العنوان
           Text(
-            widget.product == null ? 'إضافة منتج جديد' : 'تعديل المنتج',
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            widget.product == null ? '✨ إضافة منتج جديد' : '✏️ تعديل المنتج',
+            style: TextStyle(
+              fontSize: responsive.getTitleFontSize() + 2,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primary,
+            ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: padding.top),
+
+          // المحتوى
           Expanded(
             child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
               child: Column(
                 children: [
+                  // معرض الصور
                   ImageGalleryEditor(
                     imageUrls: imageUrls,
                     onAddUrl: _addUrl,
                     onRemove: _removeImage,
                     onPickImage: _pickImage,
                   ),
-                  const SizedBox(height: 24),
-                  _buildTextField(nameController, 'اسم المنتج', Icons.label_outline),
-                  const SizedBox(height: 16),
+                  SizedBox(height: padding.top * 1.5),
+
+                  // اسم المنتج
+                  _buildModernTextField(
+                    nameController,
+                    'اسم المنتج',
+                    Icons.label_outline,
+                  ),
+                  SizedBox(height: padding.top),
+
+                  // السعر والعرض
                   Row(
                     children: [
-                      Expanded(child: _buildTextField(priceController, 'السعر', Icons.attach_money, isNumber: true)),
-                      const SizedBox(width: 16),
-                      Expanded(child: _buildTextField(discountPriceController, 'سعر العرض', Icons.discount_outlined, isNumber: true)),
+                      Expanded(
+                        child: _buildModernTextField(
+                          priceController,
+                          'السعر',
+                          Icons.attach_money,
+                          isNumber: true,
+                        ),
+                      ),
+                      SizedBox(width: padding.left),
+                      Expanded(
+                        child: _buildModernTextField(
+                          discountPriceController,
+                          'سعر العرض',
+                          Icons.discount_outlined,
+                          isNumber: true,
+                        ),
+                      ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: padding.top),
+
+                  // المخزون والماركة
                   Row(
                     children: [
-                      Expanded(child: _buildTextField(stockController, 'الكمية', Icons.inventory_2_outlined, isNumber: true)),
-                      const SizedBox(width: 16),
-                      Expanded(child: _buildTextField(brandController, 'الماركة', Icons.business_outlined)),
+                      Expanded(
+                        child: _buildModernTextField(
+                          stockController,
+                          'الكمية',
+                          Icons.inventory_2_outlined,
+                          isNumber: true,
+                        ),
+                      ),
+                      SizedBox(width: padding.left),
+                      Expanded(
+                        child: _buildModernTextField(
+                          brandController,
+                          'الماركة',
+                          Icons.business_outlined,
+                        ),
+                      ),
                     ],
                   ),
-                  const SizedBox(height: 16),
-                  // اختيار التصنيف
-                  DropdownButtonFormField<String>(
-                    value: selectedCategoryId.isEmpty ? null : selectedCategoryId,
-                    decoration: InputDecoration(
-                      labelText: 'التصنيف',
-                      prefixIcon: const Icon(Icons.category_outlined),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                    items: widget.controller.categories.map((cat) {
-                      return DropdownMenuItem(
-                        value: cat.id,
-                        child: Text(cat.name),
-                      );
-                    }).toList(),
-                    onChanged: (val) => setState(() => selectedCategoryId = val ?? ''),
+                  SizedBox(height: padding.top),
+
+                  // التصنيف
+                  _buildModernDropdown(),
+                  SizedBox(height: padding.top),
+
+                  // الوصف
+                  _buildModernTextField(
+                    descriptionController,
+                    'الوصف',
+                    Icons.description_outlined,
+                    maxLines: 4,
                   ),
-                  const SizedBox(height: 16),
-                  _buildTextField(descriptionController, 'الوصف', Icons.description_outlined, maxLines: 4),
-                  const SizedBox(height: 24),
+                  SizedBox(height: padding.top * 2),
                 ],
               ),
             ),
           ),
-          
+
+          // زر الحفظ
           SizedBox(
             width: double.infinity,
-            height: 50,
-            child: ElevatedButton(
-              onPressed: _submitForm,
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            height: 56,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(14),
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.primary,
+                    AppColors.secondary,
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.4),
+                    blurRadius: 20,
+                    spreadRadius: 2,
+                  ),
+                ],
               ),
-              child: Obx(() => widget.controller.isLoading.value 
-                ? const CircularProgressIndicator(color: Colors.white)
-                : Text(widget.product == null ? 'إضافة المنتج' : 'حفظ التغييرات')
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: _submitForm,
+                  borderRadius: BorderRadius.circular(14),
+                  child: Obx(
+                    () => widget.controller.isLoading.value
+                        ? Center(
+                            child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white.withAlpha(200),
+                              ),
+                            ),
+                          )
+                        : Center(
+                            child: Text(
+                              widget.product == null
+                                  ? '➕ إضافة المنتج'
+                                  : '💾 حفظ التغييرات',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: responsive.getBodyFontSize() + 2,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                  ),
+                ),
               ),
             ),
           ),
@@ -187,27 +280,173 @@ class ProductFormSheetState extends State<ProductFormSheet> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label, IconData icon, {bool isNumber = false, int maxLines = 1}) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: isNumber ? TextInputType.number : TextInputType.text,
-      maxLines: maxLines,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+  Widget _buildModernTextField(
+    TextEditingController controller,
+    String label,
+    IconData icon, {
+    bool isNumber = false,
+    int maxLines = 1,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final responsive = context.responsive;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF2C2C2C) : Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.08),
+            blurRadius: 12,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+      child: TextField(
+        controller: controller,
+        cursorColor: AppColors.primary,
+        style: TextStyle(
+          color: isDark ? Colors.white : AppColors.textDark,
+          fontSize: responsive.getBodyFontSize(),
+        ),
+        keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+        maxLines: maxLines,
+        decoration: InputDecoration(
+          labelText: label,
+          prefixIcon: Icon(
+            icon,
+            color: AppColors.primary.withValues(alpha: 0.7),
+            size: responsive.iconSize,
+          ),
+          filled: true,
+          fillColor: Colors.transparent,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: AppColors.primary.withValues(alpha: 0.15),
+              width: 1.5,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(
+              color: AppColors.primary,
+              width: 2,
+            ),
+          ),
+          labelStyle: TextStyle(
+            color: isDark ? Colors.white70 : AppColors.primary.withValues(alpha: 0.6),
+            fontSize: responsive.getBodyFontSize(),
+          ),
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: responsive.defaultPadding.left / 1.5,
+            vertical: responsive.defaultPadding.top / 1.5,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildModernDropdown() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final responsive = context.responsive;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF2C2C2C) : Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.08),
+            blurRadius: 12,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+      child: DropdownButtonFormField<String>(
+        value: (selectedCategoryId.isEmpty || !widget.controller.categories.any((c) => c.id == selectedCategoryId))
+            ? (widget.controller.categories.isNotEmpty ? widget.controller.categories.first.id : null)
+            : selectedCategoryId,
+        dropdownColor: isDark ? const Color(0xFF2C2C2C) : Colors.white,
+        icon: Icon(Icons.keyboard_arrow_down, color: AppColors.primary.withValues(alpha: 0.7)),
+        decoration: InputDecoration(
+          labelText: 'التصنيف',
+          prefixIcon: Icon(
+            Icons.category_outlined,
+            color: AppColors.primary.withValues(alpha: 0.7),
+            size: responsive.iconSize,
+          ),
+          filled: true,
+          fillColor: Colors.transparent,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: AppColors.primary.withValues(alpha: 0.15),
+              width: 1.5,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(
+              color: AppColors.primary,
+              width: 2,
+            ),
+          ),
+          labelStyle: TextStyle(
+            color: isDark ? Colors.white70 : AppColors.primary.withValues(alpha: 0.6),
+            fontSize: responsive.getBodyFontSize(),
+          ),
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: responsive.defaultPadding.left / 1.5,
+            vertical: responsive.defaultPadding.top / 1.5,
+          ),
+        ),
+        items: widget.controller.categories.map((cat) {
+          return DropdownMenuItem(
+            value: cat.id,
+            child: Row(
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.primary.withValues(alpha: 0.5),
+                  ),
+                ),
+                SizedBox(width: responsive.itemSpacing / 2),
+                Text(
+                  cat.name,
+                  style: TextStyle(
+                    fontSize: responsive.getBodyFontSize(),
+                    color: isDark ? Colors.white : AppColors.textDark,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+        onChanged: (val) => setState(() => selectedCategoryId = val ?? ''),
       ),
     );
   }
 
   void _submitForm() {
     if (nameController.text.isEmpty || priceController.text.isEmpty) {
-      Get.snackbar('تنبیه', 'يرجى ملء الاسم والسعر على الأقل');
+      Get.snackbar('تنبيه', 'يرجى ملء الاسم والسعر على الأقل');
       return;
     }
 
     final data = ProductModel(
-      id: widget.product?.id ?? '',
+      id: widget.product?.id ?? 'PROD-${DateTime.now().millisecondsSinceEpoch}',
       name: nameController.text,
       price: double.tryParse(priceController.text) ?? 0.0,
       discountPrice: double.tryParse(discountPriceController.text),
