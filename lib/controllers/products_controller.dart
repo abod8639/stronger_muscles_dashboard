@@ -1,0 +1,143 @@
+import 'package:get/get.dart';
+import '../models/index.dart';
+import '../services/api_service.dart';
+import '../repositories/index.dart';
+import '../components/index.dart';
+
+class ProductsController extends GetxController {
+  late final ProductRepository _productRepository;
+  late final CategoryRepository _categoryRepository;
+
+  final isLoading = true.obs;
+  final products = <ProductModel>[].obs;
+  final filteredProducts = <ProductModel>[].obs;
+  final categories = <CategoryModel>[].obs;
+  final searchQuery = ''.obs;
+  final selectedCategoryId = 'all'.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    final apiService = ApiService();
+    _productRepository = ProductRepository(apiService);
+    _categoryRepository = CategoryRepository(apiService);
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    try {
+      isLoading.value = true;
+      
+      final results = await Future.wait([
+        _productRepository.getProducts(),
+        _categoryRepository.getCategories(),
+      ]);
+
+      products.assignAll(results[0] as List<ProductModel>);
+      categories.assignAll(results[1] as List<CategoryModel>);
+      
+      _applyFiltering();
+      isLoading.value = false;
+    } catch (e) {
+      isLoading.value = false;
+      Get.snackbar('خطأ', 'فشل في تحميل البيانات: ${e.toString()}');
+    }
+  }
+
+  void onSearchChanged(String query) {
+    searchQuery.value = query;
+    _applyFiltering();
+  }
+
+  void setCategory(String categoryId) {
+    selectedCategoryId.value = categoryId;
+    _applyFiltering();
+  }
+
+  void _applyFiltering() {
+    List<ProductModel> filtered = products;
+
+    // تصفية حسب القسم
+    if (selectedCategoryId.value != 'all') {
+      filtered = filtered.where((p) => p.categoryId == selectedCategoryId.value).toList();
+    }
+
+    // تصفية حسب البحث
+    if (searchQuery.isNotEmpty) {
+      final query = searchQuery.value.toLowerCase();
+      filtered = filtered.where((p) => 
+        p.name.toLowerCase().contains(query) ||
+        p.brand?.toLowerCase().contains(query) == true ||
+        p.id.contains(query)
+      ).toList();
+    }
+
+    filteredProducts.assignAll(filtered);
+  }
+
+  Future<void> addProduct(ProductModel product) async {
+    try {
+      isLoading.value = true;
+      final productData = product.toJson();
+      final newProduct = await _productRepository.addProduct(productData);
+      products.insert(0, newProduct);
+      _applyFiltering();
+      isLoading.value = false;
+      Get.back(); // Close modal
+      Get.snackbar('نجاح', 'تم إضافة المنتج بنجاح');
+    } catch (e) {
+      isLoading.value = false;
+      Get.snackbar('خطأ', 'فشل في إضافة المنتج: ${e.toString()}');
+    }
+  }
+
+  Future<void> updateProduct(ProductModel product) async {
+    try {
+      isLoading.value = true;
+      final productData = product.toJson();
+      final updatedProduct = await _productRepository.updateProduct(product.id, productData);
+      
+      final index = products.indexWhere((p) => p.id == product.id);
+      if (index != -1) {
+        products[index] = updatedProduct;
+        _applyFiltering();
+      }
+      
+      isLoading.value = false;
+      Get.back(); // Close modal
+      Get.snackbar('نجاح', 'تم تحديث المنتج بنجاح');
+    } catch (e) {
+      isLoading.value = false;
+      print('Error updating product: $e');
+      Get.snackbar('خطأ', 'فشل في تحديث المنتج. يرجى التأكد من أن جميع الحقول صحيحة.');
+    }
+  }
+
+  Future<void> deleteProduct(String id) async {
+    try {
+      Get.dialog(
+        ConfirmDialog(
+          title: 'حذف المنتج',
+          message: 'هل أنت متأكد من رغبتك في حذف هذا المنتج؟ لا يمكن التراجع عن هذا الإجراء.',
+          confirmText: 'حذف',
+          onConfirm: () async {
+            Get.back(); // Close confirm dialog
+            isLoading.value = true;
+            final success = await _productRepository.deleteProduct(id);
+            if (success) {
+              products.removeWhere((p) => p.id == id);
+              _applyFiltering();
+              Get.snackbar('نجاح', 'تم حذف المنتج بنجاح');
+            } else {
+              Get.snackbar('خطأ', 'فشل في حذف المنتج من الخادم');
+            }
+            isLoading.value = false;
+          },
+        ),
+      );
+    } catch (e) {
+      isLoading.value = false;
+      Get.snackbar('خطأ', 'فشل في حذف المنتج: ${e.toString()}');
+    }
+  }
+}
