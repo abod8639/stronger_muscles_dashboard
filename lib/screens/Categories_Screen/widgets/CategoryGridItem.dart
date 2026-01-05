@@ -47,9 +47,9 @@ class _CategoryGridItemState extends State<CategoryGridItem> {
                     ? Image.network(
                         widget.category.imageUrl!,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => _buildPlaceholder(isDark),
+                        errorBuilder: (_, __, ___) => buildPlaceholder(isDark),
                       )
-                    : _buildPlaceholder(isDark),
+                    : buildPlaceholder(isDark),
                 ),
 
                 // طبقة التعتيم المتدرجة
@@ -135,7 +135,7 @@ class _CategoryGridItemState extends State<CategoryGridItem> {
     );
   }
 
-  Widget _buildPlaceholder(bool isDark) {
+  Widget buildPlaceholder(bool isDark) {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
