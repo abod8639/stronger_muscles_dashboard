@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/ProductFormSheet.dart';
 import '../models/index.dart';
 import '../repositories/index.dart';
 import '../services/api_service.dart';
@@ -206,4 +207,16 @@ class ProductsController extends GetxController {
       return null;
     }
   }
+
+    void showProductForm(BuildContext context, {
+    ProductModel? product,
+  }) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => ProductFormSheet( product: product),
+    );
+  }
+  
 }

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/ProductFormSheet.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/ProductListItem.dart';
-import '../../models/index.dart';
 import '../../controllers/products_controller.dart';
 import '../../config/theme.dart';
 import '../../config/responsive.dart';
@@ -45,7 +43,7 @@ class ProductsScreen extends GetView<ProductsController> {
               shape: const CircleBorder(),
               color: AppColors.primary.withValues(alpha: 0.1),
               child: IconButton(
-                onPressed: () => _showProductForm(context),
+                onPressed: () => controller.showProductForm(context),
                 icon: Icon(
                   Icons.add_circle_outline,
                   size: responsive.iconSize + 2,
@@ -164,8 +162,8 @@ class ProductsScreen extends GetView<ProductsController> {
                   return ProductListItem(
                     product: product,
                     index: index,
-                    onEdit: () =>
-                        _showProductForm(context, product: product),
+                    onEdit: () => 
+                    controller.showProductForm(context, product: product),
                     onDelete: () => controller.deleteProduct(product.id),
                   );
                 },
@@ -177,17 +175,5 @@ class ProductsScreen extends GetView<ProductsController> {
     );
   }
 
-  void _showProductForm(
-    BuildContext context,
-     {
-    ProductModel? product,
-  }) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) =>
-          ProductFormSheet( product: product),
-    );
-  }
+
 }
