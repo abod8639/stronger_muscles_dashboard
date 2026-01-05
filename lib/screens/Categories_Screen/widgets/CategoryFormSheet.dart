@@ -10,7 +10,7 @@ class CategoryFormSheet extends StatefulWidget {
   final CategoriesController controller;
   final CategoryModel? category;
 
-  const CategoryFormSheet({
+  const CategoryFormSheet({super.key, 
     required this.controller,
     this.category,
   });

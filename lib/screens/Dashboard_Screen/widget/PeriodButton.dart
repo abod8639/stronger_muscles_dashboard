@@ -9,7 +9,7 @@ class PeriodButton extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
 
-  const PeriodButton({
+  const PeriodButton({super.key, 
     required this.label,
     required this.value,
     required this.isSelected,

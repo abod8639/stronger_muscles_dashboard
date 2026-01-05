@@ -11,7 +11,7 @@ class ProductFormSheet extends StatefulWidget {
   final ProductsController controller;
   final ProductModel? product;
 
-  const ProductFormSheet({
+  const ProductFormSheet({super.key, 
     required this.controller,
     this.product,
   });
@@ -175,7 +175,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                   SizedBox(height: padding.top * 1.5),
 
                   // اسم المنتج
-                  _buildModernTextField(
+                  buildModernTextField(
                     nameController,
                     'اسم المنتج',
                     Icons.label_outline,
@@ -186,7 +186,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                   Row(
                     children: [
                       Expanded(
-                        child: _buildModernTextField(
+                        child: buildModernTextField(
                           priceController,
                           'السعر',
                           Icons.attach_money,
@@ -195,7 +195,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                       ),
                       SizedBox(width: padding.left),
                       Expanded(
-                        child: _buildModernTextField(
+                        child: buildModernTextField(
                           discountPriceController,
                           'سعر العرض',
                           Icons.discount_outlined,
@@ -210,7 +210,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                   Row(
                     children: [
                       Expanded(
-                        child: _buildModernTextField(
+                        child: buildModernTextField(
                           stockController,
                           'الكمية',
                           Icons.inventory_2_outlined,
@@ -219,7 +219,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                       ),
                       SizedBox(width: padding.left),
                       Expanded(
-                        child: _buildModernTextField(
+                        child: buildModernTextField(
                           brandController,
                           'الماركة',
                           Icons.business_outlined,
@@ -234,7 +234,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                   SizedBox(height: padding.top),
 
                   // الوصف
-                  _buildModernTextField(
+                  buildModernTextField(
                     descriptionController,
                     'الوصف',
                     Icons.description_outlined,
@@ -305,7 +305,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
     );
   }
 
-  Widget _buildModernTextField(
+  Widget buildModernTextField(
     TextEditingController controller,
     String label,
     IconData icon, {
@@ -393,7 +393,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
         ],
       ),
       child: DropdownButtonFormField<String>(
-        value: (selectedCategoryId.isEmpty || !widget.controller.categories.any((c) => c.id == selectedCategoryId))
+        initialValue: (selectedCategoryId.isEmpty || !widget.controller.categories.any((c) => c.id == selectedCategoryId))
             ? (widget.controller.categories.isNotEmpty ? widget.controller.categories.first.id : null)
             : selectedCategoryId,
         dropdownColor: isDark ? const Color(0xFF2C2C2C) : Colors.white,

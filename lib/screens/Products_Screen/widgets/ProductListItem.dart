@@ -11,7 +11,7 @@ class ProductListItem extends StatefulWidget {
   final VoidCallback onDelete;
   final int index;
 
-  const ProductListItem({
+  const ProductListItem({super.key, 
     required this.product,
     required this.onEdit,
     required this.onDelete,

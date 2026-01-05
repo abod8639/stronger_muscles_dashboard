@@ -102,7 +102,7 @@ class _BarChartWidgetState extends State<BarChartWidget> {
                         int rodIndex,
                       ) {
                         return BarTooltipItem(
-                          '${rod.toY.toStringAsFixed(0)}',
+                          rod.toY.toStringAsFixed(0),
                           const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,

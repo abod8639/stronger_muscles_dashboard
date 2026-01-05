@@ -10,7 +10,7 @@ class CategoryListItem extends StatefulWidget {
   final VoidCallback onDelete;
   final int index;
 
-  const CategoryListItem({
+  const CategoryListItem({super.key, 
     required this.category,
     required this.onEdit,
     required this.onDelete,

@@ -129,7 +129,7 @@ class _PieChartWidgetState extends State<PieChartWidget> {
                                     ),
                                     padding: const EdgeInsets.all(6),
                                     child: Text(
-                                      '${data.value.toStringAsFixed(0)}',
+                                      data.value.toStringAsFixed(0),
                                       style: TextStyle(
                                         color: data.color,
                                         fontWeight: FontWeight.bold,

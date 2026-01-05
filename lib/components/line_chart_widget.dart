@@ -182,7 +182,7 @@ class _LineChartWidgetState extends State<LineChartWidget> {
                       getTooltipItems: (List<LineBarSpot> touchedSpots) {
                         return touchedSpots.map((LineBarSpot touchedSpot) {
                           return LineTooltipItem(
-                            '${touchedSpot.y.toStringAsFixed(1)}',
+                            touchedSpot.y.toStringAsFixed(1),
                             const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,

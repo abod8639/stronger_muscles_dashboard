@@ -9,7 +9,7 @@ class CategoryGridItem extends StatefulWidget {
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
-  const CategoryGridItem({
+  const CategoryGridItem({super.key, 
     required this.category,
     required this.onEdit,
     required this.onDelete,
