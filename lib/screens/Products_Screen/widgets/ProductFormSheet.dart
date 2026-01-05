@@ -6,13 +6,12 @@ import 'package:stronger_muscles_dashboard/controllers/products_controller.dart'
 import 'package:stronger_muscles_dashboard/models/product.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
+import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/buildModernTextField.dart';
 
 class ProductFormSheet extends StatefulWidget {
-  final ProductsController controller;
   final ProductModel? product;
 
   const ProductFormSheet({super.key, 
-    required this.controller,
     this.product,
   });
 
@@ -30,6 +29,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
   late String selectedCategoryId;
   late List<String> imageUrls;
   final ImagePicker _picker = ImagePicker();
+  final ProductsController controller = Get.put(ProductsController());
 
   @override
   void initState() {
@@ -41,7 +41,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
     descriptionController = TextEditingController(text: widget.product?.description ?? '');
     brandController = TextEditingController(text: widget.product?.brand ?? '');
     selectedCategoryId = widget.product?.categoryId ?? 
-                        (widget.controller.categories.isNotEmpty ? widget.controller.categories.first.id : '');
+                        (controller.categories.isNotEmpty ? controller.categories.first.id : '');
     imageUrls = List<String>.from(widget.product?.imageUrls ?? []);
   }
 
@@ -69,7 +69,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
         );
 
         // رفع الصورة إلى الخادم
-        final uploadedUrl = await widget.controller.uploadProductImage(image.path);
+        final uploadedUrl = await controller.uploadProductImage(image.path);
         
         if (uploadedUrl != null && uploadedUrl.isNotEmpty) {
           setState(() {
@@ -230,7 +230,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                   SizedBox(height: padding.top),
 
                   // التصنيف
-                  _buildModernDropdown(),
+                  buildModernDropdown(),
                   SizedBox(height: padding.top),
 
                   // الوصف
@@ -275,7 +275,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                   onTap: _submitForm,
                   borderRadius: BorderRadius.circular(14),
                   child: Obx(
-                    () => widget.controller.isLoading.value
+                    () => controller.isLoading.value
                         ? Center(
                             child: CircularProgressIndicator(
                               valueColor: AlwaysStoppedAnimation<Color>(
@@ -305,78 +305,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
     );
   }
 
-  Widget buildModernTextField(
-    TextEditingController controller,
-    String label,
-    IconData icon, {
-    bool isNumber = false,
-    int maxLines = 1,
-  }) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final responsive = context.responsive;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF2C2C2C) : Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.08),
-            blurRadius: 12,
-            spreadRadius: 1,
-          ),
-        ],
-      ),
-      child: TextField(
-        controller: controller,
-        cursorColor: AppColors.primary,
-        style: TextStyle(
-          color: isDark ? Colors.white : AppColors.textDark,
-          fontSize: responsive.getBodyFontSize(),
-        ),
-        keyboardType: isNumber ? TextInputType.number : TextInputType.text,
-        maxLines: maxLines,
-        decoration: InputDecoration(
-          labelText: label,
-          prefixIcon: Icon(
-            icon,
-            color: AppColors.primary.withValues(alpha: 0.7),
-            size: responsive.iconSize,
-          ),
-          filled: true,
-          fillColor: Colors.transparent,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide.none,
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(
-              color: AppColors.primary.withValues(alpha: 0.15),
-              width: 1.5,
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(
-              color: AppColors.primary,
-              width: 2,
-            ),
-          ),
-          labelStyle: TextStyle(
-            color: isDark ? Colors.white70 : AppColors.primary.withValues(alpha: 0.6),
-            fontSize: responsive.getBodyFontSize(),
-          ),
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: responsive.defaultPadding.left / 1.5,
-            vertical: responsive.defaultPadding.top / 1.5,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildModernDropdown() {
+  Widget buildModernDropdown() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final responsive = context.responsive;
 
@@ -393,8 +322,8 @@ class ProductFormSheetState extends State<ProductFormSheet> {
         ],
       ),
       child: DropdownButtonFormField<String>(
-        initialValue: (selectedCategoryId.isEmpty || !widget.controller.categories.any((c) => c.id == selectedCategoryId))
-            ? (widget.controller.categories.isNotEmpty ? widget.controller.categories.first.id : null)
+        initialValue: (selectedCategoryId.isEmpty || !controller.categories.any((c) => c.id == selectedCategoryId))
+            ? (controller.categories.isNotEmpty ? controller.categories.first.id : null)
             : selectedCategoryId,
         dropdownColor: isDark ? const Color(0xFF2C2C2C) : Colors.white,
         icon: Icon(Icons.keyboard_arrow_down, color: AppColors.primary.withValues(alpha: 0.7)),
@@ -434,7 +363,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
             vertical: responsive.defaultPadding.top / 1.5,
           ),
         ),
-        items: widget.controller.categories.map((cat) {
+        items: controller.categories.map((cat) {
           return DropdownMenuItem(
             value: cat.id,
             child: Row(
@@ -484,9 +413,9 @@ class ProductFormSheetState extends State<ProductFormSheet> {
     );
 
     if (widget.product == null) {
-      widget.controller.addProduct(data);
+      controller.addProduct(data);
     } else {
-      widget.controller.updateProduct(data);
+      controller.updateProduct(data);
     }
   }
 }

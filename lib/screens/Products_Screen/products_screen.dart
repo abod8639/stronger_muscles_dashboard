@@ -45,7 +45,7 @@ class ProductsScreen extends GetView<ProductsController> {
               shape: const CircleBorder(),
               color: AppColors.primary.withValues(alpha: 0.1),
               child: IconButton(
-                onPressed: () => _showProductForm(context, controller),
+                onPressed: () => _showProductForm(context),
                 icon: Icon(
                   Icons.add_circle_outline,
                   size: responsive.iconSize + 2,
@@ -165,7 +165,7 @@ class ProductsScreen extends GetView<ProductsController> {
                     product: product,
                     index: index,
                     onEdit: () =>
-                        _showProductForm(context, controller, product: product),
+                        _showProductForm(context, product: product),
                     onDelete: () => controller.deleteProduct(product.id),
                   );
                 },
@@ -179,7 +179,7 @@ class ProductsScreen extends GetView<ProductsController> {
 
   void _showProductForm(
     BuildContext context,
-    ProductsController controller, {
+     {
     ProductModel? product,
   }) {
     showModalBottomSheet(
@@ -187,7 +187,7 @@ class ProductsScreen extends GetView<ProductsController> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) =>
-          ProductFormSheet(controller: controller, product: product),
+          ProductFormSheet( product: product),
     );
   }
 }
