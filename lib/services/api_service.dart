@@ -400,23 +400,53 @@ class ApiService {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseData = await response.stream.bytesToString();
+        print('📥 رد الخادم (uploadProductImage): $responseData');
         final decoded = json.decode(responseData);
         
         // محاولة استخراج رابط الصورة من الاستجابة
+        String? imageUrl;
+        
         if (decoded is Map) {
-          if (decoded.containsKey('url')) {
-            return decoded['url'];
-          } else if (decoded.containsKey('data') && decoded['data'] is Map) {
+          // الحالة 1: url مباشرة
+          if (decoded.containsKey('url') && decoded['url'] != null) {
+            imageUrl = decoded['url'].toString();
+          }
+          // الحالة 2: داخل data object
+          else if (decoded.containsKey('data') && decoded['data'] is Map) {
             final dataMap = decoded['data'] as Map;
-            return dataMap['url'] ?? dataMap['imageUrl'] ?? '';
-          } else if (decoded.containsKey('imageUrl')) {
-            return decoded['imageUrl'];
-          } else if (decoded.containsKey('path')) {
-            return decoded['path'];
+            imageUrl = dataMap['url']?.toString() ?? dataMap['imageUrl']?.toString();
+          }
+          // الحالة 3: imageUrl مباشرة
+          else if (decoded.containsKey('imageUrl') && decoded['imageUrl'] != null) {
+            imageUrl = decoded['imageUrl'].toString();
+          }
+          // الحالة 4: path مباشرة
+          else if (decoded.containsKey('path') && decoded['path'] != null) {
+            imageUrl = decoded['path'].toString();
           }
         }
         
-        throw Exception('لم يتم استلام رابط الصورة من الخادم');
+        // التحقق من أن الرابط صحيح
+        if (imageUrl != null && imageUrl.isNotEmpty) {
+          // التحقق من أن الرابط يبدأ بـ http
+          if (!imageUrl.startsWith('http')) {
+            // إذا كان الرابط ناقصاً، أضف base URL
+            imageUrl = '${ApiConfig.baseUrl}/../$imageUrl';
+          }
+          
+          // إصلاح المنفذ إذا كان هناك عدم توافق
+          // مثلاً إذا كان الخادم يرسل :8000 والتطبيق يستخدم :8080
+          if (imageUrl.contains('localhost:8000')) {
+            imageUrl = imageUrl.replaceAll('localhost:8000', 'localhost:8080');
+            print('🔧 تم تصحيح المنفذ من :8000 إلى :8080');
+          }
+          
+          print('✅ رابط الصورة النهائي: $imageUrl');
+          return imageUrl;
+        }
+        
+        print('❌ لم يتم استلام رابط الصورة صحيح من الخادم');
+        throw Exception('لم يتم استلام رابط الصورة من الخادم. الرد: $responseData');
       } else {
         final responseData = await response.stream.bytesToString();
         print('الخادم رد: $responseData');
@@ -456,24 +486,53 @@ class ApiService {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseData = await response.stream.bytesToString();
+        print('📥 رد الخادم (uploadCategoryImage): $responseData');
         final decoded = json.decode(responseData);
         
+        // محاولة استخراج رابط الصورة من الاستجابة
+        String? imageUrl;
+        
         if (decoded is Map) {
-          if (decoded.containsKey('url')) {
-            return decoded['url'];
-          } else if (decoded.containsKey('data') && decoded['data'] is Map) {
+          // الحالة 1: url مباشرة
+          if (decoded.containsKey('url') && decoded['url'] != null) {
+            imageUrl = decoded['url'].toString();
+          }
+          // الحالة 2: داخل data object
+          else if (decoded.containsKey('data') && decoded['data'] is Map) {
             final dataMap = decoded['data'] as Map;
-            return dataMap['url'] ?? dataMap['imageUrl'] ?? '';
-          } else if (decoded.containsKey('imageUrl')) {
-            return decoded['imageUrl'];
-          } else if (decoded.containsKey('path')) {
-            return decoded['path'];
+            imageUrl = dataMap['url']?.toString() ?? dataMap['imageUrl']?.toString();
+          }
+          // الحالة 3: imageUrl مباشرة
+          else if (decoded.containsKey('imageUrl') && decoded['imageUrl'] != null) {
+            imageUrl = decoded['imageUrl'].toString();
+          }
+          // الحالة 4: path مباشرة
+          else if (decoded.containsKey('path') && decoded['path'] != null) {
+            imageUrl = decoded['path'].toString();
           }
         }
         
-        throw Exception('لم يتم استلام رابط الصورة من الخادم');
+        // التحقق من أن الرابط صحيح
+        if (imageUrl != null && imageUrl.isNotEmpty) {
+          // التحقق من أن الرابط يبدأ بـ http
+          if (!imageUrl.startsWith('http')) {
+            // إذا كان الرابط ناقصاً، أضف base URL
+            imageUrl = '${ApiConfig.baseUrl}/../$imageUrl';
+          }
+          
+          // إصلاح المنفذ إذا كان هناك عدم توافق
+          if (imageUrl.contains('localhost:8000')) {
+            imageUrl = imageUrl.replaceAll('localhost:8000', 'localhost:8080');
+            print('🔧 تم تصحيح المنفذ من :8000 إلى :8080');
+          }
+          
+          print('✅ رابط الصورة النهائي: $imageUrl');
+          return imageUrl;
+        }
+        
+        print('❌ لم يتم استلام رابط الصورة صحيح من الخادم');
+        throw Exception('لم يتم استلام رابط الصورة من الخادم. الرد: $responseData');
       } else {
-        final responseData = await response.stream.bytesToString();
         throw Exception('فشل في رفع الصورة: ${response.statusCode}');
       }
     } catch (e) {
@@ -510,24 +569,53 @@ class ApiService {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseData = await response.stream.bytesToString();
+        print('📥 رد الخادم (uploadImage): $responseData');
         final decoded = json.decode(responseData);
         
+        // محاولة استخراج رابط الصورة من الاستجابة
+        String? imageUrl;
+        
         if (decoded is Map) {
-          if (decoded.containsKey('url')) {
-            return decoded['url'];
-          } else if (decoded.containsKey('data') && decoded['data'] is Map) {
+          // الحالة 1: url مباشرة
+          if (decoded.containsKey('url') && decoded['url'] != null) {
+            imageUrl = decoded['url'].toString();
+          }
+          // الحالة 2: داخل data object
+          else if (decoded.containsKey('data') && decoded['data'] is Map) {
             final dataMap = decoded['data'] as Map;
-            return dataMap['url'] ?? dataMap['imageUrl'] ?? '';
-          } else if (decoded.containsKey('imageUrl')) {
-            return decoded['imageUrl'];
-          } else if (decoded.containsKey('path')) {
-            return decoded['path'];
+            imageUrl = dataMap['url']?.toString() ?? dataMap['imageUrl']?.toString();
+          }
+          // الحالة 3: imageUrl مباشرة
+          else if (decoded.containsKey('imageUrl') && decoded['imageUrl'] != null) {
+            imageUrl = decoded['imageUrl'].toString();
+          }
+          // الحالة 4: path مباشرة
+          else if (decoded.containsKey('path') && decoded['path'] != null) {
+            imageUrl = decoded['path'].toString();
           }
         }
         
-        throw Exception('لم يتم استلام رابط الصورة من الخادم');
+        // التحقق من أن الرابط صحيح
+        if (imageUrl != null && imageUrl.isNotEmpty) {
+          // التحقق من أن الرابط يبدأ بـ http
+          if (!imageUrl.startsWith('http')) {
+            // إذا كان الرابط ناقصاً، أضف base URL
+            imageUrl = '${ApiConfig.baseUrl}/../$imageUrl';
+          }
+          
+          // إصلاح المنفذ إذا كان هناك عدم توافق
+          if (imageUrl.contains('localhost:8000')) {
+            imageUrl = imageUrl.replaceAll('localhost:8000', 'localhost:8080');
+            print('🔧 تم تصحيح المنفذ من :8000 إلى :8080');
+          }
+          
+          print('✅ رابط الصورة النهائي: $imageUrl');
+          return imageUrl;
+        }
+        
+        print('❌ لم يتم استلام رابط الصورة صحيح من الخادم');
+        throw Exception('لم يتم استلام رابط الصورة من الخادم. الرد: $responseData');
       } else {
-        final responseData = await response.stream.bytesToString();
         throw Exception('فشل في رفع الصورة: ${response.statusCode}');
       }
     } catch (e) {
@@ -535,4 +623,6 @@ class ApiService {
       rethrow;
     }
   }
+
+
 }

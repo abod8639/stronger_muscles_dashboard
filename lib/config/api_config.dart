@@ -8,11 +8,11 @@ class ApiConfig {
   // روابط المنتجات
   static const String products = '/products';
   static String productDetail(String id) => '/products/$id';
-  static const String uploadProductImage = '/products/upload-image';
+  static const String uploadProductImage = '/upload/product-image';
 
   // روابط التصنيفات
   static const String categories = '/categories';
-  static const String uploadCategoryImage = '/categories/upload-image';
+  static const String uploadCategoryImage = '/upload/category-image';
 
   // روابط الطلبات
   static const String orders = '/orders';
@@ -24,5 +24,5 @@ class ApiConfig {
 
   // روابط الرفع العامة
   static const String uploadFile = '/upload';
-  static const String uploadImage = '/upload-image';
+  static const String uploadImage = '/upload/image';
 }

@@ -71,7 +71,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   else
                     buildDashboardScreenStatsCards(),
 
-                  if (controller.orders.isNotEmpty) ...[
+                  if (!controller.orders.isNotEmpty) ...[
                     SizedBox(height: context.responsive.itemSpacing * 3),
                     
                     // قسم الإحصائيات والرسوم البيانية
