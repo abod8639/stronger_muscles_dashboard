@@ -175,8 +175,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                   SizedBox(height: padding.top * 1.5),
 
                   // اسم المنتج
-                  buildModernTextField(
-                    enabled: true,
+                  buildProductFormSheetModernTextField(
                     nameController,
                     'اسم المنتج',
                     Icons.label_outline,
@@ -187,8 +186,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                   Row(
                     children: [
                       Expanded(
-                        child: buildModernTextField(
-                          enabled: true,
+                        child: buildProductFormSheetModernTextField(
                           priceController,
                           'السعر',
                           Icons.attach_money,
@@ -197,8 +195,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                       ),
                       SizedBox(width: padding.left),
                       Expanded(
-                        child: buildModernTextField(
-                          enabled: true,
+                        child: buildProductFormSheetModernTextField(
                           discountPriceController,
                           'سعر العرض',
                           Icons.discount_outlined,
@@ -213,8 +210,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                   Row(
                     children: [
                       Expanded(
-                        child: buildModernTextField(
-                          enabled: true,
+                        child: buildProductFormSheetModernTextField(
                           stockController,
                           'الكمية',
                           Icons.inventory_2_outlined,
@@ -223,8 +219,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                       ),
                       SizedBox(width: padding.left),
                       Expanded(
-                        child: buildModernTextField(
-                          enabled: true,
+                        child: buildProductFormSheetModernTextField(
                           brandController,
                           'الماركة',
                           Icons.business_outlined,
@@ -239,8 +234,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                   SizedBox(height: padding.top),
 
                   // الوصف
-                  buildModernTextField(
-                    enabled: true,
+                  buildProductFormSheetModernTextField(
                     descriptionController,
                     'الوصف',
                     Icons.description_outlined,

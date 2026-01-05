@@ -5,7 +5,7 @@ import 'package:stronger_muscles_dashboard/controllers/categories_controller.dar
 import 'package:stronger_muscles_dashboard/models/category.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
-import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/buildModernTextField.dart';
+import 'package:stronger_muscles_dashboard/screens/widgets/buildModernTextField.dart';
 
 class CategoryFormSheet extends StatefulWidget {
   final CategoriesController controller;
@@ -94,7 +94,7 @@ class CategoryFormSheetState extends State<CategoryFormSheet> {
           SizedBox(height: padding.top),
 
           // الحقول
-          buildModernTextField(
+          buildCategoryFormSheetModernTextField(
             idController,
             'كود التصنيف (ID)',
             Icons.fingerprint_rounded,
@@ -102,7 +102,7 @@ class CategoryFormSheetState extends State<CategoryFormSheet> {
           ),
           SizedBox(height: padding.top),
           
-          buildModernTextField(
+          buildCategoryFormSheetModernTextField(
             enabled: true,
             nameController,
             'اسم التصنيف',
@@ -110,7 +110,7 @@ class CategoryFormSheetState extends State<CategoryFormSheet> {
           ),
           SizedBox(height: padding.top),
           
-          buildModernTextField(
+          buildCategoryFormSheetModernTextField(
             enabled: true,
             imageController,
             'رابط الصورة',

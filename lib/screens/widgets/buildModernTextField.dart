@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 
-Widget buildModernTextField(
+Widget buildCategoryFormSheetModernTextField(
     TextEditingController controller,
     String label,
     IconData icon, {
