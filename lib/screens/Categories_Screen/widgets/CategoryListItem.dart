@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/models/category.dart';
+import 'package:stronger_muscles_dashboard/screens/Categories_Screen/widgets/buildActionBtn.dart';
 
 class CategoryListItem extends StatefulWidget {
   final CategoryModel category;
@@ -185,14 +186,14 @@ class _CategoryListItemState extends State<CategoryListItem>
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          _buildActionBtn(
+                          buildActionBtn(
                             icon: Icons.edit_outlined,
                             color: Colors.blue,
                             onPressed: widget.onEdit,
                             isDark: isDark,
                           ),
                           const SizedBox(width: 8),
-                          _buildActionBtn(
+                          buildActionBtn(
                             icon: Icons.delete_outline,
                             color: AppColors.danger,
                             onPressed: widget.onDelete,
@@ -211,26 +212,5 @@ class _CategoryListItemState extends State<CategoryListItem>
     );
   }
 
-  Widget _buildActionBtn({
-    required IconData icon,
-    required Color color,
-    required VoidCallback onPressed,
-    required bool isDark,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: IconButton(
-        onPressed: onPressed,
-        icon: Icon(icon, size: 20, color: color),
-        constraints: const BoxConstraints(
-          minWidth: 38,
-          minHeight: 38,
-        ),
-        padding: EdgeInsets.zero,
-      ),
-    );
-  }
+
 }

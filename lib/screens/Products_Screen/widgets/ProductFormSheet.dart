@@ -176,6 +176,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
 
                   // اسم المنتج
                   buildModernTextField(
+                    enabled: true,
                     nameController,
                     'اسم المنتج',
                     Icons.label_outline,
@@ -187,6 +188,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                     children: [
                       Expanded(
                         child: buildModernTextField(
+                          enabled: true,
                           priceController,
                           'السعر',
                           Icons.attach_money,
@@ -196,6 +198,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                       SizedBox(width: padding.left),
                       Expanded(
                         child: buildModernTextField(
+                          enabled: true,
                           discountPriceController,
                           'سعر العرض',
                           Icons.discount_outlined,
@@ -211,6 +214,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                     children: [
                       Expanded(
                         child: buildModernTextField(
+                          enabled: true,
                           stockController,
                           'الكمية',
                           Icons.inventory_2_outlined,
@@ -220,6 +224,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                       SizedBox(width: padding.left),
                       Expanded(
                         child: buildModernTextField(
+                          enabled: true,
                           brandController,
                           'الماركة',
                           Icons.business_outlined,
@@ -235,6 +240,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
 
                   // الوصف
                   buildModernTextField(
+                    enabled: true,
                     descriptionController,
                     'الوصف',
                     Icons.description_outlined,
