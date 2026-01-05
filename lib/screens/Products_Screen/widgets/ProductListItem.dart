@@ -4,6 +4,7 @@ import 'package:stronger_muscles_dashboard/components/status_badge.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/models/product.dart';
+import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/buildActionButtons.dart';
 
 class ProductListItem extends StatefulWidget {
   final ProductModel product;
@@ -269,7 +270,11 @@ class _ProductListItemState extends State<ProductListItem>
                       SizedBox(width: responsive.itemSpacing),
 
                       // أزرار التحكم
-                      _buildActionButtons(context, responsive),
+                      buildActionButtons(
+                        onEdit: widget.onEdit , 
+                        onDelete: widget.onDelete, 
+                        isHovered: _isHovered,
+                       ),
                     ],
                   ),
                 ),
@@ -281,70 +286,5 @@ class _ProductListItemState extends State<ProductListItem>
     );
   }
 
-  Widget _buildActionButtons(BuildContext context, ResponsiveLayout responsive) {
-    
-    return AnimatedOpacity(
-      opacity: _isHovered ? 1 : 0.5,
-      duration: const Duration(milliseconds: 300),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // زر التعديل
-          Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.blue.withValues(alpha: 0.2),
-                  blurRadius: 8,
-                  spreadRadius: _isHovered ? 2 : 0,
-                ),
-              ],
-            ),
-            child: Material(
-              shape: const CircleBorder(),
-              color: Colors.blue.withValues(alpha: 0.1),
-              child: IconButton(
-                onPressed: widget.onEdit,
-                icon: Icon(
-                  Icons.edit_outlined,
-                  size: responsive.iconSize,
-                  color: Colors.blue,
-                ),
-                padding: EdgeInsets.all(responsive.itemSpacing / 2),
-              ),
-            ),
-          ),
-          SizedBox(height: responsive.itemSpacing / 2),
 
-          // زر الحذف
-          Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.danger.withValues(alpha: 0.2),
-                  blurRadius: 8,
-                  spreadRadius: _isHovered ? 2 : 0,
-                ),
-              ],
-            ),
-            child: Material(
-              shape: const CircleBorder(),
-              color: AppColors.danger.withValues(alpha: 0.1),
-              child: IconButton(
-                onPressed: widget.onDelete,
-                icon: Icon(
-                  Icons.delete_outline,
-                  size: responsive.iconSize,
-                  color: AppColors.danger,
-                ),
-                padding: EdgeInsets.all(responsive.itemSpacing / 2),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
