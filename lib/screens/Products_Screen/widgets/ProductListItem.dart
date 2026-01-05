@@ -37,9 +37,6 @@ class _ProductListItemState extends State<ProductListItem>
       vsync: this,
     );
 
-    // _slideAnimation = Tween<double>(begin: 100, end: 0).animate(
-    //   CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
-    // );
 
     _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeIn),

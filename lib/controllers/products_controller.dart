@@ -164,7 +164,6 @@ class ProductsController extends GetxController {
     }
   }
 
-  // رفع صورة المنتج
   Future<String?> uploadProductImage(String filePath) async {
     try {
       isLoading.value = true;
@@ -186,7 +185,6 @@ class ProductsController extends GetxController {
     }
   }
 
-  // رفع صورة التصنيف
   Future<String?> uploadCategoryImage(String filePath) async {
     try {
       isLoading.value = true;
@@ -218,5 +216,6 @@ class ProductsController extends GetxController {
       builder: (context) => ProductFormSheet( product: product),
     );
   }
-  
+
+
 }
