@@ -13,3 +13,6 @@ export 'animated_order_list_tile.dart';
 export 'enhanced_status_chart.dart';
 export 'animated_category_card.dart';
 export 'enhanced_loading_widget.dart';
+export 'pie_chart_widget.dart';
+export 'bar_chart_widget.dart';
+export 'line_chart_widget.dart';

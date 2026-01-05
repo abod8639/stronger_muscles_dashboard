@@ -7,6 +7,7 @@ import '../services/api_service.dart';
 class ProductsController extends GetxController {
   late final ProductRepository _productRepository;
   late final CategoryRepository _categoryRepository;
+  late final ApiService _apiService;
 
   final isLoading = true.obs;
   final products = <ProductModel>[].obs;
@@ -15,13 +16,14 @@ class ProductsController extends GetxController {
   
   final searchQuery = ''.obs;
   final selectedCategoryId = 'all'.obs;
+  final isUploadingImage = false.obs;
 
   @override
   void onInit() {
     super.onInit();
-    final apiService = ApiService();
-    _productRepository = ProductRepository(apiService);
-    _categoryRepository = CategoryRepository(apiService);
+    _apiService = ApiService();
+    _productRepository = ProductRepository(_apiService);
+    _categoryRepository = CategoryRepository(_apiService);
     fetchData();
   }
 
@@ -158,6 +160,50 @@ class ProductsController extends GetxController {
     } catch (e) {
       isLoading.value = false;
       Get.snackbar('خطأ', 'فشل في حذف المنتج: ${e.toString()}');
+    }
+  }
+
+  // رفع صورة المنتج
+  Future<String?> uploadProductImage(String filePath) async {
+    try {
+      isLoading.value = true;
+      final imageUrl = await _apiService.uploadProductImage(filePath);
+      isLoading.value = false;
+      return imageUrl;
+    } catch (e) {
+      isLoading.value = false;
+      String errorMsg = e.toString().replaceAll('Exception: ', '');
+      Get.snackbar(
+        'خطأ',
+        'فشل في رفع الصورة: $errorMsg',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 5),
+      );
+      return null;
+    }
+  }
+
+  // رفع صورة التصنيف
+  Future<String?> uploadCategoryImage(String filePath) async {
+    try {
+      isLoading.value = true;
+      final imageUrl = await _apiService.uploadCategoryImage(filePath);
+      isLoading.value = false;
+      return imageUrl;
+    } catch (e) {
+      isLoading.value = false;
+      String errorMsg = e.toString().replaceAll('Exception: ', '');
+      Get.snackbar(
+        'خطأ',
+        'فشل في رفع الصورة: $errorMsg',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 5),
+      );
+      return null;
     }
   }
 }

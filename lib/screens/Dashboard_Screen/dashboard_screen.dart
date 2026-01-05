@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/widget/buildAppBar.dart';
 import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/widget/buildDashboardScreenPeriodSelector.dart';
 import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/widget/buildDashboardScreenStatsCards.dart';
 import '../../config/responsive.dart';
+import '../../config/theme.dart';
 import '../../controllers/dashboard_controller.dart';
 import '../../components/index.dart';
 
@@ -71,38 +73,152 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                   if (controller.orders.isNotEmpty) ...[
                     SizedBox(height: context.responsive.itemSpacing * 3),
+                    
+                    // قسم الإحصائيات والرسوم البيانية
+                    Padding(
+                      padding: context.responsive.defaultPadding,
+                      child: Text(
+                        'رسوم بيانية تفصيلية',
+                        style: TextStyle(
+                          fontSize: context.responsive.getTitleFontSize() + 1,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textDark,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: context.responsive.itemSpacing),
+                    
+                    // رسم بياني دائري لحالات الطلبات
+                    Padding(
+                      padding: context.responsive.defaultPadding,
+                      child: PieChartWidget(
+                        showLegend: true,
+                        title: 'توزيع حالات الطلبات',
+                        data: [
+                          PieChartItemData(
+                            label: 'معلقة',
+                            value: controller.pendingOrders.value.toDouble(),
+                            color: AppColors.pending,
+                          ),
+                          PieChartItemData(
+                            label: 'تحت المعالجة',
+                            value: controller.processingOrders.value.toDouble(),
+                            color: AppColors.processing,
+                          ),
+                          PieChartItemData(
+                            label: 'مرسلة',
+                            value: controller.shippedOrders.value.toDouble(),
+                            color: AppColors.shipped,
+                          ),
+                          PieChartItemData(
+                            label: 'تم التسليم',
+                            value: controller.deliveredOrders.value.toDouble(),
+                            color: AppColors.delivered,
+                          ),
+                          PieChartItemData(
+                            label: 'ملغاة',
+                            value: controller.cancelledOrders.value.toDouble(),
+                            color: AppColors.cancelled,
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: context.responsive.itemSpacing * 3),
+                    
                     RecentOrdersList(
                       orders: controller.orders.take(3).toList(),
                       onSeeAll: () {
-                        // Assuming index 3 is Orders in main.dart
-                        // In main.dart, Categories is index 1, Products is 2, Orders is 3.
-                        // However, we should use a proper navigation method.
                         Get.snackbar('تنبیه', 'سيتم تحويلك لصفحة الطلبات قريباً');
                       },
                     ),
                     SizedBox(height: context.responsive.itemSpacing * 3),
-                    Card(
-                      margin: EdgeInsets.symmetric(
-                        horizontal: context.responsive.defaultPadding.left,
-                      ),
-                      child: Padding(
-                        padding: context.responsive.defaultPadding,
-                        child: OrderStatusChart(
-                          pending: controller.pendingOrders.value,
-                          processing: controller.processingOrders.value,
-                          shipped: controller.shippedOrders.value,
-                          delivered: controller.deliveredOrders.value,
-                          cancelled: controller.cancelledOrders.value,
-                        ),
+                    
+                    // رسم بياني بأعمدة لإجمالي الطلبات
+                    Padding(
+                      padding: context.responsive.defaultPadding,
+                      child: BarChartWidget(
+                        title: 'إجمالي الطلبات حسب الحالة',
+                        groups: [
+                          BarChartGroupData(
+                            x: 0,
+                            barRods: [
+                              BarChartRodData(
+                                toY: controller.pendingOrders.value.toDouble(),
+                                color: AppColors.pending,
+                                width: 16,
+                              ),
+                            ],
+                          ),
+                          BarChartGroupData(
+                            x: 1,
+                            barRods: [
+                              BarChartRodData(
+                                toY: controller.processingOrders.value.toDouble(),
+                                color: AppColors.processing,
+                                width: 16,
+                              ),
+                            ],
+                          ),
+                          BarChartGroupData(
+                            x: 2,
+                            barRods: [
+                              BarChartRodData(
+                                toY: controller.shippedOrders.value.toDouble(),
+                                color: AppColors.shipped,
+                                width: 16,
+                              ),
+                            ],
+                          ),
+                          BarChartGroupData(
+                            x: 3,
+                            barRods: [
+                              BarChartRodData(
+                                toY: controller.deliveredOrders.value.toDouble(),
+                                color: AppColors.delivered,
+                                width: 16,
+                              ),
+                            ],
+                          ),
+                          BarChartGroupData(
+                            x: 4,
+                            barRods: [
+                              BarChartRodData(
+                                toY: controller.cancelledOrders.value.toDouble(),
+                                color: AppColors.cancelled,
+                                width: 16,
+                              ),
+                            ],
+                          ),
+                        ],
+                        bottomTitles: const ['معلقة', 'معالجة', 'مرسلة', 'تسليم', 'ملغاة'],
+                        maxY: (controller.orders.length / 5).toDouble() + 10,
                       ),
                     ),
                     SizedBox(height: context.responsive.itemSpacing * 3),
+                    
+                    // رسم بياني خطي لتطور الطلبات
+                    Padding(
+                      padding: context.responsive.defaultPadding,
+                      child: LineChartWidget(
+                        title: 'تطور الطلبات',
+                        spots: [
+                          FlSpot(0, controller.pendingOrders.value.toDouble()),
+                          FlSpot(1, (controller.pendingOrders.value + controller.processingOrders.value).toDouble()),
+                          FlSpot(2, (controller.pendingOrders.value + controller.processingOrders.value + controller.shippedOrders.value).toDouble()),
+                          FlSpot(3, (controller.pendingOrders.value + controller.processingOrders.value + controller.shippedOrders.value + controller.deliveredOrders.value).toDouble()),
+                          FlSpot(4, controller.orders.length.toDouble()),
+                        ],
+                        bottomTitles: const ['البداية', 'المعالجة', 'الشحن', 'التسليم', 'النهاية'],
+                        gradientColor: AppColors.primary,
+                        maxY: controller.orders.length.toDouble() + 10,
+                      ),
+                    ),
+                    SizedBox(height: context.responsive.itemSpacing * 3),
+                    
                     if (controller.categories.isNotEmpty)
                       CategoriesGrid(
                         categories: controller.categories,
-                        onSeeAll: () {
-                          // Categories is index 1
-                        },
+                        onSeeAll: () {},
                       ),
                     SizedBox(height: context.responsive.itemSpacing * 3),
                   ],

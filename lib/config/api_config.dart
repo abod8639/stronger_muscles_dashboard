@@ -8,9 +8,11 @@ class ApiConfig {
   // روابط المنتجات
   static const String products = '/products';
   static String productDetail(String id) => '/products/$id';
+  static const String uploadProductImage = '/products/upload-image';
 
   // روابط التصنيفات
   static const String categories = '/categories';
+  static const String uploadCategoryImage = '/categories/upload-image';
 
   // روابط الطلبات
   static const String orders = '/orders';
@@ -19,4 +21,8 @@ class ApiConfig {
   static const String userProfile = '/user'; // يتطلب Token
   static const String login = '/login';
   static const String register = '/register';
+
+  // روابط الرفع العامة
+  static const String uploadFile = '/upload';
+  static const String uploadImage = '/upload-image';
 }

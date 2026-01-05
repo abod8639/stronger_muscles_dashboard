@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../config/api_config.dart';
 
@@ -367,6 +368,170 @@ class ApiService {
       };
     } catch (e) {
       print('خطأ في جلب الإحصائيات: $e');
+      rethrow;
+    }
+  }
+
+  // رفع صورة المنتج
+  Future<String> uploadProductImage(String filePath) async {
+    try {
+      final file = File(filePath);
+      
+      if (!file.existsSync()) {
+        throw Exception('الملف غير موجود: $filePath');
+      }
+
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.uploadProductImage}'),
+      );
+
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'image',
+          filePath,
+        ),
+      );
+
+      final response = await request.send().timeout(
+        const Duration(seconds: 60),
+        onTimeout: () => throw Exception('انتهت مهلة الرفع'),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final responseData = await response.stream.bytesToString();
+        final decoded = json.decode(responseData);
+        
+        // محاولة استخراج رابط الصورة من الاستجابة
+        if (decoded is Map) {
+          if (decoded.containsKey('url')) {
+            return decoded['url'];
+          } else if (decoded.containsKey('data') && decoded['data'] is Map) {
+            final dataMap = decoded['data'] as Map;
+            return dataMap['url'] ?? dataMap['imageUrl'] ?? '';
+          } else if (decoded.containsKey('imageUrl')) {
+            return decoded['imageUrl'];
+          } else if (decoded.containsKey('path')) {
+            return decoded['path'];
+          }
+        }
+        
+        throw Exception('لم يتم استلام رابط الصورة من الخادم');
+      } else {
+        final responseData = await response.stream.bytesToString();
+        print('الخادم رد: $responseData');
+        throw Exception('فشل في رفع الصورة: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('خطأ في رفع الصورة: $e');
+      rethrow;
+    }
+  }
+
+  // رفع صورة التصنيف
+  Future<String> uploadCategoryImage(String filePath) async {
+    try {
+      final file = File(filePath);
+      
+      if (!file.existsSync()) {
+        throw Exception('الملف غير موجود: $filePath');
+      }
+
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.uploadCategoryImage}'),
+      );
+
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'image',
+          filePath,
+        ),
+      );
+
+      final response = await request.send().timeout(
+        const Duration(seconds: 60),
+        onTimeout: () => throw Exception('انتهت مهلة الرفع'),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final responseData = await response.stream.bytesToString();
+        final decoded = json.decode(responseData);
+        
+        if (decoded is Map) {
+          if (decoded.containsKey('url')) {
+            return decoded['url'];
+          } else if (decoded.containsKey('data') && decoded['data'] is Map) {
+            final dataMap = decoded['data'] as Map;
+            return dataMap['url'] ?? dataMap['imageUrl'] ?? '';
+          } else if (decoded.containsKey('imageUrl')) {
+            return decoded['imageUrl'];
+          } else if (decoded.containsKey('path')) {
+            return decoded['path'];
+          }
+        }
+        
+        throw Exception('لم يتم استلام رابط الصورة من الخادم');
+      } else {
+        final responseData = await response.stream.bytesToString();
+        throw Exception('فشل في رفع الصورة: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('خطأ في رفع صورة التصنيف: $e');
+      rethrow;
+    }
+  }
+
+  // رفع صورة عامة (استخدام عام)
+  Future<String> uploadImage(String filePath) async {
+    try {
+      final file = File(filePath);
+      
+      if (!file.existsSync()) {
+        throw Exception('الملف غير موجود: $filePath');
+      }
+
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.uploadImage}'),
+      );
+
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'image',
+          filePath,
+        ),
+      );
+
+      final response = await request.send().timeout(
+        const Duration(seconds: 60),
+        onTimeout: () => throw Exception('انتهت مهلة الرفع'),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final responseData = await response.stream.bytesToString();
+        final decoded = json.decode(responseData);
+        
+        if (decoded is Map) {
+          if (decoded.containsKey('url')) {
+            return decoded['url'];
+          } else if (decoded.containsKey('data') && decoded['data'] is Map) {
+            final dataMap = decoded['data'] as Map;
+            return dataMap['url'] ?? dataMap['imageUrl'] ?? '';
+          } else if (decoded.containsKey('imageUrl')) {
+            return decoded['imageUrl'];
+          } else if (decoded.containsKey('path')) {
+            return decoded['path'];
+          }
+        }
+        
+        throw Exception('لم يتم استلام رابط الصورة من الخادم');
+      } else {
+        final responseData = await response.stream.bytesToString();
+        throw Exception('فشل في رفع الصورة: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('خطأ في رفع الصورة: $e');
       rethrow;
     }
   }

@@ -60,13 +60,38 @@ class ProductFormSheetState extends State<ProductFormSheet> {
     try {
       final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
       if (image != null) {
-        setState(() {
-          imageUrls.add('https://picsum.photos/seed/${DateTime.now().millisecondsSinceEpoch}/400/400');
-        });
-        Get.snackbar('نجاح', 'تم اختيار الصورة (تمت محاكاة الرفع)');
+        // إظهار مؤشر التحميل
+        Get.snackbar(
+          'جاري الرفع',
+          'يتم رفع الصورة إلى الخادم...',
+          duration: const Duration(seconds: 30),
+          snackPosition: SnackPosition.BOTTOM,
+        );
+
+        // رفع الصورة إلى الخادم
+        final uploadedUrl = await widget.controller.uploadProductImage(image.path);
+        
+        if (uploadedUrl != null && uploadedUrl.isNotEmpty) {
+          setState(() {
+            imageUrls.add(uploadedUrl);
+          });
+          Get.back(); // إغلاق الـ snackbar السابق
+          Get.snackbar(
+            'نجاح',
+            'تم رفع الصورة بنجاح',
+            backgroundColor: Colors.green,
+            colorText: Colors.white,
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        }
       }
     } catch (e) {
-      Get.snackbar('خطأ', 'فشل في اختيار الصورة: $e');
+      Get.snackbar(
+        'خطأ',
+        'فشل في اختيار الصورة: $e',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 

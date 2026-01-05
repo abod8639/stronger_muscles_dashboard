@@ -8,7 +8,7 @@ import '../../config/theme.dart';
 import '../../config/responsive.dart';
 import '../../components/index.dart';
 
-class ProductsScreen extends StatelessWidget {
+class ProductsScreen extends GetView<ProductsController> {
   const ProductsScreen({super.key});
 
   @override
@@ -66,59 +66,67 @@ class ProductsScreen extends StatelessWidget {
           SizedBox(height: responsive.itemSpacing),
           SizedBox(
             height: 50,
-            child: Obx(() => ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: EdgeInsets.symmetric(horizontal: padding.left),
-              itemCount: controller.categories.length + 1,
-              itemBuilder: (context, index) {
-                final isAll = index == 0;
-                final category = isAll ? null : controller.categories[index - 1];
-                final id = isAll ? 'all' : category!.id;
-                final name = isAll ? 'الكل' : category!.name;
-                final isSelected = controller.selectedCategoryId.value == id;
+            child: Obx(
+              () => ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: EdgeInsets.symmetric(horizontal: padding.left),
+                itemCount: controller.categories.length + 1,
+                itemBuilder: (context, index) {
+                  final isAll = index == 0;
+                  final category = isAll
+                      ? null
+                      : controller.categories[index - 1];
+                  final id = isAll ? 'all' : category!.id;
+                  final name = isAll ? 'الكل' : category!.name;
+                  final isSelected = controller.selectedCategoryId.value == id;
 
-                return Padding(
-                  padding: EdgeInsets.only(left: responsive.itemSpacing),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      gradient: isSelected
-                          ? LinearGradient(
-                              colors: [
-                                AppColors.primary.withValues(alpha: 0.8),
-                                AppColors.secondary.withValues(alpha: 0.6),
-                              ],
-                            )
-                          : null,
-                    ),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: () => controller.setCategory(id),
+                  return Padding(
+                    padding: EdgeInsets.only(left: responsive.itemSpacing),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: padding.left,
-                            vertical: padding.top / 3,
-                          ),
-                          child: Center(
-                            child: Text(
-                              name,
-                              style: TextStyle(
-                                color: isSelected ? Colors.white : AppColors.textDark,
-                                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                                fontSize: responsive.getBodyFontSize(),
+                        gradient: isSelected
+                            ? LinearGradient(
+                                colors: [
+                                  AppColors.primary.withValues(alpha: 0.8),
+                                  AppColors.secondary.withValues(alpha: 0.6),
+                                ],
+                              )
+                            : null,
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () => controller.setCategory(id),
+                          borderRadius: BorderRadius.circular(12),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: padding.left,
+                              vertical: padding.top / 3,
+                            ),
+                            child: Center(
+                              child: Text(
+                                name,
+                                style: TextStyle(
+                                  color: isSelected
+                                      ? Colors.white
+                                      : AppColors.textLight,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.w500,
+                                  fontSize: responsive.getBodyFontSize(),
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                );
-              },
-            )),
+                  );
+                },
+              ),
+            ),
           ),
           SizedBox(height: responsive.itemSpacing),
 
@@ -134,7 +142,8 @@ class ProductsScreen extends StatelessWidget {
               if (controller.filteredProducts.isEmpty) {
                 return EnhancedErrorWidget(
                   title: 'لا توجد منتجات',
-                  message: controller.searchQuery.isEmpty &&
+                  message:
+                      controller.searchQuery.isEmpty &&
                           controller.selectedCategoryId.value == 'all'
                       ? 'لا يوجد منتجات حالياً'
                       : 'لم يتم العثور على نتائج للبحث',
@@ -155,7 +164,8 @@ class ProductsScreen extends StatelessWidget {
                   return ProductListItem(
                     product: product,
                     index: index,
-                    onEdit: () => _showProductForm(context, controller, product: product),
+                    onEdit: () =>
+                        _showProductForm(context, controller, product: product),
                     onDelete: () => controller.deleteProduct(product.id),
                   );
                 },
@@ -167,18 +177,17 @@ class ProductsScreen extends StatelessWidget {
     );
   }
 
-  void _showProductForm(BuildContext context, ProductsController controller, {ProductModel? product}) {
+  void _showProductForm(
+    BuildContext context,
+    ProductsController controller, {
+    ProductModel? product,
+  }) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => ProductFormSheet(
-        controller: controller,
-        product: product,
-      ),
+      builder: (context) =>
+          ProductFormSheet(controller: controller, product: product),
     );
   }
 }
-
-
-
