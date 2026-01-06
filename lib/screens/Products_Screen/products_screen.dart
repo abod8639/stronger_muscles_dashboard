@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/ProductListItem.dart';
+import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/ProductsCategoriesScreen.dart';
 import '../../controllers/products_controller.dart';
 import '../../config/theme.dart';
 import '../../config/responsive.dart';
@@ -13,7 +14,6 @@ class ProductsScreen extends GetView<ProductsController> {
   Widget build(BuildContext context) {
     final controller = Get.put(ProductsController());
     final responsive = context.responsive;
-    final padding = responsive.defaultPadding;
 
     return Scaffold(
       appBar: AppBar(
@@ -62,70 +62,9 @@ class ProductsScreen extends GetView<ProductsController> {
 
           // اختيار التصنيفات المحسّن
           SizedBox(height: responsive.itemSpacing),
-          SizedBox(
-            height: 50,
-            child: Obx(
-              () => ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.symmetric(horizontal: padding.left),
-                itemCount: controller.categories.length + 1,
-                itemBuilder: (context, index) {
-                  final isAll = index == 0;
-                  final category = isAll
-                      ? null
-                      : controller.categories[index - 1];
-                  final id = isAll ? 'all' : category!.id;
-                  final name = isAll ? 'الكل' : category!.name;
-                  final isSelected = controller.selectedCategoryId.value == id;
 
-                  return Padding(
-                    padding: EdgeInsets.only(left: responsive.itemSpacing),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        gradient: isSelected
-                            ? LinearGradient(
-                                colors: [
-                                  AppColors.primary.withValues(alpha: 0.8),
-                                  AppColors.secondary.withValues(alpha: 0.6),
-                                ],
-                              )
-                            : null,
-                      ),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () => controller.setCategory(id),
-                          borderRadius: BorderRadius.circular(12),
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: padding.left,
-                              vertical: padding.top / 3,
-                            ),
-                            child: Center(
-                              child: Text(
-                                name,
-                                style: TextStyle(
-                                  color: isSelected
-                                      ? Colors.white
-                                      : AppColors.textLight,
-                                  fontWeight: isSelected
-                                      ? FontWeight.bold
-                                      : FontWeight.w500,
-                                  fontSize: responsive.getBodyFontSize(),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ),
+          ProductsCategoriesScreen(),
+
           SizedBox(height: responsive.itemSpacing),
 
           // قائمة المنتجات

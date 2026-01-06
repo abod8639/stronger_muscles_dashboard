@@ -130,7 +130,7 @@ class _CategoryListItemState extends State<CategoryListItem>
                                 ),
                               )
                             : const Icon(
-                                Icons.category_outlined,
+                                Icons.app_registration_rounded,
                                 color: AppColors.primary,
                               ),
                       ),

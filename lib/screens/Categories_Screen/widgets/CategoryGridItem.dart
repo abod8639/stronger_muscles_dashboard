@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/models/category.dart';
+import 'package:stronger_muscles_dashboard/screens/Categories_Screen/widgets/buildPlaceholder.dart';
 
 class CategoryGridItem extends StatefulWidget {
   final CategoryModel category;
@@ -135,18 +136,5 @@ class _CategoryGridItemState extends State<CategoryGridItem> {
     );
   }
 
-  Widget buildPlaceholder(bool isDark) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColors.primary.withValues(alpha: 0.8),
-            AppColors.secondary.withValues(alpha: 0.8),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-    );
-  }
+
 }
