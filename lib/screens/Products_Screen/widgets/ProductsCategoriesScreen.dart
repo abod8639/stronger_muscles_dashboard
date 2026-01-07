@@ -5,12 +5,11 @@ import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/controllers/products_controller.dart';
 
-class ProductsCategoriesScreen extends StatelessWidget {
+class ProductsCategoriesScreen extends GetView<ProductsController> {
   const ProductsCategoriesScreen({ super.key });
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(ProductsController());
     final responsive = context.responsive;
     final padding = responsive.defaultPadding;
     return SizedBox(
@@ -39,7 +38,7 @@ class ProductsCategoriesScreen extends StatelessWidget {
                       ? LinearGradient(
                           colors: [
                             AppColors.primary.withValues(alpha: 0.8),
-                            AppColors.secondary.withValues(alpha: 0.6),
+                            AppColors.primary.withValues(alpha: 0.6),
                           ],
                         )
                       : null,
@@ -64,7 +63,7 @@ class ProductsCategoriesScreen extends StatelessWidget {
                             fontWeight: isSelected
                                 ? FontWeight.bold
                                 : FontWeight.w500,
-                            fontSize: responsive.getBodyFontSize(),
+                            fontSize: responsive.getTitleFontSize(),
                           ),
                         ),
                       ),

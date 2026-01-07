@@ -1,9 +1,10 @@
 class ApiConfig {
   // الرابط الأساسي (Base URL)
-  static const String baseUrl = 'http://localhost:8080/api/v1'; 
+  // static const String baseUrl = 'http://localhost:8080/api/v1'; 
   
   // ملاحظة: للهاتف الحقيقي استخدم IP الجهاز، وللمحاكي (Android Emulator) استخدم 10.0.2.2
   // static const String baseUrl = 'http://10.0.2.2:8080/api/v1';
+  static const String baseUrl = 'http://192.168.1.17:8080/api/v1';
 
   // روابط المنتجات
   static const String products = '/products';
@@ -25,4 +26,6 @@ class ApiConfig {
   // روابط الرفع العامة
   static const String uploadFile = '/upload';
   static const String uploadImage = '/upload/image';
+
+
 }

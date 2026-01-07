@@ -14,7 +14,7 @@ class ProductsController extends GetxController {
   final products = <ProductModel>[].obs;
   final categories = <CategoryModel>[].obs;
   final filteredProducts = <ProductModel>[].obs;
-  
+
   final searchQuery = ''.obs;
   final selectedCategoryId = 'all'.obs;
   final isUploadingImage = false.obs;
@@ -33,10 +33,10 @@ class ProductsController extends GetxController {
       isLoading.value = true;
       final cats = await _categoryRepository.getCategories();
       categories.assignAll(cats);
-      
+
       final prods = await _productRepository.getProducts();
       products.assignAll(prods);
-      
+
       _applyFiltering();
       isLoading.value = false;
     } catch (e) {
@@ -60,17 +60,22 @@ class ProductsController extends GetxController {
 
     // تصفية حسب القسم
     if (selectedCategoryId.value != 'all') {
-      filtered = filtered.where((p) => p.categoryId == selectedCategoryId.value).toList();
+      filtered = filtered
+          .where((p) => p.categoryId == selectedCategoryId.value)
+          .toList();
     }
 
     // تصفية حسب البحث
     if (searchQuery.isNotEmpty) {
       final query = searchQuery.value.toLowerCase();
-      filtered = filtered.where((p) => 
-        p.name.toLowerCase().contains(query) ||
-        p.brand?.toLowerCase().contains(query) == true ||
-        p.id.contains(query)
-      ).toList();
+      filtered = filtered
+          .where(
+            (p) =>
+                p.name.toLowerCase().contains(query) ||
+                p.brand?.toLowerCase().contains(query) == true ||
+                p.id.contains(query),
+          )
+          .toList();
     }
 
     filteredProducts.assignAll(filtered);
@@ -79,7 +84,7 @@ class ProductsController extends GetxController {
   Future<void> addProduct(ProductModel product) async {
     try {
       isLoading.value = true;
-      
+
       // توليد معرف إذا كان فارغاً (Backend requires ID)
       String productId = product.id;
       if (productId.isEmpty) {
@@ -100,7 +105,7 @@ class ProductsController extends GetxController {
       print('Error adding product: $e');
       String errorMsg = e.toString().replaceAll('Exception: ', '');
       Get.snackbar(
-        'خطأ في التحقق', 
+        'خطأ في التحقق',
         errorMsg,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.redAccent,
@@ -117,14 +122,17 @@ class ProductsController extends GetxController {
     try {
       isLoading.value = true;
       final productData = product.toJson();
-      final updatedProduct = await _productRepository.updateProduct(product.id, productData);
-      
+      final updatedProduct = await _productRepository.updateProduct(
+        product.id,
+        productData,
+      );
+
       final index = products.indexWhere((p) => p.id == product.id);
       if (index != -1) {
         products[index] = updatedProduct;
         _applyFiltering();
       }
-      
+
       isLoading.value = false;
       Get.back(); // Close modal
       Get.snackbar('نجاح', 'تم تحديث المنتج بنجاح');
@@ -133,7 +141,7 @@ class ProductsController extends GetxController {
       print('Error updating product: $e');
       String errorMsg = e.toString().replaceAll('Exception: ', '');
       Get.snackbar(
-        'خطأ في التحقق', 
+        'خطأ في التحقق',
         errorMsg,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.redAccent,
@@ -206,16 +214,12 @@ class ProductsController extends GetxController {
     }
   }
 
-    void showProductForm(BuildContext context, {
-    ProductModel? product,
-  }) {
+  void showProductForm(BuildContext context, {ProductModel? product}) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => ProductFormSheet( product: product),
+      builder: (context) => ProductFormSheet(product: product),
     );
   }
-
-
 }
