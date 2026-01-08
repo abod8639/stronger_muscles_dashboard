@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/screens/Users_Screen/users_screen.dart';
 import 'config/theme.dart';
 import 'screens/index.dart';
 
@@ -43,7 +44,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           CategoriesScreen(),
           ProductsScreen(),
           Center(child: Text('الطلبات (قريباً)')),
-          Center(child: Text('المستخدمون (قريباً)')),
+          UsersScreen(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(

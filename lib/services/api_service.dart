@@ -392,7 +392,6 @@ class ApiService {
           }
           
           // إصلاح المنفذ إذا كان هناك عدم توافق
-          // مثلاً إذا كان الخادم يرسل :8000 والتطبيق يستخدم :8080
           if (imageUrl.contains('localhost:8000')) {
             imageUrl = imageUrl.replaceAll('localhost:8000', 'localhost:8080');
             print('🔧 تم تصحيح المنفذ من :8000 إلى :8080');
@@ -498,4 +497,25 @@ class ApiService {
     }
   }
 
+  // جلب إحصائيات المستخدمين
+  Future<Map<String, dynamic>> fetchUsersStats() async {
+    try {
+      final response = await http.get(
+        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.usersStats}'),
+        headers: {'Accept': 'application/json'},
+      ).timeout(
+        const Duration(seconds: timeoutSeconds),
+        onTimeout: () => http.Response('Connection timeout', 408),
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('فشل في جلب إحصائيات المستخدمين: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('خطأ في جلب إحصائيات المستخدمين: $e');
+      rethrow;
+    }
+  }
 }
