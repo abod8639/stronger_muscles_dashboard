@@ -165,87 +165,100 @@ class UsersScreen extends StatelessWidget {
             color: isDark ? Colors.white : AppColors.textDark,
           ),
         ),
-        subtitle: Row(
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(
-              Icons.shopping_bag_outlined,
-              size: 14,
-              color: user.hasOrdered ? AppColors.success : Colors.grey,
-            ),
-            const SizedBox(width: 4),
-            Text(
-              '${user.ordersCount} طلبات',
-              style: TextStyle(
-                fontSize: responsive.getBodyFontSize() - 2,
-                color: Colors.grey,
+            if (user.email != null)
+              Text(
+                user.email!,
+                style: TextStyle(
+                  fontSize: responsive.getBodyFontSize() - 2,
+                  color: Colors.grey,
+                ),
               ),
+             Row(
+              children: [
+                Icon(
+                  Icons.shopping_bag_outlined,
+                  size: 14,
+                  color: user.ordersCount > 0 ? AppColors.success : Colors.grey,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  '${user.ordersCount} طلبات',
+                  style: TextStyle(
+                    fontSize: responsive.getBodyFontSize() - 2,
+                    color: Colors.grey,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                 Container(
+                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                   decoration: BoxDecoration(
+                     color: user.isActive ? AppColors.success.withValues(alpha: 0.1) : AppColors.danger.withValues(alpha: 0.1),
+                     borderRadius: BorderRadius.circular(4),
+                   ),
+                   child: Text(
+                     user.isActive ? 'نشط' : 'غير نشط',
+                     style: TextStyle(
+                       fontSize: 10,
+                       color: user.isActive ? AppColors.success : AppColors.danger,
+                     ),
+                   ),
+                 ),
+              ],
             ),
           ],
         ),
         children: [
-          if (user.orders.isEmpty)
-             Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                'لا توجد طلبات سابقة',
-                style: TextStyle(color: Colors.grey, fontSize: responsive.getBodyFontSize()),
-              ),
-            )
-          else
-            ...user.orders.map((order) => _buildOrderHistoryItem(context, order, isDark)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildOrderHistoryItem(BuildContext context, DashboardOrder order, bool isDark) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(
-            color: isDark ? Colors.white12 : Colors.grey.shade100,
-          ),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'طلب #${order.id}',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 4),
-              Row(
-                children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: _getStatusColor(order.status),
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 6),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildInfoRow('الدور', user.role, isDark),
+                if (user.phone != null) _buildInfoRow('رقم الهاتف', user.phone!, isDark),
+                _buildInfoRow('إجمالي المشتريات', '${user.totalSpent} ر.س', isDark),
+                if (user.lastLogin != null)
+                  _buildInfoRow('آخر دخول', user.lastLogin.toString().split('.')[0], isDark),
+                 
+                const SizedBox(height: 12),
+                if (user.addresses.isNotEmpty) ...[
                   Text(
-                    order.status,
+                    'العناوين:',
                     style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? Colors.white70 : AppColors.textDark,
                     ),
                   ),
-                ],
-              ),
-            ],
-          ),
-          Text(
-            '${order.totalAmount} ر.س',
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              color: AppColors.primary,
+                  const SizedBox(height: 8),
+                  ...user.addresses.map((addr) => Container(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: isDark ? Colors.black12 : Colors.grey.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade200),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.location_on_outlined, size: 16, color: Colors.grey),
+                        const SizedBox(width: 8),
+                        Expanded(child: Text('${addr.city} - ${addr.street}')),
+                        if (addr.isDefault)
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: const Text('الافتراضي', style: TextStyle(fontSize: 10, color: AppColors.primary)),
+                          ),
+                      ],
+                    ),
+                  )),
+                ]
+              ],
             ),
           ),
         ],
@@ -253,16 +266,16 @@ class UsersScreen extends StatelessWidget {
     );
   }
 
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'completed':
-        return AppColors.success;
-      case 'pending':
-        return AppColors.warning;
-      case 'cancelled':
-        return AppColors.danger;
-      default:
-        return Colors.grey;
-    }
+  Widget _buildInfoRow(String label, String value, bool isDark) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: const TextStyle(color: Colors.grey)),
+          Text(value, style: TextStyle(fontWeight: FontWeight.w500, color: isDark ? Colors.white : AppColors.textDark)),
+        ],
+      ),
+    );
   }
 }

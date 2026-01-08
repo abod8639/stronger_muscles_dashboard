@@ -1,4 +1,6 @@
 
+import 'package:stronger_muscles_dashboard/models/user-address.dart';
+
 class DashboardResponse {
   final int totalUsers;
   final List<DashboardUser> users;
@@ -22,77 +24,49 @@ class DashboardResponse {
 class DashboardUser {
   final int id;
   final String name;
+  final String? email;
+  final String? phone;
+  final String role;
+  final bool isActive;
   final String? photoUrl;
-  final bool hasOrdered;
+  final double totalSpent;
+  final DateTime? createdAt;
+  final DateTime? lastLogin;
+  final List<UserAddress> addresses;
   final int ordersCount;
-  final List<DashboardOrder> orders;
 
   DashboardUser({
     required this.id,
     required this.name,
+    this.email,
+    this.phone,
+    required this.role,
+    required this.isActive,
     this.photoUrl,
-    required this.hasOrdered,
+    required this.totalSpent,
+    this.createdAt,
+    this.lastLogin,
+    required this.addresses,
     required this.ordersCount,
-    required this.orders,
   });
 
   factory DashboardUser.fromJson(Map<String, dynamic> json) {
     return DashboardUser(
       id: json['id'],
       name: json['name'] ?? '',
+      email: json['email'],
+      phone: json['phone'],
+      role: json['role'] ?? 'customer',
+      isActive: json['is_active'] ?? true,
       photoUrl: json['photo_url'],
-      hasOrdered: json['has_ordered'] ?? false,
+      totalSpent: double.tryParse(json['total_spent'].toString()) ?? 0.0,
+      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
+      lastLogin: json['last_login'] != null ? DateTime.parse(json['last_login']) : null,
+      addresses: (json['addresses'] as List<dynamic>?)
+              ?.map((e) => UserAddress.fromJson(e))
+              .toList() ??
+          [],
       ordersCount: json['orders_count'] ?? 0,
-      orders: (json['orders'] as List<dynamic>?)
-              ?.map((e) => DashboardOrder.fromJson(e))
-              .toList() ??
-          [],
-    );
-  }
-}
-
-class DashboardOrder {
-  final int id;
-  final String status;
-  final double totalAmount;
-  final List<DashboardOrderItem> items;
-
-  DashboardOrder({
-    required this.id,
-    required this.status,
-    required this.totalAmount,
-    required this.items,
-  });
-
-  factory DashboardOrder.fromJson(Map<String, dynamic> json) {
-    return DashboardOrder(
-      id: json['id'],
-      status: json['status'] ?? 'unknown',
-      totalAmount: double.tryParse(json['total_amount'].toString()) ?? 0.0,
-      items: (json['items'] as List<dynamic>?)
-              ?.map((e) => DashboardOrderItem.fromJson(e))
-              .toList() ??
-          [],
-    );
-  }
-}
-
-class DashboardOrderItem {
-  final String productName;
-  final int quantity;
-  final String? imageUrl;
-
-  DashboardOrderItem({
-    required this.productName,
-    required this.quantity,
-    this.imageUrl,
-  });
-
-  factory DashboardOrderItem.fromJson(Map<String, dynamic> json) {
-    return DashboardOrderItem(
-      productName: json['product_name'] ?? 'Unknown Product',
-      quantity: json['quantity'] ?? 0,
-      imageUrl: json['image_url'],
     );
   }
 }
