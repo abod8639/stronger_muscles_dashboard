@@ -8,6 +8,8 @@ class ImageGalleryEditor extends StatelessWidget {
   final Function(String) onAddUrl;
   final Function(int) onRemove;
   final VoidCallback onPickImage;
+  // إضافة هذه الـ Function للتعامل مع إعادة الترتيب
+  final Function(int oldIndex, int newIndex) onReorder; 
 
   const ImageGalleryEditor({
     super.key,
@@ -15,6 +17,7 @@ class ImageGalleryEditor extends StatelessWidget {
     required this.onAddUrl,
     required this.onRemove,
     required this.onPickImage,
+    required this.onReorder, // مررها هنا
   });
 
   @override
@@ -41,20 +44,89 @@ class ImageGalleryEditor extends StatelessWidget {
         const SizedBox(height: 12),
         SizedBox(
           height: 120,
-          child: ListView.builder(
+          // استخدام ReorderableListView بدلاً من ListView العادي
+          child: ReorderableListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: imageUrls.length + 1,
-            itemBuilder: (context, index) {
-              if (index == imageUrls.length) {
-                return _buildAddButton(context, isDark);
+            onReorder: (oldIndex, newIndex) {
+              // نمنع سحب زر "إضافة صورة"
+              if (oldIndex < imageUrls.length && newIndex <= imageUrls.length) {
+                onReorder(oldIndex, newIndex);
               }
-              return _buildImageItem(context, index, imageUrls[index], isDark);
+            },
+            proxyDecorator: (child, index, animation) {
+              // تحسين شكل العنصر أثناء السحب
+              return Material(
+                color: Colors.transparent,
+                child: child,
+              );
+            },
+            itemBuilder: (context, index) {
+              // زر الإضافة (دائماً في الأخير)
+              if (index == imageUrls.length) {
+                return Container(
+                  key: const ValueKey('add_button'), // مفتاح ثابت
+                  child: _buildAddButton(context, isDark),
+                );
+              }
+              
+              // عنصر الصورة
+              return _buildImageItem(
+                context, 
+                index, 
+                imageUrls[index], 
+                isDark,
+                key: ValueKey(imageUrls[index] + index.toString()), // مفتاح فريد لكل صورة
+              );
             },
           ),
         ),
       ],
     );
   }
+
+  // أضفنا Key هنا ليعمل الـ Reorderable بشكل صحيح
+  Widget _buildImageItem(BuildContext context, int index, String url, bool isDark, {required Key key}) {
+    return Container(
+      key: key, 
+      width: 100,
+      margin: const EdgeInsets.only(left: 12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        image: DecorationImage(
+          image: NetworkImage(url),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: Stack(
+        children: [
+          // تلميح بصري: أيقونة للسحب (اختياري)
+          const Align(
+            alignment: Alignment.center,
+            child: Icon(Icons.drag_indicator, color: Colors.white70),
+          ),
+          Positioned(
+            top: 4,
+            right: 4,
+            child: GestureDetector(
+              onTap: () => onRemove(index),
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: const BoxDecoration(
+                  color: Colors.black54,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.close, size: 16, color: Colors.white),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  // باقي الكود (_buildAddButton و _showAddUrlDialog) يبقى كما هو...
+
 
   Widget _buildAddButton(BuildContext context, bool isDark) {
     return GestureDetector(
@@ -81,39 +153,6 @@ class ImageGalleryEditor extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildImageItem(BuildContext context, int index, String url, bool isDark) {
-    return Container(
-      width: 100,
-      margin: const EdgeInsets.only(left: 12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        image: DecorationImage(
-          image: NetworkImage(url),
-          fit: BoxFit.cover,
-        ),
-      ),
-      child: Stack(
-        children: [
-          Positioned(
-            top: 4,
-            right: 4,
-            child: GestureDetector(
-              onTap: () => onRemove(index),
-              child: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: const BoxDecoration(
-                  color: Colors.black54,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.close, size: 16, color: Colors.white),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

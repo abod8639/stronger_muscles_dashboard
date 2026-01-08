@@ -171,6 +171,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                     onAddUrl: _addUrl,
                     onRemove: _removeImage,
                     onPickImage: _pickImage,
+                    onReorder:  handleReorder,
                   ),
                   SizedBox(height: padding.top * 1.5),
 
@@ -392,6 +393,18 @@ class ProductFormSheetState extends State<ProductFormSheet> {
       ),
     );
   }
+
+void handleReorder(int oldIndex, int newIndex) {
+  setState(() {
+    // تصحيح الـ index الخاص بـ Flutter
+    if (newIndex > oldIndex) {
+      newIndex -= 1;
+    }
+    // سحب العنصر من مكانه القديم ووضعه في الجديد
+    final String item = imageUrls.removeAt(oldIndex);
+    imageUrls.insert(newIndex, item);
+  });
+}
 
   void _submitForm() {
     if (nameController.text.isEmpty || priceController.text.isEmpty) {
