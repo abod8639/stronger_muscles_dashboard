@@ -101,12 +101,12 @@ class ProductCard extends StatelessWidget {
           ),
           SizedBox(width: responsive.itemSpacing * 1.5),
     
-          // معلومات المنتج
+          // product info
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // الاسم
+                // name
                 Text(
                   product.name,
                   style: TextStyle(
@@ -119,7 +119,7 @@ class ProductCard extends StatelessWidget {
                 ),
                 SizedBox(height: responsive.itemSpacing / 4),
     
-                // الماركة
+                // brand
                 Row(
                   children: [
                     Icon(
@@ -139,10 +139,10 @@ class ProductCard extends StatelessWidget {
                 ),
                 SizedBox(height: responsive.itemSpacing),
     
-                // السعر والمخزون
+                // price and stock
                 Row(
                   children: [
-                    // السعر
+                    // price
                     Container(
                       padding: EdgeInsets.symmetric(
                         horizontal: padding.left / 2,
@@ -168,7 +168,7 @@ class ProductCard extends StatelessWidget {
                     ),
                     const Spacer(),
     
-                    // حالة المخزون
+                    // stock status
                     AnimatedOpacity(
                       opacity: isHovered ? 1 : 0.7,
                       duration: const Duration(milliseconds: 300),
@@ -183,7 +183,7 @@ class ProductCard extends StatelessWidget {
           ),
           SizedBox(width: responsive.itemSpacing),
     
-          // أزرار التحكم
+          //  control buttons
           buildActionButtons(
             onEdit: () => onEdit()  ,
             onDelete: () => onDelete() , 

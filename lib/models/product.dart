@@ -21,7 +21,7 @@ class ProductModel {
   final List<String>? tags;
   final double? weight;
   final String? size;
-  // final List<String>? flavor;
+  final List<String>? flavor;
 
   // Nutrition
   final Map<String, dynamic>? nutritionFacts;
@@ -70,7 +70,7 @@ class ProductModel {
     this.tags,
     this.weight,
     this.size,
-    // this.flavor,
+    this.flavor,
     // Nutrition
     this.nutritionFacts,
     // Marketing
@@ -100,18 +100,18 @@ class ProductModel {
       id: (json['id'] ?? '').toString(),
       name: (json['name'] ?? '').toString(),
       price: double.tryParse((json['price'] ?? 0).toString()) ?? 0.0,
-      discountPrice: (json['discountPrice'] ?? json['discount_price']) != null 
-          ? double.tryParse((json['discountPrice'] ?? json['discount_price']).toString()) 
+      discountPrice: (json['discountPrice']) != null 
+          ? double.tryParse((json['discountPrice']).toString()) 
           : null,
-      imageUrls: List<String>.from(json['imageUrls'] ?? json['image_urls'] ?? []),
+      imageUrls: List<String>.from(json['imageUrls'] ),
       description: (json['description'] ?? '').toString(),
-      categoryId: (json['categoryId'] ?? json['category_id'] ?? '').toString(),
-      stockQuantity: int.tryParse((json['stockQuantity'] ?? json['stock_quantity'] ?? 0).toString()) ?? 0,
-      averageRating: double.tryParse((json['averageRating'] ?? json['average_rating'] ?? 0).toString()) ?? 0.0,
-      reviewCount: int.tryParse((json['reviewCount'] ?? json['review_count'] ?? 0).toString()) ?? 0,
+      categoryId: (json['categoryId'] ).toString(),
+      stockQuantity: int.tryParse((json['stockQuantity'] ?? 0).toString()) ?? 0,
+      averageRating: double.tryParse((json['averageRating'] ?? 0).toString()) ?? 0.0,
+      reviewCount: int.tryParse((json['reviewCount'] ?? 0).toString()) ?? 0,
       brand: json['brand']?.toString(),
-      servingSize: (json['servingSize'] ?? json['serving_size'])?.toString(),
-      servingsPerContainer: int.tryParse((json['servingsPerContainer'] ?? json['servings_per_container'] ?? 0).toString()),
+      servingSize: (json['servingSize'] )?.toString(),
+      servingsPerContainer: int.tryParse((json['servingsPerContainer'] ?? 0).toString()),
       isActive: json['isActive'] == true || json['is_active'] == true || 
                 json['isActive'] == 1 || json['is_active'] == 1,
       // Basic Info
@@ -120,7 +120,7 @@ class ProductModel {
       weight: json['weight'] != null ? double.tryParse(json['weight'].toString()) : null,
       size: json['size']?.toString(),
       // Nutrition
-      nutritionFacts: json['nutritionFacts'] ?? json['nutrition_facts'],
+      nutritionFacts: json['nutritionFacts'] ,
       // Marketing
       featured: json['featured'] == true || json['featured'] == 1,
       newArrival: json['newArrival'] == true || json['new_arrival'] == true || 
@@ -147,7 +147,7 @@ class ProductModel {
       metaTitle: (json['metaTitle'] ?? json['meta_title'])?.toString(),
       metaDescription: (json['metaDescription'] ?? json['meta_description'])?.toString(),
       slug: json['slug']?.toString(),
-      // flavor: List<String>.from(json['flavor'] ?? json['flavor'] ?? []),
+      flavor: List<String>.from(json['flavor'] ?? json['flavor'] ?? []),
     );
   }
 
@@ -194,7 +194,7 @@ class ProductModel {
       'meta_title': metaTitle,
       'meta_description': metaDescription,
       'slug': slug,
-      // 'flavor': flavor,
+      'flavor': flavor,
     };
   }
 

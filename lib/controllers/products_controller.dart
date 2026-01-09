@@ -9,17 +9,23 @@ import '../services/api_service.dart';
 class ProductsController extends GetxController {
   late final ProductRepository _productRepository;
   late final CategoryRepository _categoryRepository;
+  // late final FlavorRepository _flavorRepository; // إضافة ريبوزيتوري النكهات
   late final ApiService _apiService;
 
+  // --- States ---
   final isLoading = true.obs;
+  final isUploadingImage = false.obs;
+  
+  // --- Data Lists ---
   final products = <ProductModel>[].obs;
   final categories = <CategoryModel>[].obs;
-  final filteredProducts = <ProductModel>[].obs;
   final flavors = <FlavorsModel>[].obs;
+  final filteredProducts = <ProductModel>[].obs;
+
+  // --- Filter Values ---
   final searchQuery = ''.obs;
   final selectedCategoryId = 'all'.obs;
-  final selectedFlavor = 'all'.obs;
-  final isUploadingImage = false.obs;
+  final selectedFlavorId = 'all'.obs;
 
   @override
   void onInit() {
@@ -27,25 +33,35 @@ class ProductsController extends GetxController {
     _apiService = ApiService();
     _productRepository = ProductRepository(_apiService);
     _categoryRepository = CategoryRepository(_apiService);
+    // _flavorRepository = FlavorRepository(_apiService); // تأكد من وجود FlavorRepository
     fetchData();
   }
 
+  /// جلب كافة البيانات الأساسية من السيرفر
   Future<void> fetchData() async {
     try {
       isLoading.value = true;
-      final cats = await _categoryRepository.getCategories();
-      categories.assignAll(cats);
+      
+      // جلب البيانات بالتوازي لتقليل وقت الانتظار
+      final results = await Future.wait([
+        _categoryRepository.getCategories(),
+        _productRepository.getProducts(),
+        // _flavorRepository.getFlavors(), // جلب النكهات
+      ]);
 
-      final prods = await _productRepository.getProducts();
-      products.assignAll(prods);
+      categories.assignAll(results[0] as List<CategoryModel>);
+      products.assignAll(results[1] as List<ProductModel>);
+      // flavors.assignAll(results[2] as List<FlavorsModel>);
 
       _applyFiltering();
       isLoading.value = false;
     } catch (e) {
       isLoading.value = false;
-      Get.snackbar('خطأ', 'فشل في تحميل البيانات: ${e.toString()}');
+      _showErrorSnackbar('فشل في تحميل البيانات', e.toString());
     }
   }
+
+  // --- Logic الفلترة ---
 
   void onSearchChanged(String query) {
     searchQuery.value = query;
@@ -56,89 +72,69 @@ class ProductsController extends GetxController {
     selectedCategoryId.value = categoryId;
     _applyFiltering();
   }
+
   void setFlavor(String flavorId) {
-    selectedFlavor.value = flavorId;
+    selectedFlavorId.value = flavorId;
     _applyFiltering();
   }
 
   void _applyFiltering() {
-    List<ProductModel> filtered = products.toList();
+    Iterable<ProductModel> filtered = products;
 
-    // تصفية حسب القسم
+    // 1. التصفية حسب القسم
     if (selectedCategoryId.value != 'all') {
-      filtered = filtered
-          .where((p) => p.categoryId == selectedCategoryId.value)
-          .toList();
+      filtered = filtered.where((p) => p.categoryId == selectedCategoryId.value);
     }
 
-    // تصفية حسب البحث
+    // 2. التصفية حسب النكهة
+    if (selectedFlavorId.value != 'all') {
+      // نفترض أن المنتج يحتوي على حقل flavorId
+      filtered = filtered.where((p) => p.flavor == selectedFlavorId.value);
+    }
+
+    // 3. التصفية حسب البحث (الاسم، الماركة، أو الكود)
     if (searchQuery.isNotEmpty) {
       final query = searchQuery.value.toLowerCase();
-      filtered = filtered
-          .where(
-            (p) =>
-                p.name.toLowerCase().contains(query) ||
-                p.brand?.toLowerCase().contains(query) == true ||
-                p.id.contains(query),
-          )
-          .toList();
+      filtered = filtered.where((p) =>
+          p.name.toLowerCase().contains(query) ||
+          (p.brand?.toLowerCase().contains(query) ?? false) ||
+          p.id.contains(query));
     }
 
-    // تصفية حسب المذاق
-    // if (selectedFlavor.value != 'all') {
-    //   filtered = filtered
-    //       .where((p) => p.flavor?.contains(selectedFlavor.value) == true)
-    //       .toList();
-    // }
-
-    filteredProducts.assignAll(filtered);
+    filteredProducts.assignAll(filtered.toList());
   }
+
+  // --- CRUD Operations ---
 
   Future<void> addProduct(ProductModel product) async {
     try {
       isLoading.value = true;
-
-      // توليد معرف إذا كان فارغاً (Backend requires ID)
-      String productId = product.id;
-      if (productId.isEmpty) {
-        productId = 'PROD-${DateTime.now().millisecondsSinceEpoch}';
-      }
+      
+      // إنشاء ID تلقائي إذا لم يوجد
+      final String productId = product.id.isEmpty 
+          ? 'PROD-${DateTime.now().millisecondsSinceEpoch}' 
+          : product.id;
 
       final productData = product.toJson();
       productData['id'] = productId;
 
       final newProduct = await _productRepository.addProduct(productData);
       products.insert(0, newProduct);
+      
       _applyFiltering();
-      isLoading.value = false;
-      Get.back(); // Close modal
-      Get.snackbar('نجاح', 'تم إضافة المنتج بنجاح');
+      Get.back(); // إغلاق النموذج
+      Get.snackbar('نجاح', 'تم إضافة ${newProduct.name} بنجاح');
     } catch (e) {
+      _showErrorSnackbar('خطأ في الإضافة', e.toString());
+    } finally {
       isLoading.value = false;
-      print('Error adding product: $e');
-      String errorMsg = e.toString().replaceAll('Exception: ', '');
-      Get.snackbar(
-        'خطأ في التحقق',
-        errorMsg,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 7),
-        margin: const EdgeInsets.all(12),
-        borderRadius: 8,
-        icon: const Icon(Icons.error_outline, color: Colors.white),
-      );
     }
   }
 
   Future<void> updateProduct(ProductModel product) async {
     try {
       isLoading.value = true;
-      final productData = product.toJson();
-      final updatedProduct = await _productRepository.updateProduct(
-        product.id,
-        productData,
-      );
+      final updatedProduct = await _productRepository.updateProduct(product.id, product.toJson());
 
       final index = products.indexWhere((p) => p.id == product.id);
       if (index != -1) {
@@ -146,24 +142,12 @@ class ProductsController extends GetxController {
         _applyFiltering();
       }
 
-      isLoading.value = false;
-      Get.back(); // Close modal
-      Get.snackbar('نجاح', 'تم تحديث المنتج بنجاح');
+      Get.back();
+      Get.snackbar('نجاح', 'تم تحديث البيانات بنجاح');
     } catch (e) {
+      _showErrorSnackbar('خطأ في التحديث', e.toString());
+    } finally {
       isLoading.value = false;
-      print('Error updating product: $e');
-      String errorMsg = e.toString().replaceAll('Exception: ', '');
-      Get.snackbar(
-        'خطأ في التحقق',
-        errorMsg,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 7),
-        margin: const EdgeInsets.all(12),
-        borderRadius: 8,
-        icon: const Icon(Icons.error_outline, color: Colors.white),
-      );
     }
   }
 
@@ -174,60 +158,45 @@ class ProductsController extends GetxController {
       if (success) {
         products.removeWhere((p) => p.id == id);
         _applyFiltering();
-        Get.snackbar('نجاح', 'تم حذف المنتج بنجاح');
-      } else {
-        Get.snackbar('خطأ', 'فشل في حذف المنتج من الخادم');
+        Get.snackbar('نجاح', 'تم حذف المنتج');
       }
-      isLoading.value = false;
     } catch (e) {
+      _showErrorSnackbar('خطأ في الحذف', e.toString());
+    } finally {
       isLoading.value = false;
-      Get.snackbar('خطأ', 'فشل في حذف المنتج: ${e.toString()}');
     }
   }
 
-  Future<String?> uploadProductImage(String filePath) async {
+  // --- Media Upload ---
+
+  Future<String?> uploadImage(String filePath, {bool isCategory = false}) async {
     try {
-      isLoading.value = true;
-      final imageUrl = await _apiService.uploadProductImage(filePath);
-      isLoading.value = false;
+      isUploadingImage.value = true;
+      final imageUrl = isCategory 
+          ? await _apiService.uploadCategoryImage(filePath)
+          : await _apiService.uploadProductImage(filePath);
       return imageUrl;
     } catch (e) {
-      isLoading.value = false;
-      String errorMsg = e.toString().replaceAll('Exception: ', '');
-      Get.snackbar(
-        'خطأ',
-        'فشل في رفع الصورة: $errorMsg',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 5),
-      );
+      _showErrorSnackbar('خطأ في الرفع', e.toString());
       return null;
+    } finally {
+      isUploadingImage.value = false;
     }
   }
 
-  Future<String?> uploadCategoryImage(String filePath) async {
-    try {
-      isLoading.value = true;
-      final imageUrl = await _apiService.uploadCategoryImage(filePath);
-      isLoading.value = false;
-      return imageUrl;
-    } catch (e) {
-      isLoading.value = false;
-      String errorMsg = e.toString().replaceAll('Exception: ', '');
-      Get.snackbar(
-        'خطأ',
-        'فشل في رفع الصورة: $errorMsg',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 5),
-      );
-      return null;
-    }
+  // --- Helpers ---
+
+  void _showErrorSnackbar(String title, String message) {
+    Get.snackbar(
+      title,
+      message.replaceAll('Exception: ', ''),
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.redAccent,
+      colorText: Colors.white,
+      margin: const EdgeInsets.all(12),
+      icon: const Icon(Icons.error_outline, color: Colors.white),
+    );
   }
-
-
 
   void showProductForm(BuildContext context, {ProductModel? product}) {
     showModalBottomSheet(

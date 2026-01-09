@@ -27,7 +27,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
   late final TextEditingController stockController;
   late final TextEditingController descriptionController;
   late final TextEditingController brandController;
-  // late final TextEditingController flavorController;
+  late final TextEditingController flavorController;
   late String selectedCategoryId;
   late List<String> imageUrls;
   final ImagePicker _picker = ImagePicker();
@@ -42,7 +42,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
     stockController = TextEditingController(text: widget.product?.stockQuantity.toString() ?? '');
     descriptionController = TextEditingController(text: widget.product?.description ?? '');
     brandController = TextEditingController(text: widget.product?.brand ?? '');
-    // flavorController = TextEditingController(text: widget.product?.flavor?.join(', ') ?? '');
+    flavorController = TextEditingController(text: widget.product?.flavor?.join(', ') ?? '');
     selectedCategoryId = widget.product?.categoryId ?? 
                         (controller.categories.isNotEmpty ? controller.categories.first.id : '');
     imageUrls = List<String>.from(widget.product?.imageUrls ?? []);
@@ -72,7 +72,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
         );
 
         // رفع الصورة إلى الخادم
-        final uploadedUrl = await controller.uploadProductImage(image.path);
+        final uploadedUrl = await controller.uploadImage(image.path);
         
         if (uploadedUrl != null && uploadedUrl.isNotEmpty) {
           setState(() {
@@ -234,7 +234,6 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                   SizedBox(height: padding.top),
 
                   // التصنيف
-                  // buildModernDropdown(),
                   CustomModernDropdown<String>(
                     value: selectedCategoryId, 
                     items: controller.categories.map((cat) {
@@ -248,7 +247,25 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                         selectedCategoryId = value!;
                       });
                     },
-                 
+  
+                  ),
+                  SizedBox(height: padding.top),
+
+                  // التصنيف
+                  CustomModernDropdown<String>(
+                    value: selectedCategoryId, 
+                    items: controller.categories.map((cat) {
+                      return DropdownMenuItem(
+                        value: cat.id,
+                        child: Text(cat.name),
+                      );
+                    }).toList(), 
+                    onChanged: (String? value) {
+                      setState(() {
+                        selectedCategoryId = value!;
+                      });
+                    },
+  
                   ),
                   SizedBox(height: padding.top),
 
