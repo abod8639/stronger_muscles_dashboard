@@ -137,6 +137,43 @@ class ProductCard extends StatelessWidget {
                     ),
                   ],
                 ),
+                SizedBox(height: responsive.itemSpacing / 2),
+    
+                // flavors
+                if (product.flavor != null && product.flavor!.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Wrap(
+                      spacing: 4,
+                      runSpacing: 4,
+                      children: [
+                        ...product.flavor!.take(3).map((f) => Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(4),
+                            border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+                          ),
+                          child: Text(
+                            f,
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        )),
+                        if (product.flavor!.length > 3)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 4, top: 2),
+                            child: Text(
+                              '...',
+                              style: TextStyle(fontSize: 10, color: Colors.grey),
+                            ),
+                          )
+                      ],
+                    ),
+                  ),
                 SizedBox(height: responsive.itemSpacing),
     
                 // price and stock

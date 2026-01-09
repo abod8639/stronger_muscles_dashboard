@@ -43,6 +43,7 @@ class ProductFlavorSelector extends StatelessWidget {
             border: Border.all(color: AppColors.primary.withOpacity(0.1)),
           ),
           child: Wrap(
+            
             spacing: 8,
             runSpacing: 8,
             children: availableFlavors.map((flavor) {

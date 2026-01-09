@@ -66,6 +66,8 @@ class ProductFormSheetState extends State<ProductFormSheet> {
             ? controller.categories.first.id
             : '');
     imageUrls = List<String>.from(widget.product?.imageUrls ?? []);
+    // Initialize selected flavors
+    controller.productFlavors.assignAll(widget.product?.flavor ?? []);
   }
 
   @override

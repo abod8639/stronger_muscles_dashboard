@@ -148,7 +148,7 @@ class ProductModel {
       metaTitle: (json['metaTitle'] ?? json['meta_title'])?.toString(),
       metaDescription: (json['metaDescription'] )?.toString(),
       slug: json['slug']?.toString(),
-      flavor: List<String>.from(json['flavors'] ),
+      flavor: json['flavors'] != null ? List<String>.from(json['flavors']) : [],
     );
   }
 

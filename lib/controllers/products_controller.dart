@@ -88,8 +88,7 @@ class ProductsController extends GetxController {
 
     // 2. التصفية حسب النكهة
     if (selectedFlavorId.value != 'all') {
-      // نفترض أن المنتج يحتوي على حقل flavorId
-      filtered = filtered.where((p) => p.flavor == selectedFlavorId.value);
+      filtered = filtered.where((p) => p.flavor?.contains(selectedFlavorId.value) ?? false);
     }
 
     // 3. التصفية حسب البحث (الاسم، الماركة، أو الكود)
