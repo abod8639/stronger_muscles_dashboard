@@ -1,4 +1,5 @@
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/components/status_badge.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
@@ -57,27 +58,27 @@ class ProductCard extends StatelessWidget {
                 child: Stack(
                   children: [
                     if (product.imageUrls.isNotEmpty)
-                      Image.network(
-                        product.imageUrls.first,
+                      CachedNetworkImage (
+                        imageUrl: product.imageUrls.first,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Center(
+                       errorWidget:  (_, __, ___) => Center(
                           child: Icon(
                             Icons.image_not_supported,
                             color: isDark ? Colors.white38 : Colors.grey.shade400,
                           ),
                         ),
-                        loadingBuilder: (context, child, progress) {
-                          if (progress == null) return child;
-                          return Center(
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              value: progress.expectedTotalBytes != null
-                                  ? progress.cumulativeBytesLoaded /
-                                      progress.expectedTotalBytes!
-                                  : null,
-                            ),
-                          );
-                        },
+                        // loadingBuilder: (context, child, progress) {
+                        //   if (progress == null) return child;
+                        //   return Center(
+                        //     child: CircularProgressIndicator(
+                        //       strokeWidth: 2,
+                        //       value: progress.expectedTotalBytes != null
+                        //           ? progress.cumulativeBytesLoaded /
+                        //               progress.expectedTotalBytes!
+                        //           : null,
+                        //     ),
+                        //   );
+                        // },
                       )
                     else
                       Center(

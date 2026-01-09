@@ -94,7 +94,8 @@ class ImageGalleryEditor extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         image: DecorationImage(
-          image: NetworkImage(url),
+          image: 
+          NetworkImage(url),
           fit: BoxFit.cover,
         ),
       ),
