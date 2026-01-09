@@ -15,11 +15,13 @@ class ProductModel {
   final int? servingsPerContainer;
   final bool isActive;
 
+
   // Basic Info
   final String? sku;
   final List<String>? tags;
   final double? weight;
   final String? size;
+  // final List<String>? flavor;
 
   // Nutrition
   final Map<String, dynamic>? nutritionFacts;
@@ -68,6 +70,7 @@ class ProductModel {
     this.tags,
     this.weight,
     this.size,
+    // this.flavor,
     // Nutrition
     this.nutritionFacts,
     // Marketing
@@ -144,6 +147,7 @@ class ProductModel {
       metaTitle: (json['metaTitle'] ?? json['meta_title'])?.toString(),
       metaDescription: (json['metaDescription'] ?? json['meta_description'])?.toString(),
       slug: json['slug']?.toString(),
+      // flavor: List<String>.from(json['flavor'] ?? json['flavor'] ?? []),
     );
   }
 
@@ -190,6 +194,7 @@ class ProductModel {
       'meta_title': metaTitle,
       'meta_description': metaDescription,
       'slug': slug,
+      // 'flavor': flavor,
     };
   }
 

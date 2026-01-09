@@ -6,6 +6,7 @@ import 'package:stronger_muscles_dashboard/controllers/products_controller.dart'
 import 'package:stronger_muscles_dashboard/models/product.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
+import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/buildModernDropdown.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/buildModernTextField.dart';
 
 class ProductFormSheet extends StatefulWidget {
@@ -26,6 +27,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
   late final TextEditingController stockController;
   late final TextEditingController descriptionController;
   late final TextEditingController brandController;
+  // late final TextEditingController flavorController;
   late String selectedCategoryId;
   late List<String> imageUrls;
   final ImagePicker _picker = ImagePicker();
@@ -40,6 +42,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
     stockController = TextEditingController(text: widget.product?.stockQuantity.toString() ?? '');
     descriptionController = TextEditingController(text: widget.product?.description ?? '');
     brandController = TextEditingController(text: widget.product?.brand ?? '');
+    // flavorController = TextEditingController(text: widget.product?.flavor?.join(', ') ?? '');
     selectedCategoryId = widget.product?.categoryId ?? 
                         (controller.categories.isNotEmpty ? controller.categories.first.id : '');
     imageUrls = List<String>.from(widget.product?.imageUrls ?? []);
@@ -231,7 +234,22 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                   SizedBox(height: padding.top),
 
                   // التصنيف
-                  buildModernDropdown(),
+                  // buildModernDropdown(),
+                  CustomModernDropdown<String>(
+                    value: selectedCategoryId, 
+                    items: controller.categories.map((cat) {
+                      return DropdownMenuItem(
+                        value: cat.id,
+                        child: Text(cat.name),
+                      );
+                    }).toList(), 
+                    onChanged: (String? value) {
+                      setState(() {
+                        selectedCategoryId = value!;
+                      });
+                    },
+                 
+                  ),
                   SizedBox(height: padding.top),
 
                   // الوصف
@@ -287,8 +305,8 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                         : Center(
                             child: Text(
                               widget.product == null
-                                  ? '➕ إضافة المنتج'
-                                  : '💾 حفظ التغييرات',
+                                  ? ' إضافة المنتج'
+                                  : ' حفظ التغييرات',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: responsive.getBodyFontSize() + 2,
@@ -306,93 +324,8 @@ class ProductFormSheetState extends State<ProductFormSheet> {
     );
   }
 
-  Widget buildModernDropdown() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final responsive = context.responsive;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF2C2C2C) : Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.08),
-            blurRadius: 12,
-            spreadRadius: 1,
-          ),
-        ],
-      ),
-      child: DropdownButtonFormField<String>(
-        initialValue: (selectedCategoryId.isEmpty || !controller.categories.any((c) => c.id == selectedCategoryId))
-            ? (controller.categories.isNotEmpty ? controller.categories.first.id : null)
-            : selectedCategoryId,
-        dropdownColor: isDark ? const Color(0xFF2C2C2C) : Colors.white,
-        icon: Icon(Icons.keyboard_arrow_down, color: AppColors.primary.withValues(alpha: 0.7)),
-        decoration: InputDecoration(
-          labelText: 'التصنيف',
-          prefixIcon: Icon(
-            Icons.category_outlined,
-            color: AppColors.primary.withValues(alpha: 0.7),
-            size: responsive.iconSize,
-          ),
-          filled: true,
-          fillColor: Colors.transparent,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide.none,
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(
-              color: AppColors.primary.withValues(alpha: 0.15),
-              width: 1.5,
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(
-              color: AppColors.primary,
-              width: 2,
-            ),
-          ),
-          labelStyle: TextStyle(
-            color: isDark ? Colors.white70 : AppColors.primary.withValues(alpha: 0.6),
-            fontSize: responsive.getBodyFontSize(),
-          ),
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: responsive.defaultPadding.left / 1.5,
-            vertical: responsive.defaultPadding.top / 1.5,
-          ),
-        ),
-        items: controller.categories.map((cat) {
-          return DropdownMenuItem(
-            value: cat.id,
-            child: Row(
-              children: [
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.primary.withValues(alpha: 0.5),
-                  ),
-                ),
-                SizedBox(width: responsive.itemSpacing / 2),
-                Text(
-                  cat.name,
-                  style: TextStyle(
-                    fontSize: responsive.getBodyFontSize(),
-                    color: isDark ? Colors.white : AppColors.textDark,
-                  ),
-                ),
-              ],
-            ),
-          );
-        }).toList(),
-        onChanged: (val) => setState(() => selectedCategoryId = val ?? ''),
-      ),
-    );
-  }
+
 
 void handleReorder(int oldIndex, int newIndex) {
   setState(() {

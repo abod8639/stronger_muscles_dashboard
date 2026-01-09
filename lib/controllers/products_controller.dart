@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/models/flavors_model.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/ProductFormSheet.dart';
 import '../models/index.dart';
 import '../repositories/index.dart';
@@ -14,9 +15,10 @@ class ProductsController extends GetxController {
   final products = <ProductModel>[].obs;
   final categories = <CategoryModel>[].obs;
   final filteredProducts = <ProductModel>[].obs;
-
+  final flavors = <FlavorsModel>[].obs;
   final searchQuery = ''.obs;
   final selectedCategoryId = 'all'.obs;
+  final selectedFlavor = 'all'.obs;
   final isUploadingImage = false.obs;
 
   @override
@@ -54,6 +56,10 @@ class ProductsController extends GetxController {
     selectedCategoryId.value = categoryId;
     _applyFiltering();
   }
+  void setFlavor(String flavorId) {
+    selectedFlavor.value = flavorId;
+    _applyFiltering();
+  }
 
   void _applyFiltering() {
     List<ProductModel> filtered = products.toList();
@@ -77,6 +83,13 @@ class ProductsController extends GetxController {
           )
           .toList();
     }
+
+    // تصفية حسب المذاق
+    // if (selectedFlavor.value != 'all') {
+    //   filtered = filtered
+    //       .where((p) => p.flavor?.contains(selectedFlavor.value) == true)
+    //       .toList();
+    // }
 
     filteredProducts.assignAll(filtered);
   }
