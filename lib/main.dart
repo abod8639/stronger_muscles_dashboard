@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/screens/Products_Screen/Settings_Screen/settings_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/Users_Screen/users_screen.dart';
 import 'config/theme.dart';
 import 'screens/index.dart';
@@ -45,6 +46,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           ProductsScreen(),
           Center(child: Text('الطلبات (قريباً)')),
           UsersScreen(),
+          SettingsScreen(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -80,6 +82,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             icon: Icon(Icons.people_outline),
             activeIcon: Icon(Icons.people),
             label: 'المستخدمون',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings_outlined),
+            activeIcon: Icon(Icons.settings),
+            label: 'الإعدادات',
           ),
         ],
       ),

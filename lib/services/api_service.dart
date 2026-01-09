@@ -10,7 +10,7 @@ class ApiService {
   Future<bool> checkConnection() async {
     try {
       final response = await http.get(
-        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.categories}'),
+        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.categories}'),
       ).timeout(
         const Duration(seconds: 5),
       );
@@ -24,7 +24,7 @@ class ApiService {
   Future<List<dynamic>> fetchOrders() async {
     try {
       final response = await http.get(
-        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.orders}'),
+        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.orders}'),
         headers: {'Accept': 'application/json'},
       ).timeout(
         const Duration(seconds: timeoutSeconds),
@@ -54,7 +54,7 @@ class ApiService {
   Future<Map<String, dynamic>> fetchOrderDetail(String id) async {
     try {
       final response = await http.get(
-        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.orders}/$id'),
+        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.orders}/$id'),
         headers: {'Accept': 'application/json'},
       ).timeout(
         const Duration(seconds: timeoutSeconds),
@@ -77,7 +77,7 @@ class ApiService {
   Future<List<dynamic>> fetchProducts() async {
     try {
       final response = await http.get(
-        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.products}'),
+        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.products}'),
         headers: {'Accept': 'application/json'},
       ).timeout(
         const Duration(seconds: timeoutSeconds),
@@ -107,7 +107,7 @@ class ApiService {
   Future<Map<String, dynamic>> addProduct(Map<String, dynamic> data) async {
     try {
       final response = await http.post(
-        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.products}'),
+        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.products}'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -147,7 +147,7 @@ class ApiService {
   Future<Map<String, dynamic>> updateProduct(String id, Map<String, dynamic> data) async {
     try {
       final response = await http.put(
-        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.products}/$id'),
+        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.products}/$id'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -187,7 +187,7 @@ class ApiService {
   Future<bool> deleteProduct(String id) async {
     try {
       final response = await http.delete(
-        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.products}/$id'),
+        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.products}/$id'),
         headers: {'Accept': 'application/json'},
       ).timeout(
         const Duration(seconds: timeoutSeconds),
@@ -205,7 +205,7 @@ class ApiService {
   Future<List<dynamic>> fetchCategories() async {
     try {
       final response = await http.get(
-        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.categories}'),
+        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.categories}'),
         headers: {'Accept': 'application/json'},
       ).timeout(
         const Duration(seconds: timeoutSeconds),
@@ -235,7 +235,7 @@ class ApiService {
   Future<Map<String, dynamic>> addCategory(Map<String, dynamic> data) async {
     try {
       final response = await http.post(
-        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.categories}'),
+        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.categories}'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -275,7 +275,7 @@ class ApiService {
   Future<Map<String, dynamic>> updateCategory(String id, Map<String, dynamic> data) async {
     try {
       final response = await http.put(
-        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.categories}/$id'),
+        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.categories}/$id'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -315,7 +315,7 @@ class ApiService {
   Future<bool> deleteCategory(String id) async {
     try {
       final response = await http.delete(
-        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.categories}/$id'),
+        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.categories}/$id'),
         headers: {'Accept': 'application/json'},
       ).timeout(
         const Duration(seconds: timeoutSeconds),
@@ -340,7 +340,7 @@ class ApiService {
 
       final request = http.MultipartRequest(
         'POST',
-        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.uploadProductImage}'),
+        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.uploadProductImage}'),
       );
 
       request.files.add(
@@ -388,7 +388,7 @@ class ApiService {
           // التحقق من أن الرابط يبدأ بـ http
           if (!imageUrl.startsWith('http')) {
             // إذا كان الرابط ناقصاً، أضف base URL
-            imageUrl = '${ApiConfig.baseUrl}/../$imageUrl';
+            imageUrl = '${ApiConfigController().baseUrl.value}/../$imageUrl';
           }
           
           // إصلاح المنفذ إذا كان هناك عدم توافق
@@ -425,7 +425,7 @@ class ApiService {
 
       final request = http.MultipartRequest(
         'POST',
-        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.uploadCategoryImage}'),
+        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.uploadCategoryImage}'),
       );
 
       request.files.add(
@@ -473,7 +473,7 @@ class ApiService {
           // التحقق من أن الرابط يبدأ بـ http
           if (!imageUrl.startsWith('http')) {
             // إذا كان الرابط ناقصاً، أضف base URL
-            imageUrl = '${ApiConfig.baseUrl}/../$imageUrl';
+            imageUrl = '${ApiConfigController().baseUrl.value}/../$imageUrl';
           }
           
           // إصلاح المنفذ إذا كان هناك عدم توافق
@@ -504,7 +504,7 @@ class ApiService {
   Future<Map<String, dynamic>> fetchUsersStats() async {
     try {
       final response = await http.get(
-        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.usersStats}'),
+        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.usersStats}'),
         headers: {'Accept': 'application/json'},
       ).timeout(
         const Duration(seconds: timeoutSeconds),

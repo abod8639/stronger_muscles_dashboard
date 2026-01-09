@@ -28,6 +28,8 @@ class ProductFormSheetState extends State<ProductFormSheet> {
   late final TextEditingController descriptionController;
   late final TextEditingController brandController;
   late final TextEditingController flavorController;
+  late final TextEditingController servingSizeController;
+  late final TextEditingController numberOfSessionsController;
   late String selectedCategoryId;
   late List<String> imageUrls;
   final ImagePicker _picker = ImagePicker();
@@ -37,6 +39,8 @@ class ProductFormSheetState extends State<ProductFormSheet> {
   void initState() {
     super.initState();
     nameController = TextEditingController(text: widget.product?.name ?? '');
+    servingSizeController = TextEditingController(text: widget.product?.servingSize?.toString() ?? '');
+    numberOfSessionsController = TextEditingController(text: widget.product?.servingsPerContainer.toString() ?? '');
     priceController = TextEditingController(text: widget.product?.price.toString() ?? '');
     discountPriceController = TextEditingController(text: widget.product?.discountPrice?.toString() ?? '');
     stockController = TextEditingController(text: widget.product?.stockQuantity.toString() ?? '');
@@ -56,6 +60,9 @@ class ProductFormSheetState extends State<ProductFormSheet> {
     stockController.dispose();
     descriptionController.dispose();
     brandController.dispose();
+    flavorController.dispose();
+    servingSizeController.dispose();
+    numberOfSessionsController.dispose();
     super.dispose();
   }
 
@@ -233,23 +240,29 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                   ),
                   SizedBox(height: padding.top),
 
-                  // التصنيف
-                  CustomModernDropdown<String>(
-                    value: selectedCategoryId, 
-                    items: controller.categories.map((cat) {
-                      return DropdownMenuItem(
-                        value: cat.id,
-                        child: Text(cat.name),
-                      );
-                    }).toList(), 
-                    onChanged: (String? value) {
-                      setState(() {
-                        selectedCategoryId = value!;
-                      });
-                    },
-  
+                  Row(
+                    children: [
+                      Expanded(
+                        child: buildProductFormSheetModernTextField(
+                          servingSizeController,
+                          'حجم الصحه',
+                          Icons.local_mall_outlined,
+                          isNumber: true,
+                        ),
+                      ),
+                      SizedBox(width: padding.left),
+                      Expanded(
+                        child: buildProductFormSheetModernTextField(
+                          numberOfSessionsController,
+                          'عدد الحصص',
+                          Icons.local_mall_outlined,
+                          isNumber: true,
+                        ),
+                      ),
+                    ],
                   ),
                   SizedBox(height: padding.top),
+
 
                   // التصنيف
                   CustomModernDropdown<String>(
@@ -373,6 +386,8 @@ void handleReorder(int oldIndex, int newIndex) {
       stockQuantity: int.tryParse(stockController.text) ?? 0,
       brand: brandController.text,
       isActive: widget.product?.isActive ?? true,
+      servingSize: servingSizeController.text  ,
+      servingsPerContainer: int.tryParse(numberOfSessionsController.text) ?? 0,
     );
 
     if (widget.product == null) {

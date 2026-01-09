@@ -1,6 +1,24 @@
+
+import 'package:get/get.dart';
+
+class ApiConfigController extends GetxController {
+  //  final String baseUrl = ApiConfigController().baseUrl.value ; 
+  
+  // ملاحظة: للهاتف الحقيقي استخدم IP الجهاز، وللمحاكي (Android Emulator) استخدم 10.0.2.2
+  // static const String baseUrl = 'http://10.0.2.2:8080/api/v1';
+  // RxString baseUrl  = 'http://192.168.1.17:8080/api/v1'.obs;
+
+  RxString baseUrl = 'http://localhost:8080/api/v1'.obs;
+
+}
+  
+
+
 class ApiConfig {
   // الرابط الأساسي (Base URL)
-  static const String baseUrl = 'http://localhost:8080/api/v1'; 
+  
+
+  //  final String baseUrl = ApiConfigController().baseUrl.value ; 
   
   // ملاحظة: للهاتف الحقيقي استخدم IP الجهاز، وللمحاكي (Android Emulator) استخدم 10.0.2.2
   // static const String baseUrl = 'http://10.0.2.2:8080/api/v1';
