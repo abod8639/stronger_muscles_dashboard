@@ -10,6 +10,7 @@ class ProductFlavorSelector extends StatelessWidget {
     'Caramel', 'Coffee', 'Vanilla Cream', 'Tot', 'No Flavor'
   ];
 
+
   ProductFlavorSelector({
     super.key,
     required this.selectedFlavors,
