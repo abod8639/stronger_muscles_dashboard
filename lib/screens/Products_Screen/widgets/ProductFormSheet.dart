@@ -13,9 +13,7 @@ import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/build
 class ProductFormSheet extends StatefulWidget {
   final ProductModel? product;
 
-  const ProductFormSheet({super.key, 
-    this.product,
-  });
+  const ProductFormSheet({super.key, this.product});
 
   @override
   State<ProductFormSheet> createState() => ProductFormSheetState();
@@ -40,16 +38,33 @@ class ProductFormSheetState extends State<ProductFormSheet> {
   void initState() {
     super.initState();
     nameController = TextEditingController(text: widget.product?.name ?? '');
-    servingSizeController = TextEditingController(text: widget.product?.servingSize?.toString() ?? '');
-    numberOfSessionsController = TextEditingController(text: widget.product?.servingsPerContainer.toString() ?? '');
-    priceController = TextEditingController(text: widget.product?.price.toString() ?? '');
-    discountPriceController = TextEditingController(text: widget.product?.discountPrice?.toString() ?? '');
-    stockController = TextEditingController(text: widget.product?.stockQuantity.toString() ?? '');
-    descriptionController = TextEditingController(text: widget.product?.description ?? '');
+    servingSizeController = TextEditingController(
+      text: widget.product?.servingSize?.toString() ?? '',
+    );
+    numberOfSessionsController = TextEditingController(
+      text: widget.product?.servingsPerContainer.toString() ?? '',
+    );
+    priceController = TextEditingController(
+      text: widget.product?.price.toString() ?? '',
+    );
+    discountPriceController = TextEditingController(
+      text: widget.product?.discountPrice?.toString() ?? '',
+    );
+    stockController = TextEditingController(
+      text: widget.product?.stockQuantity.toString() ?? '',
+    );
+    descriptionController = TextEditingController(
+      text: widget.product?.description ?? '',
+    );
     brandController = TextEditingController(text: widget.product?.brand ?? '');
-    flavorController = TextEditingController(text: widget.product?.flavor?.join(', ') ?? '');
-    selectedCategoryId = widget.product?.categoryId ?? 
-                        (controller.categories.isNotEmpty ? controller.categories.first.id : '');
+    flavorController = TextEditingController(
+      text: widget.product?.flavor?.join(', ') ?? '',
+    );
+    selectedCategoryId =
+        widget.product?.categoryId ??
+        (controller.categories.isNotEmpty
+            ? controller.categories.first.id
+            : '');
     imageUrls = List<String>.from(widget.product?.imageUrls ?? []);
   }
 
@@ -67,8 +82,6 @@ class ProductFormSheetState extends State<ProductFormSheet> {
     super.dispose();
   }
 
-
-
   Future<void> _pickImage() async {
     try {
       final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
@@ -83,7 +96,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
 
         // رفع الصورة إلى الخادم
         final uploadedUrl = await controller.uploadImage(image.path);
-        
+
         if (uploadedUrl != null && uploadedUrl.isNotEmpty) {
           setState(() {
             imageUrls.add(uploadedUrl);
@@ -184,7 +197,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                     onAddUrl: _addUrl,
                     onRemove: _removeImage,
                     onPickImage: _pickImage,
-                    onReorder:  handleReorder,
+                    onReorder: handleReorder,
                   ),
                   SizedBox(height: padding.top * 1.5),
 
@@ -266,32 +279,31 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                   ),
                   SizedBox(height: padding.top),
 
-
-             // داخل الـ UI (Column)
-Obx(() => ProductFlavorSelector(
-  selectedFlavors:controller. productFlavors.toList(),
-  onSelectionChanged: (newList) {
-   controller. productFlavors.assignAll(newList);
-  },
-)),
+                  // داخل الـ UI (Column)
+                  Obx(
+                    () => ProductFlavorSelector(
+                      selectedFlavors: controller.productFlavors.toList(),
+                      onSelectionChanged: (newList) {
+                        controller.productFlavors.assignAll(newList);
+                      },
+                    ),
+                  ),
                   SizedBox(height: padding.top),
-
 
                   // التصنيف
                   CustomModernDropdown<String>(
-                    value: selectedCategoryId, 
+                    value: selectedCategoryId,
                     items: controller.categories.map((cat) {
                       return DropdownMenuItem(
                         value: cat.id,
                         child: Text(cat.name),
                       );
-                    }).toList(), 
+                    }).toList(),
                     onChanged: (String? value) {
                       setState(() {
                         selectedCategoryId = value!;
                       });
                     },
-  
                   ),
                   SizedBox(height: padding.top),
 
@@ -316,10 +328,7 @@ Obx(() => ProductFlavorSelector(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
                 gradient: LinearGradient(
-                  colors: [
-                    AppColors.primary,
-                    AppColors.secondary,
-                  ],
+                  colors: [AppColors.primary, AppColors.secondary],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -362,25 +371,23 @@ Obx(() => ProductFlavorSelector(
               ),
             ),
           ),
+
         ],
       ),
     );
   }
 
-
-
-
-void handleReorder(int oldIndex, int newIndex) {
-  setState(() {
-    // تصحيح الـ index الخاص بـ Flutter
-    if (newIndex > oldIndex) {
-      newIndex -= 1;
-    }
-    // سحب العنصر من مكانه القديم ووضعه في الجديد
-    final String item = imageUrls.removeAt(oldIndex);
-    imageUrls.insert(newIndex, item);
-  });
-}
+  void handleReorder(int oldIndex, int newIndex) {
+    setState(() {
+      // تصحيح الـ index الخاص بـ Flutter
+      if (newIndex > oldIndex) {
+        newIndex -= 1;
+      }
+      // سحب العنصر من مكانه القديم ووضعه في الجديد
+      final String item = imageUrls.removeAt(oldIndex);
+      imageUrls.insert(newIndex, item);
+    });
+  }
 
   void _submitForm() {
     if (nameController.text.isEmpty || priceController.text.isEmpty) {
@@ -399,10 +406,11 @@ void handleReorder(int oldIndex, int newIndex) {
       stockQuantity: int.tryParse(stockController.text) ?? 0,
       brand: brandController.text,
       isActive: widget.product?.isActive ?? true,
-      servingSize: servingSizeController.text  ,
+      servingSize: servingSizeController.text,
       servingsPerContainer: int.tryParse(numberOfSessionsController.text) ?? 0,
-      flavor: controller.productFlavors,
+      flavor:  controller.productFlavors.toList(),
     );
+    print(data.flavor);
 
     if (widget.product == null) {
       controller.addProduct(data);

@@ -7,8 +7,11 @@ class ProductFlavorSelector extends StatelessWidget {
 
   // قائمة النكهات الثابتة لمجال المكملات
   final List<String> availableFlavors = [
-    'شوكولاتة', 'فانيليا', 'فراولة', 'موز', 'كراميل', 
-    'قهوة', 'بسكويت وكريمة', 'توت', 'بدون نكهة'
+    'Vanilla', 'Strawberry', 
+    'Choco', 'Mango', 
+    'Caramel', 'Coffee', 
+    'Vanilla Cream', 'Tot', 
+    'No Flavor'
   ];
 
   ProductFlavorSelector({
@@ -45,6 +48,7 @@ class ProductFlavorSelector extends StatelessWidget {
             children: availableFlavors.map((flavor) {
               final isSelected = selectedFlavors.contains(flavor);
               return FilterChip(
+                
                 label: Text(flavor),
                 selected: isSelected,
                 onSelected: (bool selected) {

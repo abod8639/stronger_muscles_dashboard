@@ -146,9 +146,9 @@ class ProductModel {
       countryOfOrigin: (json['countryOfOrigin'] ?? json['country_of_origin'])?.toString(),
       // SEO
       metaTitle: (json['metaTitle'] ?? json['meta_title'])?.toString(),
-      metaDescription: (json['metaDescription'] ?? json['meta_description'])?.toString(),
+      metaDescription: (json['metaDescription'] )?.toString(),
       slug: json['slug']?.toString(),
-      flavor: List<String>.from(json['flavor'] ?? json['flavor'] ?? []),
+      flavor: List<String>.from(json['flavors'] ),
     );
   }
 
@@ -195,7 +195,7 @@ class ProductModel {
       'meta_title': metaTitle,
       'meta_description': metaDescription,
       'slug': slug,
-      'flavor': flavor,
+      'flavors': flavor,
     };
   }
 

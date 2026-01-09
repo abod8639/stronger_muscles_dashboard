@@ -11,14 +11,14 @@ class CustomModernDropdown<T> extends StatelessWidget {
   final String? Function(T?)? validator;
 
   const CustomModernDropdown({
-    Key? key,
+    super.key,
     required this.value,
     required this.items,
     required this.onChanged,
     this.label = 'اختر',
     this.prefixIcon = Icons.category_outlined,
     this.validator,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
