@@ -14,6 +14,7 @@ class ProductModel {
   final String? servingSize;
   final int? servingsPerContainer;
   final bool isActive;
+  
 
 
   // Basic Info

@@ -6,6 +6,7 @@ import 'package:stronger_muscles_dashboard/controllers/products_controller.dart'
 import 'package:stronger_muscles_dashboard/models/product.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
+import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/FlavorMultiSelect.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/buildModernDropdown.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/buildModernTextField.dart';
 
@@ -65,6 +66,8 @@ class ProductFormSheetState extends State<ProductFormSheet> {
     numberOfSessionsController.dispose();
     super.dispose();
   }
+
+
 
   Future<void> _pickImage() async {
     try {
@@ -264,6 +267,16 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                   SizedBox(height: padding.top),
 
 
+             // داخل الـ UI (Column)
+Obx(() => ProductFlavorSelector(
+  selectedFlavors:controller. productFlavors.toList(),
+  onSelectionChanged: (newList) {
+   controller. productFlavors.assignAll(newList);
+  },
+)),
+                  SizedBox(height: padding.top),
+
+
                   // التصنيف
                   CustomModernDropdown<String>(
                     value: selectedCategoryId, 
@@ -388,6 +401,7 @@ void handleReorder(int oldIndex, int newIndex) {
       isActive: widget.product?.isActive ?? true,
       servingSize: servingSizeController.text  ,
       servingsPerContainer: int.tryParse(numberOfSessionsController.text) ?? 0,
+      flavor: controller.productFlavors,
     );
 
     if (widget.product == null) {

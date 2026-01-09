@@ -38,7 +38,7 @@ class CustomModernDropdown<T> extends StatelessWidget {
         ],
       ),
       child: DropdownButtonFormField<T>(
-        value: value,
+        initialValue: value,
         items: items,
         onChanged: onChanged,
         validator: validator,

@@ -9,7 +9,7 @@ import '../services/api_service.dart';
 class ProductsController extends GetxController {
   late final ProductRepository _productRepository;
   late final CategoryRepository _categoryRepository;
-  // late final FlavorRepository _flavorRepository; // إضافة ريبوزيتوري النكهات
+  RxList<String> productFlavors = <String>[].obs;
   late final ApiService _apiService;
 
   // --- States ---
