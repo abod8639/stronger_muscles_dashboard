@@ -7,7 +7,7 @@ class ProductSizeSelector extends StatelessWidget {
 
   // الأحجام الافتراضية الشائعة في عالم المكملات
   final List<String> availableSizes = [
-    '500g', '1kg', '2kg', '5kg', 
+    '500g', '1kg', '2kg','4kg', '5kg', 
     '2lb', '5lb', '10lb', 
     '30 Servings', '60 Servings', '120 Caps',
     'Medium', 'Large', 'Small'

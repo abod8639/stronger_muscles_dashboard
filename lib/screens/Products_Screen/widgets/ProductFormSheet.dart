@@ -7,6 +7,7 @@ import 'package:stronger_muscles_dashboard/models/product.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/FlavorMultiSelect.dart';
+import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/availability_switch.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/buildModernDropdown.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/buildModernTextField.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/product_size_selector.dart';
@@ -21,6 +22,7 @@ class ProductFormSheet extends StatefulWidget {
 }
 
 class ProductFormSheetState extends State<ProductFormSheet> {
+
   late final TextEditingController nameController;
   late final TextEditingController priceController;
   late final TextEditingController discountPriceController;
@@ -38,7 +40,9 @@ class ProductFormSheetState extends State<ProductFormSheet> {
   @override
   void initState() {
     super.initState();
+
     nameController = TextEditingController(text: widget.product?.name ?? '');
+
     servingSizeController = TextEditingController(
       text: widget.product?.servingSize?.toString() ?? '',
     );
@@ -69,6 +73,9 @@ class ProductFormSheetState extends State<ProductFormSheet> {
     imageUrls = List<String>.from(widget.product?.imageUrls ?? []);
     // Initialize selected flavors
     controller.productFlavors.assignAll(widget.product?.flavor ?? []);
+    // Initialize selected sizes
+    // controller.productSizes.assignAll(widget.product?.size ?? []);
+    // controller.setAvailability(widget.product?.isActive ?? true);
   }
 
   @override
@@ -82,6 +89,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
     flavorController.dispose();
     servingSizeController.dispose();
     numberOfSessionsController.dispose();
+    // controller.setAvailability(widget.product?.isActive ?? true);
     super.dispose();
   }
 
@@ -179,7 +187,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
 
           // العنوان
           Text(
-            widget.product == null ? '✨ إضافة منتج جديد' : '✏️ تعديل المنتج',
+            widget.product == null ? ' إضافة منتج جديد' : ' تعديل المنتج',
             style: TextStyle(
               fontSize: responsive.getTitleFontSize() + 2,
               fontWeight: FontWeight.bold,
@@ -281,6 +289,12 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                     ],
                   ),
                   SizedBox(height: padding.top),
+                  // availability
+                  
+                  AvailabilitySwitch( ),
+                  
+
+                  SizedBox(height: padding.top * 2),
 
                   // داخل الـ UI (Column)
                   Obx(
@@ -417,7 +431,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
       categoryId: selectedCategoryId,
       stockQuantity: int.tryParse(stockController.text) ?? 0,
       brand: brandController.text,
-      isActive: widget.product?.isActive ?? true,
+      isActive: controller.isFeatured.value,
       servingSize: servingSizeController.text,
       servingsPerContainer: int.tryParse(numberOfSessionsController.text) ?? 0,
       flavor: controller.productFlavors.toList(),

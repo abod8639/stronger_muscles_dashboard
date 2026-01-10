@@ -37,14 +37,10 @@ class AppColors {
   static const Color surfaceDark = Color(0xFF1E293B);
 
   // --- ألوان النصوص (Typography) ---
-  static const Color textDark = Color(0xFF1E293B);   // نص رئيسي غامق جداً
+  static const Color textDark = Color.fromARGB(255, 230, 239, 255);   // نص رئيسي غامق جداً
   static const Color textLight = Color(0xFF64748B);  // نص فرعي
   static const Color textMuted = Color(0xFF94A3B8);  // نص باهت/تلميحات
 
-  // --- ألوان المخزون (Inventory) ---
-  static const Color inStock = Color(0xFF10B981);
-  static const Color lowStock = Color(0xFFF59E0B);
-  static const Color outOfStock = Color(0xFFEF4444);
 }
 class AppTheme {
   static ThemeData getLightTheme() {

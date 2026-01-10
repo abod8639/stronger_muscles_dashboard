@@ -51,12 +51,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (!controller.isConnected.value || controller.errorMessage.value.isNotEmpty)
-                    ConnectionStatusBar(
-                      isConnected: controller.isConnected.value,
-                      errorMessage: controller.errorMessage.value,
-                      onRetry: () => controller.retryConnection(),
-                    ),
+                  ConnectionStatusBar(
+                    isConnected: controller.isConnected.value,
+                    errorMessage: controller.errorMessage.value,
+                    onRetry: () => controller.retryConnection(),
+                  ),
 
                   buildDashboardScreenPeriodSelector(),
 
@@ -90,12 +89,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     
                     // رسم بياني دائري لحالات الطلبات
                     Padding(
+                      
                       padding: context.responsive.defaultPadding,
                       child: PieChartWidget(
+                        
                         showLegend: true,
                         title: 'توزيع حالات الطلبات',
                         data: [
                           PieChartItemData(
+                            
                             label: 'معلقة',
                             value: controller.pendingOrders.value.toDouble(),
                             color: AppColors.pending,

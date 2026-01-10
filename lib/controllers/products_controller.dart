@@ -11,6 +11,7 @@ class ProductsController extends GetxController {
   late final CategoryRepository _categoryRepository;
   RxList<String> productFlavors = <String>[].obs;
   late final ApiService _apiService;
+  RxBool isFeatured = false.obs;
 
   
 
@@ -29,6 +30,7 @@ class ProductsController extends GetxController {
   final searchQuery = ''.obs;
   final selectedCategoryId = 'all'.obs;
   final selectedFlavorId = 'all'.obs;
+  final isAvailable = false.obs;
 
   @override
   void onInit() {
@@ -80,6 +82,12 @@ class ProductsController extends GetxController {
     selectedFlavorId.value = flavorId;
     _applyFiltering();
   }
+
+  void setAvailability(bool isFeatured) {
+    isAvailable.value = isFeatured;
+    _applyFiltering();
+  }
+
 
   void _applyFiltering() {
     Iterable<ProductModel> filtered = products;
