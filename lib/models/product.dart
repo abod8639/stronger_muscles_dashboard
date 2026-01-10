@@ -16,12 +16,11 @@ class ProductModel {
   final bool isActive;
   
 
-
   // Basic Info
   final String? sku;
   final List<String>? tags;
   final double? weight;
-  final String? size;
+  final List<String>? size;
   final List<String>? flavor;
 
   // Nutrition
@@ -101,52 +100,80 @@ class ProductModel {
       id: (json['id'] ?? '').toString(),
       name: (json['name'] ?? '').toString(),
       price: double.tryParse((json['price'] ?? 0).toString()) ?? 0.0,
-      discountPrice: (json['discountPrice']) != null 
-          ? double.tryParse((json['discountPrice']).toString()) 
+      discountPrice: (json['discountPrice']) != null
+          ? double.tryParse((json['discountPrice']).toString())
           : null,
-      imageUrls: List<String>.from(json['imageUrls'] ),
+      imageUrls: List<String>.from(json['imageUrls']),
       description: (json['description'] ?? '').toString(),
-      categoryId: (json['categoryId'] ).toString(),
+      categoryId: (json['categoryId']).toString(),
       stockQuantity: int.tryParse((json['stockQuantity'] ?? 0).toString()) ?? 0,
-      averageRating: double.tryParse((json['averageRating'] ?? 0).toString()) ?? 0.0,
+      averageRating:
+          double.tryParse((json['averageRating'] ?? 0).toString()) ?? 0.0,
       reviewCount: int.tryParse((json['reviewCount'] ?? 0).toString()) ?? 0,
       brand: json['brand']?.toString(),
-      servingSize: (json['servingSize'] )?.toString(),
-      servingsPerContainer: int.tryParse((json['servingsPerContainer'] ?? 0).toString()),
-      isActive: json['isActive'] == true || json['is_active'] == true || 
-                json['isActive'] == 1 || json['is_active'] == 1,
+      servingSize: (json['servingSize'])?.toString(),
+      servingsPerContainer: int.tryParse(
+        (json['servingsPerContainer'] ?? 0).toString(),
+      ),
+      isActive:
+          json['isActive'] == true ||
+          json['is_active'] == true ||
+          json['isActive'] == 1 ||
+          json['is_active'] == 1,
       // Basic Info
       sku: json['sku']?.toString(),
       tags: json['tags'] != null ? List<String>.from(json['tags']) : null,
-      weight: json['weight'] != null ? double.tryParse(json['weight'].toString()) : null,
-      size: json['size']?.toString(),
+      weight: json['weight'] != null
+          ? double.tryParse(json['weight'].toString())
+          : null,
+      size: json['size'] != null ? List<String>.from(json['size']) : [],
       // Nutrition
-      nutritionFacts: json['nutritionFacts'] ,
+      nutritionFacts: json['nutritionFacts'],
       // Marketing
       featured: json['featured'] == true || json['featured'] == 1,
-      newArrival: json['newArrival'] == true || json['new_arrival'] == true || 
-                  json['newArrival'] == 1 || json['new_arrival'] == 1,
-      bestSeller: json['bestSeller'] == true || json['best_seller'] == true ||
-                  json['bestSeller'] == 1 || json['best_seller'] == 1,
-      totalSales: int.tryParse((json['totalSales'] ?? json['total_sales'] ?? 0).toString()) ?? 0,
-      viewsCount: int.tryParse((json['viewsCount'] ?? json['views_count'] ?? 0).toString()) ?? 0,
+      newArrival:
+          json['newArrival'] == true ||
+          json['new_arrival'] == true ||
+          json['newArrival'] == 1 ||
+          json['new_arrival'] == 1,
+      bestSeller:
+          json['bestSeller'] == true ||
+          json['best_seller'] == true ||
+          json['bestSeller'] == 1 ||
+          json['best_seller'] == 1,
+      totalSales:
+          int.tryParse(
+            (json['totalSales'] ?? json['total_sales'] ?? 0).toString(),
+          ) ??
+          0,
+      viewsCount:
+          int.tryParse(
+            (json['viewsCount'] ?? json['views_count'] ?? 0).toString(),
+          ) ??
+          0,
       // Shipping
-      shippingWeight: json['shippingWeight'] ?? json['shipping_weight'] != null 
-          ? double.tryParse((json['shippingWeight'] ?? json['shipping_weight']).toString()) 
+      shippingWeight: json['shippingWeight'] ?? json['shipping_weight'] != null
+          ? double.tryParse(
+              (json['shippingWeight'] ?? json['shipping_weight']).toString(),
+            )
           : null,
       dimensions: json['dimensions'],
       // Additional
       ingredients: json['ingredients']?.toString(),
-      usageInstructions: (json['usageInstructions'] ?? json['usage_instructions'])?.toString(),
+      usageInstructions:
+          (json['usageInstructions'] ?? json['usage_instructions'])?.toString(),
       warnings: json['warnings']?.toString(),
-      expiryDate: json['expiryDate'] ?? json['expiry_date'] != null 
-          ? DateTime.tryParse((json['expiryDate'] ?? json['expiry_date']).toString())
+      expiryDate: json['expiryDate'] ?? json['expiry_date'] != null
+          ? DateTime.tryParse(
+              (json['expiryDate'] ?? json['expiry_date']).toString(),
+            )
           : null,
       manufacturer: json['manufacturer']?.toString(),
-      countryOfOrigin: (json['countryOfOrigin'] ?? json['country_of_origin'])?.toString(),
+      countryOfOrigin: (json['countryOfOrigin'] ?? json['country_of_origin'])
+          ?.toString(),
       // SEO
       metaTitle: (json['metaTitle'] ?? json['meta_title'])?.toString(),
-      metaDescription: (json['metaDescription'] )?.toString(),
+      metaDescription: (json['metaDescription'])?.toString(),
       slug: json['slug']?.toString(),
       flavor: json['flavors'] != null ? List<String>.from(json['flavors']) : [],
     );

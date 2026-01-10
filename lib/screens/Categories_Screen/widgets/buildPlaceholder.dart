@@ -7,7 +7,7 @@ Widget buildPlaceholder(bool isDark) {
         gradient: LinearGradient(
           colors: [
             AppColors.primary.withValues(alpha: 0.8),
-            AppColors.secondary.withValues(alpha: 0.8),
+            AppColors.pending.withValues(alpha: 0.8),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,

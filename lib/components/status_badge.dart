@@ -71,7 +71,7 @@ class PaymentStatusBadge extends StatelessWidget {
       case PaymentStatus.paid:
         return AppColors.success;
       case PaymentStatus.failed:
-        return AppColors.danger;
+        return AppColors.error;
       case PaymentStatus.refunded:
         return AppColors.info;
     }
@@ -119,11 +119,11 @@ class StockStatusBadge extends StatelessWidget {
 
   Color _getStockColor() {
     if (quantity <= 0) {
-      return AppColors.outOfStock;
+      return AppColors.cancelled;
     } else if (quantity <= 10) {
-      return AppColors.lowStock;
+      return AppColors.pending;
     } else {
-      return AppColors.inStock;
+      return AppColors.success;
     }
   }
 

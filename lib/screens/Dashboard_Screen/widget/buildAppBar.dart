@@ -27,7 +27,7 @@ PreferredSizeWidget buildDashboardScreenAppBar(BuildContext context, bool isDark
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: (controller.isConnected.value ? AppColors.success : AppColors.danger).withOpacity(0.1),
+                  color: (controller.isConnected.value ? AppColors.success : AppColors.error).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(
@@ -37,7 +37,7 @@ PreferredSizeWidget buildDashboardScreenAppBar(BuildContext context, bool isDark
                       width: 8,
                       height: 8,
                       decoration: BoxDecoration(
-                        color: controller.isConnected.value ? AppColors.success : AppColors.danger,
+                        color: controller.isConnected.value ? AppColors.success : AppColors.error,
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -45,7 +45,7 @@ PreferredSizeWidget buildDashboardScreenAppBar(BuildContext context, bool isDark
                     Text(
                       controller.isConnected.value ? 'متصل' : 'غير متصل',
                       style: TextStyle(
-                        color: controller.isConnected.value ? AppColors.success : AppColors.danger,
+                        color: controller.isConnected.value ? AppColors.success : AppColors.error,
                         fontWeight: FontWeight.w600,
                         fontSize: 12,
                       ),

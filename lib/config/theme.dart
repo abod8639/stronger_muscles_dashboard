@@ -1,38 +1,51 @@
 import 'package:flutter/material.dart';
 
-class AppColors {
-  // الألوان الأساسية
-  static const Color primary = Color(0xFF1F77D4);
-  static const Color primaryDark = Color(0xFF0D47A1);
-  static const Color primaryLight = Color(0xFFE3F2FD);
-  
-  // الألوان الثانوية
-  static const Color secondary = Color(0xFFFF6B6B);
-  static const Color success = Color(0xFF2ECC71);
-  static const Color warning = Color(0xFFFFA500);
-  static const Color danger = Color(0xFFE74C3C);
-  static const Color info = Color(0xFF3498DB);
-  
-  // ألوان النص والخلفية
-  static const Color textDark = Color(0xFF2C3E50);
-  static const Color textLight = Color(0xFF7F8C8D);
-  static const Color textMuted = Color(0xFFBDC3C7);
-  static const Color backgroundLight = Color(0xFFF5F6FA);
-  static const Color backgroundDark = Color(0xFF1A1A1A);
-  
-  // ألوان الحالات
-  static const Color pending = Color(0xFFFFB74D);
-  static const Color processing = Color(0xFF42A5F5);
-  static const Color shipped = Color(0xFF66BB6A);
-  static const Color delivered = Color(0xFF26C6DA);
-  static const Color cancelled = Color(0xFFEF5350);
-  
-  // ألوان الأسهم
-  static const Color inStock = Color(0xFF4CAF50);
-  static const Color lowStock = Color(0xFFFF9800);
-  static const Color outOfStock = Color(0xFFF44336);
-}
 
+class AppColors {
+  // --- الألوان الأساسية (Red Energy) ---
+  // تم اختيار أحمر "روبي" عميق بدلاً من الأحمر التقليدي ليعطي فخامة
+  static const Color primary = Color(0xFFD32F2F);
+  static const Color primaryDark = Color(0xFFB71C1C);
+  static const Color primaryLight = Color(0xFFFFCDD2);
+  static const Color accent = Color(0xFFFF4081);// الأسود الفحمي كـ Accent يعطي هيبة للماركة
+
+  // --- درجات الرمادي الاحترافية (Neutral Slate) ---
+  // الدرجات المائلة للأزرق/الرمادي (Slate) تريح العين أكثر من الرمادي الصرف
+  static const Color white = Colors.white;
+  static const Color black = Color(0xFF0F172A);
+  static const Color greyLight = Color(0xFFF1F5F9);
+  static const Color greyMedium = Color(0xFFE2E8F0);
+  static const Color greyDark = Color(0xFF475569);
+
+  // --- الألوان الوظيفية (Functional) ---
+  static const Color success = Color(0xFF10B981); // أخضر زمردي
+  static const Color warning = Color(0xFFF59E0B); // برتقالي عنبري
+  static const Color error = Color(0xFFEF4444);
+  static const Color info = Color(0xFF3B82F6);
+
+  // --- حالات الطلبات (Order Status) ---
+  static const Color pending = Color(0xFFF59E0B);
+  static const Color processing = Color(0xFF3B82F6);
+  static const Color shipped = Color(0xFF8B5CF6);    // بنفسجي للشحن يعطي تميز
+  static const Color delivered = Color(0xFF10B981);
+  static const Color cancelled = Color(0xFF64748B);  // رمادي للطلبات المُلغاة
+
+  // --- الخلفيات (Backgrounds) ---
+  static const Color backgroundLight = Color(0xFFFAFAFA);
+  static const Color backgroundDark = Color(0xFF121212);
+  static const Color surfaceLight = Colors.white;
+  static const Color surfaceDark = Color(0xFF1E293B);
+
+  // --- ألوان النصوص (Typography) ---
+  static const Color textDark = Color(0xFF1E293B);   // نص رئيسي غامق جداً
+  static const Color textLight = Color(0xFF64748B);  // نص فرعي
+  static const Color textMuted = Color(0xFF94A3B8);  // نص باهت/تلميحات
+
+  // --- ألوان المخزون (Inventory) ---
+  static const Color inStock = Color(0xFF10B981);
+  static const Color lowStock = Color(0xFFF59E0B);
+  static const Color outOfStock = Color(0xFFEF4444);
+}
 class AppTheme {
   static ThemeData getLightTheme() {
     return ThemeData(

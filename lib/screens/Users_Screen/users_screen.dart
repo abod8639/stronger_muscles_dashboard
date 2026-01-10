@@ -195,14 +195,14 @@ class UsersScreen extends StatelessWidget {
                  Container(
                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                    decoration: BoxDecoration(
-                     color: user.isActive ? AppColors.success.withValues(alpha: 0.1) : AppColors.danger.withValues(alpha: 0.1),
+                     color: user.isActive ? AppColors.success.withValues(alpha: 0.1) : AppColors.error.withValues(alpha: 0.1),
                      borderRadius: BorderRadius.circular(4),
                    ),
                    child: Text(
                      user.isActive ? 'نشط' : 'غير نشط',
                      style: TextStyle(
                        fontSize: 10,
-                       color: user.isActive ? AppColors.success : AppColors.danger,
+                       color: user.isActive ? AppColors.success : AppColors.error,
                      ),
                    ),
                  ),

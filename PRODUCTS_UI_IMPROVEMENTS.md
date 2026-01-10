@@ -106,7 +106,7 @@ duration: Duration(milliseconds: 300)
 LinearGradient(
   colors: [
     AppColors.primary.withValues(alpha: 0.05),
-    AppColors.secondary.withValues(alpha: 0.05),
+    AppColors.pending.withValues(alpha: 0.05),
   ],
 )
 ```

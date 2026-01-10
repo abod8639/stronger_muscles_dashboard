@@ -40,12 +40,12 @@ class ProductCard extends StatelessWidget {
               height: responsive.isMobile ? 70 : 90,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                gradient: LinearGradient(
-                  colors: [
-                    AppColors.primary.withValues(alpha: 0.1),
-                    AppColors.secondary.withValues(alpha: 0.1),
-                  ],
-                ),
+                // gradient: LinearGradient(
+                //   colors: [
+                //     AppColors.primary.withValues(alpha: 0.1),
+                //     AppColors.pending.withValues(alpha: 0.1),
+                //   ],
+                // ),
                 boxShadow: [
                   BoxShadow(
                     color: AppColors.primary.withValues(alpha: 0.15),
@@ -189,7 +189,7 @@ class ProductCard extends StatelessWidget {
                         gradient: LinearGradient(
                           colors: [
                             AppColors.primary.withValues(alpha: 0.15),
-                            AppColors.secondary.withValues(alpha: 0.1),
+                            AppColors.pending.withValues(alpha: 0.1),
                           ],
                         ),
                         borderRadius: BorderRadius.circular(8),

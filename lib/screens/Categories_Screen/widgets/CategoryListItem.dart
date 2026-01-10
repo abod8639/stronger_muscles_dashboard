@@ -165,14 +165,14 @@ class _CategoryListItemState extends State<CategoryListItem>
                                   vertical: 2,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: AppColors.danger.withValues(alpha: 0.1),
+                                  color: AppColors.error.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: const Text(
                                   'معطل',
                                   style: TextStyle(
                                     fontSize: 10,
-                                    color: AppColors.danger,
+                                    color: AppColors.error,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -195,7 +195,7 @@ class _CategoryListItemState extends State<CategoryListItem>
                           const SizedBox(width: 8),
                           buildActionBtn(
                             icon: Icons.delete_outline,
-                            color: AppColors.danger,
+                            color: AppColors.error,
                             onPressed: widget.onDelete,
                             isDark: isDark,
                           ),

@@ -145,11 +145,11 @@ class _AnimatedCategoryCardState extends State<AnimatedCategoryCard>
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: AppColors.danger,
+                                color: AppColors.error,
                                 borderRadius: BorderRadius.circular(6),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: AppColors.danger.withValues(alpha: 0.4),
+                                    color: AppColors.error.withValues(alpha: 0.4),
                                     blurRadius: 4,
                                   ),
                                 ],

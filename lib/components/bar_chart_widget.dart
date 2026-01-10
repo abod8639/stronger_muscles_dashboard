@@ -33,7 +33,7 @@ class _BarChartWidgetState extends State<BarChartWidget> {
     super.initState();
     barColors = [
       AppColors.primary,
-      AppColors.secondary,
+      // AppColors.pending,
       AppColors.success,
       AppColors.warning,
     ];

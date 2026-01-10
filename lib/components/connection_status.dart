@@ -22,12 +22,12 @@ class ConnectionStatusBar extends StatelessWidget {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       padding: const EdgeInsets.all(12),
-      color: isConnected ? AppColors.warning.withValues(alpha: 0.1) : AppColors.danger.withValues(alpha: 0.1),
+      color: isConnected ? AppColors.warning.withValues(alpha: 0.1) : AppColors.error.withValues(alpha: 0.1),
       child: Row(
         children: [
           Icon(
             isConnected ? Icons.warning_amber : Icons.error_outline,
-            color: isConnected ? AppColors.warning : AppColors.danger,
+            color: isConnected ? AppColors.warning : AppColors.error,
             size: 20,
           ),
           const SizedBox(width: 12),
@@ -39,7 +39,7 @@ class ConnectionStatusBar extends StatelessWidget {
                   isConnected ? 'تحذير' : 'خطأ في الاتصال',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: isConnected ? AppColors.warning : AppColors.danger,
+                    color: isConnected ? AppColors.warning : AppColors.error,
                     fontSize: 13,
                   ),
                 ),
@@ -48,7 +48,7 @@ class ConnectionStatusBar extends StatelessWidget {
                   Text(
                     errorMessage!,
                     style: TextStyle(
-                      color: isConnected ? AppColors.warning : AppColors.danger,
+                      color: isConnected ? AppColors.warning : AppColors.error,
                       fontSize: 12,
                     ),
                     maxLines: 2,
@@ -65,7 +65,7 @@ class ConnectionStatusBar extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: isConnected ? AppColors.warning : AppColors.danger,
+                  color: isConnected ? AppColors.warning : AppColors.error,
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: const Text(
@@ -110,7 +110,7 @@ class ErrorScreen extends StatelessWidget {
             Icon(
               icon,
               size: 64,
-              color: AppColors.danger,
+              color: AppColors.error,
             ),
             const SizedBox(height: 24),
             Text(

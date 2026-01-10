@@ -9,6 +9,7 @@ import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/FlavorMultiSelect.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/buildModernDropdown.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/buildModernTextField.dart';
+import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/product_size_selector.dart';
 
 class ProductFormSheet extends StatefulWidget {
   final ProductModel? product;
@@ -291,6 +292,15 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                     ),
                   ),
                   SizedBox(height: padding.top),
+                  Obx(
+                    () => ProductSizeSelector(
+                      selectedSizes: controller.productSizes.toList(),
+                      onSelectionChanged: (newList) {
+                        controller.productSizes.assignAll(newList);
+                      },
+                    ),
+                  ),
+                  SizedBox(height: padding.top),
 
                   // التصنيف
                   CustomModernDropdown<String>(
@@ -329,11 +339,12 @@ class ProductFormSheetState extends State<ProductFormSheet> {
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
-                gradient: LinearGradient(
-                  colors: [AppColors.primary, AppColors.secondary],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                color: AppColors.primary.withValues(alpha: 0.8),
+                // gradient: LinearGradient(
+                //   colors: [AppColors.primary,AppColors.primary.withValues(alpha: 0.8) ],
+                //   begin: Alignment.topLeft,
+                //   end: Alignment.bottomRight,
+                // ),
                 boxShadow: [
                   BoxShadow(
                     color: AppColors.primary.withValues(alpha: 0.4),
@@ -373,7 +384,6 @@ class ProductFormSheetState extends State<ProductFormSheet> {
               ),
             ),
           ),
-
         ],
       ),
     );
@@ -410,7 +420,8 @@ class ProductFormSheetState extends State<ProductFormSheet> {
       isActive: widget.product?.isActive ?? true,
       servingSize: servingSizeController.text,
       servingsPerContainer: int.tryParse(numberOfSessionsController.text) ?? 0,
-      flavor:  controller.productFlavors.toList(),
+      flavor: controller.productFlavors.toList(),
+      size: controller.productSizes.toList(),
     );
     print(data.flavor);
 

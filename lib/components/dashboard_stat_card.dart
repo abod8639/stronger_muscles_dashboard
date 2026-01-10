@@ -103,7 +103,7 @@ class DashboardStatCard extends StatelessWidget {
                   children: [
                     Icon(
                       isTrendPositive ? Icons.trending_up : Icons.trending_down,
-                      color: isTrendPositive ? AppColors.success : AppColors.danger,
+                      color: isTrendPositive ? AppColors.success : AppColors.error,
                       size: 16,
                     ),
                     const SizedBox(width: 4),
@@ -111,7 +111,7 @@ class DashboardStatCard extends StatelessWidget {
                       isTrendPositive ? '+12% هذا الأسبوع' : '-8% هذا الأسبوع',
                       style: TextStyle(
                         fontSize: 12,
-                        color: isTrendPositive ? AppColors.success : AppColors.danger,
+                        color: isTrendPositive ? AppColors.success : AppColors.error,
                         fontWeight: FontWeight.w600,
                       ),
                     ),

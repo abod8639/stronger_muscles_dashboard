@@ -12,6 +12,8 @@ class ProductsController extends GetxController {
   RxList<String> productFlavors = <String>[].obs;
   late final ApiService _apiService;
 
+  
+
   // --- States ---
   final isLoading = true.obs;
   final isUploadingImage = false.obs;
@@ -21,6 +23,7 @@ class ProductsController extends GetxController {
   final categories = <CategoryModel>[].obs;
   final flavors = <FlavorsModel>[].obs;
   final filteredProducts = <ProductModel>[].obs;
+  final productSizes = <String>[].obs;
 
   // --- Filter Values ---
   final searchQuery = ''.obs;

@@ -26,7 +26,7 @@ class _ProductListItemState extends State<ProductListItem>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   // late Animation<double> _slideAnimation;
-  late Animation<double> _fadeAnimation;
+  // late Animation<double> _fadeAnimation;
   bool _isHovered = false;
 
   @override
@@ -38,9 +38,9 @@ class _ProductListItemState extends State<ProductListItem>
     );
 
 
-    _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
+    // _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(
+      // CurvedAnimation(parent: _controller, curve: Curves.easeIn),
+    // );
 
     Future.delayed(Duration(milliseconds: 50 * widget.index), () {
       if (mounted) _controller.forward();
@@ -59,68 +59,64 @@ class _ProductListItemState extends State<ProductListItem>
     final responsive = context.responsive;
     final padding = responsive.defaultPadding;
 
-      return FadeTransition(
-        opacity: _fadeAnimation,
-        child: MouseRegion(
-          onEnter: (_) => setState(() => _isHovered = true),
-          onExit: (_) => setState(() => _isHovered = false),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            margin: EdgeInsets.only(
-              bottom: responsive.itemSpacing,
-              left: padding.left,
-              right: padding.right,
-            ),
-            decoration: BoxDecoration(
+      return MouseRegion(
+        onEnter: (_) => setState(() => _isHovered = true),
+        onExit: (_) => setState(() => _isHovered = false),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          margin: EdgeInsets.only(
+            bottom: responsive.itemSpacing,
+            left: padding.left,
+            right: padding.right,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: _isHovered
+                    ? AppColors.primary.withValues(alpha: 0.3)
+                    : Colors.transparent,
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+                spreadRadius: 2,
+              ),
+            ],
+          ),
+          child: Card(
+            margin: EdgeInsets.zero,
+            elevation: _isHovered ? 12 : 2,
+            color: isDark ? const Color(0xFF2C2C2C) : Colors.white,
+            shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: _isHovered
-                      ? AppColors.primary.withValues(alpha: 0.3)
-                      : Colors.transparent,
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
-                  spreadRadius: 2,
-                ),
-              ],
+              side: BorderSide(
+                color: isDark 
+                  ? Colors.white.withValues(alpha: 0.05) 
+                  : Colors.black.withValues(alpha: 0.05),
+                width: 1,
+              ),
             ),
-            child: Card(
-              margin: EdgeInsets.zero,
-              elevation: _isHovered ? 12 : 2,
-              color: isDark ? const Color(0xFF2C2C2C) : Colors.white,
-              shape: RoundedRectangleBorder(
+            child: Container(
+              decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
-                side: BorderSide(
-                  color: isDark 
-                    ? Colors.white.withValues(alpha: 0.05) 
-                    : Colors.black.withValues(alpha: 0.05),
-                  width: 1,
+                gradient: LinearGradient(
+                  colors: _isHovered
+                      ? [
+                          AppColors.primary.withValues(alpha: 0.05),
+                          AppColors.pending.withValues(alpha: 0.05),
+                        ]
+                      : [Colors.transparent, Colors.transparent],
                 ),
               ),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  gradient: LinearGradient(
-                    colors: _isHovered
-                        ? [
-                            AppColors.primary.withValues(alpha: 0.05),
-                            AppColors.secondary.withValues(alpha: 0.05),
-                          ]
-                        : [Colors.transparent, Colors.transparent],
-                  ),
+              child: ProductCard(
+                isHovered: _isHovered, 
+                product: widget.product,
+                onEdit:widget.onEdit,
+                onDelete:widget.onDelete,
                 ),
-                child: ProductCard(
-                  isHovered: _isHovered, 
-                  product: widget.product,
-                  onEdit:widget.onEdit,
-                  onDelete:widget.onDelete,
-                  ),
-              ),
             ),
           ),
         ),
-      
-    );
+      );
   }
 
 

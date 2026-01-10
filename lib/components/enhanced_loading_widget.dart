@@ -118,12 +118,12 @@ class EnhancedErrorWidget extends StatelessWidget {
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: AppColors.danger.withValues(alpha: 0.1),
+                  color: AppColors.error.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Icon(
                   icon ?? Icons.error_outline,
-                  color: AppColors.danger,
+                  color: AppColors.error,
                   size: 40,
                 ),
               ),

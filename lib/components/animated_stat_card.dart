@@ -183,7 +183,7 @@ class _AnimatedStatCardState extends State<AnimatedStatCard>
                         decoration: BoxDecoration(
                           color: widget.isTrendPositive
                               ? AppColors.success.withValues(alpha: 0.1)
-                              : AppColors.danger.withValues(alpha: 0.1),
+                              : AppColors.error.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Row(
@@ -195,7 +195,7 @@ class _AnimatedStatCardState extends State<AnimatedStatCard>
                                   : Icons.trending_down,
                               color: widget.isTrendPositive
                                   ? AppColors.success
-                                  : AppColors.danger,
+                                  : AppColors.error,
                               size: 16,
                             ),
                             const SizedBox(width: 4),
@@ -207,7 +207,7 @@ class _AnimatedStatCardState extends State<AnimatedStatCard>
                                 fontSize: 12,
                                 color: widget.isTrendPositive
                                     ? AppColors.success
-                                    : AppColors.danger,
+                                    : AppColors.error,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),

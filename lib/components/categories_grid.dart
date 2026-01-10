@@ -159,7 +159,7 @@ class CategoryCard extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.danger,
+                          color: AppColors.error,
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: const Text(

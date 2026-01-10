@@ -52,7 +52,7 @@ Widget buildActionButtons( {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.danger.withValues(alpha: 0.2),
+                      color: AppColors.error.withValues(alpha: 0.2),
                       blurRadius: 8,
                       spreadRadius: isHovered ? 2 : 0,
                     ),
@@ -60,13 +60,13 @@ Widget buildActionButtons( {
                 ),
                 child: Material(
                   shape: const CircleBorder(),
-                  color: AppColors.danger.withValues(alpha: 0.1),
+                  color: AppColors.error.withValues(alpha: 0.1),
                   child: IconButton(
                     onPressed: onDelete,
                     icon: Icon(
                       Icons.delete_outline,
                       size: responsive.iconSize,
-                      color: AppColors.danger,
+                      color: AppColors.error,
                     ),
                     padding: EdgeInsets.all(responsive.itemSpacing / 2),
                   ),
