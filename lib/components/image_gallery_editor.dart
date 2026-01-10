@@ -32,12 +32,20 @@ class ImageGalleryEditor extends StatelessWidget {
           children: [
             const Text(
               'صور المنتج',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              style: TextStyle(
+                // color: AppColors.info,
+                fontWeight: FontWeight.bold, fontSize: 16),
             ),
             TextButton.icon(
               onPressed: () => _showAddUrlDialog(context),
-              icon: const Icon(Icons.link, size: 18),
-              label: const Text('إضافة رابط'),
+              icon: const Icon(
+                color: AppColors.info,
+                Icons.link, size: 18),
+              label: const Text(
+                style: TextStyle(
+                  color: AppColors.info,
+                ),
+                'إضافة رابط صورة'),
             ),
           ],
         ),
