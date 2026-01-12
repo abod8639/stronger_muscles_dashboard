@@ -29,6 +29,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: const Text('الإعدادات'),
       ),

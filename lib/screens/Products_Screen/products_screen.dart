@@ -16,6 +16,7 @@ class ProductsScreen extends GetView<ProductsController> {
     final responsive = context.responsive;
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -59,6 +60,31 @@ class ProductsScreen extends GetView<ProductsController> {
       body: Column(
         children: [
           // شريط البحث المحسّن
+          Padding(
+            padding: responsive.defaultPadding,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: Theme.of(context).brightness == Brightness.dark 
+                    ? Colors.white.withValues(alpha: 0.05) 
+                    : Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Theme.of(context).brightness == Brightness.dark 
+                      ? Colors.white10 
+                      : Colors.grey.shade300
+                ),
+              ),
+              child: TextField(
+                onChanged: controller.onSearchChanged,
+                decoration: const InputDecoration(
+                  hintText: 'البحث عن منتج بالاسم أو الماركة...',
+                  border: InputBorder.none,
+                  icon: Icon(Icons.search, color: Colors.grey),
+                ),
+              ),
+            ),
+          ),
 
           // اختيار التصنيفات المحسّن
           SizedBox(height: responsive.itemSpacing),

@@ -9,11 +9,35 @@ class UsersController extends GetxController {
   final isLoading = true.obs;
   final totalUsers = 0.obs;
   final users = <DashboardUser>[].obs;
+  final searchQuery = ''.obs;
+  final filteredUsers = <DashboardUser>[].obs;
 
   @override
   void onInit() {
     super.onInit();
     fetchUsersStats();
+    
+    // Setup reactive search
+    debounce(searchQuery, (_) => applySearch(), time: const Duration(milliseconds: 300));
+  }
+
+  void onSearchChanged(String query) {
+    searchQuery.value = query;
+  }
+
+  void applySearch() {
+    if (searchQuery.isEmpty) {
+      filteredUsers.assignAll(users);
+    } else {
+      final query = searchQuery.value.toLowerCase();
+      filteredUsers.assignAll(
+        users.where((user) {
+          return user.name.toLowerCase().contains(query) ||
+                 (user.email?.toLowerCase().contains(query) ?? false) ||
+                 (user.phone?.contains(query) ?? false);
+        }).toList(),
+      );
+    }
   }
 
   Future<void> fetchUsersStats() async {
@@ -24,6 +48,7 @@ class UsersController extends GetxController {
       
       totalUsers.value = response.totalUsers;
       users.assignAll(response.users);
+      applySearch();
       
     } catch (e) {
       print('Error fetching users stats: $e');

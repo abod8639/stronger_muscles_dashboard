@@ -255,7 +255,9 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                           isNumber: true,
                         ),
                       ),
+
                       SizedBox(width: padding.left),
+                      
                       Expanded(
                         child: buildProductFormSheetModernTextField(
                           brandController,
@@ -277,7 +279,9 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                           isNumber: true,
                         ),
                       ),
+
                       SizedBox(width: padding.left),
+
                       Expanded(
                         child: buildProductFormSheetModernTextField(
                           numberOfSessionsController,
@@ -288,6 +292,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                       ),
                     ],
                   ),
+
                   SizedBox(height: padding.top),
                   // availability
                   
@@ -305,7 +310,9 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                       },
                     ),
                   ),
+
                   SizedBox(height: padding.top),
+
                   Obx(
                     () => ProductSizeSelector(
                       selectedSizes: controller.productSizes.toList(),
@@ -314,6 +321,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                       },
                     ),
                   ),
+
                   SizedBox(height: padding.top),
 
                   // التصنيف

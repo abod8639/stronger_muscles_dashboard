@@ -49,7 +49,9 @@ class ImageGalleryEditor extends StatelessWidget {
             ),
           ],
         ),
+
         const SizedBox(height: 12),
+
         SizedBox(
           height: 120,
           // استخدام ReorderableListView بدلاً من ListView العادي
