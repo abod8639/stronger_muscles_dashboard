@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/components/enhanced_error_widget.dart';
 import 'package:stronger_muscles_dashboard/screens/Categories_Screen/widgets/CategoryFormSheet.dart';
 import 'package:stronger_muscles_dashboard/screens/Categories_Screen/widgets/CategoryGridItem.dart';
 import 'package:stronger_muscles_dashboard/screens/Categories_Screen/widgets/CategoryListItem.dart';

@@ -9,7 +9,7 @@ class OrderModel {
   final PaymentStatus paymentStatus;
   final String paymentMethod;
   final String addressId;
-  final Map<String, dynamic>? shippingAddressSnapshot;
+  final Map<String, Map<String, dynamic>>? shippingAddressSnapshot;
   final double subtotal;
   final double shippingCost;
   final double discount;
@@ -51,7 +51,7 @@ class OrderModel {
       ),
       paymentMethod: (json['paymentMethod'] ?? json['payment_method'] ?? 'card').toString(),
       addressId: (json['addressId'] ?? json['address_id'] ?? '').toString(),
-      shippingAddressSnapshot: json['shippingAddressSnapshot'] ?? json['shipping_address_snapshot'],
+      shippingAddressSnapshot:  json['shipping_address_snapshot'],
       subtotal: double.tryParse((json['subtotal'] ?? 0).toString()) ?? 0.0,
       shippingCost: double.tryParse((json['shippingCost'] ?? json['shipping_cost'] ?? 0).toString()) ?? 0.0,
       discount: double.tryParse((json['discount'] ?? 0).toString()) ?? 0.0,
@@ -133,4 +133,6 @@ class OrderItemModel {
       'image_url': imageUrl,
     };
   }
+
+  
 }

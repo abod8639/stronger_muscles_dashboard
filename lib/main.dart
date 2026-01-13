@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/screens/Settings_Screen/settings_screen.dart';
-import 'package:stronger_muscles_dashboard/screens/Users_Screen/users_screen.dart';
-import 'package:stronger_muscles_dashboard/screens/orders_screen/orders_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/drawer.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/sidebar.dart';
 import 'config/theme.dart';

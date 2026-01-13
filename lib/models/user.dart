@@ -6,6 +6,7 @@ class UserModel {
   final String? phoneNumber;
   final String preferredLanguage;
   final bool notificationsEnabled;
+  final String? role;
 
   UserModel({
     required this.id,
@@ -15,6 +16,7 @@ class UserModel {
     this.phoneNumber,
     this.preferredLanguage = 'ar',
     this.notificationsEnabled = true,
+    this.role = 'user',
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -25,7 +27,10 @@ class UserModel {
       photoUrl: json['photo_url'],
       phoneNumber: json['phone_number'],
       preferredLanguage: json['preferred_language'] ?? 'ar',
-      notificationsEnabled: json['notifications_enabled'] == 1 || json['notifications_enabled'] == true,
+      notificationsEnabled:
+          json['notifications_enabled'] == 1 ||
+          json['notifications_enabled'] == true,
+      role: json['role'] ?? 'user',
     );
   }
 
@@ -38,6 +43,7 @@ class UserModel {
       'phone_number': phoneNumber,
       'preferred_language': preferredLanguage,
       'notifications_enabled': notificationsEnabled,
+      'role': role,
     };
   }
 }

@@ -128,7 +128,7 @@ class ProductModel {
           : null,
       size: json['size'] != null ? List<String>.from(json['size']) : [],
       // Nutrition
-      nutritionFacts: json['nutritionFacts'],
+      nutritionFacts: json['nutrition_facts'],
       // Marketing
       featured: json['featured'] == true || json['featured'] == 1,
       newArrival:
