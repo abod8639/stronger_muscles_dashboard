@@ -130,7 +130,7 @@ class ProductsScreen extends GetView<ProductsController> {
                     index: index,
                     onEdit: () => 
                     controller.showProductForm(context, product: product),
-                    onDelete: () => controller.deleteProduct(product.id),
+                    onDelete: () => controller.confirmDelete(product.id, product.name),
                   );
                 },
               );

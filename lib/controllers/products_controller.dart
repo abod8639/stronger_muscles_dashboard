@@ -161,21 +161,41 @@ class ProductsController extends GetxController {
     }
   }
 
-  Future<void> deleteProduct(String id) async {
-    try {
-      isLoading.value = true;
-      final success = await _productRepository.deleteProduct(id);
-      if (success) {
-        products.removeWhere((p) => p.id == id);
-        _applyFiltering();
-        Get.snackbar('نجاح', 'تم حذف المنتج');
-      }
-    } catch (e) {
-      _showErrorSnackbar('خطأ في الحذف', e.toString());
-    } finally {
-      isLoading.value = false;
+// 1. الدالة التي تستدعيها من الزر (UI)
+void confirmDelete(String id, String productName) {
+  Get.defaultDialog(
+    title: 'تأكيد الحذف',
+    middleText: 'هل أنت متأكد أنك تريد حذف المنتج "$productName"؟',
+    // backgroundColor: Colors.white,
+    // titleStyle: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+    textConfirm: 'حذف',
+    textCancel: 'إلغاء',
+    // confirmTextColor: Colors.white,
+    buttonColor: Colors.red,
+    onConfirm: () {
+      Get.back(); 
+      _executeDelete(id); 
+    },
+  );
+}
+
+Future<void> _executeDelete(String id) async {
+  try {
+    isLoading.value = true;
+    final success = await _productRepository.deleteProduct(id);
+    if (success) {
+      products.removeWhere((p) => p.id == id);
+      _applyFiltering();
+      Get.snackbar('نجاح', 'تم حذف المنتج بنجاح', 
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green.withOpacity(0.1));
     }
+  } catch (e) {
+    _showErrorSnackbar('خطأ في الحذف', e.toString());
+  } finally {
+    isLoading.value = false;
   }
+}
 
   // --- Media Upload ---
 
