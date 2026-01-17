@@ -1,10 +1,38 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import '../config/api_config.dart';
+import 'auth_service.dart';
 
 class ApiService {
   static const int timeoutSeconds = 30;
+  final AuthService _authService = AuthService();
+
+  // Helper method to get authenticated headers
+  Map<String, String> _getAuthHeaders() {
+    return _authService.getAuthHeaders();
+  }
+
+  // Handle authentication errors
+  void _handleAuthErrors(http.Response response) {
+    if (response.statusCode == 401) {
+      // Unauthorized - redirect to login
+      Get.offAllNamed('/login');
+      Get.snackbar(
+        'خطأ',
+        'انتهت صلاحية الجلسة. يرجى تسجيل الدخول مرة أخرى',
+        snackPosition: SnackPosition.TOP,
+      );
+    } else if (response.statusCode == 403) {
+      // Forbidden - user is not admin
+      Get.snackbar(
+        'خطأ',
+        'ليس لديك صلاحية للوصول إلى هذا المورد',
+        snackPosition: SnackPosition.TOP,
+      );
+    }
+  }
 
   // التحقق من الاتصال
   Future<bool> checkConnection() async {
@@ -20,16 +48,19 @@ class ApiService {
     }
   }
 
-  // جلب الطلبات
+  // جلب الطلبات (Admin)
   Future<List<dynamic>> fetchOrders() async {
     try {
       final response = await http.get(
-        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.orders}'),
-        headers: {'Accept': 'application/json'},
+        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.adminOrders}'),
+        headers: _getAuthHeaders(),
       ).timeout(
         const Duration(seconds: timeoutSeconds),
         onTimeout: () => http.Response('Connection timeout', 408),
       );
+
+      // Handle auth errors
+      _handleAuthErrors(response);
 
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);
@@ -50,16 +81,19 @@ class ApiService {
     }
   }
 
-  // جلب تفاصيل طلب محدد
+  // جلب تفاصيل طلب محدد (Admin)
   Future<Map<String, dynamic>> fetchOrderDetail(String id) async {
     try {
       final response = await http.get(
-        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.orders}/$id'),
-        headers: {'Accept': 'application/json'},
+        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.adminOrderDetail(id)}'),
+        headers: _getAuthHeaders(),
       ).timeout(
         const Duration(seconds: timeoutSeconds),
         onTimeout: () => http.Response('Connection timeout', 408),
       );
+
+      // Handle auth errors
+      _handleAuthErrors(response);
 
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);
@@ -73,16 +107,19 @@ class ApiService {
     }
   }
 
-  // جلب المنتجات
+  // جلب المنتجات (Admin)
   Future<List<dynamic>> fetchProducts() async {
     try {
       final response = await http.get(
-        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.products}'),
-        headers: {'Accept': 'application/json'},
+        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.adminProducts}'),
+        headers: _getAuthHeaders(),
       ).timeout(
         const Duration(seconds: timeoutSeconds),
         onTimeout: () => http.Response('Connection timeout', 408),
       );
+
+      // Handle auth errors
+      _handleAuthErrors(response);
 
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);
@@ -103,20 +140,20 @@ class ApiService {
     }
   }
 
-  // إضافة منتج جديد
+  // إضافة منتج جديد (Admin)
   Future<Map<String, dynamic>> addProduct(Map<String, dynamic> data) async {
     try {
       final response = await http.post(
-        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.products}'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.adminProducts}'),
+        headers: _getAuthHeaders(),
         body: json.encode(data),
       ).timeout(
         const Duration(seconds: timeoutSeconds),
         onTimeout: () => http.Response('Connection timeout', 408),
       );
+
+      // Handle auth errors
+      _handleAuthErrors(response);
 
       if (response.statusCode == 201 || response.statusCode == 200) {
         return json.decode(response.body);
@@ -143,20 +180,20 @@ class ApiService {
     }
   }
 
-  // تحديث منتج موجود
+  // تحديث منتج موجود (Admin)
   Future<Map<String, dynamic>> updateProduct(String id, Map<String, dynamic> data) async {
     try {
       final response = await http.put(
-        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.products}/$id'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.adminProductDetail(id)}'),
+        headers: _getAuthHeaders(),
         body: json.encode(data),
       ).timeout(
         const Duration(seconds: timeoutSeconds),
         onTimeout: () => http.Response('Connection timeout', 408),
       );
+
+      // Handle auth errors
+      _handleAuthErrors(response);
 
       if (response.statusCode == 200) {
         return json.decode(response.body);
@@ -183,16 +220,19 @@ class ApiService {
     }
   }
 
-  // حذف منتج
+  // حذف منتج (Admin)
   Future<bool> deleteProduct(String id) async {
     try {
       final response = await http.delete(
-        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.products}/$id'),
-        headers: {'Accept': 'application/json'},
+        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.adminProductDetail(id)}'),
+        headers: _getAuthHeaders(),
       ).timeout(
         const Duration(seconds: timeoutSeconds),
         onTimeout: () => http.Response('Connection timeout', 408),
       );
+
+      // Handle auth errors
+      _handleAuthErrors(response);
 
       return response.statusCode == 200 || response.statusCode == 204;
     } catch (e) {
@@ -201,11 +241,11 @@ class ApiService {
     }
   }
 
-  // جلب جميع التصنيفات
+  // جلب جميع التصنيفات (Public)
   Future<List<dynamic>> fetchCategories() async {
     try {
       final response = await http.get(
-        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.categories}'),
+        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.shopCategories}'),
         headers: {'Accept': 'application/json'},
       ).timeout(
         const Duration(seconds: timeoutSeconds),
@@ -329,7 +369,7 @@ class ApiService {
     }
   }
 
-  // رفع صورة المنتج
+  // رفع صورة المنتج (Admin)
   Future<String> uploadProductImage(String filePath) async {
     try {
       final file = File(filePath);
@@ -340,8 +380,11 @@ class ApiService {
 
       final request = http.MultipartRequest(
         'POST',
-        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.uploadProductImage}'),
+        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.adminUploadProductImage}'),
       );
+
+      // Add auth headers
+      request.headers.addAll(_getAuthHeaders());
 
       request.files.add(
         await http.MultipartFile.fromPath(
@@ -414,7 +457,7 @@ class ApiService {
     }
   }
 
-  // رفع صورة التصنيف
+  // رفع صورة التصنيف (Admin)
   Future<String> uploadCategoryImage(String filePath) async {
     try {
       final file = File(filePath);
@@ -425,8 +468,11 @@ class ApiService {
 
       final request = http.MultipartRequest(
         'POST',
-        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.uploadCategoryImage}'),
+        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.adminUploadCategoryImage}'),
       );
+
+      // Add auth headers
+      request.headers.addAll(_getAuthHeaders());
 
       request.files.add(
         await http.MultipartFile.fromPath(
@@ -500,16 +546,19 @@ class ApiService {
   //  flavors
 
 
-  // جلب إحصائيات المستخدمين
+  // جلب إحصائيات المستخدمين (Admin)
   Future<Map<String, dynamic>> fetchUsersStats() async {
     try {
       final response = await http.get(
-        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.usersStats}'),
-        headers: {'Accept': 'application/json'},
+        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.adminUsers}'),
+        headers: _getAuthHeaders(),
       ).timeout(
         const Duration(seconds: timeoutSeconds),
         onTimeout: () => http.Response('Connection timeout', 408),
       );
+
+      // Handle auth errors
+      _handleAuthErrors(response);
 
       if (response.statusCode == 200) {
         return json.decode(response.body);

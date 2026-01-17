@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/screens/widgets/drawer.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/sidebar.dart';
+import 'package:stronger_muscles_dashboard/services/auth_service.dart';
 import 'config/theme.dart';
 import 'screens/index.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await GetStorage.init();
   runApp(const StrongerMusclesDashboard());
 }
 
@@ -14,13 +17,22 @@ class StrongerMusclesDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authService = AuthService();
+    final isLoggedIn = authService.isLoggedIn();
+
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'لوحة تحكم Stronger Muscles',
       theme: AppTheme.getLightTheme(),
       darkTheme: AppTheme.getDarkTheme(),
       themeMode: ThemeMode.dark,
-      home: const MainNavigationScreen(),
+      // initialRoute: isLoggedIn ? '/dashboard' : '/login',
+      initialRoute: '/dashboard' ,
+      getPages: [
+        GetPage(name: '/dashboard', page: () => const MainNavigationScreen()),
+        // GetPage(name: '/login', page: () => const LoginScreen()),
+        // GetPage(name: '/signup', page: () => const SignupScreen()),
+      ],
     );
   }
 }
@@ -38,7 +50,7 @@ class MainNavigationScreen extends StatelessWidget {
         final isDesktop = constraints.maxWidth >= 900;
 
         return Scaffold(
-          backgroundColor: const Color(0xFF0F0F12), // Match sidebar background
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor, // Match sidebar background
           drawer: isDesktop ? null : myDrawer(),
           body: Row(
             children: [
@@ -52,7 +64,7 @@ class MainNavigationScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: isDesktop 
                           ? (Theme.of(context).brightness == Brightness.dark 
-                              ? const Color(0xFF1E1E26) 
+                              ? Theme.of(context).primaryColor  
                               : Colors.white)
                           : Colors.transparent,
                       borderRadius: isDesktop ? BorderRadius.circular(32) : null,

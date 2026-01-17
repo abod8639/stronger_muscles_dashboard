@@ -304,13 +304,13 @@ class ProductCard extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
-                Icons.attach_money_rounded,
+                Icons.attach_money_outlined,
                 size: responsive.iconSize - 2,
                 color: AppColors.primary,
               ),
               const SizedBox(width: 4),
               Text(
-                '${product.price.toStringAsFixed(2)} ر.س',
+                product.price.toStringAsFixed(2),
                 style: TextStyle(
                   color: AppColors.primary,
                   fontWeight: FontWeight.bold,

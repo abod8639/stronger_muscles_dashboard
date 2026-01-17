@@ -30,6 +30,10 @@ dependencies:
   dio: ^5.4.0
   retrofit: ^4.1.0
   json_annotation: ^4.9.0
+  http: ^1.2.2
+
+  # Storage
+  get_storage: ^2.1.1
 
   # JSON Serialization
   # Moved to dev_dependencies

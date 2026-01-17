@@ -2,7 +2,6 @@
 import 'package:get/get.dart';
 
 class ApiConfigController extends GetxController {
-  //  final String baseUrl = ApiConfigController().baseUrl.value ; 
   
   // ملاحظة: للهاتف الحقيقي استخدم IP الجهاز، وللمحاكي (Android Emulator) استخدم 10.0.2.2
   // static const String baseUrl = 'http://10.0.2.2:8080/api/v1';
@@ -15,36 +14,57 @@ class ApiConfigController extends GetxController {
 
 
 class ApiConfig {
-  // الرابط الأساسي (Base URL)
+  // ==================== Authentication Endpoints ====================
+  static const String login = '/auth/login';
+  static const String googleSignIn = '/auth/google-signin';
+  static const String updateProfile = '/auth/update-profile';
+
+  // ==================== Public Shop Endpoints ====================
+  static const String shopCategories = '/shop/categories';
+  static String shopCategoryDetail(String id) => '/shop/categories/$id';
   
+  static const String shopProducts = '/shop/products';
+  static String shopProductDetail(String id) => '/shop/products/$id';
 
-  //  final String baseUrl = ApiConfigController().baseUrl.value ; 
+  // ==================== Admin Endpoints (Protected) ====================
   
-  // ملاحظة: للهاتف الحقيقي استخدم IP الجهاز، وللمحاكي (Android Emulator) استخدم 10.0.2.2
-  // static const String baseUrl = 'http://10.0.2.2:8080/api/v1';
-  // static const String baseUrl = 'http://192.168.1.17:8080/api/v1';
+  // Products Management
+  static const String adminProducts = '/admin/products';
+  static String adminProductDetail(String id) => '/admin/products/$id';
+  
+  // Orders Management
+  static const String adminOrders = '/admin/orders';
+  static String adminOrderDetail(String id) => '/admin/orders/$id';
+  
+  // Users Management
+  static const String adminUsers = '/admin/users';
+  
+  // Image Uploads
+  static const String adminUploadProductImage = '/admin/upload/product-image';
+  static const String adminUploadCategoryImage = '/admin/upload/category-image';
 
-  // روابط المنتجات
-  static const String products = '/products';
-  static String productDetail(String id) => '/products/$id';
-  static const String uploadProductImage = '/upload/product-image';
+  // ==================== Customer Endpoints (Protected) ====================
+  static const String customerProfile = '/customer/profile';
+  static const String customerCart = '/customer/cart';
+  static const String customerOrders = '/customer/orders';
 
-  // روابط التصنيفات
-  static const String categories = '/categories';
-  static const String uploadCategoryImage = '/upload/category-image';
-
-  // روابط الطلبات
-  static const String orders = '/orders';
-
-  // روابط لوحة التحكم
-  static const String usersStats = '/dashboard/users-stats';
-
-  // روابط المستخدم والحساب
-  static const String userProfile = '/user'; // يتطلب Token
-  static const String login = '/login';
-  static const String register = '/register';
-
-  // روابط الرفع العامة
-  static const String uploadFile = '/upload';
-  static const String uploadImage = '/upload/image';
+  // ==================== Legacy/Deprecated (for backward compatibility) ====================
+  // These are kept for backward compatibility but should be migrated to new endpoints
+  @Deprecated('Use shopProducts instead')
+  static const String products = '/shop/products';
+  
+  @Deprecated('Use shopCategories instead')
+  static const String categories = '/shop/categories';
+  
+  @Deprecated('Use adminOrders instead')
+  static const String orders = '/admin/orders';
+  
+  @Deprecated('Use adminUsers instead')
+  static const String usersStats = '/admin/users';
+  
+  @Deprecated('Use adminUploadProductImage instead')
+  static const String uploadProductImage = '/admin/upload/product-image';
+  
+  @Deprecated('Use adminUploadCategoryImage instead')
+  static const String uploadCategoryImage = '/admin/upload/category-image';
 }

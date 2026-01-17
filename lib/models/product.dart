@@ -244,9 +244,9 @@ class ProductModel {
 
   String get displayPrice {
     if (hasDiscount) {
-      return '${finalPrice.toStringAsFixed(2)} ر.س';
+      return finalPrice.toStringAsFixed(2);
     }
-    return '${price.toStringAsFixed(2)} ر.س';
+    return price.toStringAsFixed(2);
   }
 
   bool get isExpired {
