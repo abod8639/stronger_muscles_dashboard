@@ -161,7 +161,6 @@ class ProductsController extends GetxController {
     }
   }
 
-// 1. الدالة التي تستدعيها من الزر (UI)
 void confirmDelete(String id, String productName) {
   Get.defaultDialog(
     title: 'تأكيد الحذف',
