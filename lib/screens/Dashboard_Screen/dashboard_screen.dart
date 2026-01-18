@@ -59,45 +59,40 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                   buildDashboardScreenPeriodSelector(),
 
-                  if (controller.orders.isEmpty && !controller.isLoading.value)
+                  // if (controller.orders.isEmpty && !controller.isLoading.value)
                     Padding(
                       padding: context.responsive.defaultPadding,
                       child: const NoDataScreen(
                         title: 'لا توجد بيانات',
                         message: 'لم نتمكن من جلب أي بيانات من قاعدة البيانات. تأكد من وجود بيانات متاحة.',
                       ),
-                    )
-                  else
+                    ),
+                  // else ...[
                     buildDashboardScreenStatsCards(),
 
-                  if (!controller.orders.isNotEmpty) ...[
-                    SizedBox(height: context.responsive.itemSpacing * 3),
+                    SizedBox(height: context.responsive.itemSpacing * 2),
                     
                     // قسم الإحصائيات والرسوم البيانية
                     Padding(
                       padding: context.responsive.defaultPadding,
                       child: Text(
-                        'رسوم بيانية تفصيلية',
+                        'التحليلات البيانية',
                         style: TextStyle(
                           fontSize: context.responsive.getTitleFontSize() + 1,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.textDark,
+                          color: isDark ? Colors.white : AppColors.textDark,
                         ),
                       ),
                     ),
-                    SizedBox(height: context.responsive.itemSpacing),
                     
                     // رسم بياني دائري لحالات الطلبات
                     Padding(
-                      
                       padding: context.responsive.defaultPadding,
                       child: PieChartWidget(
-                        
                         showLegend: true,
                         title: 'توزيع حالات الطلبات',
                         data: [
                           PieChartItemData(
-                            
                             label: 'معلقة',
                             value: controller.pendingOrders.value.toDouble(),
                             color: AppColors.pending,
@@ -125,15 +120,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ],
                       ),
                     ),
-                    SizedBox(height: context.responsive.itemSpacing * 3),
                     
+                    SizedBox(height: context.responsive.itemSpacing),
+
                     RecentOrdersList(
-                      orders: controller.orders.take(3).toList(),
+                      orders: controller.orders.take(5).toList(),
                       onSeeAll: () {
-                        Get.snackbar('تنبیه', 'سيتم تحويلك لصفحة الطلبات قريباً');
+                         Get.toNamed('/orders');
                       },
                     ),
-                    SizedBox(height: context.responsive.itemSpacing * 3),
+
+                    SizedBox(height: context.responsive.itemSpacing * 2),
                     
                     // رسم بياني بأعمدة لإجمالي الطلبات
                     Padding(
@@ -193,16 +190,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ),
                         ],
                         bottomTitles: const ['معلقة', 'معالجة', 'مرسلة', 'تسليم', 'ملغاة'],
-                        maxY: (controller.orders.length / 5).toDouble() + 10,
+                        maxY: (controller.orders.length > 0 ? (controller.orders.length.toDouble() + 5) : 10),
                       ),
                     ),
-                    SizedBox(height: context.responsive.itemSpacing * 3),
+                    
+                    SizedBox(height: context.responsive.itemSpacing * 2),
                     
                     // رسم بياني خطي لتطور الطلبات
                     Padding(
                       padding: context.responsive.defaultPadding,
                       child: LineChartWidget(
-                        title: 'تطور الطلبات',
+                        title: 'تطور المبيعات التراكمي',
                         spots: [
                           FlSpot(0, controller.pendingOrders.value.toDouble()),
                           FlSpot(1, (controller.pendingOrders.value + controller.processingOrders.value).toDouble()),
@@ -210,21 +208,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           FlSpot(3, (controller.pendingOrders.value + controller.processingOrders.value + controller.shippedOrders.value + controller.deliveredOrders.value).toDouble()),
                           FlSpot(4, controller.orders.length.toDouble()),
                         ],
-                        bottomTitles: const ['البداية', 'المعالجة', 'الشحن', 'التسليم', 'النهاية'],
+                        bottomTitles: const ['البداية', 'المعالجة', 'الشحن', 'التسليم', 'الحالي'],
                         gradientColor: AppColors.primary,
-                        maxY: controller.orders.length.toDouble() + 10,
+                        maxY: (controller.orders.length > 0 ? (controller.orders.length.toDouble() + 5) : 10),
                       ),
                     ),
-                    SizedBox(height: context.responsive.itemSpacing * 3),
+
+                    SizedBox(height: context.responsive.itemSpacing * 2),
                     
                     if (controller.categories.isNotEmpty)
                       CategoriesGrid(
                         categories: controller.categories,
-                        onSeeAll: () {},
+                        onSeeAll: () {
+                           Get.toNamed('/categories');
+                        },
                       ),
                     SizedBox(height: context.responsive.itemSpacing * 3),
                   ],
-                ],
+                
               ),
             ),
           );

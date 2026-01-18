@@ -9,6 +9,7 @@ class DashboardController extends GetxController {
   late final OrderRepository _orderRepository;
   late final ProductRepository _productRepository;
   late final CategoryRepository _categoryRepository;
+  late final UserRepository _userRepository;
 
   // متغيرات الحالة
   final isLoading = true.obs;
@@ -51,6 +52,7 @@ class DashboardController extends GetxController {
     _orderRepository = OrderRepository(_apiService);
     _productRepository = ProductRepository(_apiService);
     _categoryRepository = CategoryRepository(_apiService);
+    _userRepository = UserRepository(_apiService);
   }
 
   Future<void> _checkConnectionAndFetchData() async {
@@ -95,6 +97,20 @@ class DashboardController extends GetxController {
       // جلب التصنيفات
       final fetchedCategories = await _categoryRepository.getCategories();
       categories.assignAll(fetchedCategories);
+
+      // جلب إحصائيات المستخدمين
+      try {
+        final usersStats = await _userRepository.getUsersStats();
+        if (usersStats.containsKey('total_users')) {
+          totalUsers.value = int.tryParse(usersStats['total_users'].toString()) ?? 0;
+        } else if (usersStats.containsKey('data') && usersStats['data'] is Map) {
+          final data = usersStats['data'] as Map;
+          totalUsers.value = int.tryParse(data['total_users'].toString()) ?? 0;
+        }
+      } catch (e) {
+        print('خطأ في جلب إحصائيات المستخدمين: $e');
+        // لا نوقف العملية إذا فشل جلب المستخدمين فقط
+      }
 
       // حساب الإحصائيات
       _calculateStatistics();

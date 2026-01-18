@@ -59,8 +59,8 @@ class OrderModel {
       trackingNumber: (json['trackingNumber'] ?? json['tracking_number'])?.toString(),
       notes: (json['notes'])?.toString(),
       items: (json['items'] ?? json['order_items']) != null
-          ? (json['items'] ?? json['order_items'] as List)
-              .map((i) => OrderItemModel.fromJson(i as Map<String, dynamic>))
+          ? ((json['items'] ?? json['order_items']) as List)
+              .map<OrderItemModel>((i) => OrderItemModel.fromJson(i as Map<String, dynamic>))
               .toList()
           : null,
     );

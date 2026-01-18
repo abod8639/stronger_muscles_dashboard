@@ -275,16 +275,16 @@ class ApiService {
   Future<Map<String, dynamic>> addCategory(Map<String, dynamic> data) async {
     try {
       final response = await http.post(
-        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.categories}'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.adminCategories}'),
+        headers: _getAuthHeaders(),
         body: json.encode(data),
       ).timeout(
         const Duration(seconds: timeoutSeconds),
         onTimeout: () => http.Response('Connection timeout', 408),
       );
+
+      // Handle auth errors
+      _handleAuthErrors(response);
 
       if (response.statusCode == 201 || response.statusCode == 200) {
         return json.decode(response.body);
@@ -315,16 +315,16 @@ class ApiService {
   Future<Map<String, dynamic>> updateCategory(String id, Map<String, dynamic> data) async {
     try {
       final response = await http.put(
-        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.categories}/$id'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.adminCategoryDetail(id)}'),
+        headers: _getAuthHeaders(),
         body: json.encode(data),
       ).timeout(
         const Duration(seconds: timeoutSeconds),
         onTimeout: () => http.Response('Connection timeout', 408),
       );
+
+      // Handle auth errors
+      _handleAuthErrors(response);
 
       if (response.statusCode == 200) {
         return json.decode(response.body);
@@ -355,12 +355,15 @@ class ApiService {
   Future<bool> deleteCategory(String id) async {
     try {
       final response = await http.delete(
-        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.categories}/$id'),
-        headers: {'Accept': 'application/json'},
+        Uri.parse('${ApiConfigController().baseUrl.value}${ApiConfig.adminCategoryDetail(id)}'),
+        headers: _getAuthHeaders(),
       ).timeout(
         const Duration(seconds: timeoutSeconds),
         onTimeout: () => http.Response('Connection timeout', 408),
       );
+
+      // Handle auth errors
+      _handleAuthErrors(response);
 
       return response.statusCode == 200 || response.statusCode == 204;
     } catch (e) {
