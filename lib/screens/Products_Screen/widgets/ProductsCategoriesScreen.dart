@@ -9,7 +9,6 @@ class ProductsCategoriesScreen extends GetView<ProductsController> {
 
   @override
   Widget build(BuildContext context) {
-    // final controller = Get.find<ProductsController>();
     final responsive = context.responsive;
     
     return SizedBox(
