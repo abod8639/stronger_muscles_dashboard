@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
@@ -6,73 +5,98 @@ import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/controllers/products_controller.dart';
 
 class ProductsCategoriesScreen extends GetView<ProductsController> {
-  const ProductsCategoriesScreen({ super.key });
+  const ProductsCategoriesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final responsive = context.responsive;
-    final padding = responsive.defaultPadding;
+    
     return SizedBox(
       height: 50,
       child: Obx(
-        () => ListView.builder(
-          scrollDirection: Axis.horizontal,
-          padding: EdgeInsets.symmetric(horizontal: padding.left),
-          itemCount: controller.categories.length + 1,
-          itemBuilder: (context, index) {
-            final isAll = index == 0;
-            final category = isAll
-                ? null
-                : controller.categories[index - 1];
-            final id = isAll ? 'all' : category!.id;
-            final name = isAll ? 'الكل' : category!.name;
-            final isSelected = controller.selectedCategoryId.value == id;
-    
-            return Padding(
-              padding: EdgeInsets.only(left: responsive.itemSpacing),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  gradient: isSelected
-                      ? LinearGradient(
-                          colors: [
-                            AppColors.primary.withValues(alpha: 0.8),
-                            AppColors.primary.withValues(alpha: 0.6),
-                          ],
-                        )
-                      : null,
+        () {
+          final categories = controller.categories;
+          
+          return ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: EdgeInsets.symmetric(horizontal: responsive.defaultPadding.left),
+            itemCount: categories.length + 1,
+            itemBuilder: (context, index) {
+              final isAll = index == 0;
+              final id = isAll ? 'all' : categories[index - 1].id;
+              final name = isAll ? 'الكل' : categories[index - 1].name;
+              final isSelected = controller.selectedCategoryId.value == id;
+
+              return _CategoryItem(
+                name: name,
+                isSelected: isSelected,
+                onTap: () => controller.setCategory(id),
+                responsive: responsive,
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _CategoryItem extends StatelessWidget {
+  final String name;
+  final bool isSelected;
+  final VoidCallback onTap;
+  final ResponsiveLayout responsive; 
+
+  const _CategoryItem({
+    required this.name,
+    required this.isSelected,
+    required this.onTap,
+    required this.responsive,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(left: responsive.itemSpacing),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeInOut,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          // إضافة تدرج لوني عند الاختيار، وإطار بسيط عند عدم الاختيار
+          gradient: isSelected
+              ? LinearGradient(
+                  colors: [
+                    AppColors.primary,
+                    AppColors.primary.withOpacity(0.7),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
+              : null,
+          border: isSelected 
+              ? null 
+              : Border.all(color: AppColors.textLight.withOpacity(0.2)),
+          color: isSelected ? null : Colors.white.withOpacity(0.05),
+        ),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Center(
+              child: AnimatedDefaultTextStyle(
+                duration: const Duration(milliseconds: 250),
+                style: TextStyle(
+                  color: isSelected ? Colors.white : AppColors.textLight,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                  fontSize: responsive.getTitleFontSize(),
+                  fontFamily: 'Cairo', // تأكد من مطابقة الخط المستخدم
                 ),
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () => controller.setCategory(id),
-                    borderRadius: BorderRadius.circular(12),
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: padding.left,
-                        vertical: padding.top / 3,
-                      ),
-                      child: Center(
-                        child: Text(
-                          name,
-                          style: TextStyle(
-                            color: isSelected
-                                ? Colors.white
-                                : AppColors.textLight,
-                            fontWeight: isSelected
-                                ? FontWeight.bold
-                                : FontWeight.w500,
-                            fontSize: responsive.getTitleFontSize(),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                child: Text(name),
               ),
-            );
-          },
+            ),
+          ),
         ),
       ),
     );
