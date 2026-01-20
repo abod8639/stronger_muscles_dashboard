@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/components/enhanced_error_widget.dart';
+import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/ProductFormPage.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/ProductListItem.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/ProductsCategoriesScreen.dart';
 import '../../controllers/products_controller.dart';
@@ -100,7 +101,7 @@ class ProductsScreen extends StatelessWidget {
         ],
       ),
       child: IconButton(
-        onPressed: () => controller.showProductForm(context),
+        onPressed: () => Get.to(ProductFormPage()), //controller.showProductForm(context),
         icon: Icon(Icons.add_circle, size: responsive.iconSize + 4, color: AppColors.primary),
         tooltip: 'إضافة منتج جديد',
       ),
