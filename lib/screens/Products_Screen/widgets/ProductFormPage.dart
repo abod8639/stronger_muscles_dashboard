@@ -5,7 +5,6 @@ import 'package:stronger_muscles_dashboard/components/image_gallery_editor.dart'
 import 'package:stronger_muscles_dashboard/controllers/products_controller.dart';
 import 'package:stronger_muscles_dashboard/models/product.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
-import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/FlavorMultiSelect.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/availability_switch.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/buildModernDropdown.dart';
@@ -72,7 +71,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
 
   @override
   Widget build(BuildContext context) {
-    final responsive = context.responsive;
+    // final responsive = context.responsive;
     
     return Scaffold(
       appBar: AppBar(
