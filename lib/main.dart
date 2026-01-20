@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:stronger_muscles_dashboard/screens/widgets/my_bottomnavigationbar.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/sidebar.dart';
 import 'package:stronger_muscles_dashboard/services/auth_service.dart';
 import 'config/theme.dart';
@@ -91,56 +92,6 @@ class MainNavigationScreen extends StatelessWidget {
           bottomNavigationBar: isDesktop ? null : Obx(() => MyBottomNavigationBar()),
         );
       },
-    );
-  }
-}
-
-class MyBottomNavigationBar extends StatelessWidget {
-  const MyBottomNavigationBar({
-    super.key,
-  });
-
-
-  @override
-  Widget build(BuildContext context) {
-    final controller = Get.put(NavigationController());
-
-    return BottomNavigationBar(
-      currentIndex: controller.selectedIndex.value,
-      type: BottomNavigationBarType.fixed,
-      onTap: controller.changeIndex,
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.dashboard_outlined),
-          activeIcon: Icon(Icons.dashboard),
-          label: 'الرئيسية',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.category_outlined),
-          activeIcon: Icon(Icons.category),
-          label: 'الأقسام',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.inventory_2_outlined),
-          activeIcon: Icon(Icons.inventory_2),
-          label: 'المنتجات',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.shopping_bag_outlined),
-          activeIcon: Icon(Icons.shopping_bag),
-          label: 'الطلبات',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.people_outline),
-          activeIcon: Icon(Icons.people),
-          label: 'المستخدمون',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.settings_outlined),
-          activeIcon: Icon(Icons.settings),
-          label: 'الإعدادات',
-        ),
-      ],
     );
   }
 }
