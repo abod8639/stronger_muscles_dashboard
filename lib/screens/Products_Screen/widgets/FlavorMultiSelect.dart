@@ -113,6 +113,7 @@ class ProductFlavorSelector extends StatelessWidget {
             child: const Text("إلغاء"),
           ),
           ElevatedButton(
+            autofocus: true,
             onPressed: () {
               final newFlavor = controller.text.trim();
               if (newFlavor.isNotEmpty && !selectedFlavors.contains(newFlavor)) {

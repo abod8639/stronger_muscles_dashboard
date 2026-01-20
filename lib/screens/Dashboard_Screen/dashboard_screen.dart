@@ -190,7 +190,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ),
                         ],
                         bottomTitles: const ['معلقة', 'معالجة', 'مرسلة', 'تسليم', 'ملغاة'],
-                        maxY: (controller.orders.length > 0 ? (controller.orders.length.toDouble() + 5) : 10),
+                        maxY: (controller.orders.isNotEmpty ? (controller.orders.length.toDouble() + 5) : 10),
                       ),
                     ),
                     
@@ -210,7 +210,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ],
                         bottomTitles: const ['البداية', 'المعالجة', 'الشحن', 'التسليم', 'الحالي'],
                         gradientColor: AppColors.primary,
-                        maxY: (controller.orders.length > 0 ? (controller.orders.length.toDouble() + 5) : 10),
+                        maxY: (controller.orders.isNotEmpty ? (controller.orders.length.toDouble() + 5) : 10),
                       ),
                     ),
 

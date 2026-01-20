@@ -1,3 +1,5 @@
+import 'package:icons_launcher/utils/icon.dart';
+
 class CategoryModel {
   final String id;
   final String name;
@@ -5,6 +7,7 @@ class CategoryModel {
   final String? imageUrl;
   final int sortOrder;
   final bool isActive;
+  final Icon? icon;
 
   CategoryModel({
     required this.id,
@@ -13,6 +16,7 @@ class CategoryModel {
     this.imageUrl,
     this.sortOrder = 0,
     this.isActive = true,
+    this.icon,
   });
 
   factory CategoryModel.fromJson(Map<String, dynamic> json) {
@@ -21,9 +25,16 @@ class CategoryModel {
       name: (json['name'] ?? '').toString(),
       description: (json['description'] ?? '').toString(),
       imageUrl: (json['imageUrl'] ?? json['image_url'])?.toString(),
-      sortOrder: int.tryParse((json['sortOrder'] ?? json['sort_order'] ?? 0).toString()) ?? 0,
-      isActive: json['isActive'] == true || json['is_active'] == true ||
-                json['isActive'] == 1 || json['is_active'] == 1,
+      icon: (json['icon'] ),
+      sortOrder:
+          int.tryParse(
+      (json['sortOrder'] ?? json['sort_order'] ?? 0).toString() ) ?? 0,
+
+      isActive:
+          json['isActive'] == true ||
+          json['is_active'] == true ||
+          json['isActive'] == 1 ||
+          json['is_active'] == 1,
     );
   }
 

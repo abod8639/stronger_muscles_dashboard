@@ -249,7 +249,7 @@ class UsersScreen extends StatelessWidget {
               children: [
                 _buildInfoRow('الدور', user.role, isDark),
                 if (user.phone != null) _buildInfoRow('رقم الهاتف', user.phone!, isDark),
-                _buildInfoRow('إجمالي المشتريات', '${user.totalSpent} ر.س', isDark),
+                _buildInfoRow('إجمالي المشتريات', '${user.totalSpent} LE', isDark),
                 if (user.lastLogin != null)
                   _buildInfoRow('آخر دخول', user.lastLogin.toString().split('.')[0], isDark),
                  

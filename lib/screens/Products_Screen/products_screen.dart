@@ -17,10 +17,10 @@ class ProductsScreen extends GetView<ProductsController> {
     final responsive = context.responsive;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      // backgroundColor: Colors.transparent,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.transparent,
+        // backgroundColor: Colors.transparent,
         title: Text(
           'إدارة المنتجات',
           style: TextStyle(
