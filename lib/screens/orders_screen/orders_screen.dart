@@ -6,6 +6,7 @@ import '../../components/index.dart';
 import '../../config/theme.dart';
 import '../../config/responsive.dart';
 import '../../models/order.dart';
+import 'widgets/order_details_screen.dart';
 
 class OrdersScreen extends StatelessWidget {
   const OrdersScreen({super.key});
@@ -56,8 +57,7 @@ class OrdersScreen extends StatelessWidget {
                       order: order,
                       index: index,
                       onTap: () {
-                        // TODO: الانتقال لتفاصيل الطلب
-                        Get.snackbar('تفاصيل الطلب', 'سيتم إضافة تفاصيل الطلب قريباً');
+                        Get.to(() => OrderDetailsScreen(order: order));
                       },
                     );
                   },
