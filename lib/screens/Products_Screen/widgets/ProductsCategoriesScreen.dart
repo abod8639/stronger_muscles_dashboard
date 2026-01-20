@@ -9,6 +9,7 @@ class ProductsCategoriesScreen extends GetView<ProductsController> {
 
   @override
   Widget build(BuildContext context) {
+    // final controller = Get.find<ProductsController>();
     final responsive = context.responsive;
     
     return SizedBox(
@@ -16,7 +17,6 @@ class ProductsCategoriesScreen extends GetView<ProductsController> {
       child: Obx(
         () {
           final categories = controller.categories;
-          
           return ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: EdgeInsets.symmetric(horizontal: responsive.defaultPadding.left),
@@ -56,14 +56,13 @@ class _CategoryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return  Padding(
       padding: EdgeInsets.only(left: responsive.itemSpacing),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         curve: Curves.easeInOut,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          // إضافة تدرج لوني عند الاختيار، وإطار بسيط عند عدم الاختيار
           gradient: isSelected
               ? LinearGradient(
                   colors: [
@@ -91,7 +90,7 @@ class _CategoryItem extends StatelessWidget {
                   color: isSelected ? Colors.white : AppColors.textLight,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                   fontSize: responsive.getTitleFontSize(),
-                  fontFamily: 'Cairo', // تأكد من مطابقة الخط المستخدم
+                  fontFamily: 'Cairo', 
                 ),
                 child: Text(name),
               ),
@@ -99,6 +98,7 @@ class _CategoryItem extends StatelessWidget {
           ),
         ),
       ),
+    
     );
   }
 }

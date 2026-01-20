@@ -8,7 +8,7 @@ import '../../config/theme.dart';
 import '../../config/responsive.dart';
 import '../../components/index.dart';
 
-class ProductsScreen extends GetView<ProductsController> {
+class ProductsScreen extends StatelessWidget {
   const ProductsScreen({super.key});
 
   @override
@@ -17,122 +17,47 @@ class ProductsScreen extends GetView<ProductsController> {
     final responsive = context.responsive;
 
     return Scaffold(
-      // backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        elevation: 0,
-        // backgroundColor: Colors.transparent,
-        title: Text(
-          'إدارة المنتجات',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: responsive.getTitleFontSize() + 2,
-          ),
-        ),
-        centerTitle: true,
-        actions: [
-          Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.3),
-                  blurRadius: 12,
-                  spreadRadius: 2,
-                ),
-              ],
-            ),
-            child: Material(
-              shape: const CircleBorder(),
-              color: AppColors.primary.withValues(alpha: 0.1),
-              child: IconButton(
-                onPressed: () => controller.showProductForm(context),
-                icon: Icon(
-                  Icons.add_circle_outline,
-                  size: responsive.iconSize + 2,
-                  color: AppColors.primary,
-                ),
-                tooltip: 'إضافة منتج جديد',
-              ),
-            ),
-          ),
-          SizedBox(width: responsive.itemSpacing),
-        ],
-      ),
+      appBar: _buildAppBar(context, controller, responsive),
       body: Column(
         children: [
-          // شريط البحث المحسّن
-          Padding(
-            padding: responsive.defaultPadding,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                color: Theme.of(context).brightness == Brightness.dark 
-                    ? Colors.white.withValues(alpha: 0.05) 
-                    : Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Theme.of(context).brightness == Brightness.dark 
-                      ? Colors.white10 
-                      : Colors.grey.shade300
-                ),
-              ),
-              child: TextField(
-                onChanged: controller.onSearchChanged,
-                decoration: const InputDecoration(
-                  hintText: 'البحث عن منتج بالاسم أو الماركة...',
-                  border: InputBorder.none,
-                  icon: Icon(Icons.search, color: Colors.grey),
-                ),
-              ),
-            ),
-          ),
+          _buildSearchBar(context, controller, responsive),
+          
+          const ProductsCategoriesScreen(),
 
-          // اختيار التصنيفات المحسّن
-          SizedBox(height: responsive.itemSpacing),
+          const SizedBox(height: 8),
 
-          ProductsCategoriesScreen(),
-
-          SizedBox(height: responsive.itemSpacing),
-
-          // قائمة المنتجات
           Expanded(
             child: Obx(() {
+              // حالة التحميل الأولى
               if (controller.isLoading.value && controller.products.isEmpty) {
-                return const EnhancedLoadingWidget(
-                  message: 'جاري تحميل المنتجات...',
-                );
+                return const EnhancedLoadingWidget(message: 'جاري تحميل المنتجات...');
               }
 
+              // حالة عدم وجود بيانات
               if (controller.filteredProducts.isEmpty) {
-                return EnhancedErrorWidget(
-                  title: 'لا توجد منتجات',
-                  message:
-                      controller.searchQuery.isEmpty &&
-                          controller.selectedCategoryId.value == 'all'
-                      ? 'لا يوجد منتجات حالياً'
-                      : 'لم يتم العثور على نتائج للبحث',
-                  icon: Icons.inventory_2_outlined,
-                  onRetry: () => controller.fetchData(),
-                  // onRetry: () => controller.fetchProducts(),
-                );
+                return _buildEmptyState(controller);
               }
 
-              return ListView.builder(
-                padding: EdgeInsets.only(
-                  // top: responsive.itemSpacing / 2,
-                  // bottom: responsive.itemSpacing * 2,
+              // القائمة مع دعم "السحب للتحديث"
+              return RefreshIndicator(
+                onRefresh: () => controller.fetchData(),
+                child: ListView.separated(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: responsive.defaultPadding.left,
+                    vertical: 10,
+                  ),
+                  itemCount: controller.filteredProducts.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final product = controller.filteredProducts[index];
+                    return ProductListItem(
+                      product: product,
+                      index: index,
+                      onEdit: () => controller.showProductForm(context, product: product),
+                      onDelete: () => controller.confirmDelete(product.id, product.name),
+                    );
+                  },
                 ),
-                itemCount: controller.filteredProducts.length,
-                itemBuilder: (context, index) {
-                  final product = controller.filteredProducts[index];
-                  return ProductListItem(
-                    product: product,
-                    index: index,
-                    onEdit: () => 
-                    controller.showProductForm(context, product: product),
-                    onDelete: () => controller.confirmDelete(product.id, product.name),
-                  );
-                },
               );
             }),
           ),
@@ -141,5 +66,88 @@ class ProductsScreen extends GetView<ProductsController> {
     );
   }
 
+  // --- مكونات الواجهة المنفصلة ---
 
+  PreferredSizeWidget _buildAppBar(BuildContext context, ProductsController controller, var responsive) {
+    return AppBar(
+      elevation: 0,
+      title: Text(
+        'إدارة المنتجات',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: responsive.getTitleFontSize() + 2,
+        ),
+      ),
+      centerTitle: true,
+      actions: [
+        _buildAddButton(context, controller, responsive),
+        SizedBox(width: responsive.itemSpacing),
+      ],
+    );
+  }
+
+  Widget _buildAddButton(BuildContext context, ProductsController controller, var responsive) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.2),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: IconButton(
+        onPressed: () => controller.showProductForm(context),
+        icon: Icon(Icons.add_circle, size: responsive.iconSize + 4, color: AppColors.primary),
+        tooltip: 'إضافة منتج جديد',
+      ),
+    );
+  }
+
+  Widget _buildSearchBar(BuildContext context, ProductsController controller, var responsive) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    return Padding(
+      padding: responsive.defaultPadding,
+      child: Container(
+        decoration: BoxDecoration(
+          color: isDark ? Colors.white.withOpacity(0.05) : Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade300),
+        ),
+        child: TextField(
+          onChanged: controller.onSearchChanged,
+          decoration: InputDecoration(
+            hintText: 'البحث عن منتج بالاسم أو الماركة...',
+            prefixIcon: const Icon(Icons.search, color: Colors.grey),
+            suffixIcon: Obx(() => controller.searchQuery.isNotEmpty 
+              ? IconButton(
+                  icon: const Icon(Icons.clear, size: 20),
+                  onPressed: () {
+                    // تحتاج لإضافة دالة clearSearch في الكنترولر
+                    controller.onSearchChanged(''); 
+                  },
+                ) 
+              : const SizedBox.shrink()),
+            border: InputBorder.none,
+            contentPadding: const EdgeInsets.symmetric(vertical: 15),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(ProductsController controller) {
+    return EnhancedErrorWidget(
+      title: 'لا توجد نتائج',
+      message: controller.searchQuery.isEmpty && controller.selectedCategoryId.value == 'all'
+          ? 'قائمة المنتجات فارغة حالياً'
+          : 'لم نجد أي منتج يطابق بحثك: "${controller.searchQuery.value}"',
+      icon: Icons.search_off_rounded,
+      onRetry: () => controller.fetchData(),
+    );
+  }
 }
