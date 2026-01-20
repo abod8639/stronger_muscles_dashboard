@@ -13,7 +13,7 @@ class MyBottomNavigationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(NavigationController());
 
-    return BottomNavigationBar(
+    return Obx(() => BottomNavigationBar(
       currentIndex: controller.selectedIndex.value,
       type: BottomNavigationBarType.fixed,
       onTap: controller.changeIndex,
@@ -49,6 +49,7 @@ class MyBottomNavigationBar extends StatelessWidget {
           label: 'الإعدادات',
         ),
       ],
+    )
     );
   }
 }

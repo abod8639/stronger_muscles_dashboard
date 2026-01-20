@@ -89,7 +89,7 @@ class MainNavigationScreen extends StatelessWidget {
               ),
             ],
           ),
-          bottomNavigationBar: isDesktop ? null : Obx(() => MyBottomNavigationBar()),
+          bottomNavigationBar: isDesktop ? null :  MyBottomNavigationBar(),
         );
       },
     );
