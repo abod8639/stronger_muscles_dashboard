@@ -16,6 +16,8 @@ class OrderModel {
   final double totalAmount;
   final String? trackingNumber;
   final String? notes;
+  final String? phoneNumber;
+
   final List<OrderItemModel>? items;
 
   OrderModel({
@@ -33,6 +35,7 @@ class OrderModel {
     required this.totalAmount,
     this.trackingNumber,
     this.notes,
+    this.phoneNumber,
     this.items,
   });
 
@@ -58,6 +61,7 @@ class OrderModel {
       totalAmount: double.tryParse((json['totalAmount'] ?? json['total_amount'] ?? 0).toString()) ?? 0.0,
       trackingNumber: (json['trackingNumber'] ?? json['tracking_number'])?.toString(),
       notes: (json['notes'])?.toString(),
+      phoneNumber: (json['phoneNumber'] ?? json['phone_number'])?.toString(),
       items: (json['items'] ?? json['order_items']) != null
           ? ((json['items'] ?? json['order_items']) as List)
               .map<OrderItemModel>((i) => OrderItemModel.fromJson(i as Map<String, dynamic>))
@@ -82,6 +86,7 @@ class OrderModel {
       'total_amount': totalAmount,
       'tracking_number': trackingNumber,
       'notes': notes,
+      'phone_number': phoneNumber,
       'order_items': items?.map((item) => item.toJson()).toList(),
     };
   }

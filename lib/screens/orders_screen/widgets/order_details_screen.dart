@@ -7,6 +7,7 @@ import '../../../components/status_badge.dart';
 
 class OrderDetailsScreen extends StatelessWidget {
   final OrderModel order;
+  // final UserModel user;
 
   const OrderDetailsScreen({super.key, required this.order});
 
@@ -55,7 +56,7 @@ class OrderDetailsScreen extends StatelessWidget {
             _buildSection(
               child: Column(
                 children: [
-                  _buildDetailRow(Icons.person, 'رقم العميل', order.userId),
+                  _buildDetailRow(Icons.person, 'رقم العميل',  order.userId),
                   const Divider(),
                   _buildDetailRow(Icons.payment, 'طريقة الدفع', order.paymentMethod),
                   const Divider(),
@@ -82,7 +83,7 @@ class OrderDetailsScreen extends StatelessWidget {
               child: Column(
                 children: [
                   if (order.items != null && order.items!.isNotEmpty)
-                    ...order.items!.map((item) => _buildOrderItem(item, isDark)).toList()
+                    ...order.items!.map((item) => _buildOrderItem(item, isDark))
                   else
                     const Padding(
                       padding: EdgeInsets.all(16.0),
@@ -165,20 +166,55 @@ class OrderDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildAddressSection(Map<String, Map<String, dynamic>>? snapshot) {
-    if (snapshot == null) return const Text('العنوان غير متوفر');
-    
-    // This depends on how the snapshot is structured. Assuming a flat map or key-value.
-    // Given the type Map<String, Map<String, dynamic>>? in the model... 
-    // Wait, let's look at the OrderModel definition for shippingAddressSnapshot.
-    
+    if (snapshot == null || snapshot.isEmpty) {
+      return const Text('العنوان غير متوفر', style: TextStyle(color: Colors.grey));
+    }
+
+    // استخراج بيانات العنوان من Snapshot
+    Map<String, dynamic> addressData = {};
+    if (snapshot.containsKey('address')) {
+      addressData = snapshot['address']!;
+    } else {
+      addressData = snapshot.values.first;
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: snapshot.entries.map((entry) {
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 4.0),
-          child: Text('${entry.key}: ${entry.value.values.join(", ")}'),
-        );
-      }).toList(),
+      children: [
+        _buildAddressInfoRow(Icons.location_city, 'المدينة', addressData['city'] ?? addressData['City'] ?? 'غير محدد'),
+        const SizedBox(height: 12),
+        _buildAddressInfoRow(Icons.location_on, 'الشارع/العنوان', addressData['street'] ?? addressData['Street'] ?? 'غير محدد'),
+        if (addressData['phone'] != null || addressData['Phone'] != null || addressData['phone_number'] != null) ...[
+          const SizedBox(height: 12),
+          _buildAddressInfoRow(Icons.phone, 'رقم التواصل', 
+            (addressData['phone'] ?? addressData['Phone'] ?? addressData['phone_number'] ?? '').toString()),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildAddressInfoRow(IconData icon, String label, String value) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: AppColors.primary.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, size: 18, color: AppColors.primary),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label, style: const TextStyle(color: Colors.grey, fontSize: 11)),
+              Text(value, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13)),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -220,4 +256,5 @@ class OrderDetailsScreen extends StatelessWidget {
       ),
     );
   }
+  
 }
