@@ -343,7 +343,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
       isBackgroundWhite: controller.isBackgroundWhite.value,
 
     );
-
+print(productData.isBackgroundWhite);
     widget.product == null 
       ? controller.addProduct(productData) 
       : controller.updateProduct(productData);

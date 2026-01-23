@@ -23,7 +23,6 @@ class AvailabilitySwitch extends StatelessWidget {
     return Obx(() => AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           decoration: BoxDecoration(
-            // تغيير لون الخلفية حسب الحالة
             color: isAvailable.value 
                 ? AppColors.primary.withOpacity(0.05) 
                 : theme.cardColor,
@@ -41,7 +40,6 @@ class AvailabilitySwitch extends StatelessWidget {
               isAvailable.value = value;
               if (onChanged != null) onChanged!(value);
             },
-            // تحسين الألوان والمظهر
             activeColor: AppColors.primary,
             activeTrackColor: AppColors.primary.withOpacity(0.2),
             inactiveThumbColor: Colors.grey[400],
