@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/screens/auth/signup_screen.dart';
+import 'package:stronger_muscles_dashboard/screens/auth/widgets/build_primary_button.dart';
+import 'package:stronger_muscles_dashboard/screens/auth/widgets/build_text_field.dart';
 import '../../config/theme.dart';
 import '../../controllers/auth_controller.dart';
 // import 'signup_screen.dart';
@@ -108,7 +110,7 @@ class LoginScreen extends StatelessWidget {
                         const SizedBox(height: 40),
 
                         // Email Field
-                        Obx(() => _buildTextField(
+                        Obx(() => buildTextField(
                               controller: controller.emailController,
                               label: 'البريد الإلكتروني',
                               icon: Icons.email_outlined,
@@ -118,7 +120,7 @@ class LoginScreen extends StatelessWidget {
                         const SizedBox(height: 20),
 
                         // Password Field
-                        Obx(() => _buildTextField(
+                        Obx(() => buildTextField(
                               controller: controller.passwordController,
                               label: 'كلمة المرور',
                               icon: Icons.lock_outline,
@@ -170,7 +172,7 @@ class LoginScreen extends StatelessWidget {
                         const SizedBox(height: 32),
 
                         // Login Button
-                        Obx(() => _buildPrimaryButton(
+                        Obx(() => buildPrimaryButton(
                               label: 'تسجيل الدخول',
                               isLoading: controller.isLoading.value,
                               onPressed: controller.login,
@@ -211,112 +213,6 @@ class LoginScreen extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    TextInputType? keyboardType,
-    bool isPassword = false,
-    bool isPasswordVisible = false,
-    VoidCallback? onTogglePassword,
-    String? errorText,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: errorText != null
-                  ? AppColors.error
-                  : Colors.white.withOpacity(0.2),
-              width: 1.5,
-            ),
-          ),
-          child: TextField(
-            controller: controller,
-            keyboardType: keyboardType,
-            obscureText: isPassword && !isPasswordVisible,
-            style: const TextStyle(color: Colors.white),
-            decoration: InputDecoration(
-              labelText: label,
-              labelStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
-              prefixIcon: Icon(icon, color: Colors.white.withOpacity(0.7)),
-              suffixIcon: isPassword
-                  ? IconButton(
-                      icon: Icon(
-                        isPasswordVisible
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
-                        color: Colors.white.withOpacity(0.7),
-                      ),
-                      onPressed: onTogglePassword,
-                    )
-                  : null,
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 16,
-              ),
-            ),
-          ),
-        ),
-        if (errorText != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 8, right: 12),
-            child: Text(
-              errorText,
-              style: const TextStyle(
-                color: AppColors.error,
-                fontSize: 12,
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-
-  Widget _buildPrimaryButton({
-    required String label,
-    required bool isLoading,
-    required VoidCallback onPressed,
-  }) {
-    return SizedBox(
-      width: double.infinity,
-      height: 56,
-      child: ElevatedButton(
-        onPressed: isLoading ? null : onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white,
-          foregroundColor: AppColors.primary,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          elevation: 8,
-          shadowColor: Colors.black.withOpacity(0.3),
-        ),
-        child: isLoading
-            ? const SizedBox(
-                height: 24,
-                width: 24,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2.5,
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-                ),
-              )
-            : Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
       ),
     );
   }
