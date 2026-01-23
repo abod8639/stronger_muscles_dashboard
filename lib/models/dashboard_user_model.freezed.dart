@@ -204,24 +204,18 @@ mixin _$DashboardUser {
   @HiveField(4)
   String get role => throw _privateConstructorUsedError;
   @HiveField(5)
-  @JsonKey(name: 'is_active')
   bool get isActive => throw _privateConstructorUsedError;
   @HiveField(6)
-  @JsonKey(name: 'photo_url')
   String? get photoUrl => throw _privateConstructorUsedError;
   @HiveField(7)
-  // @JsonKey(name: 'total_spent', fromJson: _doubleFromAny)
   double get totalSpent => throw _privateConstructorUsedError;
   @HiveField(8)
-  @JsonKey(name: 'created_at')
   DateTime? get createdAt => throw _privateConstructorUsedError;
   @HiveField(9)
-  @JsonKey(name: 'last_login')
   DateTime? get lastLogin => throw _privateConstructorUsedError;
   @HiveField(10)
   List<UserAddress> get addresses => throw _privateConstructorUsedError;
   @HiveField(11)
-  @JsonKey(name: 'orders_count')
   int get ordersCount => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -242,15 +236,13 @@ abstract class $DashboardUserCopyWith<$Res> {
       @HiveField(2) String? email,
       @HiveField(3) String? phone,
       @HiveField(4) String role,
-      @HiveField(5) @JsonKey(name: 'is_active') bool isActive,
-      @HiveField(6) @JsonKey(name: 'photo_url') String? photoUrl,
-      @HiveField(7)
-      // @JsonKey(name: 'total_spent', fromJson: _doubleFromAny)
-      double totalSpent,
-      @HiveField(8) @JsonKey(name: 'created_at') DateTime? createdAt,
-      @HiveField(9) @JsonKey(name: 'last_login') DateTime? lastLogin,
+      @HiveField(5) bool isActive,
+      @HiveField(6) String? photoUrl,
+      @HiveField(7) double totalSpent,
+      @HiveField(8) DateTime? createdAt,
+      @HiveField(9) DateTime? lastLogin,
       @HiveField(10) List<UserAddress> addresses,
-      @HiveField(11) @JsonKey(name: 'orders_count') int ordersCount});
+      @HiveField(11) int ordersCount});
 }
 
 /// @nodoc
@@ -346,15 +338,13 @@ abstract class _$$DashboardUserImplCopyWith<$Res>
       @HiveField(2) String? email,
       @HiveField(3) String? phone,
       @HiveField(4) String role,
-      @HiveField(5) @JsonKey(name: 'is_active') bool isActive,
-      @HiveField(6) @JsonKey(name: 'photo_url') String? photoUrl,
-      @HiveField(7)
-      // @JsonKey(name: 'total_spent', fromJson: _doubleFromAny)
-      double totalSpent,
-      @HiveField(8) @JsonKey(name: 'created_at') DateTime? createdAt,
-      @HiveField(9) @JsonKey(name: 'last_login') DateTime? lastLogin,
+      @HiveField(5) bool isActive,
+      @HiveField(6) String? photoUrl,
+      @HiveField(7) double totalSpent,
+      @HiveField(8) DateTime? createdAt,
+      @HiveField(9) DateTime? lastLogin,
       @HiveField(10) List<UserAddress> addresses,
-      @HiveField(11) @JsonKey(name: 'orders_count') int ordersCount});
+      @HiveField(11) int ordersCount});
 }
 
 /// @nodoc
@@ -435,8 +425,7 @@ class __$$DashboardUserImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable()
 class _$DashboardUserImpl extends _DashboardUser {
   const _$DashboardUserImpl(
       {@HiveField(0) required this.id,
@@ -444,15 +433,13 @@ class _$DashboardUserImpl extends _DashboardUser {
       @HiveField(2) this.email,
       @HiveField(3) this.phone,
       @HiveField(4) this.role = 'customer',
-      @HiveField(5) @JsonKey(name: 'is_active') this.isActive = true,
-      @HiveField(6) @JsonKey(name: 'photo_url') this.photoUrl,
-      @HiveField(7)
-      // @JsonKey(name: 'total_spent', fromJson: _doubleFromAny)
-      this.totalSpent = 0.0,
-      @HiveField(8) @JsonKey(name: 'created_at') this.createdAt,
-      @HiveField(9) @JsonKey(name: 'last_login') this.lastLogin,
+      @HiveField(5) this.isActive = true,
+      @HiveField(6) this.photoUrl,
+      @HiveField(7) this.totalSpent = 0.0,
+      @HiveField(8) this.createdAt,
+      @HiveField(9) this.lastLogin,
       @HiveField(10) final List<UserAddress> addresses = const [],
-      @HiveField(11) @JsonKey(name: 'orders_count') this.ordersCount = 0})
+      @HiveField(11) this.ordersCount = 0})
       : _addresses = addresses,
         super._();
 
@@ -477,24 +464,21 @@ class _$DashboardUserImpl extends _DashboardUser {
   @HiveField(4)
   final String role;
   @override
+  @JsonKey()
   @HiveField(5)
-  @JsonKey(name: 'is_active')
   final bool isActive;
   @override
   @HiveField(6)
-  @JsonKey(name: 'photo_url')
   final String? photoUrl;
   @override
+  @JsonKey()
   @HiveField(7)
-  // @JsonKey(name: 'total_spent', fromJson: _doubleFromAny)
   final double totalSpent;
   @override
   @HiveField(8)
-  @JsonKey(name: 'created_at')
   final DateTime? createdAt;
   @override
   @HiveField(9)
-  @JsonKey(name: 'last_login')
   final DateTime? lastLogin;
   final List<UserAddress> _addresses;
   @override
@@ -507,8 +491,8 @@ class _$DashboardUserImpl extends _DashboardUser {
   }
 
   @override
+  @JsonKey()
   @HiveField(11)
-  @JsonKey(name: 'orders_count')
   final int ordersCount;
 
   @override
@@ -580,17 +564,13 @@ abstract class _DashboardUser extends DashboardUser {
       @HiveField(2) final String? email,
       @HiveField(3) final String? phone,
       @HiveField(4) final String role,
-      @HiveField(5) @JsonKey(name: 'is_active') final bool isActive,
-      @HiveField(6) @JsonKey(name: 'photo_url') final String? photoUrl,
-      @HiveField(7)
-      // @JsonKey(name: 'total_spent', fromJson: _doubleFromAny)
-      final double totalSpent,
-      @HiveField(8) @JsonKey(name: 'created_at') final DateTime? createdAt,
-      @HiveField(9) @JsonKey(name: 'last_login') final DateTime? lastLogin,
+      @HiveField(5) final bool isActive,
+      @HiveField(6) final String? photoUrl,
+      @HiveField(7) final double totalSpent,
+      @HiveField(8) final DateTime? createdAt,
+      @HiveField(9) final DateTime? lastLogin,
       @HiveField(10) final List<UserAddress> addresses,
-      @HiveField(11)
-      @JsonKey(name: 'orders_count')
-      final int ordersCount}) = _$DashboardUserImpl;
+      @HiveField(11) final int ordersCount}) = _$DashboardUserImpl;
   const _DashboardUser._() : super._();
 
   factory _DashboardUser.fromJson(Map<String, dynamic> json) =
@@ -613,30 +593,24 @@ abstract class _DashboardUser extends DashboardUser {
   String get role;
   @override
   @HiveField(5)
-  @JsonKey(name: 'is_active')
   bool get isActive;
   @override
   @HiveField(6)
-  @JsonKey(name: 'photo_url')
   String? get photoUrl;
   @override
   @HiveField(7)
-  // @JsonKey(name: 'total_spent', fromJson: _doubleFromAny)
   double get totalSpent;
   @override
   @HiveField(8)
-  @JsonKey(name: 'created_at')
   DateTime? get createdAt;
   @override
   @HiveField(9)
-  @JsonKey(name: 'last_login')
   DateTime? get lastLogin;
   @override
   @HiveField(10)
   List<UserAddress> get addresses;
   @override
   @HiveField(11)
-  @JsonKey(name: 'orders_count')
   int get ordersCount;
   @override
   @JsonKey(ignore: true)

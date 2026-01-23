@@ -290,7 +290,7 @@ Map<String, dynamic> _$$OrderModelImplToJson(_$OrderModelImpl instance) =>
       'notes': instance.notes,
       'phoneNumber': instance.phoneNumber,
       'shippingAddressSnapshot': instance.shippingAddressSnapshot,
-      'items': instance.items?.map((e) => e.toJson()).toList(),
+      'items': instance.items,
     };
 
 const _$OrderStatusEnumMap = {

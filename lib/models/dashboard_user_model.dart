@@ -8,7 +8,7 @@ part 'dashboard_user_model.g.dart';
 @freezed
 class DashboardResponse with _$DashboardResponse {
   const factory DashboardResponse({
-    @JsonKey(name: 'total_users') @Default(0) int totalUsers,
+    @Default(0) int totalUsers,
     @Default([]) List<DashboardUser> users,
   }) = _DashboardResponse;
 
@@ -21,25 +21,22 @@ class DashboardResponse with _$DashboardResponse {
 class DashboardUser with _$DashboardUser {
   const DashboardUser._();
 
-  @JsonSerializable(explicitToJson: true)
   const factory DashboardUser({
     @HiveField(0) required int id,
     @HiveField(1) @Default('') String name,
     @HiveField(2) String? email,
     @HiveField(3) String? phone,
     @HiveField(4) @Default('customer') String role,
-    @HiveField(5) @JsonKey(name: 'is_active') @Default(true) bool isActive,
-    @HiveField(6) @JsonKey(name: 'photo_url') String? photoUrl,
-    @HiveField(7) @JsonKey(name: 'total_spent', fromJson: _doubleFromAny) @Default(0.0) double totalSpent,
-    @HiveField(8) @JsonKey(name: 'created_at') DateTime? createdAt,
-    @HiveField(9) @JsonKey(name: 'last_login') DateTime? lastLogin,
+    @HiveField(5) @Default(true) bool isActive,
+    @HiveField(6) String? photoUrl,
+    @HiveField(7) @Default(0.0) double totalSpent,
+    @HiveField(8) DateTime? createdAt,
+    @HiveField(9) DateTime? lastLogin,
     @HiveField(10) @Default([]) List<UserAddress> addresses,
-    @HiveField(11) @JsonKey(name: 'orders_count') @Default(0) int ordersCount,
+    @HiveField(11) @Default(0) int ordersCount,
   }) = _DashboardUser;
 
   factory DashboardUser.fromJson(Map<String, dynamic> json) => 
       _$DashboardUserFromJson(json);
 
-  static double _doubleFromAny(dynamic val) => 
-      double.tryParse(val.toString()) ?? 0.0;
 }

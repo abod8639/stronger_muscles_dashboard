@@ -309,8 +309,7 @@ class __$$OrderModelImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable()
 class _$OrderModelImpl extends _OrderModel {
   const _$OrderModelImpl(
       {@HiveField(0) required this.id,

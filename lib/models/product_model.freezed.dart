@@ -645,8 +645,7 @@ class __$$ProductModelImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable()
 class _$ProductModelImpl extends _ProductModel with DiagnosticableTreeMixin {
   const _$ProductModelImpl(
       {@HiveField(0) required this.id,

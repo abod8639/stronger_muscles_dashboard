@@ -101,20 +101,20 @@ _$DashboardUserImpl _$$DashboardUserImplFromJson(Map<String, dynamic> json) =>
       email: json['email'] as String?,
       phone: json['phone'] as String?,
       role: json['role'] as String? ?? 'customer',
-      isActive: json['is_active'] as bool? ?? true,
-      photoUrl: json['photo_url'] as String?,
-      totalSpent: (json['total_spent'] as num?)?.toDouble() ?? 0.0,
-      createdAt: json['created_at'] == null
+      isActive: json['isActive'] as bool? ?? true,
+      photoUrl: json['photoUrl'] as String?,
+      totalSpent: (json['totalSpent'] as num?)?.toDouble() ?? 0.0,
+      createdAt: json['createdAt'] == null
           ? null
-          : DateTime.parse(json['created_at'] as String),
-      lastLogin: json['last_login'] == null
+          : DateTime.parse(json['createdAt'] as String),
+      lastLogin: json['lastLogin'] == null
           ? null
-          : DateTime.parse(json['last_login'] as String),
+          : DateTime.parse(json['lastLogin'] as String),
       addresses: (json['addresses'] as List<dynamic>?)
               ?.map((e) => UserAddress.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      ordersCount: (json['orders_count'] as num?)?.toInt() ?? 0,
+      ordersCount: (json['ordersCount'] as num?)?.toInt() ?? 0,
     );
 
 Map<String, dynamic> _$$DashboardUserImplToJson(_$DashboardUserImpl instance) =>
@@ -124,11 +124,11 @@ Map<String, dynamic> _$$DashboardUserImplToJson(_$DashboardUserImpl instance) =>
       'email': instance.email,
       'phone': instance.phone,
       'role': instance.role,
-      'is_active': instance.isActive,
-      'photo_url': instance.photoUrl,
-      'total_spent': instance.totalSpent,
-      'created_at': instance.createdAt?.toIso8601String(),
-      'last_login': instance.lastLogin?.toIso8601String(),
-      'addresses': instance.addresses.map((e) => e.toJson()).toList(),
-      'orders_count': instance.ordersCount,
+      'isActive': instance.isActive,
+      'photoUrl': instance.photoUrl,
+      'totalSpent': instance.totalSpent,
+      'createdAt': instance.createdAt?.toIso8601String(),
+      'lastLogin': instance.lastLogin?.toIso8601String(),
+      'addresses': instance.addresses,
+      'ordersCount': instance.ordersCount,
     };
