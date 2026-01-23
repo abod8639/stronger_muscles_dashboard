@@ -71,7 +71,7 @@ class UsersScreen extends StatelessWidget {
             ),
 
             // ملخص الإحصائيات
-            _buildStatsHeader(context, controller, responsive),
+            buildStatsHeader(context, controller, responsive),
             
             // قائمة المستخدمين
             Expanded(
@@ -89,7 +89,7 @@ class UsersScreen extends StatelessWidget {
                       itemCount: controller.filteredUsers.length,
                       itemBuilder: (context, index) {
                         final user = controller.filteredUsers[index];
-                        return _buildUserCard(context, user, responsive, isDark);
+                        return buildUserCard(context, user, responsive, isDark);
                       },
                     ),
             ),
@@ -98,8 +98,8 @@ class UsersScreen extends StatelessWidget {
       }),
     );
   }
-
-  Widget _buildStatsHeader(BuildContext context, UsersController controller, ResponsiveLayout responsive) {
+}
+  Widget buildStatsHeader(BuildContext context, UsersController controller, ResponsiveLayout responsive) {
     return Container(
       padding: responsive.defaultPadding,
       width: double.infinity,
@@ -153,7 +153,7 @@ class UsersScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildUserCard(BuildContext context, DashboardUser user, ResponsiveLayout responsive, bool isDark) {
+  Widget buildUserCard(BuildContext context, DashboardUser user, ResponsiveLayout responsive, bool isDark) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -247,11 +247,11 @@ class UsersScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildInfoRow('الدور', user.role, isDark),
-                if (user.phone != null) _buildInfoRow('رقم الهاتف', user.phone??"00", isDark),
-                _buildInfoRow('إجمالي المشتريات', '${user.totalSpent} LE', isDark),
+                buildInfoRow('الدور', user.role, isDark),
+                if (user.phone != null) buildInfoRow('رقم الهاتف', user.phone??"00", isDark),
+                buildInfoRow('إجمالي المشتريات', '${user.totalSpent} LE', isDark),
                 if (user.lastLogin != null)
-                  _buildInfoRow('آخر دخول', user.lastLogin.toString().split('.')[0], isDark),
+                  buildInfoRow('آخر دخول', user.lastLogin.toString().split('.')[0], isDark),
                  
                 const SizedBox(height: 12),
                 if (user.addresses.isNotEmpty) ...[
@@ -297,7 +297,7 @@ class UsersScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(String label, String value, bool isDark) {
+  Widget buildInfoRow(String label, String value, bool isDark) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
@@ -309,4 +309,4 @@ class UsersScreen extends StatelessWidget {
       ),
     );
   }
-}
+

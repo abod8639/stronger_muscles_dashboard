@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/screens/orders_screen/build_search_bar.dart';
+import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_search_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_empty_state.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_status_tabs.dart';
@@ -8,7 +8,7 @@ import '../../components/enhanced_error_widget.dart';
 import '../../controllers/orders_controller.dart';
 import '../../components/index.dart';
 import '../../config/responsive.dart';
-import 'widgets/order_details_screen.dart';
+import 'order_details_screen.dart';
 
 class OrdersScreen extends StatelessWidget {
   const OrdersScreen({super.key});
