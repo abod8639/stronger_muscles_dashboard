@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/components/status_badge.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
-import 'package:stronger_muscles_dashboard/models/product_model.dart';
+import 'package:stronger_muscles_dashboard/models/product.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/buildActionButtons.dart';
 
 class ProductCard extends StatelessWidget {
@@ -63,7 +63,7 @@ class ProductCard extends StatelessWidget {
                 _buildProductName(responsive, isDark),
                 SizedBox(height: responsive.itemSpacing / 3),
                 _buildBrandInfo(responsive, isDark),
-                if (product.flavor.isNotEmpty) ...[
+                if (product.flavor != null && product.flavor!.isNotEmpty) ...[
                   SizedBox(height: responsive.itemSpacing / 2),
                   _buildFlavorTags(responsive),
                 ],
@@ -219,7 +219,7 @@ class ProductCard extends StatelessWidget {
       spacing: 6,
       runSpacing: 6,
       children: [
-        ...product.flavor.take(3).map((f) => Container(
+        ...product.flavor!.take(3).map((f) => Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -256,7 +256,7 @@ class ProductCard extends StatelessWidget {
             ],
           ),
         )),
-        if (product.flavor.length > 3)
+        if (product.flavor!.length > 3)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
@@ -264,7 +264,7 @@ class ProductCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
-              '+${product.flavor.length - 3}',
+              '+${product.flavor!.length - 3}',
               style: TextStyle(
                 fontSize: 11,
                 color: Colors.grey.shade600,

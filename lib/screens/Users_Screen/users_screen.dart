@@ -5,7 +5,7 @@ import 'package:stronger_muscles_dashboard/components/enhanced_error_widget.dart
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/controllers/users_controller.dart';
-import 'package:stronger_muscles_dashboard/models/dashboard_response.dart';
+import 'package:stronger_muscles_dashboard/models/dashboard_user_model.dart';
 import 'package:stronger_muscles_dashboard/components/index.dart';
 
 class UsersScreen extends StatelessWidget {
