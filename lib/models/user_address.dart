@@ -1,23 +1,20 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:hive/hive.dart';
 
-class UserAddress {
-  final int id;
-  final String city;
-  final String street;
-  final bool isDefault;
+part 'user_address.freezed.dart';
+part 'user_address.g.dart';
 
-  UserAddress({
-    required this.id,
-    required this.city,
-    required this.street,
-    required this.isDefault,
-  });
+@freezed
+@HiveType(typeId: 15, adapterName: 'UserAddressAdapter')
+@JsonSerializable()
+class UserAddress with _$UserAddress {
+  const factory UserAddress({
+    @HiveField(0) required int id,
+    @HiveField(1) @Default('') String city,
+    @HiveField(2) @Default('') String street,
+    @HiveField(3) @JsonKey(name: 'is_default') @Default(false) bool isDefault,
+  }) = _UserAddress;
 
-  factory UserAddress.fromJson(Map<String, dynamic> json) {
-    return UserAddress(
-      id: json['id'],
-      city: json['city'] ?? '',
-      street: json['street'] ?? '',
-      isDefault: json['is_default'] ?? false,
-    );
-  }
+  factory UserAddress.fromJson(Map<String, dynamic> json) => 
+      _$UserAddressFromJson(json);
 }

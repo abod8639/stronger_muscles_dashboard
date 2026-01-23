@@ -1,5 +1,5 @@
 export 'user.dart';
-export 'category.dart';
-export 'product.dart';
+export 'category_model.dart';
+export 'product_model.dart';
 export 'order.dart';
-export 'cart_item.dart';
+export 'cart_item_model.dart';

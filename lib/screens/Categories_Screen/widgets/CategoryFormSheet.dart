@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/controllers/categories_controller.dart';
-import 'package:stronger_muscles_dashboard/models/category.dart';
+import 'package:stronger_muscles_dashboard/models/category_model.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/buildModernTextField.dart';

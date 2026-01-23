@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:stronger_muscles_dashboard/components/image_gallery_editor.dart';
 import 'package:stronger_muscles_dashboard/controllers/products_controller.dart';
-import 'package:stronger_muscles_dashboard/models/product.dart';
+import 'package:stronger_muscles_dashboard/models/product_model.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/FlavorMultiSelect.dart';
