@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/screens/orders_screen/build_search_bar.dart';
+import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_app_bar.dart';
+import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_empty_state.dart';
+import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_status_tabs.dart';
 import '../../components/enhanced_error_widget.dart';
 import '../../controllers/orders_controller.dart';
 import '../../components/index.dart';
-import '../../config/theme.dart';
 import '../../config/responsive.dart';
-import '../../models/order_model.dart';
 import 'widgets/order_details_screen.dart';
 
 class OrdersScreen extends StatelessWidget {
@@ -18,11 +20,11 @@ class OrdersScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: buildAppBar(context, controller, responsive),
+      appBar: buildAppBar( controller, responsive),
       body: Column(
         children: [
-          buildSearchBar(context, controller, responsive),
-          buildStatusTabs(context, controller, responsive),
+          buildSearchBar( controller),
+          buildStatusTabs(controller),
           const SizedBox(height: 8),
           Expanded(
             child: Obx(() {
@@ -70,25 +72,3 @@ class OrdersScreen extends StatelessWidget {
     );
   }
 }
-  PreferredSizeWidget buildAppBar( OrdersController controller, ResponsiveLayout responsive) {
-    return AppBar(
-      title: Text(
-        'إدارة الطلبات',
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: responsive.getTitleFontSize() + 2,
-        ),
-      ),
-      centerTitle: true,
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      actions: [
-        IconButton(
-          onPressed: () => controller.fetchOrders(),
-          icon: const Icon(Icons.refresh),
-          tooltip: 'تحديث',
-        ),
-        const SizedBox(width: 8),
-      ],
-    );
-  }
