@@ -1,5 +1,5 @@
 
-import 'package:stronger_muscles_dashboard/models/user-address.dart';
+import 'package:stronger_muscles_dashboard/models/user_address.dart';
 
 class DashboardResponse {
   final int totalUsers;
