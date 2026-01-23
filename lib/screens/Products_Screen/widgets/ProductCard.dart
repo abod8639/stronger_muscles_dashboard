@@ -63,7 +63,7 @@ class ProductCard extends StatelessWidget {
                 _buildProductName(responsive, isDark),
                 SizedBox(height: responsive.itemSpacing / 3),
                 _buildBrandInfo(responsive, isDark),
-                if (product.flavor != null && product.flavor!.isNotEmpty) ...[
+                if (product.flavor.isNotEmpty) ...[
                   SizedBox(height: responsive.itemSpacing / 2),
                   _buildFlavorTags(responsive),
                 ],
