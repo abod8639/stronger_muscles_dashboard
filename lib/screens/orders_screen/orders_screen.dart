@@ -93,106 +93,38 @@ class OrdersScreen extends StatelessWidget {
     );
   }
 
-  Widget buildSearchBar(BuildContext context, OrdersController controller, ResponsiveLayout responsive) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+  Widget buildSearchBar( OrdersController controller) {
     
-    return Padding(
-      padding: responsive.defaultPadding,
-      child: Container(
-        decoration: BoxDecoration(
-          color: isDark ? Colors.white.withOpacity(0.05) : Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade300),
-        ),
-        child: TextField(
-          onChanged: controller.setSearchQuery,
-          decoration: InputDecoration(
-            hintText: 'البحث عن طلب برقم التعريف أو المبلغ...',
-            prefixIcon: const Icon(Icons.search, color: Colors.grey),
-            suffixIcon: Obx(() => controller.searchQuery.isNotEmpty 
-              ? IconButton(
-                  icon: const Icon(Icons.clear, size: 20),
-                  onPressed: () {
-                    controller.setSearchQuery('');
-                  },
-                ) 
-              : const SizedBox.shrink()),
-            border: InputBorder.none,
-            contentPadding: const EdgeInsets.symmetric(vertical: 15),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget buildStatusTabs(BuildContext context, OrdersController controller, ResponsiveLayout responsive) {
-    final statuses = [
-      null, // All
-      OrderStatus.pending,
-      OrderStatus.processing,
-      OrderStatus.shipped,
-      OrderStatus.delivered,
-      OrderStatus.cancelled,
-    ];
-
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: EdgeInsets.symmetric(horizontal: responsive.defaultPadding.left),
-      child: Obx(() => Row(
-        children: statuses.map((status) {
-          final isSelected = controller.selectedStatus.value == status;
-          final label = status == null ? 'الكل' : controller.getStatusText(status);
-          
-          return Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: ChoiceChip(
-              label: Text(label),
-              selected: isSelected,
-              onSelected: (selected) {
-                if (selected) controller.setFilterStatus(status);
-              },
-              backgroundColor: Colors.transparent,
-              selectedColor: AppColors.primary.withOpacity(0.2),
-              labelStyle: TextStyle(
-                color: isSelected ? AppColors.primary : Colors.grey,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-                side: BorderSide(
-                  color: isSelected ? AppColors.primary : Colors.grey.withOpacity(0.3),
-                ),
+    return Builder(
+      builder: (context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+        return Padding(
+          padding: context.responsive.defaultPadding,
+          child: Container(
+            decoration: BoxDecoration(
+              color: isDark ? Colors.white.withOpacity(0.05) : Colors.grey.shade100,
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade300),
+            ),
+            child: TextField(
+              onChanged: controller.setSearchQuery,
+              decoration: InputDecoration(
+                hintText: 'البحث عن طلب برقم التعريف أو المبلغ...',
+                prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                suffixIcon: Obx(() => controller.searchQuery.isNotEmpty 
+                  ? IconButton(
+                      icon: const Icon(Icons.clear, size: 20),
+                      onPressed: () {
+                        controller.setSearchQuery('');
+                      },
+                    ) 
+                  : const SizedBox.shrink()),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(vertical: 15),
               ),
             ),
-          );
-        }).toList(),
-      )),
-    );
-  }
-
-  Widget buildEmptyState(OrdersController controller) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.shopping_bag_outlined, size: 80, color: Colors.grey.withOpacity(0.3)),
-          const SizedBox(height: 16),
-          Text(
-            controller.searchQuery.isEmpty && controller.selectedStatus.value == null
-                ? 'لا توجد طلبات حالياً'
-                : 'لا توجد نتائج تطابق بحثك',
-            style: const TextStyle(color: Colors.grey, fontSize: 16),
           ),
-          if (controller.searchQuery.isNotEmpty || controller.selectedStatus.value != null)
-            TextButton(
-              onPressed: () {
-                controller.setSearchQuery('');
-                controller.setFilterStatus(null);
-              },
-              child: const Text('مسح الفلاتر'),
-            ),
-        ],
-      ),
+        );
+      }
     );
   }
-
