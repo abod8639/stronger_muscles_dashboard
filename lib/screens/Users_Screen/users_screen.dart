@@ -37,7 +37,7 @@ class UsersScreen extends StatelessWidget {
         ],
       ),
       body: Obx(() {
-        if (controller.isLoading.value && controller.users.isEmpty) {
+        if (controller.isLoading.value && controller.filteredUsers.isEmpty) {
           return const EnhancedLoadingWidget(message: 'جاري تحميل بيانات المستخدمين...');
         }
 
@@ -248,7 +248,7 @@ class UsersScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildInfoRow('الدور', user.role, isDark),
-                if (user.phone != null) _buildInfoRow('رقم الهاتف', user.phone!, isDark),
+                if (user.phone != null) _buildInfoRow('رقم الهاتف', user.phone??"00", isDark),
                 _buildInfoRow('إجمالي المشتريات', '${user.totalSpent} LE', isDark),
                 if (user.lastLogin != null)
                   _buildInfoRow('آخر دخول', user.lastLogin.toString().split('.')[0], isDark),

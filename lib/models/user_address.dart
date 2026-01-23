@@ -12,14 +12,14 @@ class UserAddress with _$UserAddress {
   const factory UserAddress({
     @HiveField(0) required String id,
     @HiveField(1) @Default('') String label,
-    @HiveField(2) @JsonKey(name: 'full_name') @Default('') String fullName,
+    @HiveField(2) @Default('') String fullName,
     @HiveField(3) @Default('') String phone,
     @HiveField(4) @Default('') String street,
     @HiveField(5) @Default('') String city,
     @HiveField(6) @Default('') String state,
-    @HiveField(7) @JsonKey(name: 'postal_code') @Default('') String postalCode,
+    @HiveField(7) @Default('') String postalCode,
     @HiveField(8) @Default('') String country,
-    @HiveField(9) @JsonKey(name: 'is_default') @Default(false) bool isDefault,
+    @HiveField(9) @Default(false) bool isDefault,
     @HiveField(10) double? latitude,
     @HiveField(11) double? longitude,
   }) = _UserAddress;

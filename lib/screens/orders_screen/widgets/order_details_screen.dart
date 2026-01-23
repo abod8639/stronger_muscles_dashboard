@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart' as intl;
-import 'package:stronger_muscles_dashboard/models/user.dart';
 import '../../../models/order_model.dart';
 import '../../../config/theme.dart';
 import '../../../components/status_badge.dart';
 
 class OrderDetailsScreen extends StatelessWidget {
   final OrderModel order;
-  final UserModel? user;
+  // final UserModel? user;
 
-  const OrderDetailsScreen({super.key, required this.order, this.user});
+  const OrderDetailsScreen({super.key, required this.order});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +27,7 @@ class OrderDetailsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // --- Order Status & Date ---
-            _buildSection(
+            buildSection(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -53,23 +52,23 @@ class OrderDetailsScreen extends StatelessWidget {
             const SizedBox(height: 16),
 
             // --- Customer Info ---
-            _buildSectionTitle('معلومات العميل'),
-            _buildSection(
+            buildSectionTitle('معلومات العميل'),
+            buildSection(
               child: Column(
                 children: [
-                  _buildDetailRow(Icons.person, 'اسم العميل', user?.name ?? 'غير متوفر (ID: ${order.userId})'),
-                  if(user?.email != null) ...[
+                  buildDetailRow(Icons.person, 'اسم العميل', order.phoneNumber ?? 'غير متوفر (ID: ${order.userId})'),
+                  // if(user?.email != null) ...[
+                  //     const Divider(),
+                  //     buildDetailRow(Icons.email, 'البريد الإلكتروني', order!.),
+                  // ],
+                  // if(order.phoneNumber != null && order.phoneNumber!.isNotEmpty) ...[
                       const Divider(),
-                      _buildDetailRow(Icons.email, 'البريد الإلكتروني', user!.email),
-                  ],
-                  if(order.phoneNumber != null && order.phoneNumber!.isNotEmpty) ...[
-                      const Divider(),
-                      _buildDetailRow(Icons.phone, 'رقم الهاتف', order.phoneNumber!),
-                  ],
+                      buildDetailRow(Icons.phone, 'رقم الهاتف', order.phoneNumber?? "000"),
+                  // ],
                   const Divider(),
-                  _buildDetailRow(Icons.payment, 'طريقة الدفع', order.paymentMethod),
+                  buildDetailRow(Icons.payment, 'طريقة الدفع', order.paymentMethod),
                   const Divider(),
-                  _buildDetailRow(Icons.check_circle, 'حالة الدفع', '', 
+                  buildDetailRow(Icons.check_circle, 'حالة الدفع', '', 
                     trailing: PaymentStatusBadge(status: order.paymentStatus)),
                 ],
               ),
@@ -78,21 +77,21 @@ class OrderDetailsScreen extends StatelessWidget {
             const SizedBox(height: 16),
 
             // --- Shipping Address ---
-            _buildSectionTitle('عنوان الشحن'),
-            _buildSection(
-              child: _buildAddressSection(order.shippingAddressSnapshot),
+            buildSectionTitle('عنوان الشحن'),
+            buildSection(
+              child: buildAddressSection(order.shippingAddressSnapshot),
             ),
 
             const SizedBox(height: 16),
 
             // --- Order Items ---
-            _buildSectionTitle('المنتجات'),
-            _buildSection(
+            buildSectionTitle('المنتجات'),
+            buildSection(
               padding: EdgeInsets.zero,
               child: Column(
                 children: [
                   if (order.items != null && order.items!.isNotEmpty)
-                    ...order.items!.map((item) => _buildOrderItem(item, isDark))
+                    ...order.items!.map((item) => buildOrderItem(item, isDark))
                   else
                     const Padding(
                       padding: EdgeInsets.all(16.0),
@@ -105,16 +104,16 @@ class OrderDetailsScreen extends StatelessWidget {
             const SizedBox(height: 16),
 
             // --- Order Summary ---
-            _buildSectionTitle('ملخص الطلب'),
-            _buildSection(
+            buildSectionTitle('ملخص الطلب'),
+            buildSection(
               child: Column(
                 children: [
-                  _buildSummaryRow('المجموع الفرعي', '${order.subtotal.toStringAsFixed(2)} ر.س'),
-                  _buildSummaryRow('تكلفة الشحن', '${order.shippingCost.toStringAsFixed(2)} ر.س'),
+                  buildSummaryRow('المجموع الفرعي', '${order.subtotal.toStringAsFixed(2)} ر.س'),
+                  buildSummaryRow('تكلفة الشحن', '${order.shippingCost.toStringAsFixed(2)} ر.س'),
                   if (order.discount > 0)
-                    _buildSummaryRow('الخصم', '-${order.discount.toStringAsFixed(2)} ر.س', color: Colors.green),
+                    buildSummaryRow('الخصم', '-${order.discount.toStringAsFixed(2)} ر.س', color: Colors.green),
                   const Divider(),
-                  _buildSummaryRow('الإجمالي', '${order.totalAmount.toStringAsFixed(2)} ر.س', 
+                  buildSummaryRow('الإجمالي', '${order.totalAmount.toStringAsFixed(2)} ر.س', 
                     isTotal: true, color: AppColors.primary),
                 ],
               ),
@@ -124,8 +123,8 @@ class OrderDetailsScreen extends StatelessWidget {
 
             // --- Notes ---
             if (order.notes != null && order.notes!.isNotEmpty) ...[
-              _buildSectionTitle('ملاحظات'),
-              _buildSection(
+              buildSectionTitle('ملاحظات'),
+              buildSection(
                 child: Text(order.notes!),
               ),
               const SizedBox(height: 16),
@@ -136,7 +135,7 @@ class OrderDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget buildSectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0, right: 4.0),
       child: Text(
@@ -146,7 +145,7 @@ class OrderDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSection({required Widget child, EdgeInsets? padding}) {
+  Widget buildSection({required Widget child, EdgeInsets? padding}) {
     return Container(
       width: double.infinity,
       padding: padding ?? const EdgeInsets.all(16),
@@ -159,7 +158,7 @@ class OrderDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailRow(IconData icon, String label, String value, {Widget? trailing}) {
+  Widget buildDetailRow(IconData icon, String label, String value, {Widget? trailing}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
@@ -174,7 +173,7 @@ class OrderDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAddressSection(Map<String, dynamic>? snapshot) {
+  Widget buildAddressSection(Map<String, dynamic>? snapshot) {
     if (snapshot == null || snapshot.isEmpty) {
       return const Text('العنوان غير متوفر', style: TextStyle(color: Colors.grey));
     }
@@ -183,15 +182,15 @@ class OrderDetailsScreen extends StatelessWidget {
     if (snapshot.containsKey('address')) {
       final addr = snapshot['address'];
       if (addr is String) {
-        return _buildAddressInfoRow(Icons.location_on, 'العنوان الكامل', addr);
+        return buildAddressInfoRow(Icons.location_on, 'العنوان الكامل', addr);
       }
       if (addr is Map) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildAddressInfoRow(Icons.location_city, 'المدينة', addr['city'] ?? addr['City'] ?? 'غير محدد'),
+            buildAddressInfoRow(Icons.location_city, 'المدينة', addr['city'] ?? addr['City'] ?? 'غير محدد'),
             const SizedBox(height: 12),
-            _buildAddressInfoRow(Icons.location_on, 'الشارع/العنوان', addr['street'] ?? addr['Street'] ?? 'غير محدد'),
+            buildAddressInfoRow(Icons.location_on, 'الشارع/العنوان', addr['street'] ?? addr['Street'] ?? 'غير محدد'),
           ],
         );
       }
@@ -200,15 +199,15 @@ class OrderDetailsScreen extends StatelessWidget {
     // الحالة 2: البحث في أول قيمة متوفرة
     final firstVal = snapshot.values.isNotEmpty ? snapshot.values.first : null;
     if (firstVal is String) {
-      return _buildAddressInfoRow(Icons.location_on, 'العنوان الكامل', firstVal);
+      return buildAddressInfoRow(Icons.location_on, 'العنوان الكامل', firstVal);
     }
     if (firstVal is Map) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildAddressInfoRow(Icons.location_city, 'المدينة', firstVal['city'] ?? firstVal['City'] ?? 'غير محدد'),
+          buildAddressInfoRow(Icons.location_city, 'المدينة', firstVal['city'] ?? firstVal['City'] ?? 'غير محدد'),
           const SizedBox(height: 12),
-          _buildAddressInfoRow(Icons.location_on, 'الشارع/العنوان', firstVal['street'] ?? firstVal['Street'] ?? 'غير محدد'),
+          buildAddressInfoRow(Icons.location_on, 'الشارع/العنوان', firstVal['street'] ?? firstVal['Street'] ?? 'غير محدد'),
         ],
       );
     }
@@ -216,7 +215,7 @@ class OrderDetailsScreen extends StatelessWidget {
     return const Text('العنوان غير محدد', style: TextStyle(color: Colors.grey));
   }
 
-  Widget _buildAddressInfoRow(IconData icon, String label, String value) {
+  Widget buildAddressInfoRow(IconData icon, String label, String value) {
     return Row(
       children: [
         Container(
@@ -241,7 +240,7 @@ class OrderDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildOrderItem(OrderItemModel item, bool isDark) {
+  Widget buildOrderItem(OrderItemModel item, bool isDark) {
     return ListTile(
       leading: Container(
         width: 50,
@@ -260,7 +259,7 @@ class OrderDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSummaryRow(String label, String value, {bool isTotal = false, Color? color}) {
+  Widget buildSummaryRow(String label, String value, {bool isTotal = false, Color? color}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
