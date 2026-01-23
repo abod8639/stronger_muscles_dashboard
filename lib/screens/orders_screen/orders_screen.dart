@@ -18,11 +18,11 @@ class OrdersScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: _buildAppBar(context, controller, responsive),
+      appBar: buildAppBar(context, controller, responsive),
       body: Column(
         children: [
-          _buildSearchBar(context, controller, responsive),
-          _buildStatusTabs(context, controller, responsive),
+          buildSearchBar(context, controller, responsive),
+          buildStatusTabs(context, controller, responsive),
           const SizedBox(height: 8),
           Expanded(
             child: Obx(() {
@@ -40,7 +40,7 @@ class OrdersScreen extends StatelessWidget {
               }
 
               if (controller.filteredOrders.isEmpty) {
-                return _buildEmptyState(controller);
+                return buildEmptyState(controller);
               }
 
               return RefreshIndicator(
@@ -69,8 +69,8 @@ class OrdersScreen extends StatelessWidget {
       ),
     );
   }
-
-  PreferredSizeWidget _buildAppBar(BuildContext context, OrdersController controller, ResponsiveLayout responsive) {
+}
+  PreferredSizeWidget buildAppBar(BuildContext context, OrdersController controller, ResponsiveLayout responsive) {
     return AppBar(
       title: Text(
         'إدارة الطلبات',
@@ -93,7 +93,7 @@ class OrdersScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSearchBar(BuildContext context, OrdersController controller, ResponsiveLayout responsive) {
+  Widget buildSearchBar(BuildContext context, OrdersController controller, ResponsiveLayout responsive) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     
     return Padding(
@@ -125,7 +125,7 @@ class OrdersScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusTabs(BuildContext context, OrdersController controller, ResponsiveLayout responsive) {
+  Widget buildStatusTabs(BuildContext context, OrdersController controller, ResponsiveLayout responsive) {
     final statuses = [
       null, // All
       OrderStatus.pending,
@@ -170,7 +170,7 @@ class OrdersScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState(OrdersController controller) {
+  Widget buildEmptyState(OrdersController controller) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -195,4 +195,4 @@ class OrdersScreen extends StatelessWidget {
       ),
     );
   }
-}
+
