@@ -57,20 +57,31 @@ class _AnimatedOrderListTileState extends State<AnimatedOrderListTile>
       return 'العنوان غير متوفر';
     }
 
-    Map<String, dynamic> addressData = {};
+    // إذا كان الكائن يحتوي على مفتاح 'address'
     if (snapshot.containsKey('address')) {
-      addressData = snapshot['address']!;
-    } else {
-      // Fallback for slightly different structures
-      addressData = snapshot.values.isNotEmpty ? snapshot.values.first : {};
+      final addr = snapshot['address'];
+      // إذا كانت القيمة نصاً مباشرة (مثل "123 Main Street")
+      if (addr is String) return addr;
+      // إذا كانت خريطة بيانات
+      if (addr is Map) {
+        final city = addr['city'] ?? addr['City'] ?? '';
+        final street = addr['street'] ?? addr['Street'] ?? '';
+        final full = [city, street].where((s) => s != null && s.toString().isNotEmpty).join(', ');
+        return full.isNotEmpty ? full : 'العنوان غير محدد';
+      }
     }
 
-    final city = addressData['city'] ?? addressData['City'] ?? '';
-    final street = addressData['street'] ?? addressData['Street'] ?? '';
+    // محاولة البحث في القيم مباشرة إذا لم يوجد مفتاح 'address'
+    final firstVal = snapshot.values.isNotEmpty ? snapshot.values.first : null;
+    if (firstVal is String) return firstVal;
+    if (firstVal is Map) {
+      final city = firstVal['city'] ?? firstVal['City'] ?? '';
+      final street = firstVal['street'] ?? firstVal['Street'] ?? '';
+      final full = [city, street].where((s) => s != null && s.toString().isNotEmpty).join(', ');
+      return full.isNotEmpty ? full : 'العنوان غير محدد';
+    }
 
-    final fullAddress = [city, street].where((s) => s.isNotEmpty).join(', ');
-
-    return fullAddress.isNotEmpty ? fullAddress : 'العنوان غير محدد';
+    return 'العنوان غير محدد';
   }
 
   Widget _buildInfoRow(IconData icon, String text) {

@@ -52,30 +52,43 @@ class OrderItemModel with _$OrderItemModel {
 // --- دالات معالجة البيانات لضمان التوافق مع أسماء الحقول المختلفة (Mapping) ---
 
 Map<String, dynamic> _mapOrderJson(Map<String, dynamic> json) {
+  // استخراج معرف المستخدم بشكل آمن من عدة أماكن محتملة
+  String extractUserId() {
+    if (json['userId'] != null) return json['userId'].toString();
+    if (json['user_id'] != null) return json['user_id'].toString();
+    if (json['user'] != null && json['user'] is Map) {
+      return (json['user']['id'] ?? '').toString();
+    }
+    return '';
+  }
+
   return {
     ...json,
-    // نستخدم الـ casting الآمن مع توفير قيمة افتراضية لتجنب خطأ الـ Null
-    'id': (json['id'] ?? '').toString(), 
-    'user_id': (json['userId'] ?? json['user_id'] ?? '').toString(),
-    'order_date': json['orderDate'] ?? json['order_date'] ?? DateTime.now().toIso8601String(),
-    'payment_status': json['paymentStatus'] ?? json['payment_status'],
-    'payment_method': json['paymentMethod'] ?? json['payment_method'] ?? 'card',
-    'address_id': (json['addressId'] ?? json['address_id'] ?? '').toString(),
-    'shipping_cost': json['shippingCost'] ?? json['shipping_cost'] ?? 0.0,
-    'total_amount': json['totalAmount'] ?? json['total_amount'] ?? 0.0,
-    'tracking_number': json['trackingNumber'] ?? json['tracking_number'],
-    'phone_number': json['phoneNumber'] ?? json['phone_number'],
-    'order_items': json['items'] ?? json['order_items'],
+    'id': (json['id'] ?? '').toString(),
+    'userId': extractUserId(),
+    'orderDate': json['orderDate'] ?? json['order_date'] ?? DateTime.now().toIso8601String(),
+    'addressId': (json['addressId'] ?? json['address_id'] ?? '').toString(),
+    'shippingCost': json['shippingCost'] ?? json['shipping_cost'] ?? 0.0,
+    'totalAmount': json['totalAmount'] ?? json['total_amount'] ?? 0.0,
+    'items': json['items'] ?? json['order_items'],
+    // الحفاظ على الأسماء الأصلية لضمان عمل الحقول الأخرى
+    'paymentStatus': json['paymentStatus'] ?? json['payment_status'],
+    'paymentMethod': json['paymentMethod'] ?? json['payment_method'] ?? 'card',
+    'trackingNumber': json['trackingNumber'] ?? json['tracking_number'],
+    'phoneNumber': json['phoneNumber'] ?? json['phone_number'],
+    'shippingAddressSnapshot': json['shippingAddressSnapshot'] ?? json['shipping_address_snapshot'] ?? {
+       'address': json['shipping_address'] // Fallback if backend sends plain string
+    },
   };
 }
 
 Map<String, dynamic> _mapItemJson(Map<String, dynamic> json) {
   return {
     ...json,
-    'order_id': json['orderId'] ?? json['order_id'],
-    'product_id': json['productId'] ?? json['product_id'],
-    'product_name': json['productName'] ?? json['product_name'],
-    'unit_price': json['unitPrice'] ?? json['unit_price'],
-    'image_url': json['imageUrl'] ?? json['image_url'],
+    'orderId': json['orderId'] ?? json['order_id'],
+    'productId': json['productId'] ?? json['product_id'],
+    'productName': json['productName'] ?? json['product_name'],
+    'unitPrice': json['unitPrice'] ?? json['unit_price'],
+    'imageUrl': json['imageUrl'] ?? json['image_url'],
   };
 }
