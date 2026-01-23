@@ -23,23 +23,18 @@ mixin _$CartItemModel {
   @HiveField(0)
   String get id => throw _privateConstructorUsedError;
   @HiveField(1)
-  @JsonKey(name: 'user_id')
   String get userId => throw _privateConstructorUsedError;
   @HiveField(2)
-  @JsonKey(name: 'product_id')
   String get productId => throw _privateConstructorUsedError;
   @HiveField(3)
-  @JsonKey(name: 'product_name')
   String get productName => throw _privateConstructorUsedError;
   @HiveField(4)
   double get price => throw _privateConstructorUsedError;
   @HiveField(5)
   int get quantity => throw _privateConstructorUsedError;
   @HiveField(6)
-  @JsonKey(name: 'image_urls')
   List<String> get imageUrls => throw _privateConstructorUsedError;
   @HiveField(7)
-  @JsonKey(name: 'added_at')
   DateTime get addedAt => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -56,13 +51,13 @@ abstract class $CartItemModelCopyWith<$Res> {
   @useResult
   $Res call(
       {@HiveField(0) String id,
-      @HiveField(1) @JsonKey(name: 'user_id') String userId,
-      @HiveField(2) @JsonKey(name: 'product_id') String productId,
-      @HiveField(3) @JsonKey(name: 'product_name') String productName,
+      @HiveField(1) String userId,
+      @HiveField(2) String productId,
+      @HiveField(3) String productName,
       @HiveField(4) double price,
       @HiveField(5) int quantity,
-      @HiveField(6) @JsonKey(name: 'image_urls') List<String> imageUrls,
-      @HiveField(7) @JsonKey(name: 'added_at') DateTime addedAt});
+      @HiveField(6) List<String> imageUrls,
+      @HiveField(7) DateTime addedAt});
 }
 
 /// @nodoc
@@ -134,13 +129,13 @@ abstract class _$$CartItemModelImplCopyWith<$Res>
   @useResult
   $Res call(
       {@HiveField(0) String id,
-      @HiveField(1) @JsonKey(name: 'user_id') String userId,
-      @HiveField(2) @JsonKey(name: 'product_id') String productId,
-      @HiveField(3) @JsonKey(name: 'product_name') String productName,
+      @HiveField(1) String userId,
+      @HiveField(2) String productId,
+      @HiveField(3) String productName,
       @HiveField(4) double price,
       @HiveField(5) int quantity,
-      @HiveField(6) @JsonKey(name: 'image_urls') List<String> imageUrls,
-      @HiveField(7) @JsonKey(name: 'added_at') DateTime addedAt});
+      @HiveField(6) List<String> imageUrls,
+      @HiveField(7) DateTime addedAt});
 }
 
 /// @nodoc
@@ -205,15 +200,13 @@ class __$$CartItemModelImplCopyWithImpl<$Res>
 class _$CartItemModelImpl extends _CartItemModel {
   const _$CartItemModelImpl(
       {@HiveField(0) required this.id,
-      @HiveField(1) @JsonKey(name: 'user_id') required this.userId,
-      @HiveField(2) @JsonKey(name: 'product_id') required this.productId,
-      @HiveField(3) @JsonKey(name: 'product_name') required this.productName,
+      @HiveField(1) required this.userId,
+      @HiveField(2) required this.productId,
+      @HiveField(3) required this.productName,
       @HiveField(4) this.price = 0.0,
       @HiveField(5) this.quantity = 1,
-      @HiveField(6)
-      @JsonKey(name: 'image_urls')
-      final List<String> imageUrls = const [],
-      @HiveField(7) @JsonKey(name: 'added_at') required this.addedAt})
+      @HiveField(6) final List<String> imageUrls = const [],
+      @HiveField(7) required this.addedAt})
       : _imageUrls = imageUrls,
         super._();
 
@@ -225,15 +218,12 @@ class _$CartItemModelImpl extends _CartItemModel {
   final String id;
   @override
   @HiveField(1)
-  @JsonKey(name: 'user_id')
   final String userId;
   @override
   @HiveField(2)
-  @JsonKey(name: 'product_id')
   final String productId;
   @override
   @HiveField(3)
-  @JsonKey(name: 'product_name')
   final String productName;
   @override
   @JsonKey()
@@ -245,8 +235,8 @@ class _$CartItemModelImpl extends _CartItemModel {
   final int quantity;
   final List<String> _imageUrls;
   @override
+  @JsonKey()
   @HiveField(6)
-  @JsonKey(name: 'image_urls')
   List<String> get imageUrls {
     if (_imageUrls is EqualUnmodifiableListView) return _imageUrls;
     // ignore: implicit_dynamic_type
@@ -255,7 +245,6 @@ class _$CartItemModelImpl extends _CartItemModel {
 
   @override
   @HiveField(7)
-  @JsonKey(name: 'added_at')
   final DateTime addedAt;
 
   @override
@@ -312,19 +301,13 @@ class _$CartItemModelImpl extends _CartItemModel {
 abstract class _CartItemModel extends CartItemModel {
   const factory _CartItemModel(
       {@HiveField(0) required final String id,
-      @HiveField(1) @JsonKey(name: 'user_id') required final String userId,
-      @HiveField(2)
-      @JsonKey(name: 'product_id')
-      required final String productId,
-      @HiveField(3)
-      @JsonKey(name: 'product_name')
-      required final String productName,
+      @HiveField(1) required final String userId,
+      @HiveField(2) required final String productId,
+      @HiveField(3) required final String productName,
       @HiveField(4) final double price,
       @HiveField(5) final int quantity,
-      @HiveField(6) @JsonKey(name: 'image_urls') final List<String> imageUrls,
-      @HiveField(7)
-      @JsonKey(name: 'added_at')
-      required final DateTime addedAt}) = _$CartItemModelImpl;
+      @HiveField(6) final List<String> imageUrls,
+      @HiveField(7) required final DateTime addedAt}) = _$CartItemModelImpl;
   const _CartItemModel._() : super._();
 
   factory _CartItemModel.fromJson(Map<String, dynamic> json) =
@@ -335,15 +318,12 @@ abstract class _CartItemModel extends CartItemModel {
   String get id;
   @override
   @HiveField(1)
-  @JsonKey(name: 'user_id')
   String get userId;
   @override
   @HiveField(2)
-  @JsonKey(name: 'product_id')
   String get productId;
   @override
   @HiveField(3)
-  @JsonKey(name: 'product_name')
   String get productName;
   @override
   @HiveField(4)
@@ -353,11 +333,9 @@ abstract class _CartItemModel extends CartItemModel {
   int get quantity;
   @override
   @HiveField(6)
-  @JsonKey(name: 'image_urls')
   List<String> get imageUrls;
   @override
   @HiveField(7)
-  @JsonKey(name: 'added_at')
   DateTime get addedAt;
   @override
   @JsonKey(ignore: true)

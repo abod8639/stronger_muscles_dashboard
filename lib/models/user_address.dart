@@ -12,7 +12,7 @@ class UserAddress with _$UserAddress {
     @HiveField(0) required int id,
     @HiveField(1) @Default('') String city,
     @HiveField(2) @Default('') String street,
-    @HiveField(3) @JsonKey(name: 'is_default') @Default(false) bool isDefault,
+    @HiveField(3) @Default(false) bool isDefault,
   }) = _UserAddress;
 
   factory UserAddress.fromJson(Map<String, dynamic> json) => 

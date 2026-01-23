@@ -57,7 +57,7 @@ UserAddress _$UserAddressFromJson(Map<String, dynamic> json) => UserAddress(
       id: (json['id'] as num).toInt(),
       city: json['city'] as String,
       street: json['street'] as String,
-      isDefault: json['is_default'] as bool,
+      isDefault: json['isDefault'] as bool,
     );
 
 Map<String, dynamic> _$UserAddressToJson(UserAddress instance) =>
@@ -65,7 +65,7 @@ Map<String, dynamic> _$UserAddressToJson(UserAddress instance) =>
       'id': instance.id,
       'city': instance.city,
       'street': instance.street,
-      'is_default': instance.isDefault,
+      'isDefault': instance.isDefault,
     };
 
 _$UserAddressImpl _$$UserAddressImplFromJson(Map<String, dynamic> json) =>
@@ -73,7 +73,7 @@ _$UserAddressImpl _$$UserAddressImplFromJson(Map<String, dynamic> json) =>
       id: (json['id'] as num).toInt(),
       city: json['city'] as String? ?? '',
       street: json['street'] as String? ?? '',
-      isDefault: json['is_default'] as bool? ?? false,
+      isDefault: json['isDefault'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$$UserAddressImplToJson(_$UserAddressImpl instance) =>
@@ -81,5 +81,5 @@ Map<String, dynamic> _$$UserAddressImplToJson(_$UserAddressImpl instance) =>
       'id': instance.id,
       'city': instance.city,
       'street': instance.street,
-      'is_default': instance.isDefault,
+      'isDefault': instance.isDefault,
     };

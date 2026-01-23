@@ -68,52 +68,51 @@ class CartItemModelAdapter extends TypeAdapter<CartItemModel> {
 CartItemModel _$CartItemModelFromJson(Map<String, dynamic> json) =>
     CartItemModel(
       id: json['id'] as String,
-      userId: json['user_id'] as String,
-      productId: json['product_id'] as String,
-      productName: json['product_name'] as String,
+      userId: json['userId'] as String,
+      productId: json['productId'] as String,
+      productName: json['productName'] as String,
       price: (json['price'] as num).toDouble(),
       quantity: (json['quantity'] as num).toInt(),
-      imageUrls: (json['image_urls'] as List<dynamic>)
-          .map((e) => e as String)
-          .toList(),
-      addedAt: DateTime.parse(json['added_at'] as String),
+      imageUrls:
+          (json['imageUrls'] as List<dynamic>).map((e) => e as String).toList(),
+      addedAt: DateTime.parse(json['addedAt'] as String),
     );
 
 Map<String, dynamic> _$CartItemModelToJson(CartItemModel instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'user_id': instance.userId,
-      'product_id': instance.productId,
-      'product_name': instance.productName,
+      'userId': instance.userId,
+      'productId': instance.productId,
+      'productName': instance.productName,
       'price': instance.price,
       'quantity': instance.quantity,
-      'image_urls': instance.imageUrls,
-      'added_at': instance.addedAt.toIso8601String(),
+      'imageUrls': instance.imageUrls,
+      'addedAt': instance.addedAt.toIso8601String(),
     };
 
 _$CartItemModelImpl _$$CartItemModelImplFromJson(Map<String, dynamic> json) =>
     _$CartItemModelImpl(
       id: json['id'] as String,
-      userId: json['user_id'] as String,
-      productId: json['product_id'] as String,
-      productName: json['product_name'] as String,
+      userId: json['userId'] as String,
+      productId: json['productId'] as String,
+      productName: json['productName'] as String,
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       quantity: (json['quantity'] as num?)?.toInt() ?? 1,
-      imageUrls: (json['image_urls'] as List<dynamic>?)
+      imageUrls: (json['imageUrls'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           const [],
-      addedAt: DateTime.parse(json['added_at'] as String),
+      addedAt: DateTime.parse(json['addedAt'] as String),
     );
 
 Map<String, dynamic> _$$CartItemModelImplToJson(_$CartItemModelImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'user_id': instance.userId,
-      'product_id': instance.productId,
-      'product_name': instance.productName,
+      'userId': instance.userId,
+      'productId': instance.productId,
+      'productName': instance.productName,
       'price': instance.price,
       'quantity': instance.quantity,
-      'image_urls': instance.imageUrls,
-      'added_at': instance.addedAt.toIso8601String(),
+      'imageUrls': instance.imageUrls,
+      'addedAt': instance.addedAt.toIso8601String(),
     };

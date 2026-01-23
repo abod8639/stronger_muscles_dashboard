@@ -12,13 +12,13 @@ class CartItemModel with _$CartItemModel {
 
   const factory CartItemModel({
     @HiveField(0) required String id,
-    @HiveField(1) @JsonKey(name: 'user_id') required String userId,
-    @HiveField(2) @JsonKey(name: 'product_id') required String productId,
-    @HiveField(3) @JsonKey(name: 'product_name') required String productName,
+    @HiveField(1) required String userId,
+    @HiveField(2) required String productId,
+    @HiveField(3) required String productName,
     @HiveField(4) @Default(0.0) double price,
     @HiveField(5) @Default(1) int quantity,
-    @HiveField(6) @JsonKey(name: 'image_urls') @Default([]) List<String> imageUrls,
-    @HiveField(7) @JsonKey(name: 'added_at') required DateTime addedAt,
+    @HiveField(6) @Default([]) List<String> imageUrls,
+    @HiveField(7) required DateTime addedAt,
   }) = _CartItemModel;
 
   factory CartItemModel.fromJson(Map<String, dynamic> json) => 

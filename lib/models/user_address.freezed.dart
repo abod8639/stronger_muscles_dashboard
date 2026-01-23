@@ -27,7 +27,6 @@ mixin _$UserAddress {
   @HiveField(2)
   String get street => throw _privateConstructorUsedError;
   @HiveField(3)
-  @JsonKey(name: 'is_default')
   bool get isDefault => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -46,7 +45,7 @@ abstract class $UserAddressCopyWith<$Res> {
       {@HiveField(0) int id,
       @HiveField(1) String city,
       @HiveField(2) String street,
-      @HiveField(3) @JsonKey(name: 'is_default') bool isDefault});
+      @HiveField(3) bool isDefault});
 }
 
 /// @nodoc
@@ -100,7 +99,7 @@ abstract class _$$UserAddressImplCopyWith<$Res>
       {@HiveField(0) int id,
       @HiveField(1) String city,
       @HiveField(2) String street,
-      @HiveField(3) @JsonKey(name: 'is_default') bool isDefault});
+      @HiveField(3) bool isDefault});
 }
 
 /// @nodoc
@@ -147,7 +146,7 @@ class _$UserAddressImpl implements _UserAddress {
       {@HiveField(0) required this.id,
       @HiveField(1) this.city = '',
       @HiveField(2) this.street = '',
-      @HiveField(3) @JsonKey(name: 'is_default') this.isDefault = false});
+      @HiveField(3) this.isDefault = false});
 
   factory _$UserAddressImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserAddressImplFromJson(json);
@@ -164,8 +163,8 @@ class _$UserAddressImpl implements _UserAddress {
   @HiveField(2)
   final String street;
   @override
+  @JsonKey()
   @HiveField(3)
-  @JsonKey(name: 'is_default')
   final bool isDefault;
 
   @override
@@ -205,11 +204,10 @@ class _$UserAddressImpl implements _UserAddress {
 
 abstract class _UserAddress implements UserAddress {
   const factory _UserAddress(
-          {@HiveField(0) required final int id,
-          @HiveField(1) final String city,
-          @HiveField(2) final String street,
-          @HiveField(3) @JsonKey(name: 'is_default') final bool isDefault}) =
-      _$UserAddressImpl;
+      {@HiveField(0) required final int id,
+      @HiveField(1) final String city,
+      @HiveField(2) final String street,
+      @HiveField(3) final bool isDefault}) = _$UserAddressImpl;
 
   factory _UserAddress.fromJson(Map<String, dynamic> json) =
       _$UserAddressImpl.fromJson;
@@ -225,7 +223,6 @@ abstract class _UserAddress implements UserAddress {
   String get street;
   @override
   @HiveField(3)
-  @JsonKey(name: 'is_default')
   bool get isDefault;
   @override
   @JsonKey(ignore: true)
