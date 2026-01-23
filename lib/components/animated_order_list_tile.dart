@@ -52,7 +52,7 @@ class _AnimatedOrderListTileState extends State<AnimatedOrderListTile>
     super.dispose();
   }
 
-  String _extractAddress(Map<String, Map<String, dynamic>>? snapshot) {
+  String _extractAddress(Map<String, dynamic>? snapshot) {
     if (snapshot == null || snapshot.isEmpty) {
       return 'العنوان غير متوفر';
     }

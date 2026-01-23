@@ -11,21 +11,21 @@ enum PaymentStatus { pending, paid, failed, refunded }
 class OrderModel with _$OrderModel {
   const factory OrderModel({
     required String id,
-    @JsonKey(name: 'user_id') required String userId,
-    @JsonKey(name: 'order_date') required DateTime orderDate,
+    required String userId,
+    required DateTime orderDate,
     @Default(OrderStatus.pending) OrderStatus status,
-    @JsonKey(name: 'payment_status') @Default(PaymentStatus.pending) PaymentStatus paymentStatus,
-    @JsonKey(name: 'payment_method') @Default('card') String paymentMethod,
-    @JsonKey(name: 'address_id') required String addressId,
-    @JsonKey(name: 'shipping_address_snapshot') Map<String, dynamic>? shippingAddressSnapshot,
+    @Default(PaymentStatus.pending) PaymentStatus paymentStatus,
+    @Default('card') String paymentMethod,
+    required String addressId,
+    Map<String, dynamic>? shippingAddressSnapshot,
     required double subtotal,
-    @JsonKey(name: 'shipping_cost') @Default(0.0) double shippingCost,
+    @Default(0.0) double shippingCost,
     @Default(0.0) double discount,
-    @JsonKey(name: 'total_amount') required double totalAmount,
-    @JsonKey(name: 'tracking_number') String? trackingNumber,
+    required double totalAmount,
+    String? trackingNumber,
     String? notes,
-    @JsonKey(name: 'phone_number') String? phoneNumber,
-    @JsonKey(name: 'order_items') List<OrderItemModel>? items,
+    String? phoneNumber,
+    List<OrderItemModel>? items,
   }) = _OrderModel;
 
   factory OrderModel.fromJson(Map<String, dynamic> json) => 
@@ -36,13 +36,13 @@ class OrderModel with _$OrderModel {
 class OrderItemModel with _$OrderItemModel {
   const factory OrderItemModel({
     required String id,
-    @JsonKey(name: 'order_id') required String orderId,
-    @JsonKey(name: 'product_id') required String productId,
-    @JsonKey(name: 'product_name') required String productName,
-    @JsonKey(name: 'unit_price') required double unitPrice,
+    required String orderId,
+    required String productId,
+    required String productName,
+    required double unitPrice,
     required int quantity,
     required double subtotal,
-    @JsonKey(name: 'image_url') String? imageUrl,
+    String? imageUrl,
   }) = _OrderItemModel;
 
   factory OrderItemModel.fromJson(Map<String, dynamic> json) => 
@@ -54,13 +54,15 @@ class OrderItemModel with _$OrderItemModel {
 Map<String, dynamic> _mapOrderJson(Map<String, dynamic> json) {
   return {
     ...json,
-    'user_id': json['userId'] ?? json['user_id'],
-    'order_date': json['orderDate'] ?? json['order_date'],
+    // نستخدم الـ casting الآمن مع توفير قيمة افتراضية لتجنب خطأ الـ Null
+    'id': (json['id'] ?? '').toString(), 
+    'user_id': (json['userId'] ?? json['user_id'] ?? '').toString(),
+    'order_date': json['orderDate'] ?? json['order_date'] ?? DateTime.now().toIso8601String(),
     'payment_status': json['paymentStatus'] ?? json['payment_status'],
-    'payment_method': json['paymentMethod'] ?? json['payment_method'],
-    'address_id': json['addressId'] ?? json['address_id'],
-    'shipping_cost': json['shippingCost'] ?? json['shipping_cost'],
-    'total_amount': json['totalAmount'] ?? json['total_amount'],
+    'payment_method': json['paymentMethod'] ?? json['payment_method'] ?? 'card',
+    'address_id': (json['addressId'] ?? json['address_id'] ?? '').toString(),
+    'shipping_cost': json['shippingCost'] ?? json['shipping_cost'] ?? 0.0,
+    'total_amount': json['totalAmount'] ?? json['total_amount'] ?? 0.0,
     'tracking_number': json['trackingNumber'] ?? json['tracking_number'],
     'phone_number': json['phoneNumber'] ?? json['phone_number'],
     'order_items': json['items'] ?? json['order_items'],

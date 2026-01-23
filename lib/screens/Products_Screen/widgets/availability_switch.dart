@@ -42,7 +42,7 @@ class AvailabilitySwitch extends StatelessWidget {
               if (onChanged != null) onChanged!(value);
             },
             // تحسين الألوان والمظهر
-            activeColor: AppColors.primary,
+            activeThumbColor: AppColors.primary,
             activeTrackColor: AppColors.primary.withOpacity(0.2),
             inactiveThumbColor: Colors.grey[400],
             secondary: Icon(

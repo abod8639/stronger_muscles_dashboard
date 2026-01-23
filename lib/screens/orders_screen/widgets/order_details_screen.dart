@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:stronger_muscles_dashboard/models/user.dart';
-import '../../../models/order.dart';
+import '../../../models/order_model.dart';
 import '../../../config/theme.dart';
 import '../../../components/status_badge.dart';
 
@@ -174,7 +174,7 @@ class OrderDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAddressSection(Map<String, Map<String, dynamic>>? snapshot) {
+  Widget _buildAddressSection(Map<String, dynamic>? snapshot) {
     if (snapshot == null || snapshot.isEmpty) {
       return const Text('العنوان غير متوفر', style: TextStyle(color: Colors.grey));
     }

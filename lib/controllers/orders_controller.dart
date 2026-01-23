@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../models/order.dart';
+import '../models/order_model.dart';
 import '../repositories/order_repository.dart';
 import '../services/api_service.dart';
 

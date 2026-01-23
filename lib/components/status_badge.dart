@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../config/theme.dart';
-import '../models/order.dart';
+import '../models/order_model.dart';
 
 class OrderStatusBadge extends StatelessWidget {
   final OrderStatus status;

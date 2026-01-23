@@ -5,7 +5,7 @@ import '../../controllers/orders_controller.dart';
 import '../../components/index.dart';
 import '../../config/theme.dart';
 import '../../config/responsive.dart';
-import '../../models/order.dart';
+import '../../models/order_model.dart';
 import 'widgets/order_details_screen.dart';
 
 class OrdersScreen extends StatelessWidget {
