@@ -25,7 +25,6 @@ mixin _$UserAddress {
   @HiveField(1)
   String get label => throw _privateConstructorUsedError;
   @HiveField(2)
-  @JsonKey(name: 'full_name')
   String get fullName => throw _privateConstructorUsedError;
   @HiveField(3)
   String get phone => throw _privateConstructorUsedError;
@@ -36,12 +35,10 @@ mixin _$UserAddress {
   @HiveField(6)
   String get state => throw _privateConstructorUsedError;
   @HiveField(7)
-  @JsonKey(name: 'postal_code')
   String get postalCode => throw _privateConstructorUsedError;
   @HiveField(8)
   String get country => throw _privateConstructorUsedError;
   @HiveField(9)
-  @JsonKey(name: 'is_default')
   bool get isDefault => throw _privateConstructorUsedError;
   @HiveField(10)
   double? get latitude => throw _privateConstructorUsedError;
@@ -63,14 +60,14 @@ abstract class $UserAddressCopyWith<$Res> {
   $Res call(
       {@HiveField(0) String id,
       @HiveField(1) String label,
-      @HiveField(2) @JsonKey(name: 'full_name') String fullName,
+      @HiveField(2) String fullName,
       @HiveField(3) String phone,
       @HiveField(4) String street,
       @HiveField(5) String city,
       @HiveField(6) String state,
-      @HiveField(7) @JsonKey(name: 'postal_code') String postalCode,
+      @HiveField(7) String postalCode,
       @HiveField(8) String country,
-      @HiveField(9) @JsonKey(name: 'is_default') bool isDefault,
+      @HiveField(9) bool isDefault,
       @HiveField(10) double? latitude,
       @HiveField(11) double? longitude});
 }
@@ -165,14 +162,14 @@ abstract class _$$UserAddressImplCopyWith<$Res>
   $Res call(
       {@HiveField(0) String id,
       @HiveField(1) String label,
-      @HiveField(2) @JsonKey(name: 'full_name') String fullName,
+      @HiveField(2) String fullName,
       @HiveField(3) String phone,
       @HiveField(4) String street,
       @HiveField(5) String city,
       @HiveField(6) String state,
-      @HiveField(7) @JsonKey(name: 'postal_code') String postalCode,
+      @HiveField(7) String postalCode,
       @HiveField(8) String country,
-      @HiveField(9) @JsonKey(name: 'is_default') bool isDefault,
+      @HiveField(9) bool isDefault,
       @HiveField(10) double? latitude,
       @HiveField(11) double? longitude});
 }
@@ -260,14 +257,14 @@ class _$UserAddressImpl extends _UserAddress {
   const _$UserAddressImpl(
       {@HiveField(0) required this.id,
       @HiveField(1) this.label = '',
-      @HiveField(2) @JsonKey(name: 'full_name') this.fullName = '',
+      @HiveField(2) this.fullName = '',
       @HiveField(3) this.phone = '',
       @HiveField(4) this.street = '',
       @HiveField(5) this.city = '',
       @HiveField(6) this.state = '',
-      @HiveField(7) @JsonKey(name: 'postal_code') this.postalCode = '',
+      @HiveField(7) this.postalCode = '',
       @HiveField(8) this.country = '',
-      @HiveField(9) @JsonKey(name: 'is_default') this.isDefault = false,
+      @HiveField(9) this.isDefault = false,
       @HiveField(10) this.latitude,
       @HiveField(11) this.longitude})
       : super._();
@@ -283,8 +280,8 @@ class _$UserAddressImpl extends _UserAddress {
   @HiveField(1)
   final String label;
   @override
+  @JsonKey()
   @HiveField(2)
-  @JsonKey(name: 'full_name')
   final String fullName;
   @override
   @JsonKey()
@@ -303,16 +300,16 @@ class _$UserAddressImpl extends _UserAddress {
   @HiveField(6)
   final String state;
   @override
+  @JsonKey()
   @HiveField(7)
-  @JsonKey(name: 'postal_code')
   final String postalCode;
   @override
   @JsonKey()
   @HiveField(8)
   final String country;
   @override
+  @JsonKey()
   @HiveField(9)
-  @JsonKey(name: 'is_default')
   final bool isDefault;
   @override
   @HiveField(10)
@@ -373,14 +370,14 @@ abstract class _UserAddress extends UserAddress {
   const factory _UserAddress(
       {@HiveField(0) required final String id,
       @HiveField(1) final String label,
-      @HiveField(2) @JsonKey(name: 'full_name') final String fullName,
+      @HiveField(2) final String fullName,
       @HiveField(3) final String phone,
       @HiveField(4) final String street,
       @HiveField(5) final String city,
       @HiveField(6) final String state,
-      @HiveField(7) @JsonKey(name: 'postal_code') final String postalCode,
+      @HiveField(7) final String postalCode,
       @HiveField(8) final String country,
-      @HiveField(9) @JsonKey(name: 'is_default') final bool isDefault,
+      @HiveField(9) final bool isDefault,
       @HiveField(10) final double? latitude,
       @HiveField(11) final double? longitude}) = _$UserAddressImpl;
   const _UserAddress._() : super._();
@@ -396,7 +393,6 @@ abstract class _UserAddress extends UserAddress {
   String get label;
   @override
   @HiveField(2)
-  @JsonKey(name: 'full_name')
   String get fullName;
   @override
   @HiveField(3)
@@ -412,14 +408,12 @@ abstract class _UserAddress extends UserAddress {
   String get state;
   @override
   @HiveField(7)
-  @JsonKey(name: 'postal_code')
   String get postalCode;
   @override
   @HiveField(8)
   String get country;
   @override
   @HiveField(9)
-  @JsonKey(name: 'is_default')
   bool get isDefault;
   @override
   @HiveField(10)

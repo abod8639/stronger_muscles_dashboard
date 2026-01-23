@@ -3,6 +3,152 @@
 part of 'product_model.dart';
 
 // **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
+
+class ProductModelAdapter extends TypeAdapter<ProductModel> {
+  @override
+  final int typeId = 8;
+
+  @override
+  ProductModel read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return ProductModel(
+      id: fields[0] as String,
+      name: fields[1] as String,
+      price: fields[2] as double,
+      discountPrice: fields[3] as double?,
+      imageUrls: (fields[4] as List).cast<String>(),
+      description: fields[5] as String,
+      categoryId: fields[6] as String,
+      stockQuantity: fields[7] as int,
+      averageRating: fields[8] as double,
+      reviewCount: fields[9] as int,
+      brand: fields[10] as String?,
+      servingSize: fields[11] as String?,
+      servingsPerContainer: fields[12] as int?,
+      isActive: fields[13] as bool,
+      isBackgroundWhite: fields[14] as bool?,
+      sku: fields[15] as String?,
+      tags: (fields[16] as List?)?.cast<String>(),
+      weight: fields[17] as double?,
+      size: (fields[18] as List?)?.cast<String>(),
+      flavor: (fields[19] as List?)?.cast<String>(),
+      nutritionFacts: (fields[20] as Map?)?.cast<String, dynamic>(),
+      featured: fields[21] as bool,
+      newArrival: fields[22] as bool,
+      bestSeller: fields[23] as bool,
+      totalSales: fields[24] as int,
+      viewsCount: fields[25] as int,
+      shippingWeight: fields[26] as double?,
+      dimensions: (fields[27] as Map?)?.cast<String, dynamic>(),
+      ingredients: (fields[28] as List).cast<String>(),
+      usageInstructions: fields[29] as String?,
+      warnings: fields[30] as String?,
+      expiryDate: fields[31] as DateTime?,
+      manufacturer: fields[32] as String?,
+      countryOfOrigin: fields[33] as String?,
+      metaTitle: fields[34] as String?,
+      metaDescription: fields[35] as String?,
+      slug: fields[36] as String?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, ProductModel obj) {
+    writer
+      ..writeByte(37)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.name)
+      ..writeByte(2)
+      ..write(obj.price)
+      ..writeByte(3)
+      ..write(obj.discountPrice)
+      ..writeByte(4)
+      ..write(obj.imageUrls)
+      ..writeByte(5)
+      ..write(obj.description)
+      ..writeByte(6)
+      ..write(obj.categoryId)
+      ..writeByte(7)
+      ..write(obj.stockQuantity)
+      ..writeByte(8)
+      ..write(obj.averageRating)
+      ..writeByte(9)
+      ..write(obj.reviewCount)
+      ..writeByte(10)
+      ..write(obj.brand)
+      ..writeByte(11)
+      ..write(obj.servingSize)
+      ..writeByte(12)
+      ..write(obj.servingsPerContainer)
+      ..writeByte(13)
+      ..write(obj.isActive)
+      ..writeByte(14)
+      ..write(obj.isBackgroundWhite)
+      ..writeByte(15)
+      ..write(obj.sku)
+      ..writeByte(16)
+      ..write(obj.tags)
+      ..writeByte(17)
+      ..write(obj.weight)
+      ..writeByte(18)
+      ..write(obj.size)
+      ..writeByte(19)
+      ..write(obj.flavor)
+      ..writeByte(20)
+      ..write(obj.nutritionFacts)
+      ..writeByte(21)
+      ..write(obj.featured)
+      ..writeByte(22)
+      ..write(obj.newArrival)
+      ..writeByte(23)
+      ..write(obj.bestSeller)
+      ..writeByte(24)
+      ..write(obj.totalSales)
+      ..writeByte(25)
+      ..write(obj.viewsCount)
+      ..writeByte(26)
+      ..write(obj.shippingWeight)
+      ..writeByte(27)
+      ..write(obj.dimensions)
+      ..writeByte(28)
+      ..write(obj.ingredients)
+      ..writeByte(29)
+      ..write(obj.usageInstructions)
+      ..writeByte(30)
+      ..write(obj.warnings)
+      ..writeByte(31)
+      ..write(obj.expiryDate)
+      ..writeByte(32)
+      ..write(obj.manufacturer)
+      ..writeByte(33)
+      ..write(obj.countryOfOrigin)
+      ..writeByte(34)
+      ..write(obj.metaTitle)
+      ..writeByte(35)
+      ..write(obj.metaDescription)
+      ..writeByte(36)
+      ..write(obj.slug);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ProductModelAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+// **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 

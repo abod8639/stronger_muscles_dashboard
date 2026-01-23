@@ -20,22 +20,38 @@ OrderModel _$OrderModelFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$OrderModel {
+  @HiveField(0)
   String get id => throw _privateConstructorUsedError;
+  @HiveField(1)
   String get userId => throw _privateConstructorUsedError;
+  @HiveField(2)
   DateTime get orderDate => throw _privateConstructorUsedError;
+  @HiveField(3)
   OrderStatus get status => throw _privateConstructorUsedError;
+  @HiveField(4)
   PaymentStatus get paymentStatus => throw _privateConstructorUsedError;
+  @HiveField(5)
   String get paymentMethod => throw _privateConstructorUsedError;
+  @HiveField(6)
   String get addressId => throw _privateConstructorUsedError;
+  @HiveField(7)
+  double get subtotal => throw _privateConstructorUsedError;
+  @HiveField(8)
+  double get shippingCost => throw _privateConstructorUsedError;
+  @HiveField(9)
+  double get discount => throw _privateConstructorUsedError;
+  @HiveField(10)
+  double get totalAmount => throw _privateConstructorUsedError;
+  @HiveField(11)
+  String? get trackingNumber => throw _privateConstructorUsedError;
+  @HiveField(12)
+  String? get notes => throw _privateConstructorUsedError;
+  @HiveField(13)
+  String? get phoneNumber => throw _privateConstructorUsedError;
+  @HiveField(14)
   Map<String, dynamic>? get shippingAddressSnapshot =>
       throw _privateConstructorUsedError;
-  double get subtotal => throw _privateConstructorUsedError;
-  double get shippingCost => throw _privateConstructorUsedError;
-  double get discount => throw _privateConstructorUsedError;
-  double get totalAmount => throw _privateConstructorUsedError;
-  String? get trackingNumber => throw _privateConstructorUsedError;
-  String? get notes => throw _privateConstructorUsedError;
-  String? get phoneNumber => throw _privateConstructorUsedError;
+  @HiveField(15)
   List<OrderItemModel>? get items => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -51,22 +67,22 @@ abstract class $OrderModelCopyWith<$Res> {
       _$OrderModelCopyWithImpl<$Res, OrderModel>;
   @useResult
   $Res call(
-      {String id,
-      String userId,
-      DateTime orderDate,
-      OrderStatus status,
-      PaymentStatus paymentStatus,
-      String paymentMethod,
-      String addressId,
-      Map<String, dynamic>? shippingAddressSnapshot,
-      double subtotal,
-      double shippingCost,
-      double discount,
-      double totalAmount,
-      String? trackingNumber,
-      String? notes,
-      String? phoneNumber,
-      List<OrderItemModel>? items});
+      {@HiveField(0) String id,
+      @HiveField(1) String userId,
+      @HiveField(2) DateTime orderDate,
+      @HiveField(3) OrderStatus status,
+      @HiveField(4) PaymentStatus paymentStatus,
+      @HiveField(5) String paymentMethod,
+      @HiveField(6) String addressId,
+      @HiveField(7) double subtotal,
+      @HiveField(8) double shippingCost,
+      @HiveField(9) double discount,
+      @HiveField(10) double totalAmount,
+      @HiveField(11) String? trackingNumber,
+      @HiveField(12) String? notes,
+      @HiveField(13) String? phoneNumber,
+      @HiveField(14) Map<String, dynamic>? shippingAddressSnapshot,
+      @HiveField(15) List<OrderItemModel>? items});
 }
 
 /// @nodoc
@@ -89,7 +105,6 @@ class _$OrderModelCopyWithImpl<$Res, $Val extends OrderModel>
     Object? paymentStatus = null,
     Object? paymentMethod = null,
     Object? addressId = null,
-    Object? shippingAddressSnapshot = freezed,
     Object? subtotal = null,
     Object? shippingCost = null,
     Object? discount = null,
@@ -97,6 +112,7 @@ class _$OrderModelCopyWithImpl<$Res, $Val extends OrderModel>
     Object? trackingNumber = freezed,
     Object? notes = freezed,
     Object? phoneNumber = freezed,
+    Object? shippingAddressSnapshot = freezed,
     Object? items = freezed,
   }) {
     return _then(_value.copyWith(
@@ -128,10 +144,6 @@ class _$OrderModelCopyWithImpl<$Res, $Val extends OrderModel>
           ? _value.addressId
           : addressId // ignore: cast_nullable_to_non_nullable
               as String,
-      shippingAddressSnapshot: freezed == shippingAddressSnapshot
-          ? _value.shippingAddressSnapshot
-          : shippingAddressSnapshot // ignore: cast_nullable_to_non_nullable
-              as Map<String, dynamic>?,
       subtotal: null == subtotal
           ? _value.subtotal
           : subtotal // ignore: cast_nullable_to_non_nullable
@@ -160,6 +172,10 @@ class _$OrderModelCopyWithImpl<$Res, $Val extends OrderModel>
           ? _value.phoneNumber
           : phoneNumber // ignore: cast_nullable_to_non_nullable
               as String?,
+      shippingAddressSnapshot: freezed == shippingAddressSnapshot
+          ? _value.shippingAddressSnapshot
+          : shippingAddressSnapshot // ignore: cast_nullable_to_non_nullable
+              as Map<String, dynamic>?,
       items: freezed == items
           ? _value.items
           : items // ignore: cast_nullable_to_non_nullable
@@ -177,22 +193,22 @@ abstract class _$$OrderModelImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String id,
-      String userId,
-      DateTime orderDate,
-      OrderStatus status,
-      PaymentStatus paymentStatus,
-      String paymentMethod,
-      String addressId,
-      Map<String, dynamic>? shippingAddressSnapshot,
-      double subtotal,
-      double shippingCost,
-      double discount,
-      double totalAmount,
-      String? trackingNumber,
-      String? notes,
-      String? phoneNumber,
-      List<OrderItemModel>? items});
+      {@HiveField(0) String id,
+      @HiveField(1) String userId,
+      @HiveField(2) DateTime orderDate,
+      @HiveField(3) OrderStatus status,
+      @HiveField(4) PaymentStatus paymentStatus,
+      @HiveField(5) String paymentMethod,
+      @HiveField(6) String addressId,
+      @HiveField(7) double subtotal,
+      @HiveField(8) double shippingCost,
+      @HiveField(9) double discount,
+      @HiveField(10) double totalAmount,
+      @HiveField(11) String? trackingNumber,
+      @HiveField(12) String? notes,
+      @HiveField(13) String? phoneNumber,
+      @HiveField(14) Map<String, dynamic>? shippingAddressSnapshot,
+      @HiveField(15) List<OrderItemModel>? items});
 }
 
 /// @nodoc
@@ -213,7 +229,6 @@ class __$$OrderModelImplCopyWithImpl<$Res>
     Object? paymentStatus = null,
     Object? paymentMethod = null,
     Object? addressId = null,
-    Object? shippingAddressSnapshot = freezed,
     Object? subtotal = null,
     Object? shippingCost = null,
     Object? discount = null,
@@ -221,6 +236,7 @@ class __$$OrderModelImplCopyWithImpl<$Res>
     Object? trackingNumber = freezed,
     Object? notes = freezed,
     Object? phoneNumber = freezed,
+    Object? shippingAddressSnapshot = freezed,
     Object? items = freezed,
   }) {
     return _then(_$OrderModelImpl(
@@ -252,10 +268,6 @@ class __$$OrderModelImplCopyWithImpl<$Res>
           ? _value.addressId
           : addressId // ignore: cast_nullable_to_non_nullable
               as String,
-      shippingAddressSnapshot: freezed == shippingAddressSnapshot
-          ? _value._shippingAddressSnapshot
-          : shippingAddressSnapshot // ignore: cast_nullable_to_non_nullable
-              as Map<String, dynamic>?,
       subtotal: null == subtotal
           ? _value.subtotal
           : subtotal // ignore: cast_nullable_to_non_nullable
@@ -284,6 +296,10 @@ class __$$OrderModelImplCopyWithImpl<$Res>
           ? _value.phoneNumber
           : phoneNumber // ignore: cast_nullable_to_non_nullable
               as String?,
+      shippingAddressSnapshot: freezed == shippingAddressSnapshot
+          ? _value._shippingAddressSnapshot
+          : shippingAddressSnapshot // ignore: cast_nullable_to_non_nullable
+              as Map<String, dynamic>?,
       items: freezed == items
           ? _value._items
           : items // ignore: cast_nullable_to_non_nullable
@@ -293,50 +309,83 @@ class __$$OrderModelImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-@JsonSerializable()
-class _$OrderModelImpl with DiagnosticableTreeMixin implements _OrderModel {
+
+@JsonSerializable(explicitToJson: true)
+class _$OrderModelImpl extends _OrderModel {
   const _$OrderModelImpl(
-      {required this.id,
-      required this.userId,
-      required this.orderDate,
-      this.status = OrderStatus.pending,
-      this.paymentStatus = PaymentStatus.pending,
-      this.paymentMethod = 'card',
-      required this.addressId,
-      final Map<String, dynamic>? shippingAddressSnapshot,
-      required this.subtotal,
-      this.shippingCost = 0.0,
-      this.discount = 0.0,
-      required this.totalAmount,
-      this.trackingNumber,
-      this.notes,
-      this.phoneNumber,
-      final List<OrderItemModel>? items})
+      {@HiveField(0) required this.id,
+      @HiveField(1) required this.userId,
+      @HiveField(2) required this.orderDate,
+      @HiveField(3) this.status = OrderStatus.pending,
+      @HiveField(4) this.paymentStatus = PaymentStatus.pending,
+      @HiveField(5) this.paymentMethod = 'card',
+      @HiveField(6) required this.addressId,
+      @HiveField(7) required this.subtotal,
+      @HiveField(8) this.shippingCost = 0.0,
+      @HiveField(9) this.discount = 0.0,
+      @HiveField(10) required this.totalAmount,
+      @HiveField(11) this.trackingNumber,
+      @HiveField(12) this.notes,
+      @HiveField(13) this.phoneNumber,
+      @HiveField(14) final Map<String, dynamic>? shippingAddressSnapshot,
+      @HiveField(15) final List<OrderItemModel>? items})
       : _shippingAddressSnapshot = shippingAddressSnapshot,
-        _items = items;
+        _items = items,
+        super._();
 
   factory _$OrderModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$OrderModelImplFromJson(json);
 
   @override
+  @HiveField(0)
   final String id;
   @override
+  @HiveField(1)
   final String userId;
   @override
+  @HiveField(2)
   final DateTime orderDate;
   @override
   @JsonKey()
+  @HiveField(3)
   final OrderStatus status;
   @override
   @JsonKey()
+  @HiveField(4)
   final PaymentStatus paymentStatus;
   @override
   @JsonKey()
+  @HiveField(5)
   final String paymentMethod;
   @override
+  @HiveField(6)
   final String addressId;
+  @override
+  @HiveField(7)
+  final double subtotal;
+  @override
+  @JsonKey()
+  @HiveField(8)
+  final double shippingCost;
+  @override
+  @JsonKey()
+  @HiveField(9)
+  final double discount;
+  @override
+  @HiveField(10)
+  final double totalAmount;
+  @override
+  @HiveField(11)
+  final String? trackingNumber;
+  @override
+  @HiveField(12)
+  final String? notes;
+  @override
+  @HiveField(13)
+  final String? phoneNumber;
   final Map<String, dynamic>? _shippingAddressSnapshot;
   @override
+  @HiveField(14)
   Map<String, dynamic>? get shippingAddressSnapshot {
     final value = _shippingAddressSnapshot;
     if (value == null) return null;
@@ -346,24 +395,9 @@ class _$OrderModelImpl with DiagnosticableTreeMixin implements _OrderModel {
     return EqualUnmodifiableMapView(value);
   }
 
-  @override
-  final double subtotal;
-  @override
-  @JsonKey()
-  final double shippingCost;
-  @override
-  @JsonKey()
-  final double discount;
-  @override
-  final double totalAmount;
-  @override
-  final String? trackingNumber;
-  @override
-  final String? notes;
-  @override
-  final String? phoneNumber;
   final List<OrderItemModel>? _items;
   @override
+  @HiveField(15)
   List<OrderItemModel>? get items {
     final value = _items;
     if (value == null) return null;
@@ -373,32 +407,8 @@ class _$OrderModelImpl with DiagnosticableTreeMixin implements _OrderModel {
   }
 
   @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'OrderModel(id: $id, userId: $userId, orderDate: $orderDate, status: $status, paymentStatus: $paymentStatus, paymentMethod: $paymentMethod, addressId: $addressId, shippingAddressSnapshot: $shippingAddressSnapshot, subtotal: $subtotal, shippingCost: $shippingCost, discount: $discount, totalAmount: $totalAmount, trackingNumber: $trackingNumber, notes: $notes, phoneNumber: $phoneNumber, items: $items)';
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty('type', 'OrderModel'))
-      ..add(DiagnosticsProperty('id', id))
-      ..add(DiagnosticsProperty('userId', userId))
-      ..add(DiagnosticsProperty('orderDate', orderDate))
-      ..add(DiagnosticsProperty('status', status))
-      ..add(DiagnosticsProperty('paymentStatus', paymentStatus))
-      ..add(DiagnosticsProperty('paymentMethod', paymentMethod))
-      ..add(DiagnosticsProperty('addressId', addressId))
-      ..add(DiagnosticsProperty(
-          'shippingAddressSnapshot', shippingAddressSnapshot))
-      ..add(DiagnosticsProperty('subtotal', subtotal))
-      ..add(DiagnosticsProperty('shippingCost', shippingCost))
-      ..add(DiagnosticsProperty('discount', discount))
-      ..add(DiagnosticsProperty('totalAmount', totalAmount))
-      ..add(DiagnosticsProperty('trackingNumber', trackingNumber))
-      ..add(DiagnosticsProperty('notes', notes))
-      ..add(DiagnosticsProperty('phoneNumber', phoneNumber))
-      ..add(DiagnosticsProperty('items', items));
+  String toString() {
+    return 'OrderModel(id: $id, userId: $userId, orderDate: $orderDate, status: $status, paymentStatus: $paymentStatus, paymentMethod: $paymentMethod, addressId: $addressId, subtotal: $subtotal, shippingCost: $shippingCost, discount: $discount, totalAmount: $totalAmount, trackingNumber: $trackingNumber, notes: $notes, phoneNumber: $phoneNumber, shippingAddressSnapshot: $shippingAddressSnapshot, items: $items)';
   }
 
   @override
@@ -417,8 +427,6 @@ class _$OrderModelImpl with DiagnosticableTreeMixin implements _OrderModel {
                 other.paymentMethod == paymentMethod) &&
             (identical(other.addressId, addressId) ||
                 other.addressId == addressId) &&
-            const DeepCollectionEquality().equals(
-                other._shippingAddressSnapshot, _shippingAddressSnapshot) &&
             (identical(other.subtotal, subtotal) ||
                 other.subtotal == subtotal) &&
             (identical(other.shippingCost, shippingCost) ||
@@ -432,6 +440,8 @@ class _$OrderModelImpl with DiagnosticableTreeMixin implements _OrderModel {
             (identical(other.notes, notes) || other.notes == notes) &&
             (identical(other.phoneNumber, phoneNumber) ||
                 other.phoneNumber == phoneNumber) &&
+            const DeepCollectionEquality().equals(
+                other._shippingAddressSnapshot, _shippingAddressSnapshot) &&
             const DeepCollectionEquality().equals(other._items, _items));
   }
 
@@ -446,7 +456,6 @@ class _$OrderModelImpl with DiagnosticableTreeMixin implements _OrderModel {
       paymentStatus,
       paymentMethod,
       addressId,
-      const DeepCollectionEquality().hash(_shippingAddressSnapshot),
       subtotal,
       shippingCost,
       discount,
@@ -454,6 +463,7 @@ class _$OrderModelImpl with DiagnosticableTreeMixin implements _OrderModel {
       trackingNumber,
       notes,
       phoneNumber,
+      const DeepCollectionEquality().hash(_shippingAddressSnapshot),
       const DeepCollectionEquality().hash(_items));
 
   @JsonKey(ignore: true)
@@ -470,59 +480,76 @@ class _$OrderModelImpl with DiagnosticableTreeMixin implements _OrderModel {
   }
 }
 
-abstract class _OrderModel implements OrderModel {
+abstract class _OrderModel extends OrderModel {
   const factory _OrderModel(
-      {required final String id,
-      required final String userId,
-      required final DateTime orderDate,
-      final OrderStatus status,
-      final PaymentStatus paymentStatus,
-      final String paymentMethod,
-      required final String addressId,
-      final Map<String, dynamic>? shippingAddressSnapshot,
-      required final double subtotal,
-      final double shippingCost,
-      final double discount,
-      required final double totalAmount,
-      final String? trackingNumber,
-      final String? notes,
-      final String? phoneNumber,
-      final List<OrderItemModel>? items}) = _$OrderModelImpl;
+      {@HiveField(0) required final String id,
+      @HiveField(1) required final String userId,
+      @HiveField(2) required final DateTime orderDate,
+      @HiveField(3) final OrderStatus status,
+      @HiveField(4) final PaymentStatus paymentStatus,
+      @HiveField(5) final String paymentMethod,
+      @HiveField(6) required final String addressId,
+      @HiveField(7) required final double subtotal,
+      @HiveField(8) final double shippingCost,
+      @HiveField(9) final double discount,
+      @HiveField(10) required final double totalAmount,
+      @HiveField(11) final String? trackingNumber,
+      @HiveField(12) final String? notes,
+      @HiveField(13) final String? phoneNumber,
+      @HiveField(14) final Map<String, dynamic>? shippingAddressSnapshot,
+      @HiveField(15) final List<OrderItemModel>? items}) = _$OrderModelImpl;
+  const _OrderModel._() : super._();
 
   factory _OrderModel.fromJson(Map<String, dynamic> json) =
       _$OrderModelImpl.fromJson;
 
   @override
+  @HiveField(0)
   String get id;
   @override
+  @HiveField(1)
   String get userId;
   @override
+  @HiveField(2)
   DateTime get orderDate;
   @override
+  @HiveField(3)
   OrderStatus get status;
   @override
+  @HiveField(4)
   PaymentStatus get paymentStatus;
   @override
+  @HiveField(5)
   String get paymentMethod;
   @override
+  @HiveField(6)
   String get addressId;
   @override
-  Map<String, dynamic>? get shippingAddressSnapshot;
-  @override
+  @HiveField(7)
   double get subtotal;
   @override
+  @HiveField(8)
   double get shippingCost;
   @override
+  @HiveField(9)
   double get discount;
   @override
+  @HiveField(10)
   double get totalAmount;
   @override
+  @HiveField(11)
   String? get trackingNumber;
   @override
+  @HiveField(12)
   String? get notes;
   @override
+  @HiveField(13)
   String? get phoneNumber;
   @override
+  @HiveField(14)
+  Map<String, dynamic>? get shippingAddressSnapshot;
+  @override
+  @HiveField(15)
   List<OrderItemModel>? get items;
   @override
   @JsonKey(ignore: true)
@@ -536,13 +563,21 @@ OrderItemModel _$OrderItemModelFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$OrderItemModel {
+  @HiveField(0)
   String get id => throw _privateConstructorUsedError;
+  @HiveField(1)
   String get orderId => throw _privateConstructorUsedError;
+  @HiveField(2)
   String get productId => throw _privateConstructorUsedError;
+  @HiveField(3)
   String get productName => throw _privateConstructorUsedError;
+  @HiveField(4)
   double get unitPrice => throw _privateConstructorUsedError;
+  @HiveField(5)
   int get quantity => throw _privateConstructorUsedError;
+  @HiveField(6)
   double get subtotal => throw _privateConstructorUsedError;
+  @HiveField(7)
   String? get imageUrl => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -558,14 +593,14 @@ abstract class $OrderItemModelCopyWith<$Res> {
       _$OrderItemModelCopyWithImpl<$Res, OrderItemModel>;
   @useResult
   $Res call(
-      {String id,
-      String orderId,
-      String productId,
-      String productName,
-      double unitPrice,
-      int quantity,
-      double subtotal,
-      String? imageUrl});
+      {@HiveField(0) String id,
+      @HiveField(1) String orderId,
+      @HiveField(2) String productId,
+      @HiveField(3) String productName,
+      @HiveField(4) double unitPrice,
+      @HiveField(5) int quantity,
+      @HiveField(6) double subtotal,
+      @HiveField(7) String? imageUrl});
 }
 
 /// @nodoc
@@ -636,14 +671,14 @@ abstract class _$$OrderItemModelImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String id,
-      String orderId,
-      String productId,
-      String productName,
-      double unitPrice,
-      int quantity,
-      double subtotal,
-      String? imageUrl});
+      {@HiveField(0) String id,
+      @HiveField(1) String orderId,
+      @HiveField(2) String productId,
+      @HiveField(3) String productName,
+      @HiveField(4) double unitPrice,
+      @HiveField(5) int quantity,
+      @HiveField(6) double subtotal,
+      @HiveField(7) String? imageUrl});
 }
 
 /// @nodoc
@@ -705,57 +740,49 @@ class __$$OrderItemModelImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$OrderItemModelImpl
-    with DiagnosticableTreeMixin
-    implements _OrderItemModel {
+class _$OrderItemModelImpl extends _OrderItemModel {
   const _$OrderItemModelImpl(
-      {required this.id,
-      required this.orderId,
-      required this.productId,
-      required this.productName,
-      required this.unitPrice,
-      required this.quantity,
-      required this.subtotal,
-      this.imageUrl});
+      {@HiveField(0) required this.id,
+      @HiveField(1) required this.orderId,
+      @HiveField(2) required this.productId,
+      @HiveField(3) required this.productName,
+      @HiveField(4) required this.unitPrice,
+      @HiveField(5) required this.quantity,
+      @HiveField(6) required this.subtotal,
+      @HiveField(7) this.imageUrl})
+      : super._();
 
   factory _$OrderItemModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$OrderItemModelImplFromJson(json);
 
   @override
+  @HiveField(0)
   final String id;
   @override
+  @HiveField(1)
   final String orderId;
   @override
+  @HiveField(2)
   final String productId;
   @override
+  @HiveField(3)
   final String productName;
   @override
+  @HiveField(4)
   final double unitPrice;
   @override
+  @HiveField(5)
   final int quantity;
   @override
+  @HiveField(6)
   final double subtotal;
   @override
+  @HiveField(7)
   final String? imageUrl;
 
   @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+  String toString() {
     return 'OrderItemModel(id: $id, orderId: $orderId, productId: $productId, productName: $productName, unitPrice: $unitPrice, quantity: $quantity, subtotal: $subtotal, imageUrl: $imageUrl)';
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty('type', 'OrderItemModel'))
-      ..add(DiagnosticsProperty('id', id))
-      ..add(DiagnosticsProperty('orderId', orderId))
-      ..add(DiagnosticsProperty('productId', productId))
-      ..add(DiagnosticsProperty('productName', productName))
-      ..add(DiagnosticsProperty('unitPrice', unitPrice))
-      ..add(DiagnosticsProperty('quantity', quantity))
-      ..add(DiagnosticsProperty('subtotal', subtotal))
-      ..add(DiagnosticsProperty('imageUrl', imageUrl));
   }
 
   @override
@@ -799,35 +826,44 @@ class _$OrderItemModelImpl
   }
 }
 
-abstract class _OrderItemModel implements OrderItemModel {
+abstract class _OrderItemModel extends OrderItemModel {
   const factory _OrderItemModel(
-      {required final String id,
-      required final String orderId,
-      required final String productId,
-      required final String productName,
-      required final double unitPrice,
-      required final int quantity,
-      required final double subtotal,
-      final String? imageUrl}) = _$OrderItemModelImpl;
+      {@HiveField(0) required final String id,
+      @HiveField(1) required final String orderId,
+      @HiveField(2) required final String productId,
+      @HiveField(3) required final String productName,
+      @HiveField(4) required final double unitPrice,
+      @HiveField(5) required final int quantity,
+      @HiveField(6) required final double subtotal,
+      @HiveField(7) final String? imageUrl}) = _$OrderItemModelImpl;
+  const _OrderItemModel._() : super._();
 
   factory _OrderItemModel.fromJson(Map<String, dynamic> json) =
       _$OrderItemModelImpl.fromJson;
 
   @override
+  @HiveField(0)
   String get id;
   @override
+  @HiveField(1)
   String get orderId;
   @override
+  @HiveField(2)
   String get productId;
   @override
+  @HiveField(3)
   String get productName;
   @override
+  @HiveField(4)
   double get unitPrice;
   @override
+  @HiveField(5)
   int get quantity;
   @override
+  @HiveField(6)
   double get subtotal;
   @override
+  @HiveField(7)
   String? get imageUrl;
   @override
   @JsonKey(ignore: true)

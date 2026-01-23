@@ -1,67 +1,70 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter/foundation.dart';
+import 'package:hive/hive.dart';
 
 part 'product_model.freezed.dart';
 part 'product_model.g.dart';
 
 @freezed
+@HiveType(typeId: 8) // تأكد من أن هذا الـ ID فريد في مشروعك
 class ProductModel with _$ProductModel {
   const ProductModel._();
 
+  @JsonSerializable(explicitToJson: true)
   const factory ProductModel({
-    required String id,
-    required String name,
-    required double price,
-    double? discountPrice,
-    // لاحظ استخدام اسم المفتاح الموحد الذي ننتجه في الدالة بالأسفل
-    @Default([]) List<String> imageUrls,
-    required String description,
-    required String categoryId,
-    @Default(0) int stockQuantity,
-    @Default(0.0) double averageRating,
-    @Default(0) int reviewCount,
-    String? brand,
-    String? servingSize,
-    int? servingsPerContainer,
-    @Default(true) bool isActive,
-    @Default(false) bool? isBackgroundWhite,
+    @HiveField(0) required String id,
+    @HiveField(1) required String name,
+    @HiveField(2) required double price,
+    @HiveField(3) @JsonKey(name: 'discount_price') double? discountPrice,
+    @HiveField(4) @JsonKey(name: 'image_urls') @Default([]) List<String> imageUrls,
+    @HiveField(5) required String description,
+    @HiveField(6) @JsonKey(name: 'category_id') required String categoryId,
+    @HiveField(7) @JsonKey(name: 'stock_quantity') @Default(0) int stockQuantity,
+    @HiveField(8) @JsonKey(name: 'average_rating') @Default(0.0) double averageRating,
+    @HiveField(9) @JsonKey(name: 'review_count') @Default(0) int reviewCount,
+    @HiveField(10) String? brand,
+    @HiveField(11) @JsonKey(name: 'serving_size') String? servingSize,
+    @HiveField(12) @JsonKey(name: 'servings_per_container') int? servingsPerContainer,
+    @HiveField(13) @JsonKey(name: 'is_active') @Default(true) bool isActive,
+    @HiveField(14) @JsonKey(name: 'is_background_white') @Default(false) bool? isBackgroundWhite,
 
-    String? sku,
-    @Default([]) List<String>? tags,
-    double? weight,
-    @Default([]) List<String>? size,
-    @Default([]) List<String>? flavor,
-    Map<String, dynamic>? nutritionFacts,
+    @HiveField(15) String? sku,
+    @HiveField(16) @Default([]) List<String>? tags,
+    @HiveField(17) double? weight,
+    @HiveField(18) @Default([]) List<String>? size,
+    @HiveField(19) @JsonKey(name: 'flavors') @Default([]) List<String>? flavor,
+    @HiveField(20) @JsonKey(name: 'nutrition_facts') Map<String, dynamic>? nutritionFacts,
 
-    @Default(false) bool featured,
-    @Default(false) bool newArrival,
-    @Default(false) bool bestSeller,
-    @Default(0) int totalSales,
-    @Default(0) int viewsCount,
+    @HiveField(21) @Default(false) bool featured,
+    @HiveField(22) @JsonKey(name: 'new_arrival') @Default(false) bool newArrival,
+    @HiveField(23) @JsonKey(name: 'best_seller') @Default(false) bool bestSeller,
+    @HiveField(24) @JsonKey(name: 'total_sales') @Default(0) int totalSales,
+    @HiveField(25) @JsonKey(name: 'views_count') @Default(0) int viewsCount,
 
-    double? shippingWeight,
-    Map<String, dynamic>? dimensions,
+    @HiveField(26) @JsonKey(name: 'shipping_weight') double? shippingWeight,
+    @HiveField(27) Map<String, dynamic>? dimensions,
 
-    @Default([]) List<String> ingredients,
-    String? usageInstructions,
-    String? warnings,
-    DateTime? expiryDate,
-    String? manufacturer,
-    String? countryOfOrigin,
+    @HiveField(28) @Default([]) List<String> ingredients,
+    @HiveField(29) @JsonKey(name: 'usage_instructions') String? usageInstructions,
+    @HiveField(30) String? warnings,
+    @HiveField(31) @JsonKey(name: 'expiry_date') DateTime? expiryDate,
+    @HiveField(32) String? manufacturer,
+    @HiveField(33) @JsonKey(name: 'country_of_origin') String? countryOfOrigin,
 
-    String? metaTitle,
-    String? metaDescription,
-    String? slug,
+    @HiveField(34) @JsonKey(name: 'meta_title') String? metaTitle,
+    @HiveField(35) @JsonKey(name: 'meta_description') String? metaDescription,
+    @HiveField(36) String? slug,
   }) = _ProductModel;
 
   factory ProductModel.fromJson(Map<String, dynamic> json) => 
       _$ProductModelFromJson(_mapProductJson(json));
 
-  // Getters (كما هي في كودك)
+  // Getters
   double get finalPrice => discountPrice ?? price;
   bool get isInStock => stockQuantity > 0;
 }
 
+// --- دالة المعالجة لتنظيف البيانات القادمة من السيرفر ---
 Map<String, dynamic> _mapProductJson(Map<String, dynamic> json) {
   List<String> toList(dynamic val) {
     if (val == null) return [];
@@ -81,25 +84,14 @@ Map<String, dynamic> _mapProductJson(Map<String, dynamic> json) {
     'name': toStringSafe(json['name']),
     'description': toStringSafe(json['description']),
     'category_id': toStringSafe(json['category_id'] ?? json['categoryId']),
-    'brand': toStringSafe(json['brand']),
-    'serving_size': toStringSafe(json['serving_size'] ?? json['servingSize']),
     'image_urls': toList(json['image_urls'] ?? json['imageUrls']),
     'flavors': toList(json['flavors'] ?? json['flavor']),
-    'size': toList(json['size']),
     'price': double.tryParse(json['price']?.toString() ?? '0') ?? 0.0,
-    'discount_price': json['discount_price'] != null || json['discountPrice'] != null 
-        ? double.tryParse((json['discount_price'] ?? json['discountPrice']).toString()) 
+    'discount_price': (json['discount_price'] != null || json['discountPrice'] != null)
+        ? double.tryParse((json['discount_price'] ?? json['discountPrice']).toString())
         : null,
     'stock_quantity': int.tryParse((json['stock_quantity'] ?? json['stockQuantity'] ?? 0).toString()) ?? 0,
     'is_active': json['is_active'] == true || json['is_active'] == 1 || json['isActive'] == true,
-    'ingredients': toList(json['ingredients']),
-    'usage_instructions': toStringSafe(json['usage_instructions'] ?? json['usageInstructions']),
-    'warnings': toStringSafe(json['warnings']),
-    'manufacturer': toStringSafe(json['manufacturer']),
-    'country_of_origin': toStringSafe(json['country_of_origin'] ?? json['countryOfOrigin']),
-    'meta_title': toStringSafe(json['meta_title'] ?? json['metaTitle']),
-    'meta_description': toStringSafe(json['meta_description'] ?? json['metaDescription']),
-    'slug': toStringSafe(json['slug']),
-    'sku': toStringSafe(json['sku']),
+    'expiry_date': json['expiry_date'] ?? json['expiryDate'],
   };
 }

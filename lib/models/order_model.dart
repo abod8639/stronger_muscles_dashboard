@@ -1,31 +1,50 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:flutter/foundation.dart';
+import 'package:hive/hive.dart'; 
 
 part 'order_model.freezed.dart';
 part 'order_model.g.dart';
 
-enum OrderStatus { pending, processing, shipped, delivered, cancelled }
-enum PaymentStatus { pending, paid, failed, refunded }
+@HiveType(typeId: 9) 
+enum OrderStatus {
+  @HiveField(0) pending,
+  @HiveField(1) processing,
+  @HiveField(2) shipped,
+  @HiveField(3) delivered,
+  @HiveField(4) cancelled
+}
+
+@HiveType(typeId: 10)
+enum PaymentStatus {
+  @HiveField(0) pending,
+  @HiveField(1) paid,
+  @HiveField(2) failed,
+  @HiveField(3) refunded
+}
 
 @freezed
+@HiveType(typeId: 11) // إضافة HiveType للكلاس
 class OrderModel with _$OrderModel {
+  // إضافة constructor خاص لتمكين إضافة methods أو getters
+  const OrderModel._();
+
+  @JsonSerializable(explicitToJson: true)
   const factory OrderModel({
-    required String id,
-    required String userId,
-    required DateTime orderDate,
-    @Default(OrderStatus.pending) OrderStatus status,
-    @Default(PaymentStatus.pending) PaymentStatus paymentStatus,
-    @Default('card') String paymentMethod,
-    required String addressId,
-    Map<String, dynamic>? shippingAddressSnapshot,
-    required double subtotal,
-    @Default(0.0) double shippingCost,
-    @Default(0.0) double discount,
-    required double totalAmount,
-    String? trackingNumber,
-    String? notes,
-    String? phoneNumber,
-    List<OrderItemModel>? items,
+    @HiveField(0) required String id,
+    @HiveField(1) required String userId,
+    @HiveField(2) required DateTime orderDate,
+    @HiveField(3) @Default(OrderStatus.pending) OrderStatus status,
+    @HiveField(4) @Default(PaymentStatus.pending) PaymentStatus paymentStatus,
+    @HiveField(5) @Default('card') String paymentMethod,
+    @HiveField(6) required String addressId,
+    @HiveField(7) required double subtotal,
+    @HiveField(8) @Default(0.0) double shippingCost,
+    @HiveField(9) @Default(0.0) double discount,
+    @HiveField(10) required double totalAmount,
+    @HiveField(11) String? trackingNumber,
+    @HiveField(12) String? notes,
+    @HiveField(13) String? phoneNumber,
+    @HiveField(14) Map<String, dynamic>? shippingAddressSnapshot,
+    @HiveField(15) List<OrderItemModel>? items,
   }) = _OrderModel;
 
   factory OrderModel.fromJson(Map<String, dynamic> json) => 
@@ -33,32 +52,32 @@ class OrderModel with _$OrderModel {
 }
 
 @freezed
+@HiveType(typeId: 12)
 class OrderItemModel with _$OrderItemModel {
+  const OrderItemModel._();
+
   const factory OrderItemModel({
-    required String id,
-    required String orderId,
-    required String productId,
-    required String productName,
-    required double unitPrice,
-    required int quantity,
-    required double subtotal,
-    String? imageUrl,
+    @HiveField(0) required String id,
+    @HiveField(1) required String orderId,
+    @HiveField(2) required String productId,
+    @HiveField(3) required String productName,
+    @HiveField(4) required double unitPrice,
+    @HiveField(5) required int quantity,
+    @HiveField(6) required double subtotal,
+    @HiveField(7) String? imageUrl,
   }) = _OrderItemModel;
 
   factory OrderItemModel.fromJson(Map<String, dynamic> json) => 
       _$OrderItemModelFromJson(_mapItemJson(json));
 }
 
-// --- دالات معالجة البيانات لضمان التوافق مع أسماء الحقول المختلفة (Mapping) ---
+// --- دالات معالجة البيانات (تأكد أنها خارج الكلاسات) ---
 
 Map<String, dynamic> _mapOrderJson(Map<String, dynamic> json) {
-  // استخراج معرف المستخدم بشكل آمن من عدة أماكن محتملة
   String extractUserId() {
     if (json['userId'] != null) return json['userId'].toString();
     if (json['user_id'] != null) return json['user_id'].toString();
-    if (json['user'] != null && json['user'] is Map) {
-      return (json['user']['id'] ?? '').toString();
-    }
+    if (json['user'] is Map) return (json['user']['id'] ?? '').toString();
     return '';
   }
 
@@ -70,15 +89,11 @@ Map<String, dynamic> _mapOrderJson(Map<String, dynamic> json) {
     'addressId': (json['addressId'] ?? json['address_id'] ?? '').toString(),
     'shippingCost': json['shippingCost'] ?? json['shipping_cost'] ?? 0.0,
     'totalAmount': json['totalAmount'] ?? json['total_amount'] ?? 0.0,
-    'items': json['items'] ?? json['order_items'],
-    // الحفاظ على الأسماء الأصلية لضمان عمل الحقول الأخرى
+    'order_items': json['items'] ?? json['order_items'], // توحيد اسم المفتاح ليتطابق مع المولد
     'paymentStatus': json['paymentStatus'] ?? json['payment_status'],
     'paymentMethod': json['paymentMethod'] ?? json['payment_method'] ?? 'card',
     'trackingNumber': json['trackingNumber'] ?? json['tracking_number'],
     'phoneNumber': json['phoneNumber'] ?? json['phone_number'],
-    'shippingAddressSnapshot': json['shippingAddressSnapshot'] ?? json['shipping_address_snapshot'] ?? {
-       'address': json['shipping_address'] // Fallback if backend sends plain string
-    },
   };
 }
 

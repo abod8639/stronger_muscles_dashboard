@@ -1,17 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:stronger_muscles_dashboard/functions/hive_init.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/my_bottomnavigationbar.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/sidebar.dart';
 import 'package:stronger_muscles_dashboard/services/auth_service.dart';
 import 'config/theme.dart';
 import 'screens/index.dart';
 
-void main() async {
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Hive.initFlutter();
   await GetStorage.init();
+  await hiveInit();
   runApp(const StrongerMusclesDashboard());
 }
+
 
 class StrongerMusclesDashboard extends StatelessWidget {
   const StrongerMusclesDashboard({super.key});
