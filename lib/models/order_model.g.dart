@@ -9,25 +9,25 @@ part of 'order_model.dart';
 _$OrderModelImpl _$$OrderModelImplFromJson(Map<String, dynamic> json) =>
     _$OrderModelImpl(
       id: json['id'] as String,
-      userId: json['user_id'] as String,
-      orderDate: DateTime.parse(json['order_date'] as String),
+      userId: json['userId'] as String,
+      orderDate: DateTime.parse(json['orderDate'] as String),
       status: $enumDecodeNullable(_$OrderStatusEnumMap, json['status']) ??
           OrderStatus.pending,
       paymentStatus:
-          $enumDecodeNullable(_$PaymentStatusEnumMap, json['payment_status']) ??
+          $enumDecodeNullable(_$PaymentStatusEnumMap, json['paymentStatus']) ??
               PaymentStatus.pending,
-      paymentMethod: json['payment_method'] as String? ?? 'card',
-      addressId: json['address_id'] as String,
+      paymentMethod: json['paymentMethod'] as String? ?? 'card',
+      addressId: json['addressId'] as String,
       shippingAddressSnapshot:
-          json['shipping_address_snapshot'] as Map<String, dynamic>?,
+          json['shippingAddressSnapshot'] as Map<String, dynamic>?,
       subtotal: (json['subtotal'] as num).toDouble(),
-      shippingCost: (json['shipping_cost'] as num?)?.toDouble() ?? 0.0,
+      shippingCost: (json['shippingCost'] as num?)?.toDouble() ?? 0.0,
       discount: (json['discount'] as num?)?.toDouble() ?? 0.0,
-      totalAmount: (json['total_amount'] as num).toDouble(),
-      trackingNumber: json['tracking_number'] as String?,
+      totalAmount: (json['totalAmount'] as num).toDouble(),
+      trackingNumber: json['trackingNumber'] as String?,
       notes: json['notes'] as String?,
-      phoneNumber: json['phone_number'] as String?,
-      items: (json['order_items'] as List<dynamic>?)
+      phoneNumber: json['phoneNumber'] as String?,
+      items: (json['items'] as List<dynamic>?)
           ?.map((e) => OrderItemModel.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
@@ -35,21 +35,21 @@ _$OrderModelImpl _$$OrderModelImplFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$OrderModelImplToJson(_$OrderModelImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'user_id': instance.userId,
-      'order_date': instance.orderDate.toIso8601String(),
+      'userId': instance.userId,
+      'orderDate': instance.orderDate.toIso8601String(),
       'status': _$OrderStatusEnumMap[instance.status]!,
-      'payment_status': _$PaymentStatusEnumMap[instance.paymentStatus]!,
-      'payment_method': instance.paymentMethod,
-      'address_id': instance.addressId,
-      'shipping_address_snapshot': instance.shippingAddressSnapshot,
+      'paymentStatus': _$PaymentStatusEnumMap[instance.paymentStatus]!,
+      'paymentMethod': instance.paymentMethod,
+      'addressId': instance.addressId,
+      'shippingAddressSnapshot': instance.shippingAddressSnapshot,
       'subtotal': instance.subtotal,
-      'shipping_cost': instance.shippingCost,
+      'shippingCost': instance.shippingCost,
       'discount': instance.discount,
-      'total_amount': instance.totalAmount,
-      'tracking_number': instance.trackingNumber,
+      'totalAmount': instance.totalAmount,
+      'trackingNumber': instance.trackingNumber,
       'notes': instance.notes,
-      'phone_number': instance.phoneNumber,
-      'order_items': instance.items,
+      'phoneNumber': instance.phoneNumber,
+      'items': instance.items,
     };
 
 const _$OrderStatusEnumMap = {
@@ -70,24 +70,24 @@ const _$PaymentStatusEnumMap = {
 _$OrderItemModelImpl _$$OrderItemModelImplFromJson(Map<String, dynamic> json) =>
     _$OrderItemModelImpl(
       id: json['id'] as String,
-      orderId: json['order_id'] as String,
-      productId: json['product_id'] as String,
-      productName: json['product_name'] as String,
-      unitPrice: (json['unit_price'] as num).toDouble(),
+      orderId: json['orderId'] as String,
+      productId: json['productId'] as String,
+      productName: json['productName'] as String,
+      unitPrice: (json['unitPrice'] as num).toDouble(),
       quantity: (json['quantity'] as num).toInt(),
       subtotal: (json['subtotal'] as num).toDouble(),
-      imageUrl: json['image_url'] as String?,
+      imageUrl: json['imageUrl'] as String?,
     );
 
 Map<String, dynamic> _$$OrderItemModelImplToJson(
         _$OrderItemModelImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'order_id': instance.orderId,
-      'product_id': instance.productId,
-      'product_name': instance.productName,
-      'unit_price': instance.unitPrice,
+      'orderId': instance.orderId,
+      'productId': instance.productId,
+      'productName': instance.productName,
+      'unitPrice': instance.unitPrice,
       'quantity': instance.quantity,
       'subtotal': instance.subtotal,
-      'image_url': instance.imageUrl,
+      'imageUrl': instance.imageUrl,
     };

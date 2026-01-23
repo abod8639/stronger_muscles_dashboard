@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import '../models/index.dart';
 import '../services/api_service.dart';
 
@@ -6,14 +8,20 @@ class ProductRepository {
 
   ProductRepository(this._apiService);
 
-  Future<List<ProductModel>> getProducts() async {
+Future<List<ProductModel>> getProducts() async {
     try {
-      final List<dynamic>data = await _apiService.fetchProducts();
-      return data
-          .map((json) => ProductModel.fromJson(json))
-          .toList();
+      final List<dynamic> data = await _apiService.fetchProducts();
+      return data.map((json) {
+        try {
+          return ProductModel.fromJson(json as Map<String, dynamic>);
+        } catch (e) {
+          // سيخبرك بالضبط أي ID منتج فشل وما هو الحقل
+          debugPrint('فشل تحويل المنتج ID: ${json['id']} - الخطأ: $e');
+          rethrow;
+        }
+      }).toList();
     } catch (e) {
-      print('خطأ في ProductRepository: $e');
+      debugPrint('خطأ في ProductRepository (getProducts): $e');
       rethrow;
     }
   }

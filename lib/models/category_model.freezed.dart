@@ -23,15 +23,9 @@ mixin _$CategoryModel {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
-  @JsonKey(name: 'image_url')
   String? get imageUrl => throw _privateConstructorUsedError;
-  @JsonKey(name: 'sort_order')
   int get sortOrder => throw _privateConstructorUsedError;
-  @JsonKey(name: 'is_active')
-  bool get isActive =>
-      throw _privateConstructorUsedError; // ملاحظة: الـ Icon عادة لا يتم تحويله لـ JSON بسهولة إلا إذا كان String (path)
-// أو قمت بعمل Custom Converter له.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  bool get isActive => throw _privateConstructorUsedError;
   dynamic get icon => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -50,10 +44,10 @@ abstract class $CategoryModelCopyWith<$Res> {
       {String id,
       String name,
       String? description,
-      @JsonKey(name: 'image_url') String? imageUrl,
-      @JsonKey(name: 'sort_order') int sortOrder,
-      @JsonKey(name: 'is_active') bool isActive,
-      @JsonKey(includeFromJson: false, includeToJson: false) dynamic icon});
+      String? imageUrl,
+      int sortOrder,
+      bool isActive,
+      dynamic icon});
 }
 
 /// @nodoc
@@ -122,10 +116,10 @@ abstract class _$$CategoryModelImplCopyWith<$Res>
       {String id,
       String name,
       String? description,
-      @JsonKey(name: 'image_url') String? imageUrl,
-      @JsonKey(name: 'sort_order') int sortOrder,
-      @JsonKey(name: 'is_active') bool isActive,
-      @JsonKey(includeFromJson: false, includeToJson: false) dynamic icon});
+      String? imageUrl,
+      int sortOrder,
+      bool isActive,
+      dynamic icon});
 }
 
 /// @nodoc
@@ -187,10 +181,10 @@ class _$CategoryModelImpl implements _CategoryModel {
       {required this.id,
       required this.name,
       this.description,
-      @JsonKey(name: 'image_url') this.imageUrl,
-      @JsonKey(name: 'sort_order') this.sortOrder = 0,
-      @JsonKey(name: 'is_active') this.isActive = true,
-      @JsonKey(includeFromJson: false, includeToJson: false) this.icon});
+      this.imageUrl,
+      this.sortOrder = 0,
+      this.isActive = true,
+      this.icon});
 
   factory _$CategoryModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$CategoryModelImplFromJson(json);
@@ -202,18 +196,14 @@ class _$CategoryModelImpl implements _CategoryModel {
   @override
   final String? description;
   @override
-  @JsonKey(name: 'image_url')
   final String? imageUrl;
   @override
-  @JsonKey(name: 'sort_order')
+  @JsonKey()
   final int sortOrder;
   @override
-  @JsonKey(name: 'is_active')
+  @JsonKey()
   final bool isActive;
-// ملاحظة: الـ Icon عادة لا يتم تحويله لـ JSON بسهولة إلا إذا كان String (path)
-// أو قمت بعمل Custom Converter له.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
   final dynamic icon;
 
   @override
@@ -263,10 +253,9 @@ abstract class _CategoryModel implements CategoryModel {
       {required final String id,
       required final String name,
       final String? description,
-      @JsonKey(name: 'image_url') final String? imageUrl,
-      @JsonKey(name: 'sort_order') final int sortOrder,
-      @JsonKey(name: 'is_active') final bool isActive,
-      @JsonKey(includeFromJson: false, includeToJson: false)
+      final String? imageUrl,
+      final int sortOrder,
+      final bool isActive,
       final dynamic icon}) = _$CategoryModelImpl;
 
   factory _CategoryModel.fromJson(Map<String, dynamic> json) =
@@ -279,17 +268,12 @@ abstract class _CategoryModel implements CategoryModel {
   @override
   String? get description;
   @override
-  @JsonKey(name: 'image_url')
   String? get imageUrl;
   @override
-  @JsonKey(name: 'sort_order')
   int get sortOrder;
   @override
-  @JsonKey(name: 'is_active')
   bool get isActive;
-  @override // ملاحظة: الـ Icon عادة لا يتم تحويله لـ JSON بسهولة إلا إذا كان String (path)
-// أو قمت بعمل Custom Converter له.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
   dynamic get icon;
   @override
   @JsonKey(ignore: true)

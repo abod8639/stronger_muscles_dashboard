@@ -21,32 +21,21 @@ OrderModel _$OrderModelFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$OrderModel {
   String get id => throw _privateConstructorUsedError;
-  @JsonKey(name: 'user_id')
   String get userId => throw _privateConstructorUsedError;
-  @JsonKey(name: 'order_date')
   DateTime get orderDate => throw _privateConstructorUsedError;
   OrderStatus get status => throw _privateConstructorUsedError;
-  @JsonKey(name: 'payment_status')
   PaymentStatus get paymentStatus => throw _privateConstructorUsedError;
-  @JsonKey(name: 'payment_method')
   String get paymentMethod => throw _privateConstructorUsedError;
-  @JsonKey(name: 'address_id')
   String get addressId => throw _privateConstructorUsedError;
-  @JsonKey(name: 'shipping_address_snapshot')
   Map<String, dynamic>? get shippingAddressSnapshot =>
       throw _privateConstructorUsedError;
   double get subtotal => throw _privateConstructorUsedError;
-  @JsonKey(name: 'shipping_cost')
   double get shippingCost => throw _privateConstructorUsedError;
   double get discount => throw _privateConstructorUsedError;
-  @JsonKey(name: 'total_amount')
   double get totalAmount => throw _privateConstructorUsedError;
-  @JsonKey(name: 'tracking_number')
   String? get trackingNumber => throw _privateConstructorUsedError;
   String? get notes => throw _privateConstructorUsedError;
-  @JsonKey(name: 'phone_number')
   String? get phoneNumber => throw _privateConstructorUsedError;
-  @JsonKey(name: 'order_items')
   List<OrderItemModel>? get items => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -63,22 +52,21 @@ abstract class $OrderModelCopyWith<$Res> {
   @useResult
   $Res call(
       {String id,
-      @JsonKey(name: 'user_id') String userId,
-      @JsonKey(name: 'order_date') DateTime orderDate,
+      String userId,
+      DateTime orderDate,
       OrderStatus status,
-      @JsonKey(name: 'payment_status') PaymentStatus paymentStatus,
-      @JsonKey(name: 'payment_method') String paymentMethod,
-      @JsonKey(name: 'address_id') String addressId,
-      @JsonKey(name: 'shipping_address_snapshot')
+      PaymentStatus paymentStatus,
+      String paymentMethod,
+      String addressId,
       Map<String, dynamic>? shippingAddressSnapshot,
       double subtotal,
-      @JsonKey(name: 'shipping_cost') double shippingCost,
+      double shippingCost,
       double discount,
-      @JsonKey(name: 'total_amount') double totalAmount,
-      @JsonKey(name: 'tracking_number') String? trackingNumber,
+      double totalAmount,
+      String? trackingNumber,
       String? notes,
-      @JsonKey(name: 'phone_number') String? phoneNumber,
-      @JsonKey(name: 'order_items') List<OrderItemModel>? items});
+      String? phoneNumber,
+      List<OrderItemModel>? items});
 }
 
 /// @nodoc
@@ -190,22 +178,21 @@ abstract class _$$OrderModelImplCopyWith<$Res>
   @useResult
   $Res call(
       {String id,
-      @JsonKey(name: 'user_id') String userId,
-      @JsonKey(name: 'order_date') DateTime orderDate,
+      String userId,
+      DateTime orderDate,
       OrderStatus status,
-      @JsonKey(name: 'payment_status') PaymentStatus paymentStatus,
-      @JsonKey(name: 'payment_method') String paymentMethod,
-      @JsonKey(name: 'address_id') String addressId,
-      @JsonKey(name: 'shipping_address_snapshot')
+      PaymentStatus paymentStatus,
+      String paymentMethod,
+      String addressId,
       Map<String, dynamic>? shippingAddressSnapshot,
       double subtotal,
-      @JsonKey(name: 'shipping_cost') double shippingCost,
+      double shippingCost,
       double discount,
-      @JsonKey(name: 'total_amount') double totalAmount,
-      @JsonKey(name: 'tracking_number') String? trackingNumber,
+      double totalAmount,
+      String? trackingNumber,
       String? notes,
-      @JsonKey(name: 'phone_number') String? phoneNumber,
-      @JsonKey(name: 'order_items') List<OrderItemModel>? items});
+      String? phoneNumber,
+      List<OrderItemModel>? items});
 }
 
 /// @nodoc
@@ -310,23 +297,21 @@ class __$$OrderModelImplCopyWithImpl<$Res>
 class _$OrderModelImpl with DiagnosticableTreeMixin implements _OrderModel {
   const _$OrderModelImpl(
       {required this.id,
-      @JsonKey(name: 'user_id') required this.userId,
-      @JsonKey(name: 'order_date') required this.orderDate,
+      required this.userId,
+      required this.orderDate,
       this.status = OrderStatus.pending,
-      @JsonKey(name: 'payment_status')
       this.paymentStatus = PaymentStatus.pending,
-      @JsonKey(name: 'payment_method') this.paymentMethod = 'card',
-      @JsonKey(name: 'address_id') required this.addressId,
-      @JsonKey(name: 'shipping_address_snapshot')
+      this.paymentMethod = 'card',
+      required this.addressId,
       final Map<String, dynamic>? shippingAddressSnapshot,
       required this.subtotal,
-      @JsonKey(name: 'shipping_cost') this.shippingCost = 0.0,
+      this.shippingCost = 0.0,
       this.discount = 0.0,
-      @JsonKey(name: 'total_amount') required this.totalAmount,
-      @JsonKey(name: 'tracking_number') this.trackingNumber,
+      required this.totalAmount,
+      this.trackingNumber,
       this.notes,
-      @JsonKey(name: 'phone_number') this.phoneNumber,
-      @JsonKey(name: 'order_items') final List<OrderItemModel>? items})
+      this.phoneNumber,
+      final List<OrderItemModel>? items})
       : _shippingAddressSnapshot = shippingAddressSnapshot,
         _items = items;
 
@@ -336,26 +321,22 @@ class _$OrderModelImpl with DiagnosticableTreeMixin implements _OrderModel {
   @override
   final String id;
   @override
-  @JsonKey(name: 'user_id')
   final String userId;
   @override
-  @JsonKey(name: 'order_date')
   final DateTime orderDate;
   @override
   @JsonKey()
   final OrderStatus status;
   @override
-  @JsonKey(name: 'payment_status')
+  @JsonKey()
   final PaymentStatus paymentStatus;
   @override
-  @JsonKey(name: 'payment_method')
+  @JsonKey()
   final String paymentMethod;
   @override
-  @JsonKey(name: 'address_id')
   final String addressId;
   final Map<String, dynamic>? _shippingAddressSnapshot;
   @override
-  @JsonKey(name: 'shipping_address_snapshot')
   Map<String, dynamic>? get shippingAddressSnapshot {
     final value = _shippingAddressSnapshot;
     if (value == null) return null;
@@ -368,25 +349,21 @@ class _$OrderModelImpl with DiagnosticableTreeMixin implements _OrderModel {
   @override
   final double subtotal;
   @override
-  @JsonKey(name: 'shipping_cost')
+  @JsonKey()
   final double shippingCost;
   @override
   @JsonKey()
   final double discount;
   @override
-  @JsonKey(name: 'total_amount')
   final double totalAmount;
   @override
-  @JsonKey(name: 'tracking_number')
   final String? trackingNumber;
   @override
   final String? notes;
   @override
-  @JsonKey(name: 'phone_number')
   final String? phoneNumber;
   final List<OrderItemModel>? _items;
   @override
-  @JsonKey(name: 'order_items')
   List<OrderItemModel>? get items {
     final value = _items;
     if (value == null) return null;
@@ -495,24 +472,22 @@ class _$OrderModelImpl with DiagnosticableTreeMixin implements _OrderModel {
 
 abstract class _OrderModel implements OrderModel {
   const factory _OrderModel(
-          {required final String id,
-          @JsonKey(name: 'user_id') required final String userId,
-          @JsonKey(name: 'order_date') required final DateTime orderDate,
-          final OrderStatus status,
-          @JsonKey(name: 'payment_status') final PaymentStatus paymentStatus,
-          @JsonKey(name: 'payment_method') final String paymentMethod,
-          @JsonKey(name: 'address_id') required final String addressId,
-          @JsonKey(name: 'shipping_address_snapshot')
-          final Map<String, dynamic>? shippingAddressSnapshot,
-          required final double subtotal,
-          @JsonKey(name: 'shipping_cost') final double shippingCost,
-          final double discount,
-          @JsonKey(name: 'total_amount') required final double totalAmount,
-          @JsonKey(name: 'tracking_number') final String? trackingNumber,
-          final String? notes,
-          @JsonKey(name: 'phone_number') final String? phoneNumber,
-          @JsonKey(name: 'order_items') final List<OrderItemModel>? items}) =
-      _$OrderModelImpl;
+      {required final String id,
+      required final String userId,
+      required final DateTime orderDate,
+      final OrderStatus status,
+      final PaymentStatus paymentStatus,
+      final String paymentMethod,
+      required final String addressId,
+      final Map<String, dynamic>? shippingAddressSnapshot,
+      required final double subtotal,
+      final double shippingCost,
+      final double discount,
+      required final double totalAmount,
+      final String? trackingNumber,
+      final String? notes,
+      final String? phoneNumber,
+      final List<OrderItemModel>? items}) = _$OrderModelImpl;
 
   factory _OrderModel.fromJson(Map<String, dynamic> json) =
       _$OrderModelImpl.fromJson;
@@ -520,45 +495,34 @@ abstract class _OrderModel implements OrderModel {
   @override
   String get id;
   @override
-  @JsonKey(name: 'user_id')
   String get userId;
   @override
-  @JsonKey(name: 'order_date')
   DateTime get orderDate;
   @override
   OrderStatus get status;
   @override
-  @JsonKey(name: 'payment_status')
   PaymentStatus get paymentStatus;
   @override
-  @JsonKey(name: 'payment_method')
   String get paymentMethod;
   @override
-  @JsonKey(name: 'address_id')
   String get addressId;
   @override
-  @JsonKey(name: 'shipping_address_snapshot')
   Map<String, dynamic>? get shippingAddressSnapshot;
   @override
   double get subtotal;
   @override
-  @JsonKey(name: 'shipping_cost')
   double get shippingCost;
   @override
   double get discount;
   @override
-  @JsonKey(name: 'total_amount')
   double get totalAmount;
   @override
-  @JsonKey(name: 'tracking_number')
   String? get trackingNumber;
   @override
   String? get notes;
   @override
-  @JsonKey(name: 'phone_number')
   String? get phoneNumber;
   @override
-  @JsonKey(name: 'order_items')
   List<OrderItemModel>? get items;
   @override
   @JsonKey(ignore: true)
@@ -573,17 +537,12 @@ OrderItemModel _$OrderItemModelFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$OrderItemModel {
   String get id => throw _privateConstructorUsedError;
-  @JsonKey(name: 'order_id')
   String get orderId => throw _privateConstructorUsedError;
-  @JsonKey(name: 'product_id')
   String get productId => throw _privateConstructorUsedError;
-  @JsonKey(name: 'product_name')
   String get productName => throw _privateConstructorUsedError;
-  @JsonKey(name: 'unit_price')
   double get unitPrice => throw _privateConstructorUsedError;
   int get quantity => throw _privateConstructorUsedError;
   double get subtotal => throw _privateConstructorUsedError;
-  @JsonKey(name: 'image_url')
   String? get imageUrl => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -600,13 +559,13 @@ abstract class $OrderItemModelCopyWith<$Res> {
   @useResult
   $Res call(
       {String id,
-      @JsonKey(name: 'order_id') String orderId,
-      @JsonKey(name: 'product_id') String productId,
-      @JsonKey(name: 'product_name') String productName,
-      @JsonKey(name: 'unit_price') double unitPrice,
+      String orderId,
+      String productId,
+      String productName,
+      double unitPrice,
       int quantity,
       double subtotal,
-      @JsonKey(name: 'image_url') String? imageUrl});
+      String? imageUrl});
 }
 
 /// @nodoc
@@ -678,13 +637,13 @@ abstract class _$$OrderItemModelImplCopyWith<$Res>
   @useResult
   $Res call(
       {String id,
-      @JsonKey(name: 'order_id') String orderId,
-      @JsonKey(name: 'product_id') String productId,
-      @JsonKey(name: 'product_name') String productName,
-      @JsonKey(name: 'unit_price') double unitPrice,
+      String orderId,
+      String productId,
+      String productName,
+      double unitPrice,
       int quantity,
       double subtotal,
-      @JsonKey(name: 'image_url') String? imageUrl});
+      String? imageUrl});
 }
 
 /// @nodoc
@@ -751,13 +710,13 @@ class _$OrderItemModelImpl
     implements _OrderItemModel {
   const _$OrderItemModelImpl(
       {required this.id,
-      @JsonKey(name: 'order_id') required this.orderId,
-      @JsonKey(name: 'product_id') required this.productId,
-      @JsonKey(name: 'product_name') required this.productName,
-      @JsonKey(name: 'unit_price') required this.unitPrice,
+      required this.orderId,
+      required this.productId,
+      required this.productName,
+      required this.unitPrice,
       required this.quantity,
       required this.subtotal,
-      @JsonKey(name: 'image_url') this.imageUrl});
+      this.imageUrl});
 
   factory _$OrderItemModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$OrderItemModelImplFromJson(json);
@@ -765,23 +724,18 @@ class _$OrderItemModelImpl
   @override
   final String id;
   @override
-  @JsonKey(name: 'order_id')
   final String orderId;
   @override
-  @JsonKey(name: 'product_id')
   final String productId;
   @override
-  @JsonKey(name: 'product_name')
   final String productName;
   @override
-  @JsonKey(name: 'unit_price')
   final double unitPrice;
   @override
   final int quantity;
   @override
   final double subtotal;
   @override
-  @JsonKey(name: 'image_url')
   final String? imageUrl;
 
   @override
@@ -847,15 +801,14 @@ class _$OrderItemModelImpl
 
 abstract class _OrderItemModel implements OrderItemModel {
   const factory _OrderItemModel(
-          {required final String id,
-          @JsonKey(name: 'order_id') required final String orderId,
-          @JsonKey(name: 'product_id') required final String productId,
-          @JsonKey(name: 'product_name') required final String productName,
-          @JsonKey(name: 'unit_price') required final double unitPrice,
-          required final int quantity,
-          required final double subtotal,
-          @JsonKey(name: 'image_url') final String? imageUrl}) =
-      _$OrderItemModelImpl;
+      {required final String id,
+      required final String orderId,
+      required final String productId,
+      required final String productName,
+      required final double unitPrice,
+      required final int quantity,
+      required final double subtotal,
+      final String? imageUrl}) = _$OrderItemModelImpl;
 
   factory _OrderItemModel.fromJson(Map<String, dynamic> json) =
       _$OrderItemModelImpl.fromJson;
@@ -863,23 +816,18 @@ abstract class _OrderItemModel implements OrderItemModel {
   @override
   String get id;
   @override
-  @JsonKey(name: 'order_id')
   String get orderId;
   @override
-  @JsonKey(name: 'product_id')
   String get productId;
   @override
-  @JsonKey(name: 'product_name')
   String get productName;
   @override
-  @JsonKey(name: 'unit_price')
   double get unitPrice;
   @override
   int get quantity;
   @override
   double get subtotal;
   @override
-  @JsonKey(name: 'image_url')
   String? get imageUrl;
   @override
   @JsonKey(ignore: true)
