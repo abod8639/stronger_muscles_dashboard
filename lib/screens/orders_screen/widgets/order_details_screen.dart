@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_address_section.dart';
+import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_detail_row.dart';
+import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_orderItem.dart';
+import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_section.dart';
+import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_summary_row.dart';
+import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/builds_section_title.dart';
 import '../../../models/order_model.dart';
 import '../../../config/theme.dart';
 import '../../../components/status_badge.dart';
@@ -134,149 +139,14 @@ class OrderDetailsScreen extends StatelessWidget {
       ),
     );
   }
-
-  Widget buildSectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0, right: 4.0),
-      child: Text(
-        title,
-        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-      ),
-    );
-  }
-
-  Widget buildSection({required Widget child, EdgeInsets? padding}) {
-    return Container(
-      width: double.infinity,
-      padding: padding ?? const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Get.isDarkMode ? Colors.white.withOpacity(0.05) : Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Get.isDarkMode ? Colors.white10 : Colors.grey.shade200),
-      ),
-      child: child,
-    );
-  }
-
-  Widget buildDetailRow(IconData icon, String label, String value, {Widget? trailing}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: Colors.grey),
-          const SizedBox(width: 12),
-          Text(label, style: const TextStyle(color: Colors.grey)),
-          const Spacer(),
-          if (trailing != null) trailing else Text(value, style: const TextStyle(fontWeight: FontWeight.w500)),
-        ],
-      ),
-    );
-  }
-
-  Widget buildAddressSection(Map<String, dynamic>? snapshot) {
-    if (snapshot == null || snapshot.isEmpty) {
-      return const Text('العنوان غير متوفر', style: TextStyle(color: Colors.grey));
-    }
-
-    // الحالة 1: العنوان نص مباشر
-    if (snapshot.containsKey('address')) {
-      final addr = snapshot['address'];
-      if (addr is String) {
-        return buildAddressInfoRow(Icons.location_on, 'العنوان الكامل', addr);
-      }
-      if (addr is Map) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            buildAddressInfoRow(Icons.location_city, 'المدينة', addr['city'] ?? addr['City'] ?? 'غير محدد'),
-            const SizedBox(height: 12),
-            buildAddressInfoRow(Icons.location_on, 'الشارع/العنوان', addr['street'] ?? addr['Street'] ?? 'غير محدد'),
-          ],
-        );
-      }
-    }
-
-    // الحالة 2: البحث في أول قيمة متوفرة
-    final firstVal = snapshot.values.isNotEmpty ? snapshot.values.first : null;
-    if (firstVal is String) {
-      return buildAddressInfoRow(Icons.location_on, 'العنوان الكامل', firstVal);
-    }
-    if (firstVal is Map) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          buildAddressInfoRow(Icons.location_city, 'المدينة', firstVal['city'] ?? firstVal['City'] ?? 'غير محدد'),
-          const SizedBox(height: 12),
-          buildAddressInfoRow(Icons.location_on, 'الشارع/العنوان', firstVal['street'] ?? firstVal['Street'] ?? 'غير محدد'),
-        ],
-      );
-    }
-
-    return const Text('العنوان غير محدد', style: TextStyle(color: Colors.grey));
-  }
-
-  Widget buildAddressInfoRow(IconData icon, String label, String value) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: AppColors.primary.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(icon, size: 18, color: AppColors.primary),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(label, style: const TextStyle(color: Colors.grey, fontSize: 11)),
-              Text(value, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13)),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget buildOrderItem(OrderItemModel item, bool isDark) {
-    return ListTile(
-      leading: Container(
-        width: 50,
-        height: 50,
-        decoration: BoxDecoration(
-          color: isDark ? Colors.white10 : Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: item.imageUrl != null 
-          ? Image.network(item.imageUrl!, errorBuilder: (c, e, s) => Icon(Icons.image))
-          : Icon(Icons.image, color: Colors.grey),
-      ),
-      title: Text(item.productName, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-      subtitle: Text('الكمية: ${item.quantity} × ${item.unitPrice.toStringAsFixed(2)} ر.س'),
-      trailing: Text('${item.subtotal.toStringAsFixed(2)} ر.س', style: TextStyle(fontWeight: FontWeight.bold)),
-    );
-  }
-
-  Widget buildSummaryRow(String label, String value, {bool isTotal = false, Color? color}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label, style: TextStyle(
-            fontSize: isTotal ? 16 : 14,
-            fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-          )),
-          Text(value, style: TextStyle(
-            fontSize: isTotal ? 16 : 14,
-            fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-            color: color,
-          )),
-        ],
-      ),
-    );
-  }
-  
 }
+
+
+
+
+
+
+
+
+
+
