@@ -62,12 +62,12 @@ class Sidebar extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               children: [
-                buildNavItem( controller, 0, Icons.grid_view_outlined, Icons.grid_view_rounded, 'الرئيسية'),
-                buildNavItem( controller, 2, Icons.inventory_2_outlined, Icons.inventory_2_rounded, 'المنتجات'),
-                buildNavItem( controller, 4, Icons.people_outline, Icons.people_rounded, 'المستخدمون'),
-                buildNavItem( controller, 1, Icons.category_outlined, Icons.category_rounded, 'الأقسام'),
-                buildNavItem( controller, 3, Icons.shopping_bag_outlined, Icons.shopping_bag_rounded, 'الطلبات'),
-                buildNavItem( controller, 5, Icons.settings_outlined, Icons.settings_rounded, 'الإعدادات'),
+                buildNavItem(isDrawer, controller, 0, Icons.grid_view_outlined, Icons.grid_view_rounded, 'الرئيسية'),
+                buildNavItem(isDrawer, controller, 2, Icons.inventory_2_outlined, Icons.inventory_2_rounded, 'المنتجات'),
+                buildNavItem(isDrawer, controller, 4, Icons.people_outline, Icons.people_rounded, 'المستخدمون'),
+                buildNavItem(isDrawer, controller, 1, Icons.category_outlined, Icons.category_rounded, 'الأقسام'),
+                buildNavItem(isDrawer, controller, 3, Icons.shopping_bag_outlined, Icons.shopping_bag_rounded, 'الطلبات'),
+                buildNavItem(isDrawer, controller, 5, Icons.settings_outlined, Icons.settings_rounded, 'الإعدادات'),
               ],
             ),
           ),
