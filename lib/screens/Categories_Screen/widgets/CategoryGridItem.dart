@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
-import 'package:stronger_muscles_dashboard/models/category.dart';
+import 'package:stronger_muscles_dashboard/models/category_model.dart';
 import 'package:stronger_muscles_dashboard/screens/Categories_Screen/widgets/buildPlaceholder.dart';
 
 class CategoryGridItem extends StatefulWidget {
