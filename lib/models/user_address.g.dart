@@ -53,21 +53,6 @@ class UserAddressAdapter extends TypeAdapter<UserAddress> {
 // JsonSerializableGenerator
 // **************************************************************************
 
-UserAddress _$UserAddressFromJson(Map<String, dynamic> json) => UserAddress(
-      id: (json['id'] as num).toInt(),
-      city: json['city'] as String,
-      street: json['street'] as String,
-      isDefault: json['isDefault'] as bool,
-    );
-
-Map<String, dynamic> _$UserAddressToJson(UserAddress instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'city': instance.city,
-      'street': instance.street,
-      'isDefault': instance.isDefault,
-    };
-
 _$UserAddressImpl _$$UserAddressImplFromJson(Map<String, dynamic> json) =>
     _$UserAddressImpl(
       id: (json['id'] as num).toInt(),

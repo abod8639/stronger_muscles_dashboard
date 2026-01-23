@@ -100,7 +100,7 @@ class ProductsController extends GetxController {
 
     // 2. التصفية حسب النكهة
     if (selectedFlavorId.value != 'all') {
-      filtered = filtered.where((p) => p.flavor?.contains(selectedFlavorId.value) ?? false);
+      filtered = filtered.where((p) => p.flavor.contains(selectedFlavorId.value));
     }
 
     // 3. التصفية حسب البحث (الاسم، الماركة، أو الكود)
@@ -188,7 +188,7 @@ Future<void> _executeDelete(String id) async {
       _applyFiltering();
       Get.snackbar('نجاح', 'تم حذف المنتج بنجاح', 
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.withOpacity(0.1));
+        backgroundColor: Colors.green.withValues(alpha: 0.1));
     }
   } catch (e) {
     _showErrorSnackbar('خطأ في الحذف', e.toString());

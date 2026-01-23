@@ -6,7 +6,7 @@ part 'user_address.g.dart';
 
 @freezed
 @HiveType(typeId: 15, adapterName: 'UserAddressAdapter')
-@JsonSerializable()
+
 class UserAddress with _$UserAddress {
   const factory UserAddress({
     @HiveField(0) required int id,

@@ -14,6 +14,10 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
+ProductModel _$ProductModelFromJson(Map<String, dynamic> json) {
+  return _ProductModel.fromJson(json);
+}
+
 /// @nodoc
 mixin _$ProductModel {
   @HiveField(0)
@@ -94,6 +98,7 @@ mixin _$ProductModel {
   @HiveField(35)
   String? get slug => throw _privateConstructorUsedError;
 
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
   $ProductModelCopyWith<ProductModel> get copyWith =>
       throw _privateConstructorUsedError;
@@ -588,7 +593,7 @@ class __$$ProductModelImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-
+@JsonSerializable()
 class _$ProductModelImpl extends _ProductModel {
   const _$ProductModelImpl(
       {@HiveField(0) required this.id,
@@ -636,6 +641,9 @@ class _$ProductModelImpl extends _ProductModel {
         _nutritionFacts = nutritionFacts,
         _dimensions = dimensions,
         super._();
+
+  factory _$ProductModelImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ProductModelImplFromJson(json);
 
   @override
   @HiveField(0)
@@ -883,6 +891,7 @@ class _$ProductModelImpl extends _ProductModel {
             (identical(other.slug, slug) || other.slug == slug));
   }
 
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hashAll([
         runtimeType,
@@ -929,6 +938,13 @@ class _$ProductModelImpl extends _ProductModel {
   @pragma('vm:prefer-inline')
   _$$ProductModelImplCopyWith<_$ProductModelImpl> get copyWith =>
       __$$ProductModelImplCopyWithImpl<_$ProductModelImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$ProductModelImplToJson(
+      this,
+    );
+  }
 }
 
 abstract class _ProductModel extends ProductModel {
@@ -970,6 +986,9 @@ abstract class _ProductModel extends ProductModel {
       @HiveField(34) final String? metaDescription,
       @HiveField(35) final String? slug}) = _$ProductModelImpl;
   const _ProductModel._() : super._();
+
+  factory _ProductModel.fromJson(Map<String, dynamic> json) =
+      _$ProductModelImpl.fromJson;
 
   @override
   @HiveField(0)

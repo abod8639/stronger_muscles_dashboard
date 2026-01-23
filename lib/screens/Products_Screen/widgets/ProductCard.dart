@@ -219,7 +219,7 @@ class ProductCard extends StatelessWidget {
       spacing: 6,
       runSpacing: 6,
       children: [
-        ...product.flavor!.take(3).map((f) => Container(
+        ...product.flavor.take(3).map((f) => Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -256,7 +256,7 @@ class ProductCard extends StatelessWidget {
             ],
           ),
         )),
-        if (product.flavor!.length > 3)
+        if (product.flavor.length > 3)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
@@ -264,7 +264,7 @@ class ProductCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
-              '+${product.flavor!.length - 3}',
+              '+${product.flavor.length - 3}',
               style: TextStyle(
                 fontSize: 11,
                 color: Colors.grey.shade600,

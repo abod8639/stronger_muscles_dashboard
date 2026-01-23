@@ -59,11 +59,7 @@ class ProductModel with _$ProductModel {
     @HiveField(35) String? slug,
   }) = _ProductModel;
 
-  factory ProductModel.fromJson(Map<String, dynamic> json) {
-    // معالجة أسماء الحقول المختلفة (snake_case to camelCase) يدوياً إذا لم يكن السيرفر موحداً
-    // أو الاعتماد على @JsonKey(name: '...') داخل الـ factory
-    return _$ProductModelFromJson(json);
-  }
+  factory ProductModel.fromJson(Map<String, dynamic> json) => _$ProductModelFromJson(json);
 
   // --- Getters المحسنة ---
   double get finalPrice => (discountPrice != null && discountPrice! < price) ? discountPrice! : price;

@@ -149,36 +149,126 @@ class ProductModelAdapter extends TypeAdapter<ProductModel> {
 // JsonSerializableGenerator
 // **************************************************************************
 
-ProductModel _$ProductModelFromJson(Map<String, dynamic> json) => ProductModel(
+// ProductModel _$ProductModelFromJson(Map<String, dynamic> json) => ProductModel(
+//       id: json['id'] as String,
+//       name: json['name'] as String,
+//       price: (json['price'] as num).toDouble(),
+//       discountPrice: (json['discountPrice'] as num?)?.toDouble(),
+//       imageUrls:
+//           (json['imageUrls'] as List<dynamic>).map((e) => e as String).toList(),
+//       description: json['description'] as String,
+//       categoryId: json['categoryId'] as String,
+//       stockQuantity: (json['stockQuantity'] as num).toInt(),
+//       averageRating: (json['averageRating'] as num).toDouble(),
+//       reviewCount: (json['reviewCount'] as num).toInt(),
+//       brand: json['brand'] as String?,
+//       servingSize: json['servingSize'] as String?,
+//       servingsPerContainer: (json['servingsPerContainer'] as num?)?.toInt(),
+//       isActive: json['isActive'] as bool,
+//       isBackgroundWhite: json['isBackgroundWhite'] as bool,
+//       sku: json['sku'] as String?,
+//       tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
+//       weight: (json['weight'] as num?)?.toDouble(),
+//       size: (json['size'] as List<dynamic>).map((e) => e as String).toList(),
+//       flavor:
+//           (json['flavors'] as List<dynamic>).map((e) => e as String).toList(),
+//       nutritionFacts: json['nutritionFacts'] as Map<String, dynamic>?,
+//       dimensions: json['dimensions'] as Map<String, dynamic>?,
+//       featured: json['featured'] as bool,
+//       newArrival: json['newArrival'] as bool,
+//       bestSeller: json['bestSeller'] as bool,
+//       totalSales: (json['totalSales'] as num).toInt(),
+//       viewsCount: (json['viewsCount'] as num).toInt(),
+//       ingredients: json['ingredients'] as String?,
+//       usageInstructions: json['usageInstructions'] as String?,
+//       warnings: json['warnings'] as String?,
+//       expiryDate: json['expiryDate'] == null
+//           ? null
+//           : DateTime.parse(json['expiryDate'] as String),
+//       manufacturer: json['manufacturer'] as String?,
+//       countryOfOrigin: json['countryOfOrigin'] as String?,
+//       metaTitle: json['metaTitle'] as String?,
+//       metaDescription: json['metaDescription'] as String?,
+//       slug: json['slug'] as String?,
+//     );
+
+Map<String, dynamic> _$ProductModelToJson(ProductModel instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'price': instance.price,
+      'discountPrice': instance.discountPrice,
+      'imageUrls': instance.imageUrls,
+      'description': instance.description,
+      'categoryId': instance.categoryId,
+      'stockQuantity': instance.stockQuantity,
+      'averageRating': instance.averageRating,
+      'reviewCount': instance.reviewCount,
+      'brand': instance.brand,
+      'servingSize': instance.servingSize,
+      'servingsPerContainer': instance.servingsPerContainer,
+      'isActive': instance.isActive,
+      'isBackgroundWhite': instance.isBackgroundWhite,
+      'sku': instance.sku,
+      'tags': instance.tags,
+      'weight': instance.weight,
+      'size': instance.size,
+      'flavors': instance.flavor,
+      'nutritionFacts': instance.nutritionFacts,
+      'dimensions': instance.dimensions,
+      'featured': instance.featured,
+      'newArrival': instance.newArrival,
+      'bestSeller': instance.bestSeller,
+      'totalSales': instance.totalSales,
+      'viewsCount': instance.viewsCount,
+      'ingredients': instance.ingredients,
+      'usageInstructions': instance.usageInstructions,
+      'warnings': instance.warnings,
+      'expiryDate': instance.expiryDate?.toIso8601String(),
+      'manufacturer': instance.manufacturer,
+      'countryOfOrigin': instance.countryOfOrigin,
+      'metaTitle': instance.metaTitle,
+      'metaDescription': instance.metaDescription,
+      'slug': instance.slug,
+    };
+
+_$ProductModelImpl _$$ProductModelImplFromJson(Map<String, dynamic> json) =>
+    _$ProductModelImpl(
       id: json['id'] as String,
       name: json['name'] as String,
-      price: (json['price'] as num).toDouble(),
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
       discountPrice: (json['discountPrice'] as num?)?.toDouble(),
-      imageUrls:
-          (json['imageUrls'] as List<dynamic>).map((e) => e as String).toList(),
-      description: json['description'] as String,
+      imageUrls: (json['imageUrls'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
+      description: json['description'] as String? ?? '',
       categoryId: json['categoryId'] as String,
-      stockQuantity: (json['stockQuantity'] as num).toInt(),
-      averageRating: (json['averageRating'] as num).toDouble(),
-      reviewCount: (json['reviewCount'] as num).toInt(),
+      stockQuantity: (json['stockQuantity'] as num?)?.toInt() ?? 0,
+      averageRating: (json['averageRating'] as num?)?.toDouble() ?? 0.0,
+      reviewCount: (json['reviewCount'] as num?)?.toInt() ?? 0,
       brand: json['brand'] as String?,
       servingSize: json['servingSize'] as String?,
       servingsPerContainer: (json['servingsPerContainer'] as num?)?.toInt(),
-      isActive: json['isActive'] as bool,
-      isBackgroundWhite: json['isBackgroundWhite'] as bool,
+      isActive: json['isActive'] as bool? ?? true,
+      isBackgroundWhite: json['isBackgroundWhite'] as bool? ?? false,
       sku: json['sku'] as String?,
       tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
       weight: (json['weight'] as num?)?.toDouble(),
-      size: (json['size'] as List<dynamic>).map((e) => e as String).toList(),
-      flavor:
-          (json['flavors'] as List<dynamic>).map((e) => e as String).toList(),
+      size:
+          (json['size'] as List<dynamic>?)?.map((e) => e as String).toList() ??
+              const [],
+      flavor: (json['flavors'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
       nutritionFacts: json['nutritionFacts'] as Map<String, dynamic>?,
       dimensions: json['dimensions'] as Map<String, dynamic>?,
-      featured: json['featured'] as bool,
-      newArrival: json['newArrival'] as bool,
-      bestSeller: json['bestSeller'] as bool,
-      totalSales: (json['totalSales'] as num).toInt(),
-      viewsCount: (json['viewsCount'] as num).toInt(),
+      featured: json['featured'] as bool? ?? false,
+      newArrival: json['newArrival'] as bool? ?? false,
+      bestSeller: json['bestSeller'] as bool? ?? false,
+      totalSales: (json['totalSales'] as num?)?.toInt() ?? 0,
+      viewsCount: (json['viewsCount'] as num?)?.toInt() ?? 0,
       ingredients: json['ingredients'] as String?,
       usageInstructions: json['usageInstructions'] as String?,
       warnings: json['warnings'] as String?,
@@ -192,7 +282,7 @@ ProductModel _$ProductModelFromJson(Map<String, dynamic> json) => ProductModel(
       slug: json['slug'] as String?,
     );
 
-Map<String, dynamic> _$ProductModelToJson(ProductModel instance) =>
+Map<String, dynamic> _$$ProductModelImplToJson(_$ProductModelImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,

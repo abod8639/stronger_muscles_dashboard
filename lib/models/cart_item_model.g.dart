@@ -65,18 +65,18 @@ class CartItemModelAdapter extends TypeAdapter<CartItemModel> {
 // JsonSerializableGenerator
 // **************************************************************************
 
-CartItemModel _$CartItemModelFromJson(Map<String, dynamic> json) =>
-    CartItemModel(
-      id: json['id'] as String,
-      userId: json['userId'] as String,
-      productId: json['productId'] as String,
-      productName: json['productName'] as String,
-      price: (json['price'] as num).toDouble(),
-      quantity: (json['quantity'] as num).toInt(),
-      imageUrls:
-          (json['imageUrls'] as List<dynamic>).map((e) => e as String).toList(),
-      addedAt: DateTime.parse(json['addedAt'] as String),
-    );
+// CartItemModel _$CartItemModelFromJson(Map<String, dynamic> json) =>
+//     CartItemModel(
+//       id: json['id'] as String,
+//       userId: json['userId'] as String,
+//       productId: json['productId'] as String,
+//       productName: json['productName'] as String,
+//       price: (json['price'] as num).toDouble(),
+//       quantity: (json['quantity'] as num).toInt(),
+//       imageUrls:
+//           (json['imageUrls'] as List<dynamic>).map((e) => e as String).toList(),
+//       addedAt: DateTime.parse(json['addedAt'] as String),
+//     );
 
 Map<String, dynamic> _$CartItemModelToJson(CartItemModel instance) =>
     <String, dynamic>{
