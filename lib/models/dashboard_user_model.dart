@@ -1,72 +1,45 @@
-
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:hive/hive.dart';
 import 'package:stronger_muscles_dashboard/models/user_address.dart';
 
-class DashboardResponse {
-  final int totalUsers;
-  final List<DashboardUser> users;
+part 'dashboard_user_model.freezed.dart';
+part 'dashboard_user_model.g.dart';
 
-  DashboardResponse({
-    required this.totalUsers,
-    required this.users
-  });
+@freezed
+class DashboardResponse with _$DashboardResponse {
+  const factory DashboardResponse({
+    @JsonKey(name: 'total_users') @Default(0) int totalUsers,
+    @Default([]) List<DashboardUser> users,
+  }) = _DashboardResponse;
 
-  factory DashboardResponse.fromJson(Map<String, dynamic> json) {
-    return DashboardResponse(
-      totalUsers: json['total_users'] ?? 0,
-      users: (json['users'] as List<dynamic>?)
-              ?.map((e) => DashboardUser.fromJson(e))
-              .toList() ??
-          [],
-    );
-  }
+  factory DashboardResponse.fromJson(Map<String, dynamic> json) => 
+      _$DashboardResponseFromJson(json);
 }
 
-class DashboardUser {
-  final int id;
-  final String name;
-  final String? email;
-  final String? phone;
-  final String role;
-  final bool isActive;
-  final String? photoUrl;
-  final double totalSpent;
-  final DateTime? createdAt;
-  final DateTime? lastLogin;
-  final List<UserAddress> addresses;
-  final int ordersCount;
+@freezed
+@HiveType(typeId: 17) // تأكد من استخدام TypeId غير محجوز
+class DashboardUser with _$DashboardUser {
+  const DashboardUser._();
 
-  DashboardUser({
-    required this.id,
-    required this.name,
-    this.email,
-    this.phone,
-    required this.role,
-    required this.isActive,
-    this.photoUrl,
-    required this.totalSpent,
-    this.createdAt,
-    this.lastLogin,
-    required this.addresses,
-    required this.ordersCount,
-  });
+  @JsonSerializable(explicitToJson: true)
+  const factory DashboardUser({
+    @HiveField(0) required int id,
+    @HiveField(1) @Default('') String name,
+    @HiveField(2) String? email,
+    @HiveField(3) String? phone,
+    @HiveField(4) @Default('customer') String role,
+    @HiveField(5) @JsonKey(name: 'is_active') @Default(true) bool isActive,
+    @HiveField(6) @JsonKey(name: 'photo_url') String? photoUrl,
+    @HiveField(7) @JsonKey(name: 'total_spent', fromJson: _doubleFromAny) @Default(0.0) double totalSpent,
+    @HiveField(8) @JsonKey(name: 'created_at') DateTime? createdAt,
+    @HiveField(9) @JsonKey(name: 'last_login') DateTime? lastLogin,
+    @HiveField(10) @Default([]) List<UserAddress> addresses,
+    @HiveField(11) @JsonKey(name: 'orders_count') @Default(0) int ordersCount,
+  }) = _DashboardUser;
 
-  factory DashboardUser.fromJson(Map<String, dynamic> json) {
-    return DashboardUser(
-      id: json['id'],
-      name: json['name'] ?? '',
-      email: json['email'],
-      phone: json['phone'],
-      role: json['role'] ?? 'customer',
-      isActive: json['is_active'] ?? true,
-      photoUrl: json['photo_url'],
-      totalSpent: double.tryParse(json['total_spent'].toString()) ?? 0.0,
-      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
-      lastLogin: json['last_login'] != null ? DateTime.parse(json['last_login']) : null,
-      addresses: (json['addresses'] as List<dynamic>?)
-              ?.map((e) => UserAddress.fromJson(e))
-              .toList() ??
-          [],
-      ordersCount: json['orders_count'] ?? 0,
-    );
-  }
+  factory DashboardUser.fromJson(Map<String, dynamic> json) => 
+      _$DashboardUserFromJson(json);
+
+  static double _doubleFromAny(dynamic val) => 
+      double.tryParse(val.toString()) ?? 0.0;
 }

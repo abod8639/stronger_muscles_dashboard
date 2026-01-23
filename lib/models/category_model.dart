@@ -21,14 +21,12 @@ class CategoryModel with _$CategoryModel {
       _$CategoryModelFromJson(_customJson(json));
 }
 
-// دالة المعالجة اليدوية لضمان توافق الأسماء والأنواع
 Map<String, dynamic> _customJson(Map<String, dynamic> json) {
   return {
     ...json,
     'id': (json['id'] ?? '').toString(),
     'name': (json['name'] ?? '').toString(),
     'description': (json['description'] ?? '').toString(),
-    // توحيد مسميات الحقول لتطابق الـ JsonKey المذكور في الأعلى
     'image_url': json['imageUrl'] ?? json['image_url'],
     'sort_order': int.tryParse((json['sortOrder'] ?? json['sort_order'] ?? 0).toString()) ?? 0,
     'is_active': json['isActive'] == true || 

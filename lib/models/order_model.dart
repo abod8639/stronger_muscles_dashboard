@@ -27,7 +27,6 @@ class OrderModel with _$OrderModel {
   // إضافة constructor خاص لتمكين إضافة methods أو getters
   const OrderModel._();
 
-  @JsonSerializable(explicitToJson: true)
   const factory OrderModel({
     @HiveField(0) required String id,
     @HiveField(1) required String userId,

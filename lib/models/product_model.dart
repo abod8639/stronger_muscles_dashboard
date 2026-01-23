@@ -10,7 +10,6 @@ part 'product_model.g.dart';
 class ProductModel with _$ProductModel {
   const ProductModel._();
 
-  @JsonSerializable(explicitToJson: true)
   const factory ProductModel({
     @HiveField(0) required String id,
     @HiveField(1) required String name,
