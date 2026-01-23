@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/models/dashboard_user_model.dart';
-import 'package:stronger_muscles_dashboard/screens/Users_Screen/users_screen.dart';
+import 'package:stronger_muscles_dashboard/screens/Users_Screen/widgets/build_info_row.dart';
 
 Widget buildUserCard( DashboardUser user) {
     return Builder(
