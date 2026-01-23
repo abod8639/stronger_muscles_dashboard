@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/screens/widgets/build_nav_item.dart';
 
 class NavigationController extends GetxController {
   final selectedIndex = 0.obs;
@@ -61,12 +62,12 @@ class Sidebar extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               children: [
-                _buildNavItem(context, controller, 0, Icons.grid_view_outlined, Icons.grid_view_rounded, 'الرئيسية'),
-                _buildNavItem(context, controller, 2, Icons.inventory_2_outlined, Icons.inventory_2_rounded, 'المنتجات'),
-                _buildNavItem(context, controller, 4, Icons.people_outline, Icons.people_rounded, 'المستخدمون'),
-                _buildNavItem(context, controller, 1, Icons.category_outlined, Icons.category_rounded, 'الأقسام'),
-                _buildNavItem(context, controller, 3, Icons.shopping_bag_outlined, Icons.shopping_bag_rounded, 'الطلبات'),
-                _buildNavItem(context, controller, 5, Icons.settings_outlined, Icons.settings_rounded, 'الإعدادات'),
+                buildNavItem( controller, 0, Icons.grid_view_outlined, Icons.grid_view_rounded, 'الرئيسية'),
+                buildNavItem( controller, 2, Icons.inventory_2_outlined, Icons.inventory_2_rounded, 'المنتجات'),
+                buildNavItem( controller, 4, Icons.people_outline, Icons.people_rounded, 'المستخدمون'),
+                buildNavItem( controller, 1, Icons.category_outlined, Icons.category_rounded, 'الأقسام'),
+                buildNavItem( controller, 3, Icons.shopping_bag_outlined, Icons.shopping_bag_rounded, 'الطلبات'),
+                buildNavItem( controller, 5, Icons.settings_outlined, Icons.settings_rounded, 'الإعدادات'),
               ],
             ),
           ),
@@ -112,44 +113,5 @@ class Sidebar extends StatelessWidget {
     );
   }
 
-  Widget _buildNavItem(BuildContext context, NavigationController controller, int index, IconData icon, IconData activeIcon, String label) {
-    return Obx(() {
-      final isSelected = controller.selectedIndex.value == index;
-      return Padding(
-        padding: const EdgeInsets.only(bottom: 8),
-        child: InkWell(
-          onTap: () {
-            controller.changeIndex(index);
-            if (isDrawer) Get.back();
-          },
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: isSelected ? const Color(0xFF4F73F5) : Colors.transparent,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  isSelected ? activeIcon : icon,
-                  color: isSelected ? Colors.white : Colors.white54,
-                  size: 24,
-                ),
-                const SizedBox(width: 16),
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: isSelected ? Colors.white : Colors.white54,
-                    fontSize: 16,
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    });
-  }
 }
+ 
