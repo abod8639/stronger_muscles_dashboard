@@ -31,6 +31,7 @@ class ProductsController extends GetxController {
   final selectedCategoryId = 'all'.obs;
   final selectedFlavorId = 'all'.obs;
   final isAvailable = false.obs;
+  final isBackgroundWhite = false.obs;
 
   @override
   void onInit() {

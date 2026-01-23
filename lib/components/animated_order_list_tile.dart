@@ -52,6 +52,44 @@ class _AnimatedOrderListTileState extends State<AnimatedOrderListTile>
     super.dispose();
   }
 
+  String _extractAddress(Map<String, Map<String, dynamic>>? snapshot) {
+    if (snapshot == null || snapshot.isEmpty) {
+      return 'العنوان غير متوفر';
+    }
+
+    Map<String, dynamic> addressData = {};
+    if (snapshot.containsKey('address')) {
+      addressData = snapshot['address']!;
+    } else {
+      // Fallback for slightly different structures
+      addressData = snapshot.values.isNotEmpty ? snapshot.values.first : {};
+    }
+
+    final city = addressData['city'] ?? addressData['City'] ?? '';
+    final street = addressData['street'] ?? addressData['Street'] ?? '';
+
+    final fullAddress = [city, street].where((s) => s.isNotEmpty).join(', ');
+
+    return fullAddress.isNotEmpty ? fullAddress : 'العنوان غير محدد';
+  }
+
+  Widget _buildInfoRow(IconData icon, String text) {
+    return Row(
+      children: [
+        Icon(icon, size: 12, color: AppColors.textMuted),
+        const SizedBox(width: 6),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(color: AppColors.textMuted, fontSize: 11),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SlideTransition(
@@ -110,7 +148,7 @@ class _AnimatedOrderListTileState extends State<AnimatedOrderListTile>
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'الطلب: ${widget.order.id}',
+                                  'الطلب: #${widget.order.id}',
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 13,
@@ -139,6 +177,20 @@ class _AnimatedOrderListTileState extends State<AnimatedOrderListTile>
                                   ),
                                 ),
                               ],
+                            ),
+                            const Divider(height: 16, thickness: 0.5),
+                            _buildInfoRow(Icons.person_outline,
+                                'العميل: ${widget.order.userId}'),
+                            const SizedBox(height: 4),
+                            if (widget.order.phoneNumber != null &&
+                                widget.order.phoneNumber!.isNotEmpty) ...[
+                              _buildInfoRow(
+                                  Icons.phone_outlined, widget.order.phoneNumber!),
+                              const SizedBox(height: 4),
+                            ],
+                            _buildInfoRow(
+                              Icons.location_on_outlined,
+                              _extractAddress(widget.order.shippingAddressSnapshot),
                             ),
                           ],
                         ),

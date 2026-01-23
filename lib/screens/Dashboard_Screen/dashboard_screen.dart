@@ -126,7 +126,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     RecentOrdersList(
                       orders: controller.orders.take(5).toList(),
                       onSeeAll: () {
-                         Get.toNamed('/orders');
+                        //  Get.toNamed('/orders');
                       },
                     ),
 

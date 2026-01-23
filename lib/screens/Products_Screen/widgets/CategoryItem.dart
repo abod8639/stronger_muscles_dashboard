@@ -9,7 +9,7 @@ class CategoryItem extends StatelessWidget {
   final VoidCallback onTap;
   final ResponsiveLayout responsive; 
 
-  const CategoryItem({
+  const CategoryItem({super.key, 
     required this.name,
     required this.isSelected,
     required this.onTap,

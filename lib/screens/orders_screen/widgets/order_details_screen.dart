@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:stronger_muscles_dashboard/models/user.dart';
 import '../../../models/order.dart';
 import '../../../config/theme.dart';
 import '../../../components/status_badge.dart';
 
 class OrderDetailsScreen extends StatelessWidget {
   final OrderModel order;
-  // final UserModel user;
+  final UserModel? user;
 
-  const OrderDetailsScreen({super.key, required this.order});
+  const OrderDetailsScreen({super.key, required this.order, this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +57,15 @@ class OrderDetailsScreen extends StatelessWidget {
             _buildSection(
               child: Column(
                 children: [
-                  _buildDetailRow(Icons.person, 'رقم العميل',  order.userId),
+                  _buildDetailRow(Icons.person, 'اسم العميل', user?.name ?? 'غير متوفر (ID: ${order.userId})'),
+                  if(user?.email != null) ...[
+                      const Divider(),
+                      _buildDetailRow(Icons.email, 'البريد الإلكتروني', user!.email),
+                  ],
+                  if(order.phoneNumber != null && order.phoneNumber!.isNotEmpty) ...[
+                      const Divider(),
+                      _buildDetailRow(Icons.phone, 'رقم الهاتف', order.phoneNumber!),
+                  ],
                   const Divider(),
                   _buildDetailRow(Icons.payment, 'طريقة الدفع', order.paymentMethod),
                   const Divider(),
@@ -184,11 +193,6 @@ class OrderDetailsScreen extends StatelessWidget {
         _buildAddressInfoRow(Icons.location_city, 'المدينة', addressData['city'] ?? addressData['City'] ?? 'غير محدد'),
         const SizedBox(height: 12),
         _buildAddressInfoRow(Icons.location_on, 'الشارع/العنوان', addressData['street'] ?? addressData['Street'] ?? 'غير محدد'),
-        if (addressData['phone'] != null || addressData['Phone'] != null || addressData['phone_number'] != null) ...[
-          const SizedBox(height: 12),
-          _buildAddressInfoRow(Icons.phone, 'رقم التواصل', 
-            (addressData['phone'] ?? addressData['Phone'] ?? addressData['phone_number'] ?? '').toString()),
-        ],
       ],
     );
   }

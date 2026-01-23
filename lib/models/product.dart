@@ -14,7 +14,7 @@ class ProductModel {
   final String? servingSize;
   final int? servingsPerContainer;
   final bool isActive;
-  
+  final bool? isBackgroundWhite;
 
   // Basic Info
   final String? sku;
@@ -65,6 +65,7 @@ class ProductModel {
     this.servingSize,
     this.servingsPerContainer,
     this.isActive = true,
+    this.isBackgroundWhite = false,
     // Basic Info
     this.sku,
     this.tags,

@@ -160,6 +160,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
 
               // قسم المخزون والماركة
               _buildCardSection(
+
                 title: 'المخزون والتفاصيل الفنية',
                 child: Column(
                   children: [
@@ -179,7 +180,21 @@ class _ProductFormPageState extends State<ProductFormPage> {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    const AvailabilitySwitch(),
+                     AvailabilitySwitch(
+                      title: "Featured",
+                      onChanged: (value) {
+                        controller.isFeatured.value = value;
+                      },
+                      isAvailable: controller.isFeatured,
+                    ),
+                    const SizedBox(height: 16),
+                     AvailabilitySwitch(
+                      onChanged: (value) {
+                        controller.isBackgroundWhite.value = value;
+                      },
+                      title: "Background White",
+                      isAvailable: controller.isBackgroundWhite,
+                    ),
                   ],
                 ),
               ),

@@ -65,9 +65,10 @@ class ProductFormSheetState extends State<ProductFormSheet> {
 
   @override
   void dispose() {
-    [nameController, priceController, discountPriceController, stockController, 
-     descriptionController, brandController, servingSizeController, numberOfSessionsController]
-    .forEach((c) => c.dispose());
+    for (var c in [nameController, priceController, discountPriceController, stockController, 
+     descriptionController, brandController, servingSizeController, numberOfSessionsController]) {
+      c.dispose();
+    }
     super.dispose();
   }
 
@@ -103,9 +104,25 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                     _buildStockAndBrandSection(responsive),
                     const SizedBox(height: 16),
                     _buildNutritionalSection(responsive),
+                  
+
                     const SizedBox(height: 24),
-                    const AvailabilitySwitch(),
+                     AvailabilitySwitch(
+                      title: "Featured",
+                      onChanged: (value) {
+                        controller.isFeatured.value = value;
+                      },
+                      isAvailable: controller.isFeatured,
+                    ),
                     const SizedBox(height: 24),
+                     AvailabilitySwitch(
+                      onChanged: (value) {
+                        controller.isBackgroundWhite.value = value;
+                      },
+                      title: "Background White",
+                      isAvailable: controller.isBackgroundWhite,
+                    ),
+                    
                     _buildSelectorsSection(),
                     const SizedBox(height: 16),
                     _buildDescriptionSection(controller),
@@ -323,6 +340,8 @@ class ProductFormSheetState extends State<ProductFormSheet> {
       flavor: controller.productFlavors.toList(),
       size: controller.productSizes.toList(),
       weight: 1.0,
+      isBackgroundWhite: controller.isBackgroundWhite.value,
+
     );
 
     widget.product == null 
