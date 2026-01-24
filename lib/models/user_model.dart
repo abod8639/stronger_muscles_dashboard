@@ -22,10 +22,3 @@ class UserModel with _$UserModel {
   factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
 }
 
-/// دالة مساعدة لمعالجة القيم المنطقية القادمة من السيرفر كأرقام (0 أو 1)
-// bool _boolFromInt(dynamic value) {
-//   if (value is bool) return value;
-//   if (value is int) return value == 1;
-//   if (value is String) return value == '1' || value.toLowerCase() == 'true';
-//   return false;
-// }
