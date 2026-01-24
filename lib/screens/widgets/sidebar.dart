@@ -3,15 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/components/glass_container.dart';
+import 'package:stronger_muscles_dashboard/controllers/navigation_controller.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/build_nav_item.dart';
 
-class NavigationController extends GetxController {
-  final selectedIndex = 0.obs;
-
-  void changeIndex(int index) {
-    selectedIndex.value = index;
-  }
-}
 
 class Sidebar extends StatelessWidget {
   final bool isDrawer;

@@ -120,12 +120,10 @@ class AppTheme {
         primary: AppColors.primary,
         secondary: AppColors.accent,
         surface: AppColors.surfaceDark,
-        background: AppColors.backgroundDark,
         error: AppColors.error,
         onPrimary: Colors.white,
         onSecondary: Colors.black,
         onSurface: AppColors.textLight,
-        onBackground: AppColors.textLight,
       ),
 
       // Fonts

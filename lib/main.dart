@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:stronger_muscles_dashboard/controllers/navigation_controller.dart';
 import 'package:stronger_muscles_dashboard/functions/hive_init.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/my_bottomnavigationbar.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/sidebar.dart';

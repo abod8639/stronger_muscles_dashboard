@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
-import 'package:stronger_muscles_dashboard/screens/widgets/sidebar.dart';
+import 'package:stronger_muscles_dashboard/controllers/navigation_controller.dart';
 
 Widget buildNavItem( bool isDrawer, NavigationController controller, int index, IconData icon, IconData activeIcon, String label) {
     return Builder(

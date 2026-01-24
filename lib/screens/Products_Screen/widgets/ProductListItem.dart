@@ -1,7 +1,5 @@
 
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/config/theme.dart';
-import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/models/product_model.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/ProductCard.dart';
 
