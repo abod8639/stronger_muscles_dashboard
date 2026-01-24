@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/models/category_model.dart';
@@ -50,19 +51,8 @@ class _CategoryListItemState extends State<CategoryListItem>
             ),
           ],
         ),
-        child: Card(
-          margin: EdgeInsets.zero,
-          elevation: _isHovered ? 8 : 1,
-          color: isDark ? const Color(0xFF2C2C2C) : Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: BorderSide(
-              color: isDark 
-                ? Colors.white.withValues(alpha: 0.05) 
-                : Colors.black.withValues(alpha: 0.05),
-              width: 1,
-            ),
-          ),
+        child: GlassContainer(
+
           child: InkWell(
             borderRadius: BorderRadius.circular(16),
             onTap: widget.onEdit,
@@ -111,7 +101,7 @@ class _CategoryListItemState extends State<CategoryListItem>
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: responsive.getBodyFontSize() + 1,
-                            color: isDark ? Colors.white : AppColors.textDark,
+                            color: isDark ? Colors.white : AppColors.textMuted,
                           ),
                         ),
                         const SizedBox(height: 4),

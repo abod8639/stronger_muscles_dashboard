@@ -117,7 +117,7 @@ class ErrorScreen extends StatelessWidget {
               title,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textDark,
+                    color: AppColors.textMuted,
                   ),
               textAlign: TextAlign.center,
             ),
@@ -177,7 +177,7 @@ class NoDataScreen extends StatelessWidget {
               title,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textDark,
+                    color: AppColors.textMuted,
                   ),
               textAlign: TextAlign.center,
             ),

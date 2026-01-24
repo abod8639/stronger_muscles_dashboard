@@ -30,7 +30,7 @@ class GradientProgressBar extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textDark,
+                color: AppColors.textMuted,
               ),
             ),
             Container(

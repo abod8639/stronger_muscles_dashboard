@@ -128,7 +128,7 @@ class CategoryFormSheetState extends State<CategoryFormSheet> {
                 gradient: LinearGradient(
                   colors: [
                     AppColors.primary,
-                    AppColors.pending,
+                    AppColors.warning,
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,

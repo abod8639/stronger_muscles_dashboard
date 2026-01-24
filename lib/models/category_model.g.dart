@@ -67,9 +67,9 @@ _$CategoryModelImpl _$$CategoryModelImplFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       name: json['name'] as String,
       description: json['description'] as String?,
-      imageUrl: json['image_url'] as String?,
-      sortOrder: (json['sort_order'] as num?)?.toInt() ?? 0,
-      isActive: json['is_active'] as bool? ?? true,
+      imageUrl: json['imageUrl'] as String?,
+      sortOrder: (json['sortOrder'] as num?)?.toInt() ?? 0,
+      isActive: json['isActive'] as bool? ?? true,
       icon: json['icon'],
     );
 
@@ -78,8 +78,8 @@ Map<String, dynamic> _$$CategoryModelImplToJson(_$CategoryModelImpl instance) =>
       'id': instance.id,
       'name': instance.name,
       'description': instance.description,
-      'image_url': instance.imageUrl,
-      'sort_order': instance.sortOrder,
-      'is_active': instance.isActive,
+      'imageUrl': instance.imageUrl,
+      'sortOrder': instance.sortOrder,
+      'isActive': instance.isActive,
       'icon': instance.icon,
     };

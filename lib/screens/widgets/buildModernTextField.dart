@@ -31,7 +31,7 @@ Widget buildCategoryFormSheetModernTextField(
             enabled: enabled,
             cursorColor: AppColors.primary,
             style: TextStyle(
-              color: isDark ? Colors.white : AppColors.textDark,
+              color: isDark ? Colors.white : AppColors.textMuted,
               fontSize: responsive.getBodyFontSize(),
             ),
             decoration: InputDecoration(

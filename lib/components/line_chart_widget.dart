@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:stronger_muscles_dashboard/components/glass_container.dart';
 import '../config/theme.dart';
 import '../config/responsive.dart';
 
@@ -29,175 +30,182 @@ class LineChartWidget extends StatefulWidget {
 
 class _LineChartWidgetState extends State<LineChartWidget> {
   @override
-  Widget build(BuildContext context) {
-    final responsive = context.responsive;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+  // Widget build(BuildContext context) {
+    // final responsive = context.responsive;
+    // final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          gradient: LinearGradient(
-            colors: [
-              isDark ? const Color(0xFF2C2C2C) : Colors.white,
-              isDark ? const Color(0xFF1E1E1E) : Colors.grey[50] ?? Colors.white,
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          border: Border.all(
-            color: AppColors.primary.withValues(alpha: 0.1),
-            width: 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.08),
-              blurRadius: 20,
-              spreadRadius: 2,
-            ),
+    @override
+    Widget build(BuildContext context) {
+      final responsive = context.responsive;
+      // final isDark = Theme.of(context).brightness == Brightness.dark;
+
+      return GlassContainer(
+        opacity: 0.05,
+        blur: 20,
+        borderRadius: BorderRadius.circular(20),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.white.withOpacity(0.1),
+            Colors.white.withOpacity(0.02),
           ],
         ),
-        padding: EdgeInsets.all(responsive.defaultPadding.left),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // العنوان
-            Text(
-              widget.title,
-              style: TextStyle(
-                fontSize: responsive.getTitleFontSize(),
-                fontWeight: FontWeight.bold,
-                color: AppColors.textDark,
+        border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
+        child: Padding(
+          padding: EdgeInsets.all(responsive.defaultPadding.left),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // العنوان
+              Row(
+                children: [
+                  Icon(
+                    Icons.show_chart_rounded,
+                    color: AppColors.success,
+                    size: 20,
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    widget.title.toUpperCase(),
+                    style: TextStyle(
+                      fontSize: responsive.getTitleFontSize(),
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textLight,
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                ],
               ),
-            ),
-            SizedBox(height: responsive.itemSpacing),
+              SizedBox(height: responsive.itemSpacing),
 
-            // الرسم البياني
-            SizedBox(
-              height: 300,
-              child: LineChart(
-                LineChartData(
-                  gridData: FlGridData(
-                    show: true,
-                    drawVerticalLine: false,
-                    horizontalInterval: widget.maxY / 5,
-                    getDrawingHorizontalLine: (value) {
-                      return FlLine(
-                        color: AppColors.primary.withValues(alpha: 0.1),
-                        strokeWidth: 1,
-                        dashArray: [5, 5],
-                      );
-                    },
-                  ),
-                  titlesData: FlTitlesData(
-                    show: true,
-                    rightTitles: const AxisTitles(),
-                    topTitles: const AxisTitles(),
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        reservedSize: 30,
-                        getTitlesWidget: (value, meta) {
-                          final index = value.toInt();
-                          if (index < 0 || index >= widget.bottomTitles.length) {
-                            return const SizedBox();
-                          }
-                          return Text(
-                            widget.bottomTitles[index],
-                            style: TextStyle(
-                              color: AppColors.textLight,
-                              fontWeight: FontWeight.w500,
-                              fontSize: responsive.getBodyFontSize() - 2,
-                            ),
-                          );
-                        },
-                      ),
+              // الرسم البياني
+              SizedBox(
+                height: 300,
+                child: LineChart(
+                  LineChartData(
+                    gridData: FlGridData(
+                      show: true,
+                      drawVerticalLine: false,
+                      horizontalInterval: widget.maxY / 5,
+                      getDrawingHorizontalLine: (value) {
+                        return FlLine(
+                          color: Colors.white.withOpacity(0.05),
+                          strokeWidth: 1,
+                          dashArray: [5, 5],
+                        );
+                      },
                     ),
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        reservedSize: 40,
-                        getTitlesWidget: (value, meta) {
-                          return Text(
-                            '${value.toInt()}',
-                            style: TextStyle(
-                              color: AppColors.textLight,
-                              fontWeight: FontWeight.w500,
-                              fontSize: responsive.getBodyFontSize() - 2,
-                            ),
-                          );
-                        },
+                    titlesData: FlTitlesData(
+                      show: true,
+                      rightTitles: const AxisTitles(),
+                      topTitles: const AxisTitles(),
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          reservedSize: 30,
+                          getTitlesWidget: (value, meta) {
+                            final index = value.toInt();
+                            if (index < 0 ||
+                                index >= widget.bottomTitles.length) {
+                              return const SizedBox();
+                            }
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Text(
+                                widget.bottomTitles[index],
+                                style: TextStyle(
+                                  color: AppColors.textMuted,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                  ),
-                  borderData: FlBorderData(
-                    show: false,
-                  ),
-                  minX: 0,
-                  maxX: (widget.spots.length - 1).toDouble(),
-                  minY: 0,
-                  maxY: widget.maxY,
-                  lineBarsData: [
-                    LineChartBarData(
-                      spots: widget.spots,
-                      isCurved: true,
-                      gradient: LinearGradient(
-                        colors: [
-                          widget.gradientColor,
-                          widget.gradientColor.withValues(alpha: 0.3),
-                        ],
-                      ),
-                      barWidth: 3,
-                      isStrokeCapRound: true,
-                      dotData: FlDotData(
-                        show: true,
-                        getDotPainter: (spot, percent, barData, index) {
-                          return FlDotCirclePainter(
-                            radius: 5,
-                            color: widget.gradientColor,
-                            strokeWidth: 2,
-                            strokeColor: Colors.white,
-                          );
-                        },
-                      ),
-                      belowBarData: BarAreaData(
-                        show: true,
-                        gradient: LinearGradient(
-                          colors: [
-                            widget.gradientColor.withValues(alpha: 0.3),
-                            widget.gradientColor.withValues(alpha: 0),
-                          ],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
+                      leftTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          reservedSize: 40,
+                          getTitlesWidget: (value, meta) {
+                            return Text(
+                              '${value.toInt()}',
+                              style: TextStyle(
+                                color: AppColors.textMuted,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 10,
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ),
-                  ],
-                  lineTouchData: LineTouchData(
-                    enabled: true,
-                    handleBuiltInTouches: true,
-                    touchTooltipData: LineTouchTooltipData(
-                      getTooltipItems: (List<LineBarSpot> touchedSpots) {
-                        return touchedSpots.map((LineBarSpot touchedSpot) {
-                          return LineTooltipItem(
-                            touchedSpot.y.toStringAsFixed(1),
-                            const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          );
-                        }).toList();
-                      },
+                    borderData: FlBorderData(show: false),
+                    minX: 0,
+                    maxX: (widget.spots.length - 1).toDouble(),
+                    minY: 0,
+                    maxY: widget.maxY,
+                    lineBarsData: [
+                      LineChartBarData(
+                        spots: widget.spots,
+                        isCurved: true,
+                        curveSmoothness: 0.4,
+                        gradient: LinearGradient(
+                          colors: [widget.gradientColor, AppColors.accent],
+                        ),
+                        barWidth: 3,
+                        isStrokeCapRound: true,
+                        dotData: FlDotData(
+                          show: true,
+                          getDotPainter: (spot, percent, barData, index) {
+                            return FlDotCirclePainter(
+                              radius: 4,
+                              color: AppColors.backgroundDark,
+                              strokeWidth: 2,
+                              strokeColor: widget.gradientColor,
+                            );
+                          },
+                        ),
+                        belowBarData: BarAreaData(
+                          show: true,
+                          gradient: LinearGradient(
+                            colors: [
+                              widget.gradientColor.withOpacity(0.3),
+                              widget.gradientColor.withOpacity(0.0),
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
+                        ),
+                      ),
+                    ],
+                    lineTouchData: LineTouchData(
+                      enabled: true,
+                      handleBuiltInTouches: true,
+                      touchTooltipData: LineTouchTooltipData(
+                        getTooltipItems: (List<LineBarSpot> touchedSpots) {
+                          return touchedSpots.map((LineBarSpot touchedSpot) {
+                            return LineTooltipItem(
+                              touchedSpot.y.toStringAsFixed(1),
+                              const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            );
+                          }).toList();
+                        },
+                        getTooltipColor: (touchedSpot) =>
+                            const Color(0xFF1E1E2C), // Updated tooltip color
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
-}
+

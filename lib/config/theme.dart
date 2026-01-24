@@ -2,45 +2,35 @@ import 'package:flutter/material.dart';
 
 
 class AppColors {
-  // --- الألوان الأساسية (Red Energy) ---
-  // تم اختيار أحمر "روبي" عميق بدلاً من الأحمر التقليدي ليعطي فخامة
-  static const Color primary = Color(0xFFD32F2F);
-  static const Color primaryDark = Color(0xFFB71C1C);
-  static const Color primaryLight = Color(0xFFFFCDD2);
-  static const Color accent = Color(0xFFFF4081);// الأسود الفحمي كـ Accent يعطي هيبة للماركة
+  // --- Futuristic Palette (Neon & Void) ---
+  static const Color primary = Color(0xFFFF1744); // Neon Red
+  static const Color primaryDark = Color(0xFFA00000);
+  static const Color primaryglow = Color(0xFFFF5252);
+  
+  static const Color accent = Color(0xFF00E5FF); // Cyber Blue for accents
+  
+  // --- Backgrounds (Deep Void) ---
+  static const Color backgroundDark = Color(0xFF050510); // Very deep almost black blue
+  static const Color surfaceDark = Color(0xFF13131F); // Slightly lighter for contrast
+  static const Color glassLow = Color(0x1AFFFFFF); // Low opacity white for glass
+  static const Color glassHigh = Color(0x33FFFFFF); // Higher opacity white
+  
+  // --- Text ---
+  static const Color textLight = Color(0xFFE0E0E0);
+  static const Color textMuted = Color(0xFFA0A0A0);
+  
+  // --- Status Indicators (Neon) ---
+  static const Color success = Color(0xFF00FF88); // Neon Green
+  static const Color warning = Color(0xFFFFD600); // Neon Yellow
+  static const Color error = Color(0xFFFF1744); // Neon Red
+  static const Color info = Color(0xFF00E5FF); // Cyber Blue
 
-  // --- درجات الرمادي الاحترافية (Neutral Slate) ---
-  // الدرجات المائلة للأزرق/الرمادي (Slate) تريح العين أكثر من الرمادي الصرف
-  static const Color white = Colors.white;
-  static const Color black = Color(0xFF0F172A);
-  static const Color greyLight = Color(0xFFF1F5F9);
-  static const Color greyMedium = Color(0xFFE2E8F0);
-  static const Color greyDark = Color(0xFF475569);
-
-  // --- الألوان الوظيفية (Functional) ---
-  static const Color success = Color(0xFF10B981); // أخضر زمردي
-  static const Color warning = Color(0xFFF59E0B); // برتقالي عنبري
-  static const Color error = Color(0xFFEF4444);
-  static const Color info = Color(0xFF3B82F6);
-
-  // --- حالات الطلبات (Order Status) ---
-  static const Color pending = Color(0xFFF59E0B);
-  static const Color processing = Color(0xFF3B82F6);
-  static const Color shipped = Color(0xFF8B5CF6);    // بنفسجي للشحن يعطي تميز
-  static const Color delivered = Color(0xFF10B981);
-  static const Color cancelled = Color(0xFF64748B);  // رمادي للطلبات المُلغاة
-
-  // --- الخلفيات (Backgrounds) ---
-  static const Color backgroundLight = Color(0xFFFAFAFA);
-  static const Color backgroundDark = Color(0xFF121212);
-  static const Color surfaceLight = Colors.white;
-  static const Color surfaceDark = Color(0xFF1E293B);
-
-  // --- ألوان النصوص (Typography) ---
-  static const Color textDark = Color.fromARGB(255, 230, 239, 255);   // نص رئيسي غامق جداً
-  static const Color textLight = Color(0xFF64748B);  // نص فرعي
-  static const Color textMuted = Color(0xFF94A3B8);  // نص باهت/تلميحات
-
+  // --- Gradients ---
+  static const LinearGradient primaryGradient = LinearGradient(
+    colors: [primary, Color(0xFFFF5252)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
 }
 class AppTheme {
   static ThemeData getLightTheme() {
@@ -51,14 +41,14 @@ class AppTheme {
         seedColor: AppColors.primary,
         brightness: Brightness.light,
       ),
-      scaffoldBackgroundColor: AppColors.backgroundLight,
+      scaffoldBackgroundColor: AppColors.backgroundDark,
       appBarTheme: AppBarTheme(
         elevation: 0,
         backgroundColor: Colors.white,
-        foregroundColor: AppColors.textDark,
+        foregroundColor: AppColors.textMuted,
         centerTitle: true,
         titleTextStyle: const TextStyle(
-          color: AppColors.textDark,
+          color: AppColors.textMuted,
           fontSize: 18,
           fontWeight: FontWeight.w600,
         ),
@@ -89,26 +79,26 @@ class AppTheme {
       ),
       textTheme: const TextTheme(
         headlineLarge: TextStyle(
-          color: AppColors.textDark,
+          color: AppColors.textMuted,
           fontSize: 32,
           fontWeight: FontWeight.bold,
         ),
         headlineMedium: TextStyle(
-          color: AppColors.textDark,
+          color: AppColors.textMuted,
           fontSize: 24,
           fontWeight: FontWeight.w600,
         ),
         headlineSmall: TextStyle(
-          color: AppColors.textDark,
+          color: AppColors.textMuted,
           fontSize: 18,
           fontWeight: FontWeight.w600,
         ),
         bodyLarge: TextStyle(
-          color: AppColors.textDark,
+          color: AppColors.textMuted,
           fontSize: 16,
         ),
         bodyMedium: TextStyle(
-          color: AppColors.textDark,
+          color: AppColors.textMuted,
           fontSize: 14,
         ),
         bodySmall: TextStyle(
@@ -123,83 +113,100 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: AppColors.primary,
-        brightness: Brightness.dark,
-        surface: const Color(0xFF1E1E1E),
-        background: AppColors.backgroundDark,
-      ),
       scaffoldBackgroundColor: AppColors.backgroundDark,
+      primaryColor: AppColors.primary,
+      
+      colorScheme: const ColorScheme.dark(
+        primary: AppColors.primary,
+        secondary: AppColors.accent,
+        surface: AppColors.surfaceDark,
+        background: AppColors.backgroundDark,
+        error: AppColors.error,
+        onPrimary: Colors.white,
+        onSecondary: Colors.black,
+        onSurface: AppColors.textLight,
+        onBackground: AppColors.textLight,
+      ),
+
+      // Fonts
+      fontFamily: 'Roboto', // Or 'Orbitron' if added to pubspec
+
       appBarTheme: const AppBarTheme(
         elevation: 0,
-        backgroundColor: AppColors.backgroundDark,
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.transparent, // Transparent for glass effect
+        foregroundColor: AppColors.textLight,
         centerTitle: true,
         titleTextStyle: TextStyle(
-          color: Colors.white,
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
+          color: AppColors.textLight,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.2,
         ),
       ),
+
       cardTheme: CardThemeData(
-        elevation: 2,
+        elevation: 5,
+        shadowColor: AppColors.primary.withOpacity(0.2), // Neon glow shadow
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(20),
         ),
-        color: const Color(0xFF252525),
+        color: AppColors.surfaceDark,
       ),
+
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: const Color(0xFF2C2C2C),
+        fillColor: AppColors.glassLow,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Color(0xFF444444)),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Color(0xFF444444)),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.primary, width: 2),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        hintStyle: const TextStyle(color: Colors.white54),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        hintStyle: const TextStyle(color: AppColors.textMuted),
+        labelStyle: const TextStyle(color: AppColors.textLight),
       ),
+
       textTheme: const TextTheme(
         headlineLarge: TextStyle(
           color: Colors.white,
-          fontSize: 32,
-          fontWeight: FontWeight.bold,
+          fontSize: 36,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 1.5,
         ),
         headlineMedium: TextStyle(
           color: Colors.white,
-          fontSize: 24,
-          fontWeight: FontWeight.w600,
+          fontSize: 28,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.0,
         ),
         headlineSmall: TextStyle(
-          color: Colors.white,
-          fontSize: 18,
+          color: AppColors.textLight,
+          fontSize: 20,
           fontWeight: FontWeight.w600,
         ),
         bodyLarge: TextStyle(
-          color: Colors.white,
+          color: AppColors.textLight,
           fontSize: 16,
         ),
         bodyMedium: TextStyle(
-          color: Colors.white,
+          color: AppColors.textMuted,
           fontSize: 14,
         ),
-        bodySmall: TextStyle(
-          color: Colors.white70,
-          fontSize: 12,
-        ),
       ),
+      
       iconTheme: const IconThemeData(
-        color: Colors.white,
+        color: AppColors.textLight,
       ),
-      dividerTheme: const DividerThemeData(
-        color: Color(0xFF333333),
+      
+      dividerTheme: DividerThemeData(
+        color: Colors.white.withOpacity(0.1),
         thickness: 1,
       ),
     );

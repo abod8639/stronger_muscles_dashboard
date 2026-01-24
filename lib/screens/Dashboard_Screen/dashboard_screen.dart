@@ -80,7 +80,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         style: TextStyle(
                           fontSize: context.responsive.getTitleFontSize() + 1,
                           fontWeight: FontWeight.bold,
-                          color: isDark ? Colors.white : AppColors.textDark,
+                          color: isDark ? Colors.white : AppColors.textMuted,
                         ),
                       ),
                     ),
@@ -95,27 +95,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           PieChartItemData(
                             label: 'معلقة',
                             value: controller.pendingOrders.value.toDouble(),
-                            color: AppColors.pending,
+                            color: AppColors.warning,
                           ),
                           PieChartItemData(
                             label: 'تحت المعالجة',
                             value: controller.processingOrders.value.toDouble(),
-                            color: AppColors.processing,
+                            color: AppColors.warning,
                           ),
                           PieChartItemData(
                             label: 'مرسلة',
                             value: controller.shippedOrders.value.toDouble(),
-                            color: AppColors.shipped,
+                            color: AppColors.info,
                           ),
                           PieChartItemData(
                             label: 'تم التسليم',
                             value: controller.deliveredOrders.value.toDouble(),
-                            color: AppColors.delivered,
+                            color: AppColors.success,
                           ),
                           PieChartItemData(
                             label: 'ملغاة',
                             value: controller.cancelledOrders.value.toDouble(),
-                            color: AppColors.cancelled,
+                            color: AppColors.error,
                           ),
                         ],
                       ),
@@ -143,7 +143,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             barRods: [
                               BarChartRodData(
                                 toY: controller.pendingOrders.value.toDouble(),
-                                color: AppColors.pending,
+                                color: AppColors.warning,
                                 width: 16,
                               ),
                             ],
@@ -153,7 +153,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             barRods: [
                               BarChartRodData(
                                 toY: controller.processingOrders.value.toDouble(),
-                                color: AppColors.processing,
+                                color: AppColors.warning,
                                 width: 16,
                               ),
                             ],
@@ -163,7 +163,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             barRods: [
                               BarChartRodData(
                                 toY: controller.shippedOrders.value.toDouble(),
-                                color: AppColors.shipped,
+                                color: AppColors.info,
                                 width: 16,
                               ),
                             ],
@@ -173,7 +173,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             barRods: [
                               BarChartRodData(
                                 toY: controller.deliveredOrders.value.toDouble(),
-                                color: AppColors.delivered,
+                                color: AppColors.success,
                                 width: 16,
                               ),
                             ],
@@ -183,7 +183,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             barRods: [
                               BarChartRodData(
                                 toY: controller.cancelledOrders.value.toDouble(),
-                                color: AppColors.cancelled,
+                                color: AppColors.error,
                                 width: 16,
                               ),
                             ],

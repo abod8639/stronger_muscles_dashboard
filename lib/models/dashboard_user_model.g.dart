@@ -80,17 +80,16 @@ class DashboardUserAdapter extends TypeAdapter<DashboardUser> {
 _$DashboardResponseImpl _$$DashboardResponseImplFromJson(
         Map<String, dynamic> json) =>
     _$DashboardResponseImpl(
-      totalUsers: (json['total_users'] as num?)?.toInt() ?? 0,
-      users: (json['users'] as List<dynamic>?)
-              ?.map((e) => DashboardUser.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          const [],
+      totalUsers: (json['totalUsers'] as num).toInt(),
+      users: (json['users'] as List<dynamic>)
+          .map((e) => DashboardUser.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$$DashboardResponseImplToJson(
         _$DashboardResponseImpl instance) =>
     <String, dynamic>{
-      'total_users': instance.totalUsers,
+      'totalUsers': instance.totalUsers,
       'users': instance.users,
     };
 

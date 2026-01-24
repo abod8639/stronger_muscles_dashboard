@@ -51,7 +51,6 @@ class MainNavigationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Initialize NavigationController
     final controller = Get.put(NavigationController());
 
     return LayoutBuilder(
@@ -59,41 +58,71 @@ class MainNavigationScreen extends StatelessWidget {
         final isDesktop = constraints.maxWidth >= 900;
 
         return Scaffold(
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor, // Match sidebar background
+          extendBodyBehindAppBar: true,
+          backgroundColor: AppColors.backgroundDark, 
           drawer: isDesktop ? null : myDrawer(),
-          body: Row(
+          body: Stack(
             children: [
-              if (isDesktop) const Sidebar(),
-              Expanded(
-                child: Padding(
-                  padding: isDesktop 
-                      ? const EdgeInsets.only(top: 20, right: 20, bottom: 20) 
-                      : EdgeInsets.zero,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: isDesktop 
-                          ? (Theme.of(context).brightness == Brightness.dark 
-                              ? Theme.of(context).primaryColor  
-                              : Colors.white)
-                          : Colors.transparent,
-                      borderRadius: isDesktop ? BorderRadius.circular(32) : null,
-                    ),
-                    child: ClipRRect(
-                      borderRadius: isDesktop ? BorderRadius.circular(32) : BorderRadius.zero,
-                      child: Obx(() => IndexedStack(
-                        index: controller.selectedIndex.value,
-                        children: const [
-                          DashboardScreen(),
-                          CategoriesScreen(),
-                          ProductsScreen(),
-                          OrdersScreen(),
-                          UsersScreen(),
-                          SettingsScreen(),
-                        ],
-                      )),
+              // Ambient Gradient Background
+              Positioned(
+                top: -100,
+                right: -100,
+                child: Container(
+                  width: 500,
+                  height: 500,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        AppColors.primary.withOpacity(0.15),
+                        Colors.transparent,
+                      ],
                     ),
                   ),
                 ),
+              ),
+              Positioned(
+                bottom: -150,
+                left: -150,
+                child: Container(
+                  width: 600,
+                  height: 600,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        AppColors.accent.withOpacity(0.1),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              
+              // Main Layout
+              Row(
+                children: [
+                  if (isDesktop) const Sidebar(),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 20, right: 20, bottom: 20, left: 10),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(32),
+                        child: Obx(() => IndexedStack(
+                          index: controller.selectedIndex.value,
+                          children: const [
+                            DashboardScreen(),
+                            CategoriesScreen(),
+                            ProductsScreen(),
+                            OrdersScreen(),
+                            UsersScreen(),
+                            SettingsScreen(),
+                          ],
+                        )),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

@@ -100,7 +100,7 @@ class CategoryCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.backgroundLight),
+          border: Border.all(color: AppColors.backgroundDark),
           color: Colors.white,
         ),
         child: Stack(

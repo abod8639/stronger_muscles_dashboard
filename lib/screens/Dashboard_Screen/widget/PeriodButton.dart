@@ -33,13 +33,13 @@ class PeriodButton extends StatelessWidget {
           color: isSelected ? AppColors.primary : Colors.transparent,
           border: isSelected
               ? null
-              : Border.all(color: isDark ? Colors.grey.shade800 : AppColors.backgroundLight),
+              : Border.all(color: isDark ? Colors.grey.shade800 : AppColors.backgroundDark),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
           label,
           style: TextStyle(
-            color: isSelected ? Colors.white : (isDark ? Colors.grey.shade400 : AppColors.textDark),
+            color: isSelected ? Colors.white : (isDark ? Colors.grey.shade400 : AppColors.textMuted),
             fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
             fontSize: 13,
           ),

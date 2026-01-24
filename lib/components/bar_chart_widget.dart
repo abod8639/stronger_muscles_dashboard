@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:stronger_muscles_dashboard/components/glass_container.dart';
 import '../config/theme.dart';
 import '../config/responsive.dart';
 
@@ -33,7 +34,7 @@ class _BarChartWidgetState extends State<BarChartWidget> {
     super.initState();
     barColors = [
       AppColors.primary,
-      // AppColors.pending,
+      // AppColors.warning,
       AppColors.success,
       AppColors.warning,
     ];
@@ -42,46 +43,44 @@ class _BarChartWidgetState extends State<BarChartWidget> {
   @override
   Widget build(BuildContext context) {
     final responsive = context.responsive;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    // final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          gradient: LinearGradient(
-            colors: [
-              isDark ? const Color(0xFF2C2C2C) : Colors.white,
-              isDark ? const Color(0xFF1E1E1E) : Colors.grey[50] ?? Colors.white,
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          border: Border.all(
-            color: AppColors.primary.withValues(alpha: 0.1),
-            width: 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.08),
-              blurRadius: 20,
-              spreadRadius: 2,
+    return GlassContainer(
+      opacity: 0.05,
+      blur: 20,
+      borderRadius: BorderRadius.circular(20),
+      gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.white.withOpacity(0.1),
+                Colors.white.withOpacity(0.02),
+              ],
             ),
-          ],
-        ),
+      border: Border.all(
+        color: Colors.white.withOpacity(0.1),
+        width: 1,
+      ),
+      child: Padding(
         padding: EdgeInsets.all(responsive.defaultPadding.left),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // العنوان
-            Text(
-              widget.title,
-              style: TextStyle(
-                fontSize: responsive.getTitleFontSize(),
-                fontWeight: FontWeight.bold,
-                color: AppColors.textDark,
-              ),
+            Row(
+              children: [
+                Icon(Icons.bar_chart_rounded, color: AppColors.accent, size: 20),
+                SizedBox(width: 8),
+                Text(
+                  widget.title.toUpperCase(),
+                  style: TextStyle(
+                    fontSize: responsive.getTitleFontSize(),
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textLight,
+                    letterSpacing: 1.0,
+                  ),
+                ),
+              ],
             ),
             SizedBox(height: responsive.itemSpacing),
 
@@ -92,6 +91,7 @@ class _BarChartWidgetState extends State<BarChartWidget> {
                 BarChartData(
                   alignment: BarChartAlignment.spaceAround,
                   maxY: widget.maxY,
+                  backgroundColor: Colors.transparent,
                   barTouchData: BarTouchData(
                     enabled: true,
                     touchTooltipData: BarTouchTooltipData(
@@ -123,12 +123,15 @@ class _BarChartWidgetState extends State<BarChartWidget> {
                           if (index < 0 || index >= widget.bottomTitles.length) {
                             return const SizedBox();
                           }
-                          return Text(
-                            widget.bottomTitles[index],
-                            style: TextStyle(
-                              color: AppColors.textLight,
-                              fontWeight: FontWeight.w500,
-                              fontSize: responsive.getBodyFontSize() - 2,
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text(
+                              widget.bottomTitles[index],
+                              style: TextStyle(
+                                color: AppColors.textMuted,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 10,
+                              ),
                             ),
                           );
                         },
@@ -142,9 +145,9 @@ class _BarChartWidgetState extends State<BarChartWidget> {
                           return Text(
                             '${value.toInt()}',
                             style: TextStyle(
-                              color: AppColors.textLight,
+                              color: AppColors.textMuted,
                               fontWeight: FontWeight.w500,
-                              fontSize: responsive.getBodyFontSize() - 2,
+                              fontSize: 10,
                             ),
                           );
                         },
@@ -154,10 +157,10 @@ class _BarChartWidgetState extends State<BarChartWidget> {
                   gridData: FlGridData(
                     show: true,
                     drawVerticalLine: false,
-                    horizontalInterval: widget.maxY / 5,
+                    horizontalInterval: widget.maxY > 0 ? widget.maxY / 5 : 1, // Prevent division by zero
                     getDrawingHorizontalLine: (value) {
                       return FlLine(
-                        color: AppColors.primary.withValues(alpha: 0.1),
+                        color: Colors.white.withOpacity(0.05),
                         strokeWidth: 1,
                         dashArray: [5, 5],
                       );
@@ -166,7 +169,21 @@ class _BarChartWidgetState extends State<BarChartWidget> {
                   borderData: FlBorderData(
                     show: false,
                   ),
-                  barGroups: widget.groups,
+                  barGroups: widget.groups.map((group) {
+                    return group.copyWith(
+                      barRods: group.barRods.map((rod) {
+                        return rod.copyWith(
+                          width: 20,
+                          borderRadius: const BorderRadius.vertical(top: Radius.circular(6)),
+                          backDrawRodData: BackgroundBarChartRodData(
+                            show: true,
+                            toY: widget.maxY,
+                            color: Colors.white.withOpacity(0.05), // Track background
+                          ),
+                        );
+                      }).toList(),
+                    );
+                  }).toList(),
                 ),
               ),
             ),

@@ -13,7 +13,7 @@ PreferredSizeWidget buildDashboardScreenAppBar(BuildContext context, bool isDark
       title: Text(
         'لوحة التحكم',
         style: TextStyle(
-          color: isDark ? Colors.white : AppColors.textDark,
+          color: isDark ? Colors.white : AppColors.textMuted,
           fontWeight: FontWeight.bold,
           fontSize: 20,
         ),

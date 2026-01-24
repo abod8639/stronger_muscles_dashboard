@@ -27,13 +27,10 @@ mixin _$CategoryModel {
   @HiveField(2)
   String? get description => throw _privateConstructorUsedError;
   @HiveField(3)
-  @JsonKey(name: 'image_url')
   String? get imageUrl => throw _privateConstructorUsedError;
   @HiveField(4)
-  @JsonKey(name: 'sort_order')
   int get sortOrder => throw _privateConstructorUsedError;
   @HiveField(5)
-  @JsonKey(name: 'is_active')
   bool get isActive => throw _privateConstructorUsedError;
   @HiveField(6)
   dynamic get icon => throw _privateConstructorUsedError;
@@ -54,9 +51,9 @@ abstract class $CategoryModelCopyWith<$Res> {
       {@HiveField(0) String id,
       @HiveField(1) String name,
       @HiveField(2) String? description,
-      @HiveField(3) @JsonKey(name: 'image_url') String? imageUrl,
-      @HiveField(4) @JsonKey(name: 'sort_order') int sortOrder,
-      @HiveField(5) @JsonKey(name: 'is_active') bool isActive,
+      @HiveField(3) String? imageUrl,
+      @HiveField(4) int sortOrder,
+      @HiveField(5) bool isActive,
       @HiveField(6) dynamic icon});
 }
 
@@ -126,9 +123,9 @@ abstract class _$$CategoryModelImplCopyWith<$Res>
       {@HiveField(0) String id,
       @HiveField(1) String name,
       @HiveField(2) String? description,
-      @HiveField(3) @JsonKey(name: 'image_url') String? imageUrl,
-      @HiveField(4) @JsonKey(name: 'sort_order') int sortOrder,
-      @HiveField(5) @JsonKey(name: 'is_active') bool isActive,
+      @HiveField(3) String? imageUrl,
+      @HiveField(4) int sortOrder,
+      @HiveField(5) bool isActive,
       @HiveField(6) dynamic icon});
 }
 
@@ -191,9 +188,9 @@ class _$CategoryModelImpl implements _CategoryModel {
       {@HiveField(0) required this.id,
       @HiveField(1) required this.name,
       @HiveField(2) this.description,
-      @HiveField(3) @JsonKey(name: 'image_url') this.imageUrl,
-      @HiveField(4) @JsonKey(name: 'sort_order') this.sortOrder = 0,
-      @HiveField(5) @JsonKey(name: 'is_active') this.isActive = true,
+      @HiveField(3) this.imageUrl,
+      @HiveField(4) this.sortOrder = 0,
+      @HiveField(5) this.isActive = true,
       @HiveField(6) this.icon});
 
   factory _$CategoryModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -210,15 +207,14 @@ class _$CategoryModelImpl implements _CategoryModel {
   final String? description;
   @override
   @HiveField(3)
-  @JsonKey(name: 'image_url')
   final String? imageUrl;
   @override
+  @JsonKey()
   @HiveField(4)
-  @JsonKey(name: 'sort_order')
   final int sortOrder;
   @override
+  @JsonKey()
   @HiveField(5)
-  @JsonKey(name: 'is_active')
   final bool isActive;
   @override
   @HiveField(6)
@@ -271,9 +267,9 @@ abstract class _CategoryModel implements CategoryModel {
       {@HiveField(0) required final String id,
       @HiveField(1) required final String name,
       @HiveField(2) final String? description,
-      @HiveField(3) @JsonKey(name: 'image_url') final String? imageUrl,
-      @HiveField(4) @JsonKey(name: 'sort_order') final int sortOrder,
-      @HiveField(5) @JsonKey(name: 'is_active') final bool isActive,
+      @HiveField(3) final String? imageUrl,
+      @HiveField(4) final int sortOrder,
+      @HiveField(5) final bool isActive,
       @HiveField(6) final dynamic icon}) = _$CategoryModelImpl;
 
   factory _CategoryModel.fromJson(Map<String, dynamic> json) =
@@ -290,15 +286,12 @@ abstract class _CategoryModel implements CategoryModel {
   String? get description;
   @override
   @HiveField(3)
-  @JsonKey(name: 'image_url')
   String? get imageUrl;
   @override
   @HiveField(4)
-  @JsonKey(name: 'sort_order')
   int get sortOrder;
   @override
   @HiveField(5)
-  @JsonKey(name: 'is_active')
   bool get isActive;
   @override
   @HiveField(6)

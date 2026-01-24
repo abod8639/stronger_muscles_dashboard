@@ -31,7 +31,7 @@ Widget buildProductFormSheetModernTextField(
             controller: controller,
             cursorColor: AppColors.primary,
             style: TextStyle(
-              color: isDark ? Colors.white : AppColors.textDark,
+              color: isDark ? Colors.white : AppColors.textMuted,
               fontSize: responsive.getBodyFontSize(),
             ),
             keyboardType: isNumber ? TextInputType.number : TextInputType.text,

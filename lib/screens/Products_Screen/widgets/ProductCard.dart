@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/components/status_badge.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
@@ -22,191 +23,199 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    // final isDark = Theme.of(context).brightness == Brightness.dark;
     final responsive = context.responsive;
     final padding = responsive.defaultPadding;
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      margin: EdgeInsets.all(padding.left),
-      padding: EdgeInsets.all(responsive.isMobile ? 12 : 16),
-      decoration: BoxDecoration(
-        color: isDark ? Colors.grey.shade900 : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isHovered
-              ? AppColors.primary.withValues(alpha: 0.4)
-              : (isDark ? Colors.grey.shade800 : Colors.grey.shade200),
-          width: isHovered ? 2 : 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: isHovered
-                ? AppColors.primary.withValues(alpha: 0.2)
-                : (isDark ? Colors.black26 : Colors.grey.shade200),
-            blurRadius: isHovered ? 20 : 10,
-            offset: Offset(0, isHovered ? 8 : 4),
-          ),
-        ],
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: padding.left,
+        vertical: responsive.itemSpacing / 2,
       ),
-      child: Row(
-        children: [
-          // Product Image with Enhanced Design
-          _buildProductImage(responsive, isDark),
-          SizedBox(width: responsive.itemSpacing * 1.5),
+      child: GlassContainer(
+        opacity: isHovered ? 0.08 : 0.04,
+        blur: isHovered ? 25 : 15,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: isHovered 
+              ? AppColors.primary.withOpacity(0.4) 
+              : Colors.white.withOpacity(0.08),
+          width: isHovered ? 1.5 : 1,
+        ),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            isHovered 
+                ? AppColors.primary.withOpacity(0.12) 
+                : Colors.white.withOpacity(0.05),
+            Colors.white.withOpacity(0.01),
+          ],
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(responsive.isMobile ? 12 : 16),
+          child: Row(
+            children: [
+              // Product Image with Enhanced Design
+              _buildProductImage(responsive),
+              SizedBox(width: responsive.itemSpacing * 1.5),
 
-          // Product Info
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildProductName(responsive, isDark),
-                SizedBox(height: responsive.itemSpacing / 3),
-                _buildBrandInfo(responsive, isDark),
-                if (product.flavor != null && product.flavor!.isNotEmpty) ...[
-                  SizedBox(height: responsive.itemSpacing / 2),
-                  _buildFlavorTags(responsive),
-                ],
-                SizedBox(height: responsive.itemSpacing),
-                _buildPriceAndStock(responsive, padding, isDark),
-              ],
-            ),
-          ),
-          SizedBox(width: responsive.itemSpacing),
+              // Product Info
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildProductName(responsive),
+                    SizedBox(height: 6),
+                    _buildBrandInfo(responsive),
+                    if (product.flavor != null && product.flavor!.isNotEmpty) ...[
+                      SizedBox(height: 12),
+                      _buildFlavorTags(responsive),
+                    ],
+                    SizedBox(height: 16),
+                    _buildPriceAndStock(responsive, padding),
+                  ],
+                ),
+              ),
+              SizedBox(width: responsive.itemSpacing),
 
-          // Action Buttons
-          buildActionButtons(
-            onEdit: onEdit,
-            onDelete: onDelete,
-            isHovered: isHovered,
+              // Action Buttons
+              buildActionButtons(
+                onEdit: onEdit,
+                onDelete: onDelete,
+                isHovered: isHovered,
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildProductImage(dynamic responsive, bool isDark) {
-    return AnimatedScale(
-      scale: isHovered ? 1.05 : 1,
+  Widget _buildProductImage(dynamic responsive) {
+    return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
-      child: Container(
-        width: responsive.isMobile ? 80 : 100,
-        height: responsive.isMobile ? 80 : 100,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppColors.primary.withValues(alpha: 0.1),
-              AppColors.info.withValues(alpha: 0.15),
-            ],
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.2),
-              blurRadius: isHovered ? 16 : 12,
-              offset: Offset(0, isHovered ? 6 : 4),
-            ),
-          ],
+      width: responsive.isMobile ? 85 : 110,
+      height: responsive.isMobile ? 85 : 110,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isHovered ? AppColors.primary.withOpacity(0.5) : Colors.white.withOpacity(0.1),
+          width: 1.5,
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
-          child: Stack(
-            children: [
-              if (product.imageUrls.isNotEmpty)
-                CachedNetworkImage(
-                  imageUrl: product.imageUrls.first,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  height: double.infinity,
-                  placeholder: (_, __) => Center(
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation(AppColors.primary),
+        boxShadow: [
+          if (isHovered)
+            BoxShadow(
+              color: AppColors.primary.withOpacity(0.3),
+              blurRadius: 20,
+              spreadRadius: 2,
+            ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(18),
+        child: Stack(
+          children: [
+            if (product.imageUrls.isNotEmpty)
+              CachedNetworkImage(
+                imageUrl: product.imageUrls.first,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: double.infinity,
+                placeholder: (_, __) => Container(
+                  color: Colors.white.withOpacity(0.05),
+                  child: Center(
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation(AppColors.primary),
+                      ),
                     ),
                   ),
-                  errorWidget: (_, __, ___) => Center(
+                ),
+                errorWidget: (_, __, ___) => Container(
+                  color: Colors.white.withOpacity(0.05),
+                  child: Center(
                     child: Icon(
                       Icons.image_not_supported_rounded,
-                      color: isDark ? Colors.white38 : Colors.grey.shade400,
+                      color: Colors.white24,
                       size: 32,
                     ),
                   ),
-                )
-              else
-                Center(
+                ),
+              )
+            else
+              Container(
+                color: Colors.white.withOpacity(0.05),
+                child: Center(
                   child: Icon(
                     Icons.inventory_2_rounded,
-                    color: AppColors.primary,
+                    color: AppColors.primary.withOpacity(0.5),
                     size: 40,
                   ),
                 ),
-              if (isHovered)
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
+              ),
+            if (isHovered)
+              Positioned.fill(
+                child: Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        AppColors.primary.withValues(alpha: 0.3),
+                        AppColors.primary.withOpacity(0.2),
                       ],
                     ),
                   ),
                 ),
-            ],
-          ),
+              ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildProductName(dynamic responsive, bool isDark) {
-    return Row(
-      children: [
-        Expanded(
-          child: Text(
-            product.name,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: responsive.getTitleFontSize(),
-              color: isDark ? Colors.white : AppColors.textDark,
-              letterSpacing: -0.3,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
+  Widget _buildProductName(dynamic responsive) {
+    return Text(
+      product.name,
+      style: TextStyle(
+        fontWeight: FontWeight.w900,
+        fontSize: responsive.getTitleFontSize() + 1,
+        color: Colors.white,
+        letterSpacing: 0.5,
+      ),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
     );
   }
 
-  Widget _buildBrandInfo(dynamic responsive, bool isDark) {
+  Widget _buildBrandInfo(dynamic responsive) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: isDark
-            ? Colors.grey.shade800
-            : Colors.grey.shade100,
+        color: Colors.white.withOpacity(0.05),
         borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            Icons.business_rounded,
-            size: responsive.iconSize - 2,
-            color: AppColors.primary.withValues(alpha: 0.8),
+            Icons.verified_rounded,
+            size: 14,
+            color: AppColors.accent,
           ),
-          SizedBox(width: responsive.itemSpacing / 2),
+          SizedBox(width: 6),
           Text(
-            product.brand ?? 'بدون ماركة',
+            (product.brand ?? 'GENERIC').toUpperCase(),
             style: TextStyle(
-              color: isDark ? Colors.white70 : Colors.grey.shade700,
-              fontSize: responsive.getBodyFontSize() - 1,
-              fontWeight: FontWeight.w500,
+              color: AppColors.textMuted,
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1,
             ),
           ),
         ],
@@ -216,59 +225,40 @@ class ProductCard extends StatelessWidget {
 
   Widget _buildFlavorTags(dynamic responsive) {
     return Wrap(
-      spacing: 6,
-      runSpacing: 6,
+      spacing: 8,
+      runSpacing: 8,
       children: [
-        ...product.flavor!.take(3).map((f) => Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                AppColors.primary.withValues(alpha: 0.15),
-                AppColors.info.withValues(alpha: 0.15),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: AppColors.primary.withValues(alpha: 0.3),
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 6,
-                height: 6,
-                decoration: BoxDecoration(
-                  color: AppColors.primary,
-                  shape: BoxShape.circle,
-                ),
+        ...product.flavor!.take(2).map((f) => GlassContainer(
+          opacity: 0.1,
+          blur: 5,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            child: Text(
+              f.toUpperCase(),
+              style: TextStyle(
+                fontSize: 9,
+                color: AppColors.primaryglow,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 0.5,
               ),
-              const SizedBox(width: 6),
-              Text(
-                f,
-                style: TextStyle(
-                  fontSize: 11,
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
+            ),
           ),
         )),
-        if (product.flavor!.length > 3)
+        if (product.flavor!.length > 2)
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: Colors.grey.withValues(alpha: 0.2),
+              color: Colors.white.withOpacity(0.05),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
-              '+${product.flavor!.length - 3}',
+              '+${product.flavor!.length - 2}',
               style: TextStyle(
-                fontSize: 11,
-                color: Colors.grey.shade600,
-                fontWeight: FontWeight.w600,
+                fontSize: 9,
+                color: AppColors.textMuted,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
@@ -276,45 +266,30 @@ class ProductCard extends StatelessWidget {
     );
   }
 
-  Widget _buildPriceAndStock(dynamic responsive, EdgeInsets padding, bool isDark) {
+  Widget _buildPriceAndStock(dynamic responsive, EdgeInsets padding) {
     return Row(
       children: [
         // Price Badge
-        Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: padding.left / 1.5,
-            vertical: padding.top / 3,
-          ),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                AppColors.primary.withValues(alpha: 0.15),
-                AppColors.info.withValues(alpha: 0.25),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: AppColors.primary.withValues(alpha: 0.3),
-              width: 1.5,
-            ),
-          ),
+        ShaderMask(
+          shaderCallback: (bounds) => AppColors.primaryGradient.createShader(bounds),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.attach_money_outlined,
-                size: responsive.iconSize - 2,
-                color: AppColors.primary,
+              Text(
+                'SAR',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 10,
+                ),
               ),
               const SizedBox(width: 4),
               Text(
                 product.price.toStringAsFixed(2),
                 style: TextStyle(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: responsive.getBodyFontSize() + 1,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                  fontSize: responsive.getBodyFontSize() + 4,
                 ),
               ),
             ],
@@ -323,16 +298,8 @@ class ProductCard extends StatelessWidget {
         const Spacer(),
 
         // Stock Status Badge
-        AnimatedOpacity(
-          opacity: isHovered ? 1 : 0.8,
-          duration: const Duration(milliseconds: 300),
-          child: AnimatedScale(
-            scale: isHovered ? 1.05 : 1,
-            duration: const Duration(milliseconds: 300),
-            child: StockStatusBadge(
-              quantity: product.stockQuantity,
-            ),
-          ),
+        StockStatusBadge(
+          quantity: product.stockQuantity,
         ),
       ],
     );

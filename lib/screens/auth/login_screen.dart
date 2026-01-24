@@ -27,7 +27,7 @@ class LoginScreen extends StatelessWidget {
             colors: [
               AppColors.primaryDark,
               AppColors.primary,
-              AppColors.black,
+              AppColors.primaryDark,
             ],
           ),
         ),

@@ -44,7 +44,7 @@ class EnhancedErrorWidget extends StatelessWidget {
                 title,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textDark,
+                      color: AppColors.textMuted,
                     ),
               ),
               const SizedBox(height: 12),

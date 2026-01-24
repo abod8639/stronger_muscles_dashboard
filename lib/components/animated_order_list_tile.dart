@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/components/glass_container.dart';
 import '../config/theme.dart';
 import '../models/index.dart';
 
@@ -114,43 +115,51 @@ class _AnimatedOrderListTileState extends State<AnimatedOrderListTile>
             child: InkWell(
               onTap: widget.onTap,
               borderRadius: BorderRadius.circular(12),
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: AppColors.backgroundLight,
-                    width: 1,
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.03),
-                      blurRadius: 4,
-                      offset: const Offset(0, 1),
-                    ),
+              child: GlassContainer(
+                opacity: 0.05,
+                blur: 10,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.1),
+                  width: 1,
+                ),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Colors.white.withOpacity(0.08),
+                    Colors.white.withOpacity(0.02),
                   ],
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(16),
                   child: Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(10),
+                        padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              AppColors.primary.withValues(alpha: 0.15),
-                              AppColors.primary.withValues(alpha: 0.05),
+                              AppColors.primary.withOpacity(0.2),
+                              AppColors.primary.withOpacity(0.05),
                             ],
                           ),
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withOpacity(0.1),
+                              blurRadius: 8,
+                            ),
+                          ],
                         ),
                         child: const Icon(
                           Icons.shopping_bag_outlined,
                           color: AppColors.primary,
-                          size: 20,
+                          size: 24,
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 16),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -159,25 +168,27 @@ class _AnimatedOrderListTileState extends State<AnimatedOrderListTile>
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'الطلب: #${widget.order.id}',
+                                  'ORDER #${widget.order.id}',
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 13,
+                                    fontSize: 14,
+                                    color: Colors.white,
+                                    letterSpacing: 1,
                                   ),
                                 ),
                                 _OrderStatusBadge(status: widget.order.status),
                               ],
                             ),
-                            const SizedBox(height: 6),
+                            const SizedBox(height: 8),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  '${widget.order.totalAmount.toStringAsFixed(2)} ر.س',
+                                  '${widget.order.totalAmount.toStringAsFixed(2)} SAR',
                                   style: const TextStyle(
                                     color: AppColors.primary,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12,
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 14,
                                   ),
                                 ),
                                 Text(
@@ -189,15 +200,18 @@ class _AnimatedOrderListTileState extends State<AnimatedOrderListTile>
                                 ),
                               ],
                             ),
-                            const Divider(height: 16, thickness: 0.5),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              child: Divider(color: Colors.white.withOpacity(0.1), height: 1),
+                            ),
                             _buildInfoRow(Icons.person_outline,
-                                'العميل: ${widget.order.userId}'),
-                            const SizedBox(height: 4),
+                                'Customer: ${widget.order.userId}'),
+                            const SizedBox(height: 6),
                             if (widget.order.phoneNumber != null &&
                                 widget.order.phoneNumber!.isNotEmpty) ...[
                               _buildInfoRow(
                                   Icons.phone_outlined, widget.order.phoneNumber!),
-                              const SizedBox(height: 4),
+                              const SizedBox(height: 6),
                             ],
                             _buildInfoRow(
                               Icons.location_on_outlined,
@@ -206,11 +220,18 @@ class _AnimatedOrderListTileState extends State<AnimatedOrderListTile>
                           ],
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      Icon(
-                        Icons.arrow_forward_ios,
-                        size: 12,
-                        color: AppColors.textMuted,
+                      const SizedBox(width: 12),
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.05),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.arrow_forward_ios,
+                          size: 14,
+                          color: AppColors.textLight,
+                        ),
                       ),
                     ],
                   ),
@@ -247,15 +268,15 @@ class _OrderStatusBadge extends StatelessWidget {
   Color _getStatusColor() {
     switch (status) {
       case OrderStatus.pending:
-        return AppColors.pending;
+        return AppColors.warning;
       case OrderStatus.processing:
-        return AppColors.processing;
+        return AppColors.info;
       case OrderStatus.shipped:
-        return AppColors.shipped;
+        return AppColors.info;
       case OrderStatus.delivered:
-        return AppColors.delivered;
+        return AppColors.success;
       case OrderStatus.cancelled:
-        return AppColors.cancelled;
+        return AppColors.error;
     }
   }
 

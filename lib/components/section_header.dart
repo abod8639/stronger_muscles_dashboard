@@ -28,7 +28,7 @@ class SectionHeader extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textDark,
+                  color: AppColors.textMuted,
                 ),
               ),
               if (subtitle != null) ...[

@@ -20,7 +20,6 @@ DashboardResponse _$DashboardResponseFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$DashboardResponse {
-  @JsonKey(name: 'total_users')
   int get totalUsers => throw _privateConstructorUsedError;
   List<DashboardUser> get users => throw _privateConstructorUsedError;
 
@@ -36,9 +35,7 @@ abstract class $DashboardResponseCopyWith<$Res> {
           DashboardResponse value, $Res Function(DashboardResponse) then) =
       _$DashboardResponseCopyWithImpl<$Res, DashboardResponse>;
   @useResult
-  $Res call(
-      {@JsonKey(name: 'total_users') int totalUsers,
-      List<DashboardUser> users});
+  $Res call({int totalUsers, List<DashboardUser> users});
 }
 
 /// @nodoc
@@ -78,9 +75,7 @@ abstract class _$$DashboardResponseImplCopyWith<$Res>
       __$$DashboardResponseImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {@JsonKey(name: 'total_users') int totalUsers,
-      List<DashboardUser> users});
+  $Res call({int totalUsers, List<DashboardUser> users});
 }
 
 /// @nodoc
@@ -114,19 +109,16 @@ class __$$DashboardResponseImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$DashboardResponseImpl implements _DashboardResponse {
   const _$DashboardResponseImpl(
-      {@JsonKey(name: 'total_users') this.totalUsers = 0,
-      final List<DashboardUser> users = const []})
+      {required this.totalUsers, required final List<DashboardUser> users})
       : _users = users;
 
   factory _$DashboardResponseImpl.fromJson(Map<String, dynamic> json) =>
       _$$DashboardResponseImplFromJson(json);
 
   @override
-  @JsonKey(name: 'total_users')
   final int totalUsers;
   final List<DashboardUser> _users;
   @override
-  @JsonKey()
   List<DashboardUser> get users {
     if (_users is EqualUnmodifiableListView) return _users;
     // ignore: implicit_dynamic_type
@@ -170,14 +162,13 @@ class _$DashboardResponseImpl implements _DashboardResponse {
 
 abstract class _DashboardResponse implements DashboardResponse {
   const factory _DashboardResponse(
-      {@JsonKey(name: 'total_users') final int totalUsers,
-      final List<DashboardUser> users}) = _$DashboardResponseImpl;
+      {required final int totalUsers,
+      required final List<DashboardUser> users}) = _$DashboardResponseImpl;
 
   factory _DashboardResponse.fromJson(Map<String, dynamic> json) =
       _$DashboardResponseImpl.fromJson;
 
   @override
-  @JsonKey(name: 'total_users')
   int get totalUsers;
   @override
   List<DashboardUser> get users;

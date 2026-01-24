@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/components/glass_container.dart';
 import '../config/theme.dart';
 
 class AnimatedStatCard extends StatefulWidget {
@@ -66,158 +67,152 @@ class _AnimatedStatCardState extends State<AnimatedStatCard>
         opacity: _fadeAnimation,
         child: GestureDetector(
           onTap: widget.onTap,
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: widget.color.withValues(alpha: 0.15),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
+          child: GlassContainer(
+            opacity: 0.05,
+            blur: 15,
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                widget.color.withOpacity(0.15),
+                widget.color.withOpacity(0.05),
               ],
             ),
-            child: Card(
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      widget.color.withValues(alpha: 0.08),
-                      widget.color.withValues(alpha: 0.02),
-                    ],
-                  ),
-                  border: Border.all(
-                    color: widget.color.withValues(alpha: 0.1),
-                    width: 1,
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            border: Border.all(
+              color: widget.color.withOpacity(0.3),
+              width: 1,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                widget.title,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge
-                                    ?.copyWith(
-                                      color: AppColors.textLight,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 12),
-                              ShaderMask(
-                                shaderCallback: (bounds) => LinearGradient(
-                                  colors: [widget.color, widget.color.withValues(alpha: 0.7)],
-                                ).createShader(bounds),
-                                child: Text(
-                                  widget.value,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineSmall
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.title.toUpperCase(),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: AppColors.textMuted,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1.0,
                                 ),
-                              ),
-                              if (widget.subtitle != null) ...[
-                                const SizedBox(height: 6),
-                                Text(
-                                  widget.subtitle!,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall
-                                      ?.copyWith(
-                                        color: AppColors.textMuted,
-                                      ),
-                                ),
-                              ],
-                            ],
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Container(
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                widget.color.withValues(alpha: 0.2),
-                                widget.color.withValues(alpha: 0.1),
-                              ],
+                          const SizedBox(height: 12),
+                          ShaderMask(
+                            shaderCallback: (bounds) => LinearGradient(
+                              colors: [Colors.white, widget.color],
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                            ).createShader(bounds),
+                            child: Text(
+                              widget.value,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineSmall
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.white,
+                                    letterSpacing: 0.5,
+                                  ),
                             ),
-                            borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Icon(
-                            widget.icon,
-                            color: widget.color,
-                            size: 28,
+                          if (widget.subtitle != null) ...[
+                            const SizedBox(height: 6),
+                            Text(
+                              widget.subtitle!,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    color: AppColors.textMuted,
+                                  ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: widget.color.withOpacity(0.1),
+                        boxShadow: [
+                          BoxShadow(
+                            color: widget.color.withOpacity(0.4),
+                            blurRadius: 12,
+                            spreadRadius: 2,
+                          ),
+                        ],
+                        border: Border.all(color: widget.color.withOpacity(0.5)),
+                      ),
+                      child: Icon(
+                        widget.icon,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                    ),
+                  ],
+                ),
+                if (widget.showTrendIcon) ...[
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: widget.isTrendPositive
+                          ? AppColors.success.withOpacity(0.1)
+                          : AppColors.error.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: widget.isTrendPositive
+                            ? AppColors.success.withOpacity(0.3)
+                            : AppColors.error.withOpacity(0.3),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          widget.isTrendPositive
+                              ? Icons.trending_up
+                              : Icons.trending_down,
+                          color: widget.isTrendPositive
+                              ? AppColors.success
+                              : AppColors.error,
+                          size: 14,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          widget.isTrendPositive
+                              ? '+12% THIS WEEK'
+                              : '-8% THIS WEEK',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: widget.isTrendPositive
+                                ? AppColors.success
+                                : AppColors.error,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
                           ),
                         ),
                       ],
                     ),
-                    if (widget.showTrendIcon) ...[
-                      const SizedBox(height: 12),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: widget.isTrendPositive
-                              ? AppColors.success.withValues(alpha: 0.1)
-                              : AppColors.error.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              widget.isTrendPositive
-                                  ? Icons.trending_up
-                                  : Icons.trending_down,
-                              color: widget.isTrendPositive
-                                  ? AppColors.success
-                                  : AppColors.error,
-                              size: 16,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              widget.isTrendPositive
-                                  ? '+12% هذا الأسبوع'
-                                  : '-8% هذا الأسبوع',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: widget.isTrendPositive
-                                    ? AppColors.success
-                                    : AppColors.error,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
+                  ),
+                ],
+              ],
             ),
           ),
         ),

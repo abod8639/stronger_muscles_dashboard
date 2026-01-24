@@ -10,15 +10,15 @@ class OrderStatusBadge extends StatelessWidget {
   Color _getStatusColor() {
     switch (status) {
       case OrderStatus.pending:
-        return AppColors.pending;
+        return AppColors.warning;
       case OrderStatus.processing:
-        return AppColors.processing;
+        return AppColors.warning;
       case OrderStatus.shipped:
-        return AppColors.shipped;
+        return AppColors.info;
       case OrderStatus.delivered:
-        return AppColors.delivered;
+        return AppColors.success;
       case OrderStatus.cancelled:
-        return AppColors.cancelled;
+        return AppColors.error;
     }
   }
 
@@ -41,18 +41,19 @@ class OrderStatusBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = _getStatusColor();
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color, width: 1),
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: color.withOpacity(0.3), width: 1),
       ),
       child: Text(
-        _getStatusLabel(),
+        _getStatusLabel().toUpperCase(),
         style: TextStyle(
           color: color,
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 0.5,
         ),
       ),
     );
@@ -94,18 +95,19 @@ class PaymentStatusBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = _getPaymentStatusColor();
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color, width: 1),
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: color.withOpacity(0.3), width: 1),
       ),
       child: Text(
-        _getPaymentStatusLabel(),
+        _getPaymentStatusLabel().toUpperCase(),
         style: TextStyle(
           color: color,
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 0.5,
         ),
       ),
     );
@@ -119,9 +121,9 @@ class StockStatusBadge extends StatelessWidget {
 
   Color _getStockColor() {
     if (quantity <= 0) {
-      return AppColors.cancelled;
+      return AppColors.error;
     } else if (quantity <= 10) {
-      return AppColors.pending;
+      return AppColors.warning;
     } else {
       return AppColors.success;
     }
@@ -129,11 +131,11 @@ class StockStatusBadge extends StatelessWidget {
 
   String _getStockLabel() {
     if (quantity <= 0) {
-      return 'انتهى المخزون';
+      return 'OUT OF STOCK';
     } else if (quantity <= 10) {
-      return 'مخزون منخفض';
+      return 'LOW STOCK';
     } else {
-      return 'متوفر';
+      return 'IN STOCK';
     }
   }
 
@@ -141,19 +143,37 @@ class StockStatusBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = _getStockColor();
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color, width: 1),
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: color.withOpacity(0.3), width: 1),
       ),
-      child: Text(
-        _getStockLabel(),
-        style: TextStyle(
-          color: color,
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(color: color.withOpacity(0.5), blurRadius: 4, spreadRadius: 1),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            _getStockLabel(),
+            style: TextStyle(
+              color: color,
+              fontSize: 9,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ],
       ),
     );
   }

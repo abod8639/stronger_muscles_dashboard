@@ -110,7 +110,7 @@ class OrderListTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Container(
         decoration: BoxDecoration(
-          border: Border.all(color: AppColors.backgroundLight),
+          border: Border.all(color: AppColors.backgroundDark),
           borderRadius: BorderRadius.circular(8),
         ),
         child: ListTile(
@@ -195,15 +195,15 @@ class _OrderStatusBadge extends StatelessWidget {
   Color _getStatusColor() {
     switch (status) {
       case OrderStatus.pending:
-        return AppColors.pending;
+        return AppColors.warning;
       case OrderStatus.processing:
-        return AppColors.processing;
+        return AppColors.warning;
       case OrderStatus.shipped:
-        return AppColors.shipped;
+        return AppColors.info;
       case OrderStatus.delivered:
-        return AppColors.delivered;
+        return AppColors.success;
       case OrderStatus.cancelled:
-        return AppColors.cancelled;
+        return AppColors.error;
     }
   }
 

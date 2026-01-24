@@ -88,11 +88,12 @@ Map<String, dynamic> _mapOrderJson(Map<String, dynamic> json) {
     'addressId': (json['addressId'] ?? json['address_id'] ?? '').toString(),
     'shippingCost': json['shippingCost'] ?? json['shipping_cost'] ?? 0.0,
     'totalAmount': json['totalAmount'] ?? json['total_amount'] ?? 0.0,
-    'order_items': json['items'] ?? json['order_items'], // توحيد اسم المفتاح ليتطابق مع المولد
+    'items': json['items'] ?? json['order_items'],
     'paymentStatus': json['paymentStatus'] ?? json['payment_status'],
     'paymentMethod': json['paymentMethod'] ?? json['payment_method'] ?? 'card',
     'trackingNumber': json['trackingNumber'] ?? json['tracking_number'],
     'phoneNumber': json['phoneNumber'] ?? json['phone_number'],
+    'shippingAddressSnapshot': json['shippingAddressSnapshot'] ?? json['shipping_address_snapshot'],
   };
 }
 

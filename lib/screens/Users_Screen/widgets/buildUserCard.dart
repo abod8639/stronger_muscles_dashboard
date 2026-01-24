@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/models/dashboard_user_model.dart';
@@ -10,19 +11,21 @@ Widget buildUserCard( DashboardUser user) {
       builder: (context) {
         final responsive = context.responsive;
         final isDark = Theme.of(context).brightness == Brightness.dark;
-        return Container(
+        return GlassContainer(
           margin: const EdgeInsets.only(bottom: 12),
-          decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF2C2C2C) : Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primary.withValues(alpha: 0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
+          // padding: EdgeInsets.all(8),
+          // margin: const EdgeInsets.only(bottom: 12),
+          // decoration: BoxDecoration(
+          //   color: isDark ? const Color(0xFF2C2C2C) : Colors.white,
+          //   borderRadius: BorderRadius.circular(16),
+          //   boxShadow: [
+          //     BoxShadow(
+          //       color: AppColors.primary.withValues(alpha: 0.05),
+          //       blurRadius: 10,
+          //       offset: const Offset(0, 4),
+          //     ),
+          //   ],
+          // ),
           child: ExpansionTile(
             tilePadding: const EdgeInsets.all(8),
             shape: Border.all(color: Colors.transparent),
@@ -49,7 +52,7 @@ Widget buildUserCard( DashboardUser user) {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: responsive.getBodyFontSize() + 1,
-                color: isDark ? Colors.white : AppColors.textDark,
+                color: isDark ? Colors.white : AppColors.textMuted,
               ),
             ),
             subtitle: Column(
@@ -115,7 +118,7 @@ Widget buildUserCard( DashboardUser user) {
                         'العناوين:',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: isDark ? Colors.white70 : AppColors.textDark,
+                          color: isDark ? Colors.white70 : AppColors.textMuted,
                         ),
                       ),
                       const SizedBox(height: 8),

@@ -8,16 +8,16 @@ part 'dashboard_user_model.g.dart';
 @freezed
 class DashboardResponse with _$DashboardResponse {
   const factory DashboardResponse({
-    @Default(0) int totalUsers,
-    @Default([]) List<DashboardUser> users,
+    required int totalUsers,
+    required List<DashboardUser> users,
   }) = _DashboardResponse;
 
   factory DashboardResponse.fromJson(Map<String, dynamic> json) => 
-      _$DashboardResponseFromJson(json);
+      _$DashboardResponseFromJson(_mapDashboardResponse(json));
 }
 
 @freezed
-@HiveType(typeId: 17) // تأكد من استخدام TypeId غير محجوز
+@HiveType(typeId: 17)
 class DashboardUser with _$DashboardUser {
   const DashboardUser._();
 
@@ -37,6 +37,25 @@ class DashboardUser with _$DashboardUser {
   }) = _DashboardUser;
 
   factory DashboardUser.fromJson(Map<String, dynamic> json) => 
-      _$DashboardUserFromJson(json);
+      _$DashboardUserFromJson(_mapDashboardUser(json));
+}
 
+Map<String, dynamic> _mapDashboardResponse(Map<String, dynamic> json) {
+  return {
+    ...json,
+    'totalUsers': json['totalUsers'] ?? json['total_users'] ?? 0,
+    'users': json['users'] ?? [],
+  };
+}
+
+Map<String, dynamic> _mapDashboardUser(Map<String, dynamic> json) {
+  return {
+    ...json,
+    'photoUrl': json['photoUrl'] ?? json['photo_url'],
+    'totalSpent': double.tryParse((json['totalSpent'] ?? json['total_spent'] ?? 0.0).toString()) ?? 0.0,
+    'createdAt': json['createdAt'] ?? json['created_at'],
+    'lastLogin': json['lastLogin'] ?? json['last_login'],
+    'ordersCount': json['ordersCount'] ?? json['orders_count'] ?? 0,
+    'isActive': json['isActive'] == true || json['is_active'] == true || json['is_active'] == 1,
+  };
 }

@@ -5,16 +5,16 @@ part 'category_model.freezed.dart';
 part 'category_model.g.dart';
 
 @freezed
-@HiveType(typeId: 13) // تأكد من استخدام رقم فريد لكل موديل
+@HiveType(typeId: 13) 
 class CategoryModel with _$CategoryModel {
   const factory CategoryModel({
     @HiveField(0) required String id,
     @HiveField(1) required String name,
     @HiveField(2) String? description,
-    @HiveField(3) @JsonKey(name: 'image_url') String? imageUrl,
-    @HiveField(4) @JsonKey(name: 'sort_order') @Default(0) int sortOrder,
-    @HiveField(5) @JsonKey(name: 'is_active') @Default(true) bool isActive,
-    @HiveField(6) dynamic icon, // يفضل أن يكون String (اسم الأيقونة) أو int (رقمها)
+    @HiveField(3) String? imageUrl,
+    @HiveField(4) @Default(0) int sortOrder,
+    @HiveField(5) @Default(true) bool isActive,
+    @HiveField(6) dynamic icon, 
   }) = _CategoryModel;
 
   factory CategoryModel.fromJson(Map<String, dynamic> json) => 
