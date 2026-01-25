@@ -1,7 +1,6 @@
 export 'statistic_card.dart';
 export 'section_header.dart';
 export 'status_badge.dart';
-export 'dashboard_stat_card.dart';
 export '../screens/Dashboard_Screen/widget/recent_orders_list.dart';
 export '../screens/Dashboard_Screen/widget/categories_grid.dart';
 export '../screens/orders_screen/widgets/order_status_chart.dart';
