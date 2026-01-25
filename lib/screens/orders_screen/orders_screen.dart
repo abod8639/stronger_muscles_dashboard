@@ -20,7 +20,7 @@ class OrdersScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: CustomDashboardAppBar(
+      appBar: BaseAppBar(
         title: 'الطلبات',
         onPressed: controller.fetchOrders,
         icon: Icons.refresh_rounded,

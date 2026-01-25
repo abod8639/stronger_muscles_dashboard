@@ -21,7 +21,7 @@ class ProductsScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.backgroundDark,
-      appBar: CustomDashboardAppBar(
+      appBar: BaseAppBar(
         title: 'المنتجات',
         onPressed:()=> Get.to(ProductFormPage()),
         icon: Icons.add,

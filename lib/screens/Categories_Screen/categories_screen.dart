@@ -22,7 +22,7 @@ class CategoriesScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: CustomDashboardAppBar(
+      appBar: BaseAppBar(
         title: 'إدارة التصنيفات',
         onPressed: () => _showCategoryForm(context, controller),
         icon: Icons.add_circle_outline,

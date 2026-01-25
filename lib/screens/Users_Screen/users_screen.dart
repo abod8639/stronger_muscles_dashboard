@@ -20,9 +20,10 @@ class UsersScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.transparent, // Let MainNavigationScreen handle background
-      appBar: CustomDashboardAppBar(
+      appBar: BaseAppBar(
         title: 'المستخدمون',
         onPressed: controller.fetchUsersStats,
+
         icon: Icons.refresh_rounded,
       ),
       body: Obx(() {
