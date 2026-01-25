@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/custom_dashboard_app_bar.dart';
+import 'package:stronger_muscles_dashboard/screens/widgets/horizontal_chips_selector.dart';
 import '../../config/responsive.dart';
 import '../../config/theme.dart';
 import '../../controllers/dashboard_controller.dart';
 import '../../components/index.dart';
-import './widget/buildDashboardScreenPeriodSelector.dart';
 import './widget/buildDashboardScreenStatsCards.dart';
 
 class DashboardScreen extends GetView<DashboardController> {
@@ -14,7 +14,6 @@ class DashboardScreen extends GetView<DashboardController> {
 
   @override
   Widget build(BuildContext context) {
-    // تأكد من حقن الكنترولر في الـ Bindings أو استخدم Get.put هنا إذا كانت هذه أول شاشة
     final controller = Get.put(DashboardController());
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final res = context.responsive;
@@ -26,17 +25,14 @@ class DashboardScreen extends GetView<DashboardController> {
         onPressed: () => controller.fetchDashboardData(),
       ),
       body: Obx(() {
-        // 1. حالة فشل الاتصال الأولي
         if (!controller.isConnected.value && controller.orders.isEmpty) {
           return _buildErrorState();
         }
 
-        // 2. حالة التحميل الأولي
         if (controller.isLoading.value && controller.orders.isEmpty) {
           return const EnhancedLoadingWidget(message: 'جاري تحميل لوحة التحكم...');
         }
 
-        // 3. المحتوى الرئيسي
         return RefreshIndicator(
           onRefresh: () => controller.fetchDashboardData(),
           child: SingleChildScrollView(
@@ -44,9 +40,21 @@ class DashboardScreen extends GetView<DashboardController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+
                 _buildHeaderStatus(),
-                buildDashboardScreenPeriodSelector(),
-                
+
+                // buildDashboardScreenPeriodSelector(),
+                Obx(() =>
+                HorizontalChipsSelector(
+                  items: controller.periodItems,
+                  selectedId: controller.selectPeriod.value,
+                  onSelect: (id) => controller.selectPeriod.value = id,
+                  labelKey: 'name',
+                  idKey: 'id',
+                  showAllOption: false,
+                  allLabel: 'الكل',
+                )
+                ),
                 if (controller.orders.isEmpty)
                   _buildNoDataState(res)
                 else ...[
