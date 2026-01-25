@@ -1,242 +1,183 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/widget/buildDashboardScreenPeriodSelector.dart';
-import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/widget/buildDashboardScreenStatsCards.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/custom_dashboard_app_bar.dart';
 import '../../config/responsive.dart';
 import '../../config/theme.dart';
 import '../../controllers/dashboard_controller.dart';
 import '../../components/index.dart';
+import './widget/buildDashboardScreenPeriodSelector.dart';
+import './widget/buildDashboardScreenStatsCards.dart';
 
-class DashboardScreen extends StatefulWidget {
+class DashboardScreen extends GetView<DashboardController> {
   const DashboardScreen({super.key});
 
   @override
-  State<DashboardScreen> createState() => _DashboardScreenState();
-}
-
-class _DashboardScreenState extends State<DashboardScreen> {
-  final controller = Get.put(DashboardController());
-
-  @override
   Widget build(BuildContext context) {
+    // تأكد من حقن الكنترولر في الـ Bindings أو استخدم Get.put هنا إذا كانت هذه أول شاشة
+    final controller = Get.put(DashboardController());
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final res = context.responsive;
 
     return Scaffold(
       appBar: BaseAppBar(
         title: 'لوحة التحكم',
+        showStatus: true, // الميزة التي أضفناها سابقاً
         onPressed: () => controller.fetchDashboardData(),
-        icon: Icons.refresh_rounded,
       ),
-      body: Obx(
-        () {
-          if (!controller.isConnected.value && controller.isLoading.value) {
-            return ErrorScreen(
-              title: 'فشل الاتصال',
-              message: controller.errorMessage.value.isEmpty
-                  ? 'لا يمكن الاتصال بقاعدة البيانات. تأكد من اتصالك بالإنترنت والخادم يعمل.'
-                  : controller.errorMessage.value,
-              onRetry: () => controller.retryConnection(),
-              icon: Icons.cloud_off_outlined,
-            );
-          }
+      body: Obx(() {
+        // 1. حالة فشل الاتصال الأولي
+        if (!controller.isConnected.value && controller.orders.isEmpty) {
+          return _buildErrorState();
+        }
 
-          if (controller.isLoading.value && controller.orders.isEmpty) {
-            return const EnhancedLoadingWidget(
-              message: 'جاري تحميل لوحة التحكم...',
-            );
-          }
+        // 2. حالة التحميل الأولي
+        if (controller.isLoading.value && controller.orders.isEmpty) {
+          return const EnhancedLoadingWidget(message: 'جاري تحميل لوحة التحكم...');
+        }
 
-          return RefreshIndicator(
-            onRefresh: () => controller.fetchDashboardData(),
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ConnectionStatusBar(
-                    isConnected: controller.isConnected.value,
-                    errorMessage: controller.errorMessage.value,
-                    onRetry: () => controller.retryConnection(),
-                  ),
-
-                  buildDashboardScreenPeriodSelector(),
-
-                  // if (controller.orders.isEmpty && !controller.isLoading.value)
-                    Padding(
-                      padding: context.responsive.defaultPadding,
-                      child: const NoDataScreen(
-                        title: 'لا توجد بيانات',
-                        message: 'لم نتمكن من جلب أي بيانات من قاعدة البيانات. تأكد من وجود بيانات متاحة.',
-                      ),
-                    ),
-                  // else ...[
-                    buildDashboardScreenStatsCards(),
-
-                    SizedBox(height: context.responsive.itemSpacing * 2),
-                    
-                    // قسم الإحصائيات والرسوم البيانية
-                    Padding(
-                      padding: context.responsive.defaultPadding,
-                      child: Text(
-                        'التحليلات البيانية',
-                        style: TextStyle(
-                          fontSize: context.responsive.getTitleFontSize() + 1,
-                          fontWeight: FontWeight.bold,
-                          color: isDark ? Colors.white : AppColors.textMuted,
-                        ),
-                      ),
-                    ),
-                    
-                    // رسم بياني دائري لحالات الطلبات
-                    Padding(
-                      padding: context.responsive.defaultPadding,
-                      child: PieChartWidget(
-                        showLegend: true,
-                        title: 'توزيع حالات الطلبات',
-                        data: [
-                          PieChartItemData(
-                            label: 'معلقة',
-                            value: controller.pendingOrders.value.toDouble(),
-                            color: AppColors.warning,
-                          ),
-                          PieChartItemData(
-                            label: 'تحت المعالجة',
-                            value: controller.processingOrders.value.toDouble(),
-                            color: AppColors.warning,
-                          ),
-                          PieChartItemData(
-                            label: 'مرسلة',
-                            value: controller.shippedOrders.value.toDouble(),
-                            color: AppColors.info,
-                          ),
-                          PieChartItemData(
-                            label: 'تم التسليم',
-                            value: controller.deliveredOrders.value.toDouble(),
-                            color: AppColors.success,
-                          ),
-                          PieChartItemData(
-                            label: 'ملغاة',
-                            value: controller.cancelledOrders.value.toDouble(),
-                            color: AppColors.error,
-                          ),
-                        ],
-                      ),
-                    ),
-                    
-                    SizedBox(height: context.responsive.itemSpacing),
-
-                    RecentOrdersList(
-                      orders: controller.orders.take(5).toList(),
-                      onSeeAll: () {
-                        //  Get.toNamed('/orders');
-                      },
-                    ),
-
-                    SizedBox(height: context.responsive.itemSpacing * 2),
-                    
-                    // رسم بياني بأعمدة لإجمالي الطلبات
-                    Padding(
-                      padding: context.responsive.defaultPadding,
-                      child: BarChartWidget(
-                        title: 'إجمالي الطلبات حسب الحالة',
-                        groups: [
-                          BarChartGroupData(
-                            x: 0,
-                            barRods: [
-                              BarChartRodData(
-                                toY: controller.pendingOrders.value.toDouble(),
-                                color: AppColors.warning,
-                                width: 16,
-                              ),
-                            ],
-                          ),
-                          BarChartGroupData(
-                            x: 1,
-                            barRods: [
-                              BarChartRodData(
-                                toY: controller.processingOrders.value.toDouble(),
-                                color: AppColors.warning,
-                                width: 16,
-                              ),
-                            ],
-                          ),
-                          BarChartGroupData(
-                            x: 2,
-                            barRods: [
-                              BarChartRodData(
-                                toY: controller.shippedOrders.value.toDouble(),
-                                color: AppColors.info,
-                                width: 16,
-                              ),
-                            ],
-                          ),
-                          BarChartGroupData(
-                            x: 3,
-                            barRods: [
-                              BarChartRodData(
-                                toY: controller.deliveredOrders.value.toDouble(),
-                                color: AppColors.success,
-                                width: 16,
-                              ),
-                            ],
-                          ),
-                          BarChartGroupData(
-                            x: 4,
-                            barRods: [
-                              BarChartRodData(
-                                toY: controller.cancelledOrders.value.toDouble(),
-                                color: AppColors.error,
-                                width: 16,
-                              ),
-                            ],
-                          ),
-                        ],
-                        bottomTitles: const ['معلقة', 'معالجة', 'مرسلة', 'تسليم', 'ملغاة'],
-                        maxY: (controller.orders.isNotEmpty ? (controller.orders.length.toDouble() + 5) : 10),
-                      ),
-                    ),
-                    
-                    SizedBox(height: context.responsive.itemSpacing * 2),
-                    
-                    // رسم بياني خطي لتطور الطلبات
-                    Padding(
-                      padding: context.responsive.defaultPadding,
-                      child: LineChartWidget(
-                        title: 'تطور المبيعات التراكمي',
-                        spots: [
-                          FlSpot(0, controller.pendingOrders.value.toDouble()),
-                          FlSpot(1, (controller.pendingOrders.value + controller.processingOrders.value).toDouble()),
-                          FlSpot(2, (controller.pendingOrders.value + controller.processingOrders.value + controller.shippedOrders.value).toDouble()),
-                          FlSpot(3, (controller.pendingOrders.value + controller.processingOrders.value + controller.shippedOrders.value + controller.deliveredOrders.value).toDouble()),
-                          FlSpot(4, controller.orders.length.toDouble()),
-                        ],
-                        bottomTitles: const ['البداية', 'المعالجة', 'الشحن', 'التسليم', 'الحالي'],
-                        gradientColor: AppColors.primary,
-                        maxY: (controller.orders.isNotEmpty ? (controller.orders.length.toDouble() + 5) : 10),
-                      ),
-                    ),
-
-                    SizedBox(height: context.responsive.itemSpacing * 2),
-                    
-                    if (controller.categories.isNotEmpty)
-                      CategoriesGrid(
-                        categories: controller.categories,
-                        onSeeAll: () {
-                           Get.toNamed('/categories');
-                        },
-                      ),
-                    SizedBox(height: context.responsive.itemSpacing * 3),
-                  ],
+        // 3. المحتوى الرئيسي
+        return RefreshIndicator(
+          onRefresh: () => controller.fetchDashboardData(),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeaderStatus(),
+                buildDashboardScreenPeriodSelector(),
                 
-              ),
+                if (controller.orders.isEmpty)
+                  _buildNoDataState(res)
+                else ...[
+                  buildDashboardScreenStatsCards(),
+                  _buildSectionTitle('التحليلات البيانية', res, isDark),
+                  _buildChartsSection(res),
+                  _buildRecentOrders(res),
+                  _buildCategoriesSection(res),
+                ],
+                SizedBox(height: res.itemSpacing * 3),
+              ],
             ),
-          );
-        },
+          ),
+        );
+      }),
+    );
+  }
+
+  // --- مكونات الواجهة الصغيرة لتبسيط الكود الرئيسي ---
+
+  Widget _buildHeaderStatus() {
+    return ConnectionStatusBar(
+      isConnected: controller.isConnected.value,
+      errorMessage: controller.errorMessage.value,
+      onRetry: () => controller.retryConnection(),
+    );
+  }
+
+  Widget _buildSectionTitle(String title, var res, bool isDark) {
+    return Padding(
+      padding: res.defaultPadding,
+      child: Text(
+        title,
+        style: TextStyle(
+          fontSize: res.getTitleFontSize() + 1,
+          fontWeight: FontWeight.bold,
+          color: isDark ? Colors.white : AppColors.textMuted,
+        ),
       ),
     );
   }
 
-  
+  Widget _buildChartsSection(var res) {
+    return Column(
+      children: [
+        // الرسم البياني الدائري
+        Padding(
+          padding: res.defaultPadding,
+          child: PieChartWidget(
+            showLegend: true,
+            title: 'توزيع حالات الطلبات',
+            data: _getPieChartData(),
+          ),
+        ),
+        SizedBox(height: res.itemSpacing),
+        // الرسم البياني بالأعمدة
+        Padding(
+          padding: res.defaultPadding,
+          child: BarChartWidget(
+            title: 'إجمالي الطلبات حسب الحالة',
+            groups: _getBarChartGroups(),
+            bottomTitles: const ['معلقة', 'معالجة', 'مرسلة', 'تسليم', 'ملغاة'],
+            maxY: controller.orders.length.toDouble() + 5,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRecentOrders(var res) {
+    return RecentOrdersList(
+      orders: controller.orders.take(5).toList(),
+      onSeeAll: () => Get.toNamed('/orders'),
+    );
+  }
+
+  Widget _buildCategoriesSection(var res) {
+    if (controller.categories.isEmpty) return const SizedBox();
+    return CategoriesGrid(
+      categories: controller.categories,
+      onSeeAll: () => Get.toNamed('/categories'),
+    );
+  }
+
+  Widget _buildErrorState() {
+    return ErrorScreen(
+      title: 'فشل الاتصال',
+      message: controller.errorMessage.value,
+      onRetry: () => controller.retryConnection(),
+      icon: Icons.cloud_off_outlined,
+    );
+  }
+
+  Widget _buildNoDataState(var res) {
+    return Padding(
+      padding: res.defaultPadding,
+      child: const NoDataScreen(
+        title: 'لا توجد بيانات',
+        message: 'لم نتمكن من جلب أي بيانات حالياً.',
+      ),
+    );
+  }
+
+  // --- دوال مساعدة لاستخراج البيانات الحسابية للرسوم ---
+
+  List<PieChartItemData> _getPieChartData() {
+    return [
+      PieChartItemData(label: 'معلقة', value: controller.pendingOrders.value.toDouble(), color: AppColors.warning),
+      PieChartItemData(label: 'معالجة', value: controller.processingOrders.value.toDouble(), color: AppColors.info),
+      PieChartItemData(label: 'مرسلة', value: controller.shippedOrders.value.toDouble(), color: AppColors.accent),
+      PieChartItemData(label: 'تم التسليم', value: controller.deliveredOrders.value.toDouble(), color: AppColors.success),
+      PieChartItemData(label: 'ملغاة', value: controller.cancelledOrders.value.toDouble(), color: AppColors.error),
+    ];
+  }
+
+  List<BarChartGroupData> _getBarChartGroups() {
+    final values = [
+      controller.pendingOrders.value,
+      controller.processingOrders.value,
+      controller.shippedOrders.value,
+      controller.deliveredOrders.value,
+      controller.cancelledOrders.value,
+    ];
+    return List.generate(values.length, (i) => BarChartGroupData(
+      x: i,
+      barRods: [BarChartRodData(toY: values[i].toDouble(), color: _getStatusColor(i), width: 16)],
+    ));
+  }
+
+  Color _getStatusColor(int index) {
+    List<Color> colors = [AppColors.warning, AppColors.info, AppColors.accent, AppColors.success, AppColors.error];
+    return colors[index];
+  }
 }

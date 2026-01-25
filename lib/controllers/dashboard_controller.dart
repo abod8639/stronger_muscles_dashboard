@@ -40,6 +40,15 @@ class DashboardController extends GetxController {
   final productsLowStock = 0.obs;
   final productsOutOfStock = 0.obs;
 
+  
+
+  final items = const [
+                'هذا الأسبوع',
+                'هذا الشهر',
+                'هذا العام',
+              ];
+              
+
   @override
   void onInit() {
     super.onInit();
