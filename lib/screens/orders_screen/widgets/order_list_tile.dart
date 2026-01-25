@@ -54,59 +54,97 @@ class OrderListTileState extends State<OrderListTile>
   }
 
   // --- Widgets فرعية لتحسين قراءة الكود ---
+  Widget _buildOrderImage() {
+  final items = widget.order.items ?? [];
+  final itemCount = items.length;
+  // سنعرض كحد أقصى 3 صور متراكمة للحفاظ على نظافة التصميم
+  final displayCount = itemCount > 3 ? 3 : itemCount;
 
-Widget _buildOrderImage() {
-  // استخدام الـ Getter الآمن الذي أضفناه للموديل
-  final imageUrl = widget.order.firstItemImageUrl;
-  final itemCount = widget.order.items?.length ?? 0;
+  return SizedBox(
+    width: 100, // زيادة العرض قليلاً لاستيعاب الإزاحة
+    height: 60,
+    child: Stack(
+      clipBehavior: Clip.none,
+      children: [
+        // توليد الصور المتراكمة
+        ...List.generate(displayCount, (index) {
+          //index 0 هي الصورة الأبعد، وآخر index هي الصورة الأمامية
+          final itemIndex = (displayCount - 1) - index;
+          final imageUrl = items[itemIndex].imageUrl;
+          
+          return Positioned(
+            left: index * 8.0, // إزاحة كل صورة عن التي خلفها
+            top: index * 2.0,  // إزاحة بسيطة للأسفل لتعزيز البعد الثالث
+            child: _buildSingleStackImage(
+              imageUrl, 
+              isLast: index == displayCount - 1,
+              additionalCount: itemCount > 3 && index == displayCount - 1 ? itemCount - 3 : 0,
+            ),
+          );
+        }),
+      ],
+    ),
+  );
+}
 
-  return Stack(
-    clipBehavior: Clip.none,
-    children: [
-      Container(
-        width: 60,
-        height: 60,
-        decoration: BoxDecoration(
-          color: AppColors.primary.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+  Widget _buildSingleStackImage(String? imageUrl, {required bool isLast, int additionalCount = 0}) {
+  return Container(
+    width: 88,
+    height: 88,
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(12),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.2),
+          blurRadius: 4,
+          offset: const Offset(2, 2),
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(13),
-          child: imageUrl != null
+      ],
+      border: Border.all(color: Colors.white.withOpacity(0.2), width: 1.5),
+    ),
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(11),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          imageUrl != null
               ? CachedNetworkImage(
                   cacheManager: CustomCacheManager.instance,
                   imageUrl: imageUrl,
                   fit: BoxFit.cover,
-                  placeholder: (_, __) => const Center(child: CircularProgressIndicator(strokeWidth: 2)),
-                  errorWidget: (_, __, ___) => const Icon(Icons.inventory_2_outlined, color: Colors.grey),
+                  placeholder: (_, __) => Container(color: Colors.white10),
+                  errorWidget: (_, __, ___) => Container(
+                    color: AppColors.primary.withOpacity(0.1),
+                    child: const Icon(Icons.inventory_2_outlined, size: 20, color: Colors.grey),
+                  ),
                 )
-              : const Icon(Icons.inventory_2_outlined, color: Colors.grey),
-        ),
+              : Container(
+                  color: AppColors.primary.withOpacity(0.1),
+                  child: const Icon(Icons.inventory_2_outlined, size: 20, color: Colors.grey),
+                ),
+          
+          // إضافة طبقة تعتيم وعدد المنتجات الإضافية على آخر صورة فقط
+          if (isLast && additionalCount > 0)
+            Container(
+              color: Colors.black.withOpacity(0.5),
+              child: Center(
+                child: Text(
+                  '+$additionalCount',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
-      // إضافة شارة (Badge) إذا كان هناك أكثر من منتج
-      if (itemCount > 1)
-        Positioned(
-          bottom: -5,
-          right: -5,
-          child: Container(
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: AppColors.primary,
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.white, width: 2),
-            ),
-            child: Text(
-              '+${itemCount - 1}',
-              style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
-            ),
-          ),
-        ),
-    ],
+    ),
   );
 }
 
-Widget _buildOrderDetails() {
+  Widget _buildOrderDetails() {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -163,12 +201,21 @@ Widget _buildOrderDetails() {
       ),
       
       // معلومات العميل والعنوان
-      _buildInfoRow(Icons.person_outline, 'Customer: ${widget.order.userId}'),
+      _buildInfoRow(
+        icon: Icons.person_outline,
+        text: 'Customer: ${widget.order.userId}'),
       const SizedBox(height: 4),
-      _buildInfoRow(Icons.location_on_outlined, _extractAddress(widget.order.shippingAddressSnapshot )),
+      _buildInfoRow(
+        icon: Icons.location_on_outlined,
+        text: _extractAddress(widget.order.shippingAddressSnapshot )),
+      const SizedBox(height: 4),
+      _buildInfoRow(
+        icon: Icons.shopping_cart_outlined,
+        text: widget.order.items!.length.toString() ),
     ],
   );
 }
+
   Widget _buildTrailingAction() {
     return Container(
       padding: const EdgeInsets.all(6),
@@ -180,7 +227,7 @@ Widget _buildOrderDetails() {
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String text) {
+  Widget _buildInfoRow({required IconData icon, required String text}) {
     return Row(
       children: [
         Icon(icon, size: 14, color: AppColors.primary.withOpacity(0.7)),

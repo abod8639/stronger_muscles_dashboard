@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/screens/auth/signup_screen.dart';
@@ -5,7 +6,6 @@ import 'package:stronger_muscles_dashboard/screens/auth/widgets/build_primary_bu
 import 'package:stronger_muscles_dashboard/screens/auth/widgets/build_text_field.dart';
 import '../../config/theme.dart';
 import '../../controllers/auth_controller.dart';
-// import 'signup_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -17,216 +17,241 @@ class LoginScreen extends StatelessWidget {
     final isDesktop = size.width >= 900;
 
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppColors.primaryDark,
-              AppColors.primary,
-              AppColors.primaryDark,
-            ],
-          ),
-        ),
-        child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(
-                horizontal: isDesktop ? 0 : 24,
-                vertical: 24,
-              ),
-              child: Container(
-                constraints: BoxConstraints(
-                  maxWidth: isDesktop ? 450 : double.infinity,
+      body: Stack(
+        children: [
+          // خلفية متدرجة فخمة
+          _buildAnimatedBackground(),
+          
+          SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: EdgeInsets.symmetric(
+                  horizontal: isDesktop ? 0 : 24,
+                  vertical: 24,
                 ),
-                child: TweenAnimationBuilder(
-                  duration: const Duration(milliseconds: 800),
-                  tween: Tween<double>(begin: 0, end: 1),
-                  builder: (context, double value, child) {
-                    return Opacity(
-                      opacity: value,
-                      child: Transform.translate(
-                        offset: Offset(0, 50 * (1 - value)),
-                        child: child,
-                      ),
-                    );
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(32),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(
-                        color: Colors.white.withOpacity(0.2),
-                        width: 1.5,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 30,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Logo
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.15),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.fitness_center,
-                            size: 64,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-
-                        // Title
-                        const Text(
-                          'تسجيل الدخول',
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'مرحباً بك في لوحة تحكم Stronger Muscles',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.white.withOpacity(0.8),
-                          ),
-                        ),
-                        const SizedBox(height: 40),
-
-                        // Email Field
-                        Obx(
-                          () => buildTextField(
-                            controller: controller.emailController,
-                            label: 'البريد الإلكتروني',
-                            icon: Icons.email_outlined,
-                            keyboardType: TextInputType.emailAddress,
-                            errorText: controller.emailError.value,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-
-                        // Password Field
-                        Obx(
-                          () => buildTextField(
-                            controller: controller.passwordController,
-                            label: 'كلمة المرور',
-                            icon: Icons.lock_outline,
-                            isPassword: true,
-                            isPasswordVisible:
-                                controller.isPasswordVisible.value,
-                            onTogglePassword:
-                                controller.togglePasswordVisibility,
-                            errorText: controller.passwordError.value,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Remember Me & Forgot Password
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Obx(
-                              () => Row(
-                                children: [
-                                  Checkbox(
-                                    value: controller.rememberMe.value,
-                                    onChanged: (value) {
-                                      controller.rememberMe.value =
-                                          value ?? false;
-                                    },
-                                    fillColor: WidgetStateProperty.all(
-                                      Colors.white.withOpacity(0.3),
-                                    ),
-                                    checkColor: AppColors.primary,
-                                  ),
-                                  Text(
-                                    'تذكرني',
-                                    style: TextStyle(
-                                      color: Colors.white.withOpacity(0.9),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                // TODO: Implement forgot password
-                              },
-                              child: Text(
-                                'نسيت كلمة المرور؟',
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.9),
-                                  decoration: TextDecoration.underline,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 32),
-
-                        // Login Button
-                        Obx(
-                          () => buildPrimaryButton(
-                            label: 'تسجيل الدخول',
-                            isLoading: controller.isLoading.value,
-                            onPressed: controller.login,
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-
-                        // Signup Link
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'ليس لديك حساب؟ ',
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.8),
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Get.to(
-                                  () => const SignupScreen(),
-                                  transition: Transition.rightToLeft,
-                                );
-                              },
-                              child: const Text(
-                                'إنشاء حساب',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  decoration: TextDecoration.underline,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 450),
+                    child: _buildLoginCard(controller),
                   ),
                 ),
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAnimatedBackground() {
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.primaryDark,
+            const Color(0xFF4F46E5), // Indigo touch
+            AppColors.primaryDark,
+          ],
         ),
       ),
+    );
+  }
+
+  Widget _buildLoginCard(AuthController controller) {
+    return TweenAnimationBuilder<double>(
+      duration: const Duration(milliseconds: 1000),
+      tween: Tween(begin: 0.0, end: 1.0),
+      builder: (context, value, child) {
+        return Opacity(
+          opacity: value,
+          child: Transform.translate(
+            offset: Offset(0, 40 * (1 - value)),
+            child: child,
+          ),
+        );
+      },
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(30),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+          child: Container(
+            padding: const EdgeInsets.all(32),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.08),
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.2),
+                width: 1.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.25),
+                  blurRadius: 25,
+                  offset: const Offset(0, 15),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildLogo(),
+                const SizedBox(height: 24),
+                _buildHeaderText(),
+                const SizedBox(height: 40),
+                _buildFormFields(controller),
+                const SizedBox(height: 16),
+                _buildRememberForgot(controller),
+                const SizedBox(height: 32),
+                _buildLoginAction(controller),
+                const SizedBox(height: 24),
+                _buildFooter(),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLogo() {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.12),
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.3),
+            blurRadius: 15,
+            spreadRadius: 2,
+          )
+        ],
+      ),
+      child: const Icon(Icons.fitness_center_rounded, size: 55, color: Colors.white),
+    );
+  }
+
+  Widget _buildHeaderText() {
+    return Column(
+      children: [
+        const Text(
+          'تسجيل الدخول',
+          style: TextStyle(
+            fontSize: 30,
+            fontWeight: FontWeight.w900,
+            color: Colors.white,
+            letterSpacing: 0.8,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          'مرحباً بك في لوحة تحكم Stronger Muscles',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 13,
+            color: Colors.white.withOpacity(0.6),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFormFields(AuthController controller) {
+    return Column(
+      children: [
+        Obx(() => buildTextField(
+          controller: controller.emailController,
+          label: 'البريد الإلكتروني',
+          icon: Icons.alternate_email_rounded,
+          keyboardType: TextInputType.emailAddress,
+          errorText: controller.emailError.value,
+        )),
+        const SizedBox(height: 20),
+        Obx(() => buildTextField(
+          controller: controller.passwordController,
+          label: 'كلمة المرور',
+          icon: Icons.lock_person_outlined,
+          isPassword: true,
+          isPasswordVisible: controller.isPasswordVisible.value,
+          onTogglePassword: controller.togglePasswordVisibility,
+          errorText: controller.passwordError.value,
+        )),
+      ],
+    );
+  }
+
+  Widget _buildRememberForgot(AuthController controller) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Obx(() => InkWell(
+          onTap: () => controller.rememberMe.toggle(),
+          child: Row(
+            children: [
+              SizedBox(
+                height: 24,
+                width: 24,
+                child: Checkbox(
+                  value: controller.rememberMe.value,
+                  onChanged: (v) => controller.rememberMe.value = v!,
+                  activeColor: AppColors.primary,
+                  side: BorderSide(color: Colors.white.withOpacity(0.4)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text('تذكرني', style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 13)),
+            ],
+          ),
+        )),
+        TextButton(
+          onPressed: () {},
+          child: Text(
+            'نسيت كلمة المرور؟',
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.7),
+              fontSize: 12,
+              decoration: TextDecoration.underline,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLoginAction(AuthController controller) {
+    return Obx(() => buildPrimaryButton(
+      label: 'تسجيل الدخول',
+      isLoading: controller.isLoading.value,
+      onPressed: controller.login,
+    ));
+  }
+
+  Widget _buildFooter() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          'ليس لديك حساب؟ ',
+          style: TextStyle(color: Colors.white.withOpacity(0.6)),
+        ),
+        TextButton(
+          onPressed: () => Get.to(() => const SignupScreen(), transition: Transition.cupertino),
+          child: const Text(
+            'إنشاء حساب جديد',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              decoration: TextDecoration.underline,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
