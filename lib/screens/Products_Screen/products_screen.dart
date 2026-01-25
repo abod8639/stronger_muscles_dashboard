@@ -33,18 +33,18 @@ class ProductsScreen extends StatelessWidget {
 
             onSearch: (value) => controller.onSearchChanged(value),
           ),
-Obx(
-  () => HorizontalChipsSelector(
-    items: controller.categories,
-    selectedId: controller.selectedCategoryId.value,
-    // التعديل هنا: استدعاء الدالة التي تحتوي على منطق الفلترة
-    onSelect: (id) => controller.setCategory(id), 
-    labelKey: 'name',
-    idKey: 'id',
-    showAllOption: true,
-    allLabel: 'الكل',
-  ),
-),
+          Obx(
+            () => HorizontalChipsSelector(
+              items: controller.categories,
+              selectedId: controller.selectedCategoryId.value,
+              // التعديل هنا: استدعاء الدالة التي تحتوي على منطق الفلترة
+              onSelect: (id) => controller.setCategory(id),
+              labelKey: 'name',
+              idKey: 'id',
+              showAllOption: true,
+              allLabel: 'الكل',
+            ),
+          ),
 
           const SizedBox(height: 8),
 

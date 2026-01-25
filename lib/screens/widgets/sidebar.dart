@@ -164,60 +164,62 @@ class Sidebar extends StatelessWidget {
       ),
       child: Row(
         children: [
-Container(
-  padding: const EdgeInsets.all(2.5), // المسافة بين الإطار والصورة
-  decoration: BoxDecoration(
-    shape: BoxShape.circle,
-    // إطار متدرج يعطي مظهر "النيون" الهادئ
-    gradient: LinearGradient(
-      colors: [
-        AppColors.primary,
-        AppColors.primary.withOpacity(0.2),
-      ],
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-    ),
-    boxShadow: [
-      BoxShadow(
-        color: AppColors.primary.withOpacity(0.2),
-        blurRadius: 10,
-        spreadRadius: 2,
-      ),
-    ],
-  ),
-  child: Container(
-    padding: const EdgeInsets.all(2),
-    decoration: const BoxDecoration(
-      color: Colors.black, // خلفية سوداء تفصل بين الإطار والصورة
-      shape: BoxShape.circle,
-    ),
-    child: ClipOval(
-      child: CachedNetworkImage(
-        imageUrl: 'https://avatars.githubusercontent.com/u/108903062?v=4',
-        cacheManager: CustomCacheManager.instance,
-        width: 36, // ضعف الـ radius (18 * 2)
-        height: 36,
-        fit: BoxFit.cover,
-        // تأثير التحميل السلس
-        placeholder: (context, url) => Container(
-          color: Colors.grey[900],
-          child: const Center(
-            child: SizedBox(
-              width: 15,
-              height: 15,
-              child: CircularProgressIndicator(strokeWidth: 2),
+          Container(
+            padding: const EdgeInsets.all(2.5), // المسافة بين الإطار والصورة
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              // إطار متدرج يعطي مظهر "النيون" الهادئ
+              gradient: LinearGradient(
+                colors: [AppColors.primary, AppColors.primary.withOpacity(0.2)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withOpacity(0.2),
+                  blurRadius: 10,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: Container(
+              padding: const EdgeInsets.all(2),
+              decoration: const BoxDecoration(
+                color: Colors.black, // خلفية سوداء تفصل بين الإطار والصورة
+                shape: BoxShape.circle,
+              ),
+              child: ClipOval(
+                child: CachedNetworkImage(
+                  imageUrl:
+                      'https://avatars.githubusercontent.com/u/108903062?v=4',
+                  cacheManager: CustomCacheManager.instance,
+                  width: 36, // ضعف الـ radius (18 * 2)
+                  height: 36,
+                  fit: BoxFit.cover,
+                  // تأثير التحميل السلس
+                  placeholder: (context, url) => Container(
+                    color: Colors.grey[900],
+                    child: const Center(
+                      child: SizedBox(
+                        width: 15,
+                        height: 15,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    ),
+                  ),
+                  // في حال فشل التحميل تظهر أيقونة مستخدم
+                  errorWidget: (context, url, error) => Container(
+                    color: Colors.grey[900],
+                    child: const Icon(
+                      Icons.person,
+                      color: Colors.white54,
+                      size: 20,
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
-        ),
-        // في حال فشل التحميل تظهر أيقونة مستخدم
-        errorWidget: (context, url, error) => Container(
-          color: Colors.grey[900],
-          child: const Icon(Icons.person, color: Colors.white54, size: 20),
-        ),
-      ),
-    ),
-  ),
-),
           const SizedBox(width: 12),
           Expanded(
             child: Column(

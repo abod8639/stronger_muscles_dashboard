@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/components/gradient_progress_bar.dart';
+
 class EnhancedStatusChart extends StatefulWidget {
   final String title;
   final List<StatusChartItem> items;

@@ -64,12 +64,17 @@ class OrderModel with _$OrderModel {
 
   String get formattedAddress {
     if (shippingAddressSnapshot == null) return 'العنوان غير متوفر';
-    final addr = shippingAddressSnapshot!['address'] ?? shippingAddressSnapshot!;
+    final addr =
+        shippingAddressSnapshot!['address'] ?? shippingAddressSnapshot!;
     if (addr is String) return addr;
     final city = addr['city'] ?? addr['City'] ?? '';
     final street = addr['street'] ?? addr['Street'] ?? '';
-    return [city, street].where((s) => s.toString().isNotEmpty).join(', ') 
-           .isEmpty ? 'العنوان غير محدد' : [city, street].where((s) => s.toString().isNotEmpty).join(', ');
+    return [
+          city,
+          street,
+        ].where((s) => s.toString().isNotEmpty).join(', ').isEmpty
+        ? 'العنوان غير محدد'
+        : [city, street].where((s) => s.toString().isNotEmpty).join(', ');
   }
 
   factory OrderModel.fromJson(Map<String, dynamic> json) =>

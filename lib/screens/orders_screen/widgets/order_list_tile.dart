@@ -23,37 +23,34 @@ class OrderListTile extends StatefulWidget {
 
 class OrderListTileState extends State<OrderListTile>
     with SingleTickerProviderStateMixin {
-
-
-    @override
-    Widget build(BuildContext context) {
-      return GlassContainer(
-        opacity: 0.07,
-        blur: 12,
+  @override
+  Widget build(BuildContext context) {
+    return GlassContainer(
+      opacity: 0.07,
+      blur: 12,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        onTap: widget.onTap,
         borderRadius: BorderRadius.circular(20),
-        child: InkWell(
-          onTap: widget.onTap,
-          borderRadius: BorderRadius.circular(20),
-          child: Padding(
-            padding: const EdgeInsets.all(
-              12,
-            ), // تقليل البادينج قليلاً لتوفير مساحة
-            child: Row(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start, // لمحاذاة الصور مع أعلى النص
-              children: [
-                _buildOrderImage(),
-                const SizedBox(width: 12),
-                Expanded(child: _buildOrderDetails()),
-                const SizedBox(width: 8),
-                _buildTrailingAction(),
-              ],
-            ),
+        child: Padding(
+          padding: const EdgeInsets.all(
+            12,
+          ), // تقليل البادينج قليلاً لتوفير مساحة
+          child: Row(
+            crossAxisAlignment:
+                CrossAxisAlignment.start, // لمحاذاة الصور مع أعلى النص
+            children: [
+              _buildOrderImage(),
+              const SizedBox(width: 12),
+              Expanded(child: _buildOrderDetails()),
+              const SizedBox(width: 8),
+              _buildTrailingAction(),
+            ],
           ),
         ),
-      );
-    }
-  
+      ),
+    );
+  }
 
   Widget _buildOrderImage() {
     final items = widget.order.items ?? [];

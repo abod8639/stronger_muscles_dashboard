@@ -29,7 +29,6 @@ class CategoriesController extends GetxController {
     fetchCategories();
   }
 
-
   Future<void> fetchCategories() async {
     try {
       isLoading.value = true;
@@ -61,7 +60,6 @@ class CategoriesController extends GetxController {
       );
     }
   }
-
 
   Future<bool> addCategory(String id, String name, String? imageUrl) async {
     try {
@@ -129,7 +127,7 @@ class CategoriesController extends GetxController {
         confirmText: 'حذف',
         confirmColor: AppColors.error,
         onConfirm: () async {
-          Get.back(); 
+          Get.back();
           _performDelete(id);
         },
       ),
@@ -138,7 +136,7 @@ class CategoriesController extends GetxController {
 
   Future<void> _performDelete(String id) async {
     try {
-      isProcessing.value = true; 
+      isProcessing.value = true;
       final success = await _categoryRepository.deleteCategory(id);
       if (success) {
         categories.removeWhere((c) => c.id == id);

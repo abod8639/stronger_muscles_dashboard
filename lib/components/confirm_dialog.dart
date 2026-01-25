@@ -27,7 +27,8 @@ class ConfirmDialog extends StatelessWidget {
     final primaryActionColor = confirmColor ?? AppColors.primary;
 
     return Dialog(
-      backgroundColor: Colors.transparent, // لجعل الحواف تبدو أنيقة مع الـ Container
+      backgroundColor:
+          Colors.transparent, // لجعل الحواف تبدو أنيقة مع الـ Container
       elevation: 0,
       child: Container(
         padding: const EdgeInsets.all(24),
@@ -35,7 +36,9 @@ class ConfirmDialog extends StatelessWidget {
           color: isDark ? const Color(0xFF1A1A1A) : Colors.white,
           borderRadius: BorderRadius.circular(28),
           border: Border.all(
-            color: isDark ? Colors.white.withOpacity(0.05) : Colors.grey.withOpacity(0.1),
+            color: isDark
+                ? Colors.white.withOpacity(0.05)
+                : Colors.grey.withOpacity(0.1),
           ),
           boxShadow: [
             BoxShadow(
@@ -62,7 +65,7 @@ class ConfirmDialog extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            
+
             // العنوان
             Text(
               title,
@@ -74,7 +77,7 @@ class ConfirmDialog extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            
+
             // نص الرسالة
             Text(
               message,
@@ -86,7 +89,7 @@ class ConfirmDialog extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 32),
-            
+
             // الأزرار بتصميم عصري
             Row(
               children: [

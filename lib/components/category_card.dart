@@ -20,10 +20,7 @@ class CategoryCard extends StatefulWidget {
 
 class CategoryCardState extends State<CategoryCard>
     with SingleTickerProviderStateMixin {
-
   bool _isHovered = false;
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -38,9 +35,7 @@ class CategoryCardState extends State<CategoryCard>
             borderRadius: BorderRadius.circular(14),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(
-                  alpha: _isHovered ? 0.08 : 0.03,
-                ),
+                color: Colors.black.withValues(alpha: _isHovered ? 0.08 : 0.03),
                 blurRadius: _isHovered ? 16 : 8,
                 offset: Offset(0, _isHovered ? 4 : 2),
               ),
@@ -65,9 +60,7 @@ class CategoryCardState extends State<CategoryCard>
                           errorBuilder: (_, __, ___) => Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(14),
-                              color: AppColors.primary.withValues(
-                                alpha: 0.1,
-                              ),
+                              color: AppColors.primary.withValues(alpha: 0.1),
                             ),
                             child: const Icon(
                               Icons.category_outlined,
@@ -123,9 +116,7 @@ class CategoryCardState extends State<CategoryCard>
                             borderRadius: BorderRadius.circular(6),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.error.withValues(
-                                  alpha: 0.4,
-                                ),
+                                color: AppColors.error.withValues(alpha: 0.4),
                                 blurRadius: 4,
                               ),
                             ],

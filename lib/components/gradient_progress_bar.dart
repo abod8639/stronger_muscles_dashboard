@@ -100,4 +100,3 @@ class GradientProgressBar extends StatelessWidget {
     );
   }
 }
-

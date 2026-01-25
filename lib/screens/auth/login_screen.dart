@@ -21,7 +21,7 @@ class LoginScreen extends StatelessWidget {
         children: [
           // خلفية متدرجة فخمة
           _buildAnimatedBackground(),
-          
+
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
@@ -129,10 +129,14 @@ class LoginScreen extends StatelessWidget {
             color: AppColors.primary.withOpacity(0.3),
             blurRadius: 15,
             spreadRadius: 2,
-          )
+          ),
         ],
       ),
-      child: const Icon(Icons.fitness_center_rounded, size: 55, color: Colors.white),
+      child: const Icon(
+        Icons.fitness_center_rounded,
+        size: 55,
+        color: Colors.white,
+      ),
     );
   }
 
@@ -152,10 +156,7 @@ class LoginScreen extends StatelessWidget {
         Text(
           'مرحباً بك في لوحة تحكم Stronger Muscles',
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 13,
-            color: Colors.white.withOpacity(0.6),
-          ),
+          style: TextStyle(fontSize: 13, color: Colors.white.withOpacity(0.6)),
         ),
       ],
     );
@@ -164,23 +165,27 @@ class LoginScreen extends StatelessWidget {
   Widget _buildFormFields(AuthController controller) {
     return Column(
       children: [
-        Obx(() => buildTextField(
-          controller: controller.emailController,
-          label: 'البريد الإلكتروني',
-          icon: Icons.alternate_email_rounded,
-          keyboardType: TextInputType.emailAddress,
-          errorText: controller.emailError.value,
-        )),
+        Obx(
+          () => buildTextField(
+            controller: controller.emailController,
+            label: 'البريد الإلكتروني',
+            icon: Icons.alternate_email_rounded,
+            keyboardType: TextInputType.emailAddress,
+            errorText: controller.emailError.value,
+          ),
+        ),
         const SizedBox(height: 20),
-        Obx(() => buildTextField(
-          controller: controller.passwordController,
-          label: 'كلمة المرور',
-          icon: Icons.lock_person_outlined,
-          isPassword: true,
-          isPasswordVisible: controller.isPasswordVisible.value,
-          onTogglePassword: controller.togglePasswordVisibility,
-          errorText: controller.passwordError.value,
-        )),
+        Obx(
+          () => buildTextField(
+            controller: controller.passwordController,
+            label: 'كلمة المرور',
+            icon: Icons.lock_person_outlined,
+            isPassword: true,
+            isPasswordVisible: controller.isPasswordVisible.value,
+            onTogglePassword: controller.togglePasswordVisibility,
+            errorText: controller.passwordError.value,
+          ),
+        ),
       ],
     );
   }
@@ -189,26 +194,36 @@ class LoginScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Obx(() => InkWell(
-          onTap: () => controller.rememberMe.toggle(),
-          child: Row(
-            children: [
-              SizedBox(
-                height: 24,
-                width: 24,
-                child: Checkbox(
-                  value: controller.rememberMe.value,
-                  onChanged: (v) => controller.rememberMe.value = v!,
-                  activeColor: AppColors.primary,
-                  side: BorderSide(color: Colors.white.withOpacity(0.4)),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+        Obx(
+          () => InkWell(
+            onTap: () => controller.rememberMe.toggle(),
+            child: Row(
+              children: [
+                SizedBox(
+                  height: 24,
+                  width: 24,
+                  child: Checkbox(
+                    value: controller.rememberMe.value,
+                    onChanged: (v) => controller.rememberMe.value = v!,
+                    activeColor: AppColors.primary,
+                    side: BorderSide(color: Colors.white.withOpacity(0.4)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              Text('تذكرني', style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 13)),
-            ],
+                const SizedBox(width: 8),
+                Text(
+                  'تذكرني',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.8),
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
           ),
-        )),
+        ),
         TextButton(
           onPressed: () {},
           child: Text(
@@ -225,11 +240,13 @@ class LoginScreen extends StatelessWidget {
   }
 
   Widget _buildLoginAction(AuthController controller) {
-    return Obx(() => buildPrimaryButton(
-      label: 'تسجيل الدخول',
-      isLoading: controller.isLoading.value,
-      onPressed: controller.login,
-    ));
+    return Obx(
+      () => buildPrimaryButton(
+        label: 'تسجيل الدخول',
+        isLoading: controller.isLoading.value,
+        onPressed: controller.login,
+      ),
+    );
   }
 
   Widget _buildFooter() {
@@ -241,7 +258,10 @@ class LoginScreen extends StatelessWidget {
           style: TextStyle(color: Colors.white.withOpacity(0.6)),
         ),
         TextButton(
-          onPressed: () => Get.to(() => const SignupScreen(), transition: Transition.cupertino),
+          onPressed: () => Get.to(
+            () => const SignupScreen(),
+            transition: Transition.cupertino,
+          ),
           child: const Text(
             'إنشاء حساب جديد',
             style: TextStyle(

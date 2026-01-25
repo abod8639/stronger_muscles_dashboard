@@ -36,10 +36,7 @@ class StatCard extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            color.withOpacity(0.15),
-            color.withOpacity(0.05),
-          ],
+          colors: [color.withOpacity(0.15), color.withOpacity(0.05)],
         ),
         border: Border.all(color: color.withOpacity(0.3), width: 1),
         child: Column(
@@ -55,12 +52,11 @@ class StatCard extends StatelessWidget {
                     children: [
                       Text(
                         title.toUpperCase(),
-                        style: Theme.of(context).textTheme.bodyMedium
-                            ?.copyWith(
-                              color: AppColors.textMuted,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.0,
-                            ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textMuted,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.0,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -105,9 +101,7 @@ class StatCard extends StatelessWidget {
                         spreadRadius: 2,
                       ),
                     ],
-                    border: Border.all(
-                      color: color.withOpacity(0.5),
-                    ),
+                    border: Border.all(color: color.withOpacity(0.5)),
                   ),
                   child: Icon(icon, color: Colors.white, size: 24),
                 ),
@@ -115,8 +109,8 @@ class StatCard extends StatelessWidget {
             ),
             if (showTrendIcon) ...[
               const SizedBox(height: 16),
-              // trend 
-              TrendCard(isTrendPositive:isTrendPositive),
+              // trend
+              TrendCard(isTrendPositive: isTrendPositive),
             ],
           ],
         ),
@@ -124,5 +118,3 @@ class StatCard extends StatelessWidget {
     );
   }
 }
-
-
