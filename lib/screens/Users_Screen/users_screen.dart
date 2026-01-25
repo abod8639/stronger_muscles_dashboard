@@ -7,6 +7,7 @@ import 'package:stronger_muscles_dashboard/controllers/users_controller.dart';
 import 'package:stronger_muscles_dashboard/components/index.dart';
 import 'package:stronger_muscles_dashboard/screens/Users_Screen/widgets/buildUserCard.dart';
 import 'package:stronger_muscles_dashboard/screens/Users_Screen/widgets/build_stats_header.dart';
+import 'package:stronger_muscles_dashboard/screens/widgets/custom_dashboard_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/custom_search_bar.dart';
 
 class UsersScreen extends StatelessWidget {
@@ -19,22 +20,10 @@ class UsersScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.transparent, // Let MainNavigationScreen handle background
-      appBar: AppBar(
-        title: Text(
-          'المستخدمون',
-          style: TextStyle(
-            fontSize: responsive.getTitleFontSize(),
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        actions: [
-          IconButton(
-            onPressed: controller.fetchUsersStats,
-            icon: Icon(Icons.refresh, size: responsive.iconSize),
-            tooltip: 'تحديث',
-          ),
-          SizedBox(width: responsive.itemSpacing),
-        ],
+      appBar: CustomDashboardAppBar(
+        title: 'المستخدمون',
+        onPressed: controller.fetchUsersStats,
+        icon: Icons.refresh_rounded,
       ),
       body: Obx(() {
         if (controller.isLoading.value && controller.filteredUsers.isEmpty) {
