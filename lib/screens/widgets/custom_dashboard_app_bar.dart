@@ -49,7 +49,7 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
         if (onPressed != null)
           IconButton(
             onPressed: onPressed,
-            icon: Icon(icon??Icons.refresh_rounded),
+            icon: Icon(icon),
             tooltip: 'تحديث',
           ),
 
