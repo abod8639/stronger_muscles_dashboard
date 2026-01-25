@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/config/theme.dart';
 import '../models/index.dart';
 import '../services/api_service.dart';
 import '../repositories/index.dart';
@@ -8,6 +9,7 @@ class CategoriesController extends GetxController {
   late final CategoryRepository _categoryRepository;
 
   final isLoading = true.obs;
+  final isProcessing = false.obs;
   final categories = <CategoryModel>[].obs;
   final filteredCategories = <CategoryModel>[].obs;
   final searchQuery = ''.obs;
@@ -15,48 +17,53 @@ class CategoriesController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    final apiService = ApiService();
+    final apiService = Get.put(ApiService());
     _categoryRepository = CategoryRepository(apiService);
+
+    debounce(
+      searchQuery,
+      (_) => _applySearch(),
+      time: const Duration(milliseconds: 300),
+    );
+
     fetchCategories();
   }
+
 
   Future<void> fetchCategories() async {
     try {
       isLoading.value = true;
       final data = await _categoryRepository.getCategories();
       categories.assignAll(data);
-      applySearch();
-      isLoading.value = false;
+      _applySearch();
     } catch (e) {
-      isLoading.value = false;
       Get.snackbar('خطأ', 'فشل في تحميل التصنيفات: ${e.toString()}');
+    } finally {
+      isLoading.value = false;
     }
   }
 
   void onSearchChanged(String query) {
     searchQuery.value = query;
-    applySearch();
+    // لا نحتاج لاستدعاء applySearch هنا لأن debounce سيقوم بذلك
   }
 
-  void applySearch() {
+  void _applySearch() {
     if (searchQuery.isEmpty) {
       filteredCategories.assignAll(categories);
     } else {
+      final query = searchQuery.value.toLowerCase();
       filteredCategories.assignAll(
-        categories
-            .where(
-              (c) =>
-                  c.name.toLowerCase().contains(
-                    searchQuery.value.toLowerCase(),
-                  ) ||
-                  c.id.contains(searchQuery.value),
-            )
-            .toList(),
+        categories.where((c) {
+          return c.name.toLowerCase().contains(query) ||
+              c.id.toLowerCase().contains(query);
+        }).toList(),
       );
     }
   }
 
-  Future<void> addCategory(String id, String name, String? imageUrl) async {
+
+  Future<bool> addCategory(String id, String name, String? imageUrl) async {
     try {
       isLoading.value = true;
       final newCategory = await _categoryRepository.addCategory({
@@ -67,22 +74,26 @@ class CategoriesController extends GetxController {
         'sort_order': 0,
         'is_active': 1,
       });
+
       categories.add(newCategory);
-      applySearch();
-      isLoading.value = false;
-      Get.back(); // Close modal
-      Get.snackbar('نجاح', 'تم إضافة التصنيف بنجاح');
-    } catch (e) {
-      isLoading.value = false;
-      print('Error adding category: $e');
+      _applySearch();
+
       Get.snackbar(
-        'خطأ',
-        'فشل في إضافة التصنيف. يرجى التأكد من البيانات والمحاولة مرة أخرى.',
+        'نجاح',
+        'تم إضافة التصنيف بنجاح',
+        snackPosition: SnackPosition.BOTTOM,
       );
+      return true;
+    } catch (e) {
+      print('Error adding category: $e');
+      Get.snackbar('خطأ', 'فشل في إضافة التصنيف: $e');
+      return false;
+    } finally {
+      isLoading.value = false;
     }
   }
 
-  Future<void> updateCategory(String id, String name, String? imageUrl) async {
+  Future<bool> updateCategory(String id, String name, String? imageUrl) async {
     try {
       isLoading.value = true;
       final updatedCategory = await _categoryRepository.updateCategory(id, {
@@ -96,48 +107,50 @@ class CategoriesController extends GetxController {
       final index = categories.indexWhere((c) => c.id == id);
       if (index != -1) {
         categories[index] = updatedCategory;
-        applySearch();
+        _applySearch();
       }
 
-      isLoading.value = false;
-      Get.back(); // Close modal
       Get.snackbar('نجاح', 'تم تحديث التصنيف بنجاح');
+      return true;
     } catch (e) {
-      isLoading.value = false;
-      print('Error updating category: $e');
       Get.snackbar('خطأ', 'فشل في تحديث التصنيف: ${e.toString()}');
+      return false;
+    } finally {
+      isLoading.value = false;
     }
   }
 
   Future<void> deleteCategory(String id) async {
+    Get.dialog(
+      ConfirmDialog(
+        title: 'حذف التصنيف',
+        message:
+            'هل أنت متأكد من رغبتك في حذف هذا التصنيف؟ لا يمكن التراجع عن هذا الإجراء.',
+        confirmText: 'حذف',
+        confirmColor: AppColors.error,
+        onConfirm: () async {
+          Get.back(); 
+          _performDelete(id);
+        },
+      ),
+    );
+  }
+
+  Future<void> _performDelete(String id) async {
     try {
-      Get.dialog(
-        ConfirmDialog(
-          title: 'حذف التصنيف',
-          message:
-              'هل أنت متأكد من رغبتك في حذف هذا التصنيف؟ لا يمكن التراجع عن هذا الإجراء.',
-          confirmText: 'حذف',
-          onConfirm: () async {
-            Get.back(); // Close confirm dialog
-            isLoading.value = true;
-            final success = await _categoryRepository.deleteCategory(id);
-            if (success) {
-              categories.removeWhere((c) => c.id == id);
-              applySearch();
-              Get.snackbar('نجاح', 'تم حذف التصنيف بنجاح');
-            } else {
-              Get.snackbar(
-                'خطأ',
-                'فشل في حذف التصنيف. قد يكون مرتبطاً بمنتجات.',
-              );
-            }
-            isLoading.value = false;
-          },
-        ),
-      );
+      isProcessing.value = true; 
+      final success = await _categoryRepository.deleteCategory(id);
+      if (success) {
+        categories.removeWhere((c) => c.id == id);
+        _applySearch();
+        Get.snackbar('نجاح', 'تم حذف التصنيف بنجاح');
+      } else {
+        Get.snackbar('تحذير', 'لا يمكن حذف التصنيف، قد يكون مرتبطاً بمنتجات.');
+      }
     } catch (e) {
-      isLoading.value = false;
-      Get.snackbar('خطأ', 'فشل في حذف التصنيف: ${e.toString()}');
+      Get.snackbar('خطأ', 'حدث خطأ غير متوقع أثناء الحذف');
+    } finally {
+      isProcessing.value = false;
     }
   }
 }
