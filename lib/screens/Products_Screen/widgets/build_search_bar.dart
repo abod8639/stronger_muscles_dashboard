@@ -17,7 +17,7 @@ Widget buildSearchBar(
       borderRadius: BorderRadius.circular(20),
       border: Border.all(color: Colors.white.withOpacity(0.1)),
       child: TextField(
-        onChanged: controller.onSearchChanged,
+        onChanged: controller.searchQuery ,
         style: const TextStyle(color: Colors.white, fontSize: 14),
         decoration: InputDecoration(
           hintText: 'البحث عن منتج بالاسم أو الماركة...',
@@ -27,7 +27,7 @@ Widget buildSearchBar(
             () => controller.searchQuery.isNotEmpty
                 ? IconButton(
                     icon: Icon(Icons.close_rounded, size: 20, color: AppColors.error.withOpacity(0.7)),
-                    onPressed: () => controller.onSearchChanged(''),
+                    onPressed: () => controller.searchQuery.value = '',
                   )
                 : const SizedBox.shrink(),
           ),

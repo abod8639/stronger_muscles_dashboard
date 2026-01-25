@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:stronger_muscles_dashboard/components/image_gallery_editor.dart';
-import 'package:stronger_muscles_dashboard/controllers/products_controller.dart';
-import 'package:stronger_muscles_dashboard/models/product_model.dart';
-import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/FlavorMultiSelect.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/availability_switch.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/buildModernDropdown.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/buildModernTextField.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/product_size_selector.dart';
+import '../../../components/image_gallery_editor.dart';
+import '../../../controllers/products_controller.dart';
+import '../../../models/product_model.dart';
+import '../../../config/theme.dart';
 
 class ProductFormPage extends StatefulWidget {
   final ProductModel? product;
@@ -23,18 +23,12 @@ class _ProductFormPageState extends State<ProductFormPage> {
   final _formKey = GlobalKey<FormState>();
   final ProductsController controller = Get.find<ProductsController>();
 
-  // Controllers
-  late final TextEditingController nameController;
-  late final TextEditingController priceController;
-  late final TextEditingController discountPriceController;
-  late final TextEditingController stockController;
-  late final TextEditingController descriptionController;
-  late final TextEditingController brandController;
-  late final TextEditingController servingSizeController;
-  late final TextEditingController numberOfSessionsController;
+  // تجميع الـ Controllers في Map لسهولة الإدارة أو تعريفها بوضوح
+  late final Map<String, TextEditingController> _controllers;
   
-  String? selectedCategoryId;
-  List<String> imageUrls = [];
+  // استخدام RxList للصور لتقليل استخدام setState
+  final RxList<String> _imageUrls = <String>[].obs;
+  String? _selectedCategoryId;
 
   @override
   void initState() {
@@ -43,274 +37,263 @@ class _ProductFormPageState extends State<ProductFormPage> {
   }
 
   void _initializeFields() {
-    nameController = TextEditingController(text: widget.product?.name);
-    priceController = TextEditingController(text: widget.product?.price.toString());
-    discountPriceController = TextEditingController(text: widget.product?.discountPrice?.toString());
-    stockController = TextEditingController(text: widget.product?.stockQuantity.toString());
-    descriptionController = TextEditingController(text: widget.product?.description);
-    brandController = TextEditingController(text: widget.product?.brand);
-    servingSizeController = TextEditingController(text: widget.product?.servingSize);
-    numberOfSessionsController = TextEditingController(text: widget.product?.servingsPerContainer.toString());
+    _controllers = {
+      'name': TextEditingController(text: widget.product?.name),
+      'price': TextEditingController(text: widget.product?.price.toString()),
+      'discount': TextEditingController(text: widget.product?.discountPrice?.toString() ?? ''),
+      'stock': TextEditingController(text: widget.product?.stockQuantity.toString()),
+      'desc': TextEditingController(text: widget.product?.description),
+      'brand': TextEditingController(text: widget.product?.brand),
+      'serving': TextEditingController(text: widget.product?.servingSize),
+      'sessions': TextEditingController(text: widget.product?.servingsPerContainer.toString()),
+    };
 
-    imageUrls = List<String>.from(widget.product?.imageUrls ?? []);
-    selectedCategoryId = widget.product?.categoryId ?? 
-        (controller.categories.isNotEmpty ? controller.categories.first.id : null);
-
-    controller.productFlavors.assignAll(widget.product?.flavor ?? []);
-    controller.productSizes.assignAll(widget.product?.size ?? []);
-    controller.isFeatured.value = widget.product?.isActive ?? true;
+    if (widget.product != null) {
+      _imageUrls.assignAll(widget.product!.imageUrls);
+      _selectedCategoryId = widget.product!.categoryId;
+      controller.productFlavors.assignAll(widget.product!.flavor ?? []);
+      controller.productSizes.assignAll(widget.product!.size ?? []);
+      controller.isFeatured.value = widget.product!.isActive;
+      controller.isBackgroundWhite.value = widget.product!.isBackgroundWhite ?? false;
+    } else {
+      _selectedCategoryId = controller.categories.isNotEmpty ? controller.categories.first.id : null;
+    }
   }
 
   @override
   void dispose() {
-    for (var c in [nameController, priceController, discountPriceController, stockController, descriptionController, brandController, servingSizeController, numberOfSessionsController]) {
-      c.dispose();
-    }
+    _controllers.forEach((_, c) => c.dispose());
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // final responsive = context.responsive;
-    
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.product == null ? 'إضافة منتج' : 'تعديل المنتج'),
+        title: Text(widget.product == null ? 'إضافة منتج جديد' : 'تعديل البيانات'),
         actions: [
           IconButton(
             onPressed: _submitForm,
-            icon: const Icon(Icons.check_circle_outline, size: 28, color: AppColors.primary),
-            tooltip: 'حفظ',
+            icon: const Icon(Icons.save_as_rounded, color: AppColors.primary),
           ),
-          const SizedBox(width: 8),
         ],
       ),
       body: Form(
         key: _formKey,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          physics: const BouncingScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // قسم الصور كـ Card مستقل
-              _buildCardSection(
-                title: 'صور المنتج',
-                child: ImageGalleryEditor(
-                  imageUrls: imageUrls,
-                  onAddUrl: (url) => setState(() => imageUrls.add(url)),
-                  onRemove: (index) => setState(() => imageUrls.removeAt(index)),
-                  onPickImage: _handleImagePick,
-                  onReorder: (oldIdx, newIdx) {
-                    setState(() {
-                      if (newIdx > oldIdx) newIdx -= 1;
-                      imageUrls.insert(newIdx, imageUrls.removeAt(oldIdx));
-                    });
-                  },
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              // قسم المعلومات الأساسية
-              _buildCardSection(
-                title: 'المعلومات الأساسية',
-                child: Column(
-                  children: [
-                    buildProductFormSheetModernTextField(nameController, 'اسم المنتج', Icons.label),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(child: buildProductFormSheetModernTextField(priceController, 'السعر', Icons.attach_money, isNumber: true)),
-                        const SizedBox(width: 12),
-                        Expanded(child: buildProductFormSheetModernTextField(discountPriceController, 'سعر العرض', Icons.discount, isNumber: true)),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              // قسم التصنيف والخيارات
-              _buildCardSection(
-                title: 'التصنيف والخيارات',
-                child: Column(
-                  children: [
-                    CustomModernDropdown<String>(
-                      value: selectedCategoryId,
-                      items: controller.categories.map((cat) => DropdownMenuItem(value: cat.id, child: Text(cat.name))).toList(),
-                      onChanged: (val) => setState(() => selectedCategoryId = val),
-                    ),
-                    const SizedBox(height: 16),
-                    Obx(() => ProductFlavorSelector(
-                      selectedFlavors: controller.productFlavors.toList(),
-                      onSelectionChanged: (newList) => controller.productFlavors.assignAll(newList),
-                    )),
-                    const SizedBox(height: 16),
-                    Obx(() => ProductSizeSelector(
-                      selectedSizes: controller.productSizes.toList(),
-                      onSelectionChanged: (newList) => controller.productSizes.assignAll(newList),
-                    )),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              // قسم المخزون والماركة
-              _buildCardSection(
-
-                title: 'المخزون والتفاصيل الفنية',
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(child: buildProductFormSheetModernTextField(stockController, 'الكمية', Icons.inventory, isNumber: true)),
-                        const SizedBox(width: 12),
-                        Expanded(child: buildProductFormSheetModernTextField(brandController, 'الماركة', Icons.business)),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(child: buildProductFormSheetModernTextField(servingSizeController, 'حجم الحصة', Icons.scale)),
-                        const SizedBox(width: 12),
-                        Expanded(child: buildProductFormSheetModernTextField(numberOfSessionsController, 'عدد الحصص', Icons.format_list_numbered, isNumber: true)),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                     AvailabilitySwitch(
-                      title: "Featured",
-                      onChanged: (value) {
-                        controller.isFeatured.value = value;
-                      },
-                      isAvailable: controller.isFeatured,
-                    ),
-                    const SizedBox(height: 16),
-                     AvailabilitySwitch(
-                      onChanged: (value) {
-                        controller.isBackgroundWhite.value = value;
-                      },
-                      title: "Background White",
-                      isAvailable: controller.isBackgroundWhite,
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              // قسم الوصف
-              _buildCardSection(
-                title: 'وصف المنتج',
-                child: buildProductFormSheetModernTextField(descriptionController, 'اكتب وصفاً جذاباً للمنتج...', Icons.notes, maxLines: 5),
-              ),
-
-              const SizedBox(height: 32),
-
-              // زر الحفظ النهائي
-              _buildBigSubmitButton(),
-              const SizedBox(height: 40),
-            ],
-          ),
+        child: ListView( // استخدام ListView بدلاً من SingleChild لسهولة التحكم
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+          children: [
+            _buildImageSection(),
+            const SizedBox(height: 20),
+            _buildBasicInfoSection(),
+            const SizedBox(height: 20),
+            _buildCategorySection(),
+            const SizedBox(height: 20),
+            _buildInventorySection(),
+            const SizedBox(height: 20),
+            _buildDescriptionSection(),
+            const SizedBox(height: 32),
+            _buildSubmitButton(),
+            const SizedBox(height: 50),
+          ],
         ),
       ),
     );
   }
 
-  // --- دوال مساعدة لتنظيم الواجهة ---
+  // --- UI Sections ---
 
-  Widget _buildCardSection({required String title, required Widget child}) {
+  Widget _buildImageSection() {
+    return _buildCardWrapper(
+      title: 'معرض الصور',
+      icon: Icons.image_outlined,
+      child: Obx(() => ImageGalleryEditor(
+        imageUrls: _imageUrls.toList(),
+        onAddUrl: (url) => _imageUrls.add(url),
+        onRemove: (index) => _imageUrls.removeAt(index),
+        onPickImage: _handleImagePick,
+        onReorder: (oldIdx, newIdx) {
+          if (newIdx > oldIdx) newIdx -= 1;
+          final item = _imageUrls.removeAt(oldIdx);
+          _imageUrls.insert(newIdx, item);
+        },
+      )),
+    );
+  }
+
+  Widget _buildBasicInfoSection() {
+    return _buildCardWrapper(
+      title: 'التسعير والمعلومات',
+      icon: Icons.monetization_on_outlined,
+      child: Column(
+        children: [
+          buildProductFormSheetModernTextField(_controllers['name']!, 'اسم المنتج بالكامل', Icons.drive_file_rename_outline),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(child: buildProductFormSheetModernTextField(_controllers['price']!, 'السعر الأساسي', Icons.payments_outlined, isNumber: true)),
+              const SizedBox(width: 12),
+              Expanded(child: buildProductFormSheetModernTextField(_controllers['discount']!, 'سعر الخصم', Icons.sell_outlined, isNumber: true)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategorySection() {
+    return _buildCardWrapper(
+      title: 'التصنيف والخصائص',
+      icon: Icons.category_outlined,
+      child: Column(
+        children: [
+          CustomModernDropdown<String>(
+            value: _selectedCategoryId,
+            items: controller.categories.map((cat) => DropdownMenuItem(value: cat.id, child: Text(cat.name))).toList(),
+            onChanged: (val) => setState(() => _selectedCategoryId = val),
+          ),
+          const SizedBox(height: 20),
+          Obx(() => ProductFlavorSelector(
+            selectedFlavors: controller.productFlavors.toList(),
+            onSelectionChanged: (list) => controller.productFlavors.assignAll(list),
+          )),
+          const SizedBox(height: 20),
+          Obx(() => ProductSizeSelector(
+            selectedSizes: controller.productSizes.toList(),
+            onSelectionChanged: (list) => controller.productSizes.assignAll(list),
+          )),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInventorySection() {
+    return _buildCardWrapper(
+      title: 'المخزون والبيانات الفنية',
+      icon: Icons.inventory_2_outlined,
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(child: buildProductFormSheetModernTextField(_controllers['stock']!, 'الكمية المتاحة', Icons.numbers, isNumber: true)),
+              const SizedBox(width: 12),
+              Expanded(child: buildProductFormSheetModernTextField(_controllers['brand']!, 'العلامة التجارية', Icons.verified_outlined)),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(child: buildProductFormSheetModernTextField(_controllers['serving']!, 'حجم الحصة', Icons.fitness_center)),
+              const SizedBox(width: 12),
+              Expanded(child: buildProductFormSheetModernTextField(_controllers['sessions']!, 'إجمالي الحصص', Icons.reorder, isNumber: true)),
+            ],
+          ),
+          const Divider(height: 32),
+          Obx(() => AvailabilitySwitch(
+            title: "منتج مميز (Featured)",
+            isAvailable: controller.isFeatured,
+            onChanged: (val) => controller.isFeatured.value = val,
+          )),
+          Obx(() => AvailabilitySwitch(
+            title: "خلفية بيضاء (White Background)",
+            isAvailable: controller.isBackgroundWhite,
+            onChanged: (val) => controller.isBackgroundWhite.value = val,
+          )),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDescriptionSection() {
+    return _buildCardWrapper(
+      title: 'الوصف التفصيلي',
+      icon: Icons.description_outlined,
+      child: buildProductFormSheetModernTextField(_controllers['desc']!, 'أدخل مواصفات المنتج وفوائده...', Icons.text_snippet_outlined, maxLines: 4),
+    );
+  }
+
+  // --- Helpers & Logic ---
+
+  Widget _buildCardWrapper({required String title, required IconData icon, required Widget child}) {
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.withOpacity(0.1)),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4)),
-        ],
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 15, offset: const Offset(0, 5))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.primary)),
-          const SizedBox(height: 16),
+          Row(
+            children: [
+              Icon(icon, size: 20, color: AppColors.primary),
+              const SizedBox(width: 10),
+              Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+            ],
+          ),
+          const Padding(padding: EdgeInsets.symmetric(vertical: 12), child: Divider(thickness: 0.5)),
           child,
         ],
       ),
     );
   }
 
-  Widget _buildBigSubmitButton() {
-    return SizedBox(
-      width: double.infinity,
-      height: 60,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        ),
-        onPressed: _submitForm,
-        child: Obx(() => controller.isLoading.value
-            ? const CircularProgressIndicator(color: Colors.white)
-            : const Text('حفظ البيانات ونشر المنتج', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white))),
+  Widget _buildSubmitButton() {
+    return Obx(() => ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.primary,
+        minimumSize: const Size(double.infinity, 60),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        elevation: 0,
       ),
-    );
+      onPressed: controller.isLoading.value ? null : _submitForm,
+      child: controller.isLoading.value
+          ? const CircularProgressIndicator(color: Colors.white)
+          : const Text('حفظ ونشر التعديلات', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+    ));
   }
 
-  // نفس دوال Logic السابقة (ImagePick, SubmitForm)
   Future<void> _handleImagePick() async {
-    final XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 80);
     if (image != null) {
-      Get.showOverlay(
-        asyncFunction: () async {
-          final url = await controller.uploadImage(image.path);
-          if (url != null) setState(() => imageUrls.add(url));
-        },
-        loadingWidget: const Center(child: CircularProgressIndicator()),
-      );
+      final url = await controller.uploadImage(image.path);
+      if (url != null) _imageUrls.add(url);
     }
   }
 
   void _submitForm() {
     if (!_formKey.currentState!.validate()) return;
-
-    if (selectedCategoryId == null || selectedCategoryId!.isEmpty) {
-      Get.snackbar('خطأ', 'يرجى اختيار قسم للمنتج', snackPosition: SnackPosition.BOTTOM);
+    if (_selectedCategoryId == null) {
+      Get.snackbar('تنبيه', 'يرجى اختيار القسم', snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.orange);
       return;
     }
-
-    if (imageUrls.isEmpty) {
-      Get.snackbar('خطأ', 'يرجى إضافة صورة واحدة على الأقل للمنتج', snackPosition: SnackPosition.BOTTOM);
+    if (_imageUrls.isEmpty) {
+      Get.snackbar('تنبيه', 'يجب إضافة صورة واحدة على الأقل', snackPosition: SnackPosition.BOTTOM);
       return;
     }
 
     final productData = ProductModel(
       id: widget.product?.id ?? 'PROD-${DateTime.now().millisecondsSinceEpoch}',
-      name: nameController.text,
-      price: double.tryParse(priceController.text) ?? 0.0,
-      discountPrice: double.tryParse(discountPriceController.text),
-      imageUrls: imageUrls,
-      description: descriptionController.text,
-      categoryId: selectedCategoryId ?? '',
-      stockQuantity: int.tryParse(stockController.text) ?? 0,
-      brand: brandController.text,
+      name: _controllers['name']!.text.trim(),
+      price: double.tryParse(_controllers['price']!.text) ?? 0.0,
+      discountPrice: double.tryParse(_controllers['discount']!.text),
+      imageUrls: _imageUrls.toList(),
+      description: _controllers['desc']!.text.trim(),
+      categoryId: _selectedCategoryId!,
+      stockQuantity: int.tryParse(_controllers['stock']!.text) ?? 0,
+      brand: _controllers['brand']!.text.trim(),
       isActive: controller.isFeatured.value,
-      servingSize: servingSizeController.text,
-      servingsPerContainer: int.tryParse(numberOfSessionsController.text) ?? 0,
+      isBackgroundWhite: controller.isBackgroundWhite.value,
+      servingSize: _controllers['serving']!.text,
+      servingsPerContainer: int.tryParse(_controllers['sessions']!.text) ?? 0,
       flavor: controller.productFlavors.toList(),
       size: controller.productSizes.toList(),
       weight: controller.productWeight.value,
-      isBackgroundWhite: controller.isBackgroundWhite.value,
-
     );
 
- debugPrint(productData.toString());
     widget.product == null 
-      ? controller.addProduct(productData) 
-      : controller.updateProduct(productData);
+        ? controller.addProduct(productData) 
+        : controller.updateProduct(productData);
   }
 }

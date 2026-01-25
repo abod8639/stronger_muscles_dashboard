@@ -29,7 +29,7 @@ class ProductsCategoriesScreen extends GetView<ProductsController> {
               return CategoryItem(
                 name: name,
                 isSelected: isSelected,
-                onTap: () => controller.setCategory(id),
+                onTap: () => controller.selectedCategoryId.value = id,
                 responsive: responsive,
               );
             },
