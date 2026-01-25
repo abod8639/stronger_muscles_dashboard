@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/ProductListItem.dart';
-import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/ProductsCategoriesScreen.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/build_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/build_empty_state.dart';
+import 'package:stronger_muscles_dashboard/screens/widgets/screen_widget.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/search_bar.dart';
 import '../../controllers/products_controller.dart';
 import '../../config/responsive.dart';
@@ -32,7 +32,16 @@ class ProductsScreen extends StatelessWidget {
             responsive: responsive,
           ),
 
-          const ProductsCategoriesScreen(),
+          // const ProductsCategoriesScreen(),
+          HorizontalChipsSelector(
+            items: controller.categories,
+            selectedId: controller.selectedCategoryId.value,
+            onSelect: (id) => controller.selectedCategoryId.value = id,
+            labelKey: 'name',
+            idKey: 'id',
+            showAllOption: true,
+            allLabel: 'الكل',
+          ),
 
           const SizedBox(height: 8),
 

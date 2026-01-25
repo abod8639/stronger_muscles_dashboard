@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_search_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_empty_state.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_status_tabs.dart';
@@ -24,9 +23,9 @@ class OrdersScreen extends StatelessWidget {
       appBar: buildAppBar( controller, responsive),
       body: Column(
         children: [
-          // buildSearchBar( controller),
+
           Search_Bar(
-            hintText: 'ابحث عن منتج بالاسم أو الماركة...',
+            hintText: 'ابحث عن الطلبات بالرقم أو رقم الطلب...',
             padding: responsive.defaultPadding,
             isDark: true,
             controller: controller,

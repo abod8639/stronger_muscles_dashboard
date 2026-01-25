@@ -7,6 +7,7 @@ import 'package:stronger_muscles_dashboard/controllers/users_controller.dart';
 import 'package:stronger_muscles_dashboard/components/index.dart';
 import 'package:stronger_muscles_dashboard/screens/Users_Screen/widgets/buildUserCard.dart';
 import 'package:stronger_muscles_dashboard/screens/Users_Screen/widgets/build_stats_header.dart';
+import 'package:stronger_muscles_dashboard/screens/widgets/search_bar.dart';
 
 class UsersScreen extends StatelessWidget {
   const UsersScreen({super.key});
@@ -44,31 +45,13 @@ class UsersScreen extends StatelessWidget {
         return Column(
           children: [
             // Search Bar
-            Padding(
-              padding: responsive.defaultPadding,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      decoration: BoxDecoration(
-                        color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: isDark ? Colors.white10 : Colors.grey.shade300),
-                      ),
-                      child: TextField(
-                        onChanged: controller.onSearchChanged,
-                        decoration: const InputDecoration(
-                          hintText: 'البحث باسم المستخدم أو البريد الإلكتروني...',
-                          border: InputBorder.none,
-                          icon: Icon(Icons.search, color: Colors.grey),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+           Search_Bar(
+            hintText: 'ابحث عن المستخدم بالاسم أو البريد الإلكتروني...',
+            padding: responsive.defaultPadding,
+            isDark: true,
+            controller: controller,
+            responsive: responsive,
+          ),
 
             // ملخص الإحصائيات
             buildStatsHeader( controller),
