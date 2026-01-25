@@ -105,14 +105,15 @@ Widget _buildOrderImage() {
   );
 }
 
-  Widget _buildOrderDetails() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
+Widget _buildOrderDetails() {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      // الصف الأول: رقم الطلب والحالة
+      Row(
+        children: [
+          Expanded( // يسمح للنص بأخذ المساحة المتاحة فقط ولا يتجاوز الـ Badge
+            child: Text(
               'ORDER #${widget.order.id.toString().padLeft(4, '0')}',
               style: const TextStyle(
                 fontWeight: FontWeight.w800,
@@ -120,39 +121,53 @@ Widget _buildOrderImage() {
                 color: Colors.white,
                 letterSpacing: 0.5,
               ),
+              overflow: TextOverflow.ellipsis, // يضع نقاط (...) إذا طال النص
+              maxLines: 1,
             ),
-            _OrderStatusBadge(status: widget.order.status),
-          ],
-        ),
-        const SizedBox(height: 6),
-        Row(
-          children: [
-            Text(
-              '${widget.order.totalAmount.toStringAsFixed(2)} SAR',
-              style: const TextStyle(
-                color: AppColors.primary,
-                fontWeight: FontWeight.bold,
-                fontSize: 15,
+          ),
+          const SizedBox(width: 8), // مسافة أمان
+          OrderStatusBadge(status: widget.order.status),
+        ],
+      ),
+      const SizedBox(height: 6),
+      
+      // الصف الثاني: السعر والتاريخ
+      Row(
+        children: [
+          Text(
+            '${widget.order.totalAmount.toStringAsFixed(2)} SAR',
+            style: const TextStyle(
+              color: AppColors.primary,
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded( // نستخدم Expanded هنا مع TextAlign لضمان عدم حدوث overflow في التاريخ
+            child: Text(
+              _formatDate(widget.order.orderDate),
+              textAlign: TextAlign.end,
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.5), 
+                fontSize: 10
               ),
             ),
-            const Spacer(),
-            Text(
-              _formatDate(widget.order.orderDate),
-              style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 10),
-            ),
-          ],
-        ),
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: 8),
-          child: Divider(color: Colors.white10, height: 1),
-        ),
-        _buildInfoRow(Icons.person_outline, 'Customer: ${widget.order.userId}'),
-        const SizedBox(height: 4),
-        _buildInfoRow(Icons.location_on_outlined, _extractAddress(widget.order.shippingAddressSnapshot)),
-      ],
-    );
-  }
-
+          ),
+        ],
+      ),
+      
+      const Padding(
+        padding: EdgeInsets.symmetric(vertical: 8),
+        child: Divider(color: Colors.white10, height: 1),
+      ),
+      
+      // معلومات العميل والعنوان
+      _buildInfoRow(Icons.person_outline, 'Customer: ${widget.order.userId}'),
+      const SizedBox(height: 4),
+      _buildInfoRow(Icons.location_on_outlined, _extractAddress(widget.order.shippingAddressSnapshot )),
+    ],
+  );
+}
   Widget _buildTrailingAction() {
     return Container(
       padding: const EdgeInsets.all(6),
@@ -201,9 +216,9 @@ Widget _buildOrderImage() {
 }
 
 // كلاس البادج المطور مع ألوان متوافقة مع DashboardController
-class _OrderStatusBadge extends StatelessWidget {
+class OrderStatusBadge extends StatelessWidget {
   final OrderStatus status;
-  const _OrderStatusBadge({required this.status});
+  const OrderStatusBadge({required this.status});
 
   @override
   Widget build(BuildContext context) {

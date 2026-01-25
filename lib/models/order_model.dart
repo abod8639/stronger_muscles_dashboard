@@ -55,7 +55,6 @@ class OrderModel with _$OrderModel {
     @HiveField(15) List<OrderItemModel>? items,
   }) = _OrderModel;
 
-// Getter لجلب صورة الطلب بأمان
   String? get firstItemImageUrl {
     if (items != null && items!.isNotEmpty) {
       return items!.first.imageUrl;
@@ -63,7 +62,6 @@ class OrderModel with _$OrderModel {
     return null;
   }
 
-  // Getter لجلب العنوان كنص من الـ Snapshot
   String get formattedAddress {
     if (shippingAddressSnapshot == null) return 'العنوان غير متوفر';
     final addr = shippingAddressSnapshot!['address'] ?? shippingAddressSnapshot!;
@@ -73,7 +71,7 @@ class OrderModel with _$OrderModel {
     return [city, street].where((s) => s.toString().isNotEmpty).join(', ') 
            .isEmpty ? 'العنوان غير محدد' : [city, street].where((s) => s.toString().isNotEmpty).join(', ');
   }
-  
+
   factory OrderModel.fromJson(Map<String, dynamic> json) =>
       _$OrderModelFromJson(_mapOrderJson(json));
 }
