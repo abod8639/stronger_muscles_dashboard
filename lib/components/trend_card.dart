@@ -1,21 +1,22 @@
 
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/components/animated_stat_card.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 
 class TrendCard extends StatelessWidget {
   const TrendCard({
     super.key,
-    required this.widget,
+    required this.isTrendPositive,
+    // required this.widget,
   });
 
-  final AnimatedStatCard widget;
+  final bool isTrendPositive;
+  // final StatCard widget;
 
   @override
   Widget build(BuildContext context) {
-    final Color trendColor = widget.isTrendPositive ? AppColors.success : AppColors.error;
-    final IconData trendIcon = widget.isTrendPositive ? Icons.trending_up : Icons.trending_down;
-    final String trendText = widget.isTrendPositive ? '+12% THIS WEEK' : '-8% THIS WEEK';
+    final Color trendColor =   isTrendPositive ? AppColors.success : AppColors.error;
+    final IconData trendIcon = isTrendPositive ? Icons.trending_up : Icons.trending_down;
+    final String trendText =   isTrendPositive ? '+12% THIS WEEK' : '-8% THIS WEEK';
 
     return Container(
       padding: const EdgeInsets.symmetric(

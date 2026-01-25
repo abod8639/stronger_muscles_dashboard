@@ -63,7 +63,7 @@ class DashboardStatsGrid extends GetView<DashboardController> {
           ),
           itemBuilder: (context, index) {
             final data = statsData[index];
-            return AnimatedStatCard(
+            return StatCard(
               title: data['title'],
               value: data['value'],
               icon: data['icon'],
