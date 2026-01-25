@@ -97,6 +97,7 @@ Map<String, dynamic> _mapProductJson(Map<String, dynamic> json) {
         : null,
     'stock_quantity': int.tryParse((json['stock_quantity'] ?? json['stockQuantity'] ?? 0).toString()) ?? 0,
     'is_active': json['is_active'] == true || json['is_active'] == 1 || json['isActive'] == true,
+    'is_background_white': json['is_background_white'] == true || json['is_background_white'] == 1 || json['isBackgroundWhite'] == true,
     'ingredients': toList(json['ingredients']),
     'usage_instructions': toStringSafe(json['usage_instructions'] ?? json['usageInstructions']),
     'warnings': toStringSafe(json['warnings']),

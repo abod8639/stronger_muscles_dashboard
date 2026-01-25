@@ -30,14 +30,8 @@ class LineChartWidget extends StatefulWidget {
 
 class _LineChartWidgetState extends State<LineChartWidget> {
   @override
-  // Widget build(BuildContext context) {
-    // final responsive = context.responsive;
-    // final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    @override
     Widget build(BuildContext context) {
       final responsive = context.responsive;
-      // final isDark = Theme.of(context).brightness == Brightness.dark;
 
       return GlassContainer(
         opacity: 0.05,

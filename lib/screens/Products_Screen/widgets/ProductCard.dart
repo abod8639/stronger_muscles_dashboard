@@ -228,13 +228,14 @@ class ProductCard extends StatelessWidget {
       spacing: 8,
       runSpacing: 8,
       children: [
-        ...product.flavor!.take(2).map((f) => GlassContainer(
+        ...product.flavor!.take(3).map((f) => GlassContainer(
+          // width: 50,
           opacity: 0.1,
           blur: 5,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: AppColors.primary.withOpacity(0.2)),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
             child: Text(
               f.toUpperCase(),
               style: TextStyle(
@@ -246,7 +247,7 @@ class ProductCard extends StatelessWidget {
             ),
           ),
         )),
-        if (product.flavor!.length > 2)
+        if (product.flavor!.length > 3)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(

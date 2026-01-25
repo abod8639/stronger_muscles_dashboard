@@ -42,12 +42,8 @@ class CategoryItem extends StatelessWidget {
           child: InkWell(
             onTap: onTap,
             borderRadius: BorderRadius.circular(15),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-              constraints: const BoxConstraints(minWidth: 80),
-              child: Center(
+            child:  Center(
                 child: Text(
-                  
                   name.toUpperCase(),
                   style: TextStyle(
                     color: Colors.white,// AppColors.textLight,
@@ -65,7 +61,6 @@ class CategoryItem extends StatelessWidget {
                   ),
                 ),
               ),
-            ),
           ),
         ),
       ),

@@ -61,6 +61,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
     controller.productFlavors.assignAll(widget.product?.flavor ?? []);
     controller.productSizes.assignAll(widget.product?.size ?? []);
     controller.isFeatured.value = widget.product?.isActive ?? true;
+    controller.isBackgroundWhite.value = widget.product?.isBackgroundWhite ?? false;
   }
 
   @override
