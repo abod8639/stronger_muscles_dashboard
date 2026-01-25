@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/ProductFormPage.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/ProductListItem.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/build_empty_state.dart';
@@ -34,17 +33,18 @@ class ProductsScreen extends StatelessWidget {
 
             onSearch: (value) => controller.onSearchChanged(value),
           ),
-          Obx(
-            () => HorizontalChipsSelector(
-              items: controller.categories,
-              selectedId: controller.selectedCategoryId.value,
-              onSelect: (id) => controller.selectedCategoryId.value = id,
-              labelKey: 'name',
-              idKey: 'id',
-              showAllOption: true,
-              allLabel: 'الكل',
-            ),
-          ),
+Obx(
+  () => HorizontalChipsSelector(
+    items: controller.categories,
+    selectedId: controller.selectedCategoryId.value,
+    // التعديل هنا: استدعاء الدالة التي تحتوي على منطق الفلترة
+    onSelect: (id) => controller.setCategory(id), 
+    labelKey: 'name',
+    idKey: 'id',
+    showAllOption: true,
+    allLabel: 'الكل',
+  ),
+),
 
           const SizedBox(height: 8),
 

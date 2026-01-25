@@ -49,38 +49,34 @@ class RecentOrdersList extends StatelessWidget {
             ],
           ),
         ),
-        responsive.isMobile
-            ? ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: orders.length,
-                itemBuilder: (context, index) {
-                  final order = orders[index];
-                  return Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: padding.left,
-                      vertical: spacing / 2,
-                    ),
-                    child: OrderListTile(order: order, index: index,),
-                  );
-                },
-              )
-            : GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                padding: EdgeInsets.symmetric(horizontal: padding.left),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 1,
-                  crossAxisSpacing: spacing,
-                  mainAxisSpacing: spacing,
-                  childAspectRatio: 2.5,
-                ),
-                itemCount: orders.length,
-                itemBuilder: (context, index) {
-                  final order = orders[index];
-                  return OrderListTile(order: order ,index: index, );
-                },
-              ),
+
+responsive.isMobile
+    ? ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: orders.length,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: EdgeInsets.fromLTRB(padding.left, 0, padding.left, 12), 
+            child: OrderListTile(order: orders[index], index: index),
+          );
+        },
+      )
+    : GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        padding: EdgeInsets.symmetric(horizontal: padding.left),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: spacing,
+          mainAxisSpacing: spacing,
+          childAspectRatio: responsive.isTablet ? 1.8 : 1.5, 
+        ),
+        itemCount: orders.length,
+        itemBuilder: (context, index) {
+          return OrderListTile(order: orders[index], index: index);
+        },
+      ),
       ],
     );
   }

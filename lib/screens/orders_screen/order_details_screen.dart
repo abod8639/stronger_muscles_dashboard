@@ -12,7 +12,6 @@ import '../../components/status_badge.dart';
 
 class OrderDetailsScreen extends StatelessWidget {
   final OrderModel order;
-  // final UserModel? user;
 
   const OrderDetailsScreen({super.key, required this.order});
 
