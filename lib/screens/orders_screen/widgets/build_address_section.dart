@@ -7,7 +7,6 @@ Widget buildAddressSection(Map<String, dynamic>? snapshot) {
       return const Text('العنوان غير متوفر', style: TextStyle(color: Colors.grey));
     }
 
-    // الحالة 1: العنوان نص مباشر
     if (snapshot.containsKey('address')) {
       final addr = snapshot['address'];
       if (addr is String) {
@@ -25,7 +24,6 @@ Widget buildAddressSection(Map<String, dynamic>? snapshot) {
       }
     }
 
-    // الحالة 2: البحث في أول قيمة متوفرة
     final firstVal = snapshot.values.isNotEmpty ? snapshot.values.first : null;
     if (firstVal is String) {
       return buildAddressInfoRow(Icons.location_on, 'العنوان الكامل', firstVal);

@@ -339,7 +339,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
       servingsPerContainer: int.tryParse(numberOfSessionsController.text) ?? 0,
       flavor: controller.productFlavors.toList(),
       size: controller.productSizes.toList(),
-      weight: 1.0,
+      weight: controller.productWeight.value,
       isBackgroundWhite: controller.isBackgroundWhite.value,
 
     );

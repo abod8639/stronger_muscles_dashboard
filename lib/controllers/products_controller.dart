@@ -27,6 +27,7 @@ class ProductsController extends GetxController {
   final productSizes = <String>[].obs;
 
   // --- Filter Values ---
+  final productWeight = 0.0.obs;
   final searchQuery = ''.obs;
   final selectedCategoryId = 'all'.obs;
   final selectedFlavorId = 'all'.obs;
