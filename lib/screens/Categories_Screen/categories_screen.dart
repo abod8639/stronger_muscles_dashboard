@@ -18,7 +18,6 @@ class CategoriesScreen extends StatelessWidget {
     final controller = Get.put(CategoriesController());
     final responsive = context.responsive;
     final padding = responsive.defaultPadding;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -42,7 +41,6 @@ class CategoriesScreen extends StatelessWidget {
       body: Column(
         children: [
           // شريط البحث المتطور
-          //Search Bar
           CustomSearchBar(
             hintText: 'ابحث عن تصنيف بالاسم أو الكود...',
             padding: padding,

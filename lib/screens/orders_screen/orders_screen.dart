@@ -4,7 +4,7 @@ import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_a
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_empty_state.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_status_tabs.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/horizontal_chips_selector.dart';
-import 'package:stronger_muscles_dashboard/screens/widgets/search_bar.dart';
+import 'package:stronger_muscles_dashboard/screens/widgets/custom_search_bar.dart';
 import '../../components/enhanced_error_widget.dart';
 import '../../controllers/orders_controller.dart';
 import '../../components/index.dart';
@@ -27,15 +27,11 @@ class OrdersScreen extends StatelessWidget {
           CustomSearchBar(
             hintText: 'ابحث عن الطلبات بالرقم أو رقم الطلب...',
             padding: responsive.defaultPadding,
-            onSearch: (String p1) {
-              controller.onSearchChanged(p1);
-            },
+            onSearch: (value) => controller.onSearchChanged(value),
           ),
-          // داخل كود الـ UI (Build Method)
           Obx(
             () => HorizontalChipsSelector(
-              items:
-                  controller.statusItems, // نمرر القائمة الجاهزة من الكنترولر
+              items: controller.statusItems,
               selectedId: controller.selectedStatusId.value,
               onSelect: (id) => controller.selectedStatusId.value = id,
               showAllOption: true,
