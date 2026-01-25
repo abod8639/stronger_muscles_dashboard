@@ -75,10 +75,7 @@ class CustomModernDropdown<T> extends StatelessWidget {
             color: isDark ? Colors.white70 : AppColors.primary.withOpacity(0.6),
             fontSize: 16,
           ),
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 12,
-          ),
+          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         ),
       ),
     );

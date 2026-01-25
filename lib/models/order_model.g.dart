@@ -252,11 +252,12 @@ _$OrderModelImpl _$$OrderModelImplFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       userId: json['userId'] as String,
       orderDate: DateTime.parse(json['orderDate'] as String),
-      status: $enumDecodeNullable(_$OrderStatusEnumMap, json['status']) ??
+      status:
+          $enumDecodeNullable(_$OrderStatusEnumMap, json['status']) ??
           OrderStatus.pending,
       paymentStatus:
           $enumDecodeNullable(_$PaymentStatusEnumMap, json['paymentStatus']) ??
-              PaymentStatus.pending,
+          PaymentStatus.pending,
       paymentMethod: json['paymentMethod'] as String? ?? 'card',
       addressId: json['addressId'] as String,
       subtotal: (json['subtotal'] as num).toDouble(),
@@ -321,14 +322,14 @@ _$OrderItemModelImpl _$$OrderItemModelImplFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$$OrderItemModelImplToJson(
-        _$OrderItemModelImpl instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'orderId': instance.orderId,
-      'productId': instance.productId,
-      'productName': instance.productName,
-      'unitPrice': instance.unitPrice,
-      'quantity': instance.quantity,
-      'subtotal': instance.subtotal,
-      'imageUrl': instance.imageUrl,
-    };
+  _$OrderItemModelImpl instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'orderId': instance.orderId,
+  'productId': instance.productId,
+  'productName': instance.productName,
+  'unitPrice': instance.unitPrice,
+  'quantity': instance.quantity,
+  'subtotal': instance.subtotal,
+  'imageUrl': instance.imageUrl,
+};

@@ -10,7 +10,6 @@ import 'package:stronger_muscles_dashboard/services/auth_service.dart';
 import 'config/theme.dart';
 import 'screens/index.dart';
 
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -19,7 +18,6 @@ Future<void> main() async {
   await hiveInit();
   runApp(const StrongerMusclesDashboard());
 }
-
 
 class StrongerMusclesDashboard extends StatelessWidget {
   const StrongerMusclesDashboard({super.key});
@@ -36,7 +34,7 @@ class StrongerMusclesDashboard extends StatelessWidget {
       darkTheme: AppTheme.getDarkTheme(),
       themeMode: ThemeMode.dark,
       // initialRoute: isLoggedIn ? '/dashboard' : '/login',
-      initialRoute: '/dashboard' ,
+      initialRoute: '/dashboard',
       getPages: [
         GetPage(name: '/dashboard', page: () => const MainNavigationScreen()),
         // GetPage(name: '/login', page: () => const LoginScreen()),
@@ -59,7 +57,7 @@ class MainNavigationScreen extends StatelessWidget {
 
         return Scaffold(
           extendBodyBehindAppBar: true,
-          backgroundColor: AppColors.backgroundDark, 
+          backgroundColor: AppColors.backgroundDark,
           drawer: isDesktop ? null : myDrawer(),
           body: Stack(
             children: [
@@ -98,27 +96,34 @@ class MainNavigationScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               // Main Layout
               Row(
                 children: [
                   if (isDesktop) const Sidebar(),
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.only(top: 20, right: 20, bottom: 20, left: 10),
+                      padding: const EdgeInsets.only(
+                        top: 20,
+                        right: 20,
+                        bottom: 20,
+                        left: 10,
+                      ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(32),
-                        child: Obx(() => IndexedStack(
-                          index: controller.selectedIndex.value,
-                          children: const [
-                            DashboardScreen(),
-                            CategoriesScreen(),
-                            ProductsScreen(),
-                            OrdersScreen(),
-                            UsersScreen(),
-                            SettingsScreen(),
-                          ],
-                        )),
+                        child: Obx(
+                          () => IndexedStack(
+                            index: controller.selectedIndex.value,
+                            children: const [
+                              DashboardScreen(),
+                              CategoriesScreen(),
+                              ProductsScreen(),
+                              OrdersScreen(),
+                              UsersScreen(),
+                              SettingsScreen(),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -126,7 +131,7 @@ class MainNavigationScreen extends StatelessWidget {
               ),
             ],
           ),
-          bottomNavigationBar: isDesktop ? null :  MyBottomNavigationBar(),
+          bottomNavigationBar: isDesktop ? null : MyBottomNavigationBar(),
         );
       },
     );

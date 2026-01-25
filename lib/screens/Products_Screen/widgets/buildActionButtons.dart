@@ -1,5 +1,4 @@
-
-  import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
@@ -9,35 +8,37 @@ Widget buildActionButtons({
   required Function() onDelete,
   required bool isHovered,
 }) {
-  return Builder(builder: (context) {
-    final responsive = context.responsive;
-    return AnimatedOpacity(
-      opacity: isHovered ? 1 : 0.6,
-      duration: const Duration(milliseconds: 300),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Edit Button (Neon Blue)
-          _buildActionButton(
-            onPressed: onEdit,
-            icon: Icons.edit_rounded,
-            color: AppColors.accent,
-            isHovered: isHovered,
-            responsive: responsive,
-          ),
-          SizedBox(height: 12),
-          // Delete Button (Neon Red)
-          _buildActionButton(
-            onPressed: onDelete,
-            icon: Icons.delete_outline_rounded,
-            color: AppColors.error,
-            isHovered: isHovered,
-            responsive: responsive,
-          ),
-        ],
-      ),
-    );
-  });
+  return Builder(
+    builder: (context) {
+      final responsive = context.responsive;
+      return AnimatedOpacity(
+        opacity: isHovered ? 1 : 0.6,
+        duration: const Duration(milliseconds: 300),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Edit Button (Neon Blue)
+            _buildActionButton(
+              onPressed: onEdit,
+              icon: Icons.edit_rounded,
+              color: AppColors.accent,
+              isHovered: isHovered,
+              responsive: responsive,
+            ),
+            SizedBox(height: 12),
+            // Delete Button (Neon Red)
+            _buildActionButton(
+              onPressed: onDelete,
+              icon: Icons.delete_outline_rounded,
+              color: AppColors.error,
+              isHovered: isHovered,
+              responsive: responsive,
+            ),
+          ],
+        ),
+      );
+    },
+  );
 }
 
 Widget _buildActionButton({
@@ -60,11 +61,7 @@ Widget _buildActionButton({
       ),
       child: IconButton(
         onPressed: onPressed,
-        icon: Icon(
-          icon,
-          size: 18,
-          color: color,
-        ),
+        icon: Icon(icon, size: 18, color: color),
         padding: const EdgeInsets.all(8),
         constraints: const BoxConstraints(),
         visualDensity: VisualDensity.compact,
@@ -72,4 +69,3 @@ Widget _buildActionButton({
     ),
   );
 }
-

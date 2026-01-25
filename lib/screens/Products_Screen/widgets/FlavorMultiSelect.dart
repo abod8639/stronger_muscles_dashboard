@@ -6,10 +6,16 @@ class ProductFlavorSelector extends StatelessWidget {
   final Function(List<String>) onSelectionChanged;
 
   final List<String> availableFlavors = [
-    'Vanilla', 'Strawberry', 'Choco', 'Mango', 
-    'Caramel', 'Coffee', 'Vanilla Cream', 'Tot', 'No Flavor'
+    'Vanilla',
+    'Strawberry',
+    'Choco',
+    'Mango',
+    'Caramel',
+    'Coffee',
+    'Vanilla Cream',
+    'Tot',
+    'No Flavor',
   ];
-
 
   ProductFlavorSelector({
     super.key,
@@ -38,7 +44,9 @@ class ProductFlavorSelector extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: isDark ? Colors.white.withOpacity(0.05) : Colors.grey.shade100,
+            color: isDark
+                ? Colors.white.withOpacity(0.05)
+                : Colors.grey.shade100,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: AppColors.primary.withOpacity(0.1)),
           ),
@@ -64,26 +72,38 @@ class ProductFlavorSelector extends StatelessWidget {
                   selectedColor: AppColors.primary.withOpacity(0.2),
                   checkmarkColor: AppColors.primary,
                   labelStyle: TextStyle(
-                    color: isSelected ? AppColors.primary : (isDark ? Colors.white70 : Colors.black87),
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    color: isSelected
+                        ? AppColors.primary
+                        : (isDark ? Colors.white70 : Colors.black87),
+                    fontWeight: isSelected
+                        ? FontWeight.bold
+                        : FontWeight.normal,
                     fontSize: 12,
                   ),
                   backgroundColor: Colors.transparent,
                   shape: StadiumBorder(
                     side: BorderSide(
-                      color: isSelected ? AppColors.primary : Colors.grey.withOpacity(0.3),
+                      color: isSelected
+                          ? AppColors.primary
+                          : Colors.grey.withOpacity(0.3),
                     ),
                   ),
                 );
               }),
-              
+
               // زر إضافة نكهة جديدة
               ActionChip(
-                avatar: const Icon(Icons.add, size: 16, color: AppColors.primary),
+                avatar: const Icon(
+                  Icons.add,
+                  size: 16,
+                  color: AppColors.primary,
+                ),
                 label: const Text("نكهة مخصصة"),
                 onPressed: () => _showAddFlavorDialog(context),
                 backgroundColor: AppColors.primary.withOpacity(0.05),
-                shape: const StadiumBorder(side: BorderSide(color: AppColors.primary)),
+                shape: const StadiumBorder(
+                  side: BorderSide(color: AppColors.primary),
+                ),
               ),
             ],
           ),
@@ -116,7 +136,8 @@ class ProductFlavorSelector extends StatelessWidget {
             autofocus: true,
             onPressed: () {
               final newFlavor = controller.text.trim();
-              if (newFlavor.isNotEmpty && !selectedFlavors.contains(newFlavor)) {
+              if (newFlavor.isNotEmpty &&
+                  !selectedFlavors.contains(newFlavor)) {
                 onSelectionChanged([...selectedFlavors, newFlavor]);
               }
               Navigator.pop(context);

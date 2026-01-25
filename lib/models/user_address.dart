@@ -24,7 +24,7 @@ class UserAddress with _$UserAddress {
     @HiveField(11) double? longitude,
   }) = _UserAddress;
 
-  factory UserAddress.fromJson(Map<String, dynamic> json) => 
+  factory UserAddress.fromJson(Map<String, dynamic> json) =>
       _$UserAddressFromJson(_mapAddressJson(json));
 
   String get fullAddress {
@@ -45,7 +45,10 @@ Map<String, dynamic> _mapAddressJson(Map<String, dynamic> json) {
     'state': json['state']?.toString() ?? '',
     'postal_code': json['postal_code'] ?? json['postalCode'] ?? '',
     'country': json['country']?.toString() ?? '',
-    'is_default': json['is_default'] == true || json['is_default'] == 1 || json['isDefault'] == true,
+    'is_default':
+        json['is_default'] == true ||
+        json['is_default'] == 1 ||
+        json['isDefault'] == true,
     'latitude': double.tryParse(json['latitude']?.toString() ?? ''),
     'longitude': double.tryParse(json['longitude']?.toString() ?? ''),
   };

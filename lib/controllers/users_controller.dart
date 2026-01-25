@@ -4,26 +4,26 @@ import 'package:stronger_muscles_dashboard/services/api_service.dart';
 
 class UsersController extends GetxController {
   final ApiService _apiService = ApiService();
-  
+
   // الحالة (State)
   final isLoading = true.obs;
   final totalUsers = 0.obs;
-  
+
   // نستخدم قائمة خاصة كمصدر ثابت للبيانات لضمان عدم فقدانها عند البحث
   final _allUsers = <DashboardUser>[].obs;
-  
+
   // القائمة التي يتم ربطها بـ UI (ListView/Table)
   final filteredUsers = <DashboardUser>[].obs;
-  
+
   final searchQuery = ''.obs;
 
   @override
   void onInit() {
     super.onInit();
-    
+
     // تشغيل جلب البيانات
     fetchUsersStats();
-    
+
     // تحسين: استخدام 'ever' بدلاً من استدعاء الدالة يدوياً
     // سيقوم GetX بمراقبة searchQuery وتحديث الفلترة تلقائياً
     ever(searchQuery, (_) => _applyFilter());
@@ -53,16 +53,15 @@ class UsersController extends GetxController {
   Future<void> fetchUsersStats() async {
     try {
       isLoading.value = true;
-      
+
       final data = await _apiService.fetchUsersStats();
       final response = DashboardResponse.fromJson(data);
-      
+
       totalUsers.value = response.totalUsers;
-      
+
       // تحديث المصدر والقائمة المفلترة
       _allUsers.assignAll(response.users);
       _applyFilter();
-      
     } catch (e) {
       _showErrorSnackbar('فشل تحميل بيانات المستخدمين: ${e.toString()}');
     } finally {

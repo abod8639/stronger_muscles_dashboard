@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/components/enhanced_error_widget.dart';
 import 'package:stronger_muscles_dashboard/controllers/products_controller.dart';

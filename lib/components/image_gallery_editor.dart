@@ -9,7 +9,7 @@ class ImageGalleryEditor extends StatelessWidget {
   final Function(int) onRemove;
   final VoidCallback onPickImage;
   // إضافة هذه الـ Function للتعامل مع إعادة الترتيب
-  final Function(int oldIndex, int newIndex) onReorder; 
+  final Function(int oldIndex, int newIndex) onReorder;
 
   const ImageGalleryEditor({
     super.key,
@@ -34,18 +34,17 @@ class ImageGalleryEditor extends StatelessWidget {
               'صور المنتج',
               style: TextStyle(
                 // color: AppColors.info,
-                fontWeight: FontWeight.bold, fontSize: 16),
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
             ),
             TextButton.icon(
               onPressed: () => _showAddUrlDialog(context),
-              icon: const Icon(
-                color: AppColors.info,
-                Icons.link, size: 18),
+              icon: const Icon(color: AppColors.info, Icons.link, size: 18),
               label: const Text(
-                style: TextStyle(
-                  color: AppColors.info,
-                ),
-                'إضافة رابط صورة'),
+                style: TextStyle(color: AppColors.info),
+                'إضافة رابط صورة',
+              ),
             ),
           ],
         ),
@@ -66,10 +65,7 @@ class ImageGalleryEditor extends StatelessWidget {
             },
             proxyDecorator: (child, index, animation) {
               // تحسين شكل العنصر أثناء السحب
-              return Material(
-                color: Colors.transparent,
-                child: child,
-              );
+              return Material(color: Colors.transparent, child: child);
             },
             itemBuilder: (context, index) {
               // زر الإضافة (دائماً في الأخير)
@@ -79,14 +75,16 @@ class ImageGalleryEditor extends StatelessWidget {
                   child: _buildAddButton(context, isDark),
                 );
               }
-              
+
               // عنصر الصورة
               return _buildImageItem(
-                context, 
-                index, 
-                imageUrls[index], 
+                context,
+                index,
+                imageUrls[index],
                 isDark,
-                key: ValueKey(imageUrls[index] + index.toString()), // مفتاح فريد لكل صورة
+                key: ValueKey(
+                  imageUrls[index] + index.toString(),
+                ), // مفتاح فريد لكل صورة
               );
             },
           ),
@@ -96,18 +94,20 @@ class ImageGalleryEditor extends StatelessWidget {
   }
 
   // أضفنا Key هنا ليعمل الـ Reorderable بشكل صحيح
-  Widget _buildImageItem(BuildContext context, int index, String url, bool isDark, {required Key key}) {
+  Widget _buildImageItem(
+    BuildContext context,
+    int index,
+    String url,
+    bool isDark, {
+    required Key key,
+  }) {
     return Container(
-      key: key, 
+      key: key,
       width: 100,
       margin: const EdgeInsets.only(left: 12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        image: DecorationImage(
-          image: 
-          NetworkImage(url),
-          fit: BoxFit.cover,
-        ),
+        image: DecorationImage(image: NetworkImage(url), fit: BoxFit.cover),
       ),
       child: Stack(
         children: [
@@ -135,9 +135,8 @@ class ImageGalleryEditor extends StatelessWidget {
       ),
     );
   }
-  
-  // باقي الكود (_buildAddButton و _showAddUrlDialog) يبقى كما هو...
 
+  // باقي الكود (_buildAddButton و _showAddUrlDialog) يبقى كما هو...
 
   Widget _buildAddButton(BuildContext context, bool isDark) {
     return GestureDetector(
@@ -160,7 +159,10 @@ class ImageGalleryEditor extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               'إضافة صورة',
-              style: TextStyle(fontSize: 12, color: isDark ? Colors.white70 : Colors.black54),
+              style: TextStyle(
+                fontSize: 12,
+                color: isDark ? Colors.white70 : Colors.black54,
+              ),
             ),
           ],
         ),
@@ -183,7 +185,10 @@ class ImageGalleryEditor extends StatelessWidget {
           autofocus: true,
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('إلغاء')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('إلغاء'),
+          ),
           ElevatedButton(
             onPressed: () {
               if (controller.text.isNotEmpty) {

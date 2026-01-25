@@ -24,9 +24,10 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     // نستخدم find بدلاً من put لضمان عدم إنشاء نسخة جديدة إذا كان موجوداً
-    final DashboardController statusController = Get.find<DashboardController>();
+    final DashboardController statusController =
+        Get.find<DashboardController>();
 
     return AppBar(
       elevation: 0,
@@ -44,18 +45,14 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         // 1. مؤشر حالة الاتصال (يظهر فقط إذا تم تفعيل showStatus)
         if (showStatus) _buildConnectionStatus(statusController),
-        
+
         // 2. زر التحديث (يظهر فقط إذا تم تمرير دالة onRefresh)
         if (onPressed != null)
-          IconButton(
-            onPressed: onPressed,
-            icon: Icon(icon),
-            tooltip: 'تحديث',
-          ),
+          IconButton(onPressed: onPressed, icon: Icon(icon), tooltip: 'تحديث'),
 
         // 3. أي أزرار إضافية مخصصة للشاشة
         ...?extraActions,
-        
+
         const SizedBox(width: 8),
       ],
     );
@@ -66,7 +63,7 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
     return Obx(() {
       final isConnected = controller.isConnected.value;
       final statusColor = isConnected ? AppColors.success : AppColors.error;
-      
+
       return Center(
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -109,13 +106,17 @@ class _StatusPulseDot extends StatefulWidget {
   State<_StatusPulseDot> createState() => _StatusPulseDotState();
 }
 
-class _StatusPulseDotState extends State<_StatusPulseDot> with SingleTickerProviderStateMixin {
+class _StatusPulseDotState extends State<_StatusPulseDot>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat(reverse: true);
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
   }
 
   @override

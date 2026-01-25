@@ -1,4 +1,3 @@
-
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
@@ -42,18 +41,19 @@ class GlassContainer extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(opacity),
             borderRadius: borderRadius ?? BorderRadius.circular(20),
-            border: border ?? Border.all(
-              color: Colors.white.withOpacity(0.1),
-              width: 1.0,
-            ),
-            gradient: gradient ?? LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.white.withOpacity(0.15),
-                Colors.white.withOpacity(0.05),
-              ],
-            ),
+            border:
+                border ??
+                Border.all(color: Colors.white.withOpacity(0.1), width: 1.0),
+            gradient:
+                gradient ??
+                LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Colors.white.withOpacity(0.15),
+                    Colors.white.withOpacity(0.05),
+                  ],
+                ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.1),

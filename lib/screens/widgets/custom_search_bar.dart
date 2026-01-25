@@ -49,9 +49,15 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         decoration: BoxDecoration(
-          boxShadow: _focusNode.hasFocus 
-            ? [BoxShadow(color: AppColors.primary.withOpacity(0.1), blurRadius: 15, spreadRadius: 2)]
-            : [],
+          boxShadow: _focusNode.hasFocus
+              ? [
+                  BoxShadow(
+                    color: AppColors.primary.withOpacity(0.1),
+                    blurRadius: 15,
+                    spreadRadius: 2,
+                  ),
+                ]
+              : [],
         ),
         child: GlassContainer(
           opacity: 0.08,
@@ -77,26 +83,32 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                 color: _focusNode.hasFocus ? AppColors.primary : Colors.grey,
                 size: responsive.iconSize,
               ),
-              suffixIcon: _hasText 
-                ? IconButton(
-                    icon: const Icon(Icons.close_rounded, size: 20),
-                    onPressed: () {
-                      _textController.clear();
-                      widget.onSearch('');
-                    },
-                  )
-                : null,
+              suffixIcon: _hasText
+                  ? IconButton(
+                      icon: const Icon(Icons.close_rounded, size: 20),
+                      onPressed: () {
+                        _textController.clear();
+                        widget.onSearch('');
+                      },
+                    )
+                  : null,
               filled: true,
               fillColor: Colors.transparent,
               border: InputBorder.none, // نعتمد على GlassContainer في الشكل
-              contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: 15,
+                horizontal: 20,
+              ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide(color: Colors.white.withOpacity(0.05)),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide(color: AppColors.primary.withOpacity(0.5), width: 1.5),
+                borderSide: BorderSide(
+                  color: AppColors.primary.withOpacity(0.5),
+                  width: 1.5,
+                ),
               ),
             ),
           ),

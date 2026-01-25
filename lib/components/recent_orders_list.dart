@@ -8,11 +8,7 @@ class RecentOrdersList extends StatelessWidget {
   final List<OrderModel> orders;
   final VoidCallback? onSeeAll;
 
-  const RecentOrdersList({
-    super.key,
-    required this.orders,
-    this.onSeeAll,
-  });
+  const RecentOrdersList({super.key, required this.orders, this.onSeeAll});
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +30,9 @@ class RecentOrdersList extends StatelessWidget {
               Text(
                 'الطلبات الأخيرة',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontSize: responsive.getTitleFontSize(),
-                    ),
+                  fontWeight: FontWeight.bold,
+                  fontSize: responsive.getTitleFontSize(),
+                ),
               ),
               if (onSeeAll != null)
                 GestureDetector(
@@ -65,10 +61,7 @@ class RecentOrdersList extends StatelessWidget {
                       horizontal: padding.left,
                       vertical: spacing / 2,
                     ),
-                    child: AnimatedOrderListTile(
-                      order: order,
-                      index: index,
-                    ),
+                    child: AnimatedOrderListTile(order: order, index: index),
                   );
                 },
               )
@@ -77,7 +70,7 @@ class RecentOrdersList extends StatelessWidget {
                 physics: const NeverScrollableScrollPhysics(),
                 padding: EdgeInsets.symmetric(horizontal: padding.left),
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount:  2 ,
+                  crossAxisCount: 2,
                   crossAxisSpacing: spacing,
                   mainAxisSpacing: spacing,
                   childAspectRatio: 2.5,
@@ -85,10 +78,7 @@ class RecentOrdersList extends StatelessWidget {
                 itemCount: orders.length,
                 itemBuilder: (context, index) {
                   final order = orders[index];
-                  return AnimatedOrderListTile(
-                    order: order,
-                    index: index,
-                  );
+                  return AnimatedOrderListTile(order: order, index: index);
                 },
               ),
       ],
@@ -99,10 +89,7 @@ class RecentOrdersList extends StatelessWidget {
 class OrderListTile extends StatelessWidget {
   final OrderModel order;
 
-  const OrderListTile({
-    super.key,
-    required this.order,
-  });
+  const OrderListTile({super.key, required this.order});
 
   @override
   Widget build(BuildContext context) {

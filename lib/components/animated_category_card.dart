@@ -33,13 +33,15 @@ class _AnimatedCategoryCardState extends State<AnimatedCategoryCard>
       vsync: this,
     );
 
-    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 0.8,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
 
     Future.delayed(Duration(milliseconds: 100 * widget.index), () {
       if (mounted) _controller.forward();
@@ -69,7 +71,9 @@ class _AnimatedCategoryCardState extends State<AnimatedCategoryCard>
                 borderRadius: BorderRadius.circular(14),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: _isHovered ? 0.08 : 0.03),
+                    color: Colors.black.withValues(
+                      alpha: _isHovered ? 0.08 : 0.03,
+                    ),
                     blurRadius: _isHovered ? 16 : 8,
                     offset: Offset(0, _isHovered ? 4 : 2),
                   ),
@@ -83,7 +87,8 @@ class _AnimatedCategoryCardState extends State<AnimatedCategoryCard>
                       borderRadius: BorderRadius.circular(14),
                       color: Colors.grey.shade200,
                     ),
-                    child: widget.category.imageUrl != null &&
+                    child:
+                        widget.category.imageUrl != null &&
                             widget.category.imageUrl!.isNotEmpty
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(14),
@@ -93,7 +98,9 @@ class _AnimatedCategoryCardState extends State<AnimatedCategoryCard>
                               errorBuilder: (_, __, ___) => Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(14),
-                                  color: AppColors.primary.withValues(alpha: 0.1),
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.1,
+                                  ),
                                 ),
                                 child: const Icon(
                                   Icons.category_outlined,
@@ -149,7 +156,9 @@ class _AnimatedCategoryCardState extends State<AnimatedCategoryCard>
                                 borderRadius: BorderRadius.circular(6),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: AppColors.error.withValues(alpha: 0.4),
+                                    color: AppColors.error.withValues(
+                                      alpha: 0.4,
+                                    ),
                                     blurRadius: 4,
                                   ),
                                 ],

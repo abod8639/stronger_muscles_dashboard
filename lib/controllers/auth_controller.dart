@@ -88,7 +88,7 @@ class AuthController extends GetxController {
   bool _validateConfirmPassword() {
     final password = passwordController.text;
     final confirmPassword = confirmPasswordController.text;
-    
+
     if (confirmPassword.isEmpty) {
       confirmPasswordError.value = 'تأكيد كلمة المرور مطلوب';
       return false;
@@ -138,7 +138,7 @@ class AuthController extends GetxController {
       } else {
         // Show error message
         String errorMessage = result['message'] ?? 'فشل تسجيل الدخول';
-        
+
         // Handle specific field errors
         if (result['errors'] != null) {
           final errors = result['errors'] as Map<String, dynamic>;
@@ -186,7 +186,10 @@ class AuthController extends GetxController {
     final isPasswordValid = _validatePassword(minLength: 8);
     final isConfirmPasswordValid = _validateConfirmPassword();
 
-    if (!isNameValid || !isEmailValid || !isPasswordValid || !isConfirmPasswordValid) {
+    if (!isNameValid ||
+        !isEmailValid ||
+        !isPasswordValid ||
+        !isConfirmPasswordValid) {
       return;
     }
 
@@ -226,7 +229,7 @@ class AuthController extends GetxController {
       } else {
         // Show error message
         String errorMessage = result['message'] ?? 'فشل إنشاء الحساب';
-        
+
         // Handle specific field errors
         if (result['errors'] != null) {
           final errors = result['errors'] as Map<String, dynamic>;

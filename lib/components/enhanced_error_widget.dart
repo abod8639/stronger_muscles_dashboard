@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 
@@ -43,18 +42,18 @@ class EnhancedErrorWidget extends StatelessWidget {
               Text(
                 title,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textMuted,
-                    ),
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textMuted,
+                ),
               ),
               const SizedBox(height: 12),
               Text(
                 message,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.textMuted,
-                      height: 1.5,
-                    ),
+                  color: AppColors.textMuted,
+                  height: 1.5,
+                ),
               ),
               const SizedBox(height: 32),
               Container(
@@ -102,4 +101,3 @@ class EnhancedErrorWidget extends StatelessWidget {
     );
   }
 }
-

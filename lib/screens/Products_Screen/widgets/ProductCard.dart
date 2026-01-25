@@ -37,8 +37,8 @@ class ProductCard extends StatelessWidget {
         blur: isHovered ? 25 : 15,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: isHovered 
-              ? AppColors.primary.withOpacity(0.4) 
+          color: isHovered
+              ? AppColors.primary.withOpacity(0.4)
               : Colors.white.withOpacity(0.08),
           width: isHovered ? 1.5 : 1,
         ),
@@ -46,8 +46,8 @@ class ProductCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            isHovered 
-                ? AppColors.primary.withOpacity(0.12) 
+            isHovered
+                ? AppColors.primary.withOpacity(0.12)
                 : Colors.white.withOpacity(0.05),
             Colors.white.withOpacity(0.01),
           ],
@@ -68,7 +68,8 @@ class ProductCard extends StatelessWidget {
                     _buildProductName(responsive),
                     SizedBox(height: 6),
                     _buildBrandInfo(responsive),
-                    if (product.flavor != null && product.flavor!.isNotEmpty) ...[
+                    if (product.flavor != null &&
+                        product.flavor!.isNotEmpty) ...[
                       SizedBox(height: 12),
                       _buildFlavorTags(responsive),
                     ],
@@ -100,7 +101,9 @@ class ProductCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isHovered ? AppColors.primary.withOpacity(0.5) : Colors.white.withOpacity(0.1),
+          color: isHovered
+              ? AppColors.primary.withOpacity(0.5)
+              : Colors.white.withOpacity(0.1),
           width: 1.5,
         ),
         boxShadow: [
@@ -203,11 +206,7 @@ class ProductCard extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            Icons.verified_rounded,
-            size: 14,
-            color: AppColors.accent,
-          ),
+          Icon(Icons.verified_rounded, size: 14, color: AppColors.accent),
           SizedBox(width: 6),
           Text(
             (product.brand ?? 'GENERIC').toUpperCase(),
@@ -228,25 +227,32 @@ class ProductCard extends StatelessWidget {
       spacing: 8,
       runSpacing: 8,
       children: [
-        ...product.flavor!.take(3).map((f) => GlassContainer(
-          // width: 50,
-          opacity: 0.1,
-          blur: 5,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: AppColors.primary.withOpacity(0.2)),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
-            child: Text(
-              f.toUpperCase(),
-              style: TextStyle(
-                fontSize: 9,
-                color: AppColors.primaryglow,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 0.5,
+        ...product.flavor!
+            .take(3)
+            .map(
+              (f) => GlassContainer(
+                // width: 50,
+                opacity: 0.1,
+                blur: 5,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 2,
+                    vertical: 2,
+                  ),
+                  child: Text(
+                    f.toUpperCase(),
+                    style: TextStyle(
+                      fontSize: 9,
+                      color: AppColors.primaryglow,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
-        )),
         if (product.flavor!.length > 3)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -272,7 +278,8 @@ class ProductCard extends StatelessWidget {
       children: [
         // Price Badge
         ShaderMask(
-          shaderCallback: (bounds) => AppColors.primaryGradient.createShader(bounds),
+          shaderCallback: (bounds) =>
+              AppColors.primaryGradient.createShader(bounds),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -299,9 +306,7 @@ class ProductCard extends StatelessWidget {
         const Spacer(),
 
         // Stock Status Badge
-        StockStatusBadge(
-          quantity: product.stockQuantity,
-        ),
+        StockStatusBadge(quantity: product.stockQuantity),
       ],
     );
   }

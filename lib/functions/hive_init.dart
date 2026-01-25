@@ -1,4 +1,3 @@
-
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:stronger_muscles_dashboard/models/category_model.dart';
 import 'package:stronger_muscles_dashboard/models/dashboard_user_model.dart';
@@ -26,5 +25,4 @@ Future<void> hiveInit() async {
   await Hive.openBox<OrderModel>('orders');
   await Hive.openBox<UserAddress>('addresses');
   await Hive.openBox<UserModel>('users');
-
 }

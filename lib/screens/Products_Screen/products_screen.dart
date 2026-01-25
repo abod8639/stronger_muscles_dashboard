@@ -23,32 +23,30 @@ class ProductsScreen extends StatelessWidget {
       backgroundColor: AppColors.backgroundDark,
       appBar: BaseAppBar(
         title: 'المنتجات',
-        onPressed:()=> Get.to(ProductFormPage()),
+        onPressed: () => Get.to(ProductFormPage()),
         icon: Icons.add,
-        
-
       ),
       body: Column(
         children: [
-
           CustomSearchBar(
             hintText: 'ابحث عن منتج بالاسم أو الماركة...',
             padding: responsive.defaultPadding,
 
-             onSearch: (value) => controller.onSearchChanged(value),
+            onSearch: (value) => controller.onSearchChanged(value),
           ),
 
           // const ProductsCategoriesScreen(),
-     Obx(() =>      HorizontalChipsSelector(
-            items: controller.categories,
-            selectedId: controller.selectedCategoryId.value,
-            onSelect: (id) => controller.selectedCategoryId.value = id,
-            labelKey: 'name',
-            idKey: 'id',
-            showAllOption: true,
-            allLabel: 'الكل',
-
-          ),),
+          Obx(
+            () => HorizontalChipsSelector(
+              items: controller.categories,
+              selectedId: controller.selectedCategoryId.value,
+              onSelect: (id) => controller.selectedCategoryId.value = id,
+              labelKey: 'name',
+              idKey: 'id',
+              showAllOption: true,
+              allLabel: 'الكل',
+            ),
+          ),
 
           const SizedBox(height: 8),
 

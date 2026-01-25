@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 
 class HorizontalChipsSelector extends StatelessWidget {
-  final List<dynamic> items;          // قائمة العناصر (Categories, Flavors, etc.)
-  final String selectedId;            // المعرف المختار حالياً
+  final List<dynamic> items; // قائمة العناصر (Categories, Flavors, etc.)
+  final String selectedId; // المعرف المختار حالياً
   final Function(String id) onSelect; // ماذا يحدث عند الضغط
-  final String labelKey;              // اسم الحقل الذي يحتوي على النص (مثلاً 'name')
-  final String idKey;                 // اسم الحقل الذي يحتوي على المعرف (مثلاً 'id')
-  final bool showAllOption;           // هل تريد إظهار خيار "الكل"؟
-  final String allLabel;              // نص خيار "الكل"
+  final String labelKey; // اسم الحقل الذي يحتوي على النص (مثلاً 'name')
+  final String idKey; // اسم الحقل الذي يحتوي على المعرف (مثلاً 'id')
+  final bool showAllOption; // هل تريد إظهار خيار "الكل"؟
+  final String allLabel; // نص خيار "الكل"
 
   const HorizontalChipsSelector({
     super.key,
@@ -29,19 +29,21 @@ class HorizontalChipsSelector extends StatelessWidget {
       height: 45, // تقليل الارتفاع قليلاً ليكون أكثر رشاقة
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        padding: EdgeInsets.symmetric(horizontal: responsive.defaultPadding.left),
+        padding: EdgeInsets.symmetric(
+          horizontal: responsive.defaultPadding.left,
+        ),
         // زيادة العدد بمقدار 1 إذا كان خيار "الكل" مفعلاً
         itemCount: showAllOption ? items.length + 1 : items.length,
         itemBuilder: (context, index) {
           final bool isAllItem = showAllOption && index == 0;
-          
+
           // استخراج البيانات بناءً على كون العنصر هو "الكل" أو عنصر من القائمة
-          final String displayLabel = isAllItem 
-              ? allLabel 
+          final String displayLabel = isAllItem
+              ? allLabel
               : _getValue(items[showAllOption ? index - 1 : index], labelKey);
-              
-          final String itemId = isAllItem 
-              ? 'all' 
+
+          final String itemId = isAllItem
+              ? 'all'
               : _getValue(items[showAllOption ? index - 1 : index], idKey);
 
           final bool isSelected = selectedId == itemId;
@@ -90,10 +92,14 @@ class _ChipItem extends StatelessWidget {
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
           decoration: BoxDecoration(
-            color: isSelected ? Theme.of(context).primaryColor : Colors.transparent,
+            color: isSelected
+                ? Theme.of(context).primaryColor
+                : Colors.transparent,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: isSelected ? Theme.of(context).primaryColor : Colors.grey.withOpacity(0.2),
+              color: isSelected
+                  ? Theme.of(context).primaryColor
+                  : Colors.grey.withOpacity(0.2),
             ),
           ),
           child: Center(

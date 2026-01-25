@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 
@@ -35,9 +34,10 @@ class _SuccessOverlayState extends State<SuccessOverlay>
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
-    _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
+    _fadeAnimation = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
 
     _controller.forward();
 
@@ -76,11 +76,7 @@ class _SuccessOverlayState extends State<SuccessOverlay>
             ),
             child: Row(
               children: [
-                const Icon(
-                  Icons.check_circle,
-                  color: Colors.white,
-                  size: 20,
-                ),
+                const Icon(Icons.check_circle, color: Colors.white, size: 20),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(

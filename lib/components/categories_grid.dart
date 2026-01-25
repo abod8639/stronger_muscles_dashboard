@@ -36,9 +36,9 @@ class CategoriesGrid extends StatelessWidget {
               Text(
                 'التصنيفات',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontSize: responsive.getTitleFontSize(),
-                    ),
+                  fontWeight: FontWeight.bold,
+                  fontSize: responsive.getTitleFontSize(),
+                ),
               ),
               if (onSeeAll != null)
                 GestureDetector(
@@ -87,11 +87,7 @@ class CategoryCard extends StatelessWidget {
   final CategoryModel category;
   final VoidCallback? onTap;
 
-  const CategoryCard({
-    super.key,
-    required this.category,
-    this.onTap,
-  });
+  const CategoryCard({super.key, required this.category, this.onTap});
 
   @override
   Widget build(BuildContext context) {

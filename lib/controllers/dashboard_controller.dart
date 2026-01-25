@@ -18,7 +18,7 @@ class DashboardController extends GetxController {
 
   // --- Period Filter Configuration ---
   // المعرف المختار حالياً للفترة الزمنية
-  final selectPeriod = 'week'.obs; 
+  final selectPeriod = 'week'.obs;
 
   // القائمة المتوافقة مع HorizontalChipsSelector
   final List<Map<String, String>> periodItems = const [
@@ -82,7 +82,8 @@ class DashboardController extends GetxController {
       isConnected.value = connected;
 
       if (!connected) {
-        errorMessage.value = 'لا يمكن الاتصال بالخادم. يرجى التحقق من الإنترنت.';
+        errorMessage.value =
+            'لا يمكن الاتصال بالخادم. يرجى التحقق من الإنترنت.';
         isLoading.value = false;
         return;
       }
@@ -117,7 +118,6 @@ class DashboardController extends GetxController {
       categories.assignAll(results[2] as List<CategoryModel>);
 
       _calculateStatistics();
-      
     } catch (e) {
       errorMessage.value = 'فشل في تحديث البيانات: $e';
     } finally {
@@ -130,9 +130,11 @@ class DashboardController extends GetxController {
     try {
       final usersStats = await _userRepository.getUsersStats();
       if (usersStats.containsKey('total_users')) {
-        totalUsers.value = int.tryParse(usersStats['total_users'].toString()) ?? 0;
+        totalUsers.value =
+            int.tryParse(usersStats['total_users'].toString()) ?? 0;
       } else if (usersStats['data'] != null) {
-        totalUsers.value = int.tryParse(usersStats['data']['total_users'].toString()) ?? 0;
+        totalUsers.value =
+            int.tryParse(usersStats['data']['total_users'].toString()) ?? 0;
       }
       return usersStats;
     } catch (e) {
@@ -144,15 +146,27 @@ class DashboardController extends GetxController {
   /// حساب الإحصائيات بناءً على البيانات المحملة
   void _calculateStatistics() {
     // 1. إحصائيات الطلبات
-    pendingOrders.value = orders.where((o) => o.status == OrderStatus.pending).length;
-    processingOrders.value = orders.where((o) => o.status == OrderStatus.processing).length;
-    shippedOrders.value = orders.where((o) => o.status == OrderStatus.shipped).length;
-    deliveredOrders.value = orders.where((o) => o.status == OrderStatus.delivered).length;
-    cancelledOrders.value = orders.where((o) => o.status == OrderStatus.cancelled).length;
+    pendingOrders.value = orders
+        .where((o) => o.status == OrderStatus.pending)
+        .length;
+    processingOrders.value = orders
+        .where((o) => o.status == OrderStatus.processing)
+        .length;
+    shippedOrders.value = orders
+        .where((o) => o.status == OrderStatus.shipped)
+        .length;
+    deliveredOrders.value = orders
+        .where((o) => o.status == OrderStatus.delivered)
+        .length;
+    cancelledOrders.value = orders
+        .where((o) => o.status == OrderStatus.cancelled)
+        .length;
 
     // 2. الماليات
     totalRevenue.value = orders
-        .where((o) => o.status != OrderStatus.cancelled) // لا تحسب المبيعات الملغاة
+        .where(
+          (o) => o.status != OrderStatus.cancelled,
+        ) // لا تحسب المبيعات الملغاة
         .fold(0.0, (sum, order) => sum + order.totalAmount);
 
     totalOrders.value = orders.length;
@@ -160,8 +174,12 @@ class DashboardController extends GetxController {
 
     // 3. إحصائيات المخزون
     productsInStock.value = products.where((p) => p.stockQuantity > 10).length;
-    productsLowStock.value = products.where((p) => p.stockQuantity > 0 && p.stockQuantity <= 10).length;
-    productsOutOfStock.value = products.where((p) => p.stockQuantity == 0).length;
+    productsLowStock.value = products
+        .where((p) => p.stockQuantity > 0 && p.stockQuantity <= 10)
+        .length;
+    productsOutOfStock.value = products
+        .where((p) => p.stockQuantity == 0)
+        .length;
   }
 
   /// تغيير الفترة الزمنية يدوياً (إذا لزم الأمر)

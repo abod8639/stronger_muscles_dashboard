@@ -8,7 +8,7 @@ class ProductRepository {
 
   ProductRepository(this._apiService);
 
-Future<List<ProductModel>> getProducts() async {
+  Future<List<ProductModel>> getProducts() async {
     try {
       final List<dynamic> data = await _apiService.fetchProducts();
       return data.map((json) {
@@ -37,9 +37,15 @@ Future<List<ProductModel>> getProducts() async {
     }
   }
 
-  Future<ProductModel> updateProduct(String id, Map<String, dynamic> productJson) async {
+  Future<ProductModel> updateProduct(
+    String id,
+    Map<String, dynamic> productJson,
+  ) async {
     try {
-      final Map<String, dynamic>data = await _apiService.updateProduct(id, productJson);
+      final Map<String, dynamic> data = await _apiService.updateProduct(
+        id,
+        productJson,
+      );
       final productData = (data.containsKey('data')) ? data['data'] : data;
       return ProductModel.fromJson(productData as Map<String, dynamic>);
     } catch (e) {

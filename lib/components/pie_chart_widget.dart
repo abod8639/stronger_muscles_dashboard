@@ -40,7 +40,10 @@ class _PieChartWidgetState extends State<PieChartWidget> {
     final responsive = context.responsive;
     // final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final totalValue = widget.data.fold<double>(0, (sum, item) => sum + item.value);
+    final totalValue = widget.data.fold<double>(
+      0,
+      (sum, item) => sum + item.value,
+    );
 
     return GlassContainer(
       opacity: 0.05,
@@ -49,15 +52,9 @@ class _PieChartWidgetState extends State<PieChartWidget> {
       gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [
-          Colors.white.withOpacity(0.1),
-          Colors.white.withOpacity(0.02),
-        ],
+        colors: [Colors.white.withOpacity(0.1), Colors.white.withOpacity(0.02)],
       ),
-      border: Border.all(
-        color: Colors.white.withOpacity(0.1),
-        width: 1,
-      ),
+      border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
       child: Padding(
         padding: EdgeInsets.all(responsive.defaultPadding.left),
         child: Column(
@@ -66,7 +63,11 @@ class _PieChartWidgetState extends State<PieChartWidget> {
             // العنوان
             Row(
               children: [
-                Icon(Icons.pie_chart_rounded, color: AppColors.primary, size: 20),
+                Icon(
+                  Icons.pie_chart_rounded,
+                  color: AppColors.primary,
+                  size: 20,
+                ),
                 SizedBox(width: 8),
                 Text(
                   widget.title.toUpperCase(),
@@ -106,10 +107,7 @@ class _PieChartWidgetState extends State<PieChartWidget> {
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                               shadows: [
-                                Shadow(
-                                  color: Colors.black45,
-                                  blurRadius: 4,
-                                ),
+                                Shadow(color: Colors.black45, blurRadius: 4),
                               ],
                             ),
                             color: data.color,
@@ -125,7 +123,10 @@ class _PieChartWidgetState extends State<PieChartWidget> {
                                           blurRadius: 8,
                                         ),
                                       ],
-                                      border: Border.all(color: data.color, width: 2),
+                                      border: Border.all(
+                                        color: data.color,
+                                        width: 2,
+                                      ),
                                     ),
                                     padding: const EdgeInsets.all(8),
                                     child: Text(
@@ -158,7 +159,9 @@ class _PieChartWidgetState extends State<PieChartWidget> {
                         final percentage = (data.value / totalValue) * 100;
 
                         return Padding(
-                          padding: EdgeInsets.only(bottom: responsive.itemSpacing),
+                          padding: EdgeInsets.only(
+                            bottom: responsive.itemSpacing,
+                          ),
                           child: Row(
                             children: [
                               Container(
@@ -184,7 +187,8 @@ class _PieChartWidgetState extends State<PieChartWidget> {
                                     Text(
                                       data.label,
                                       style: TextStyle(
-                                        fontSize: responsive.getBodyFontSize() - 1,
+                                        fontSize:
+                                            responsive.getBodyFontSize() - 1,
                                         fontWeight: FontWeight.w500,
                                         color: AppColors.textLight,
                                       ),
@@ -192,7 +196,8 @@ class _PieChartWidgetState extends State<PieChartWidget> {
                                     Text(
                                       '${data.value.toStringAsFixed(0)} (${percentage.toStringAsFixed(1)}%)',
                                       style: TextStyle(
-                                        fontSize: responsive.getBodyFontSize() - 2,
+                                        fontSize:
+                                            responsive.getBodyFontSize() - 2,
                                         color: AppColors.textMuted,
                                       ),
                                     ),

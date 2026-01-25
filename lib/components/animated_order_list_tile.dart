@@ -38,9 +38,10 @@ class _AnimatedOrderListTileState extends State<AnimatedOrderListTile>
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
-    _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
+    _fadeAnimation = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
 
     Future.delayed(Duration(milliseconds: 100 * widget.index), () {
       if (mounted) _controller.forward();
@@ -67,7 +68,10 @@ class _AnimatedOrderListTileState extends State<AnimatedOrderListTile>
       if (addr is Map) {
         final city = addr['city'] ?? addr['City'] ?? '';
         final street = addr['street'] ?? addr['Street'] ?? '';
-        final full = [city, street].where((s) => s != null && s.toString().isNotEmpty).join(', ');
+        final full = [
+          city,
+          street,
+        ].where((s) => s != null && s.toString().isNotEmpty).join(', ');
         return full.isNotEmpty ? full : 'العنوان غير محدد';
       }
     }
@@ -78,7 +82,10 @@ class _AnimatedOrderListTileState extends State<AnimatedOrderListTile>
     if (firstVal is Map) {
       final city = firstVal['city'] ?? firstVal['City'] ?? '';
       final street = firstVal['street'] ?? firstVal['Street'] ?? '';
-      final full = [city, street].where((s) => s != null && s.toString().isNotEmpty).join(', ');
+      final full = [
+        city,
+        street,
+      ].where((s) => s != null && s.toString().isNotEmpty).join(', ');
       return full.isNotEmpty ? full : 'العنوان غير محدد';
     }
 
@@ -145,7 +152,9 @@ class _AnimatedOrderListTileState extends State<AnimatedOrderListTile>
                             ],
                           ),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                          border: Border.all(
+                            color: AppColors.primary.withOpacity(0.3),
+                          ),
                           boxShadow: [
                             BoxShadow(
                               color: AppColors.primary.withOpacity(0.1),
@@ -202,20 +211,29 @@ class _AnimatedOrderListTileState extends State<AnimatedOrderListTile>
                             ),
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 8),
-                              child: Divider(color: Colors.white.withOpacity(0.1), height: 1),
+                              child: Divider(
+                                color: Colors.white.withOpacity(0.1),
+                                height: 1,
+                              ),
                             ),
-                            _buildInfoRow(Icons.person_outline,
-                                'Customer: ${widget.order.userId}'),
+                            _buildInfoRow(
+                              Icons.person_outline,
+                              'Customer: ${widget.order.userId}',
+                            ),
                             const SizedBox(height: 6),
                             if (widget.order.phoneNumber != null &&
                                 widget.order.phoneNumber!.isNotEmpty) ...[
                               _buildInfoRow(
-                                  Icons.phone_outlined, widget.order.phoneNumber!),
+                                Icons.phone_outlined,
+                                widget.order.phoneNumber!,
+                              ),
                               const SizedBox(height: 6),
                             ],
                             _buildInfoRow(
                               Icons.location_on_outlined,
-                              _extractAddress(widget.order.shippingAddressSnapshot),
+                              _extractAddress(
+                                widget.order.shippingAddressSnapshot,
+                              ),
                             ),
                           ],
                         ),

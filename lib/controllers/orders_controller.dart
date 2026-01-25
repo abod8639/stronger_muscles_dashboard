@@ -9,11 +9,11 @@ class OrdersController extends GetxController {
 
   final RxList<OrderModel> _allOrders = <OrderModel>[].obs;
   final RxList<OrderModel> filteredOrders = <OrderModel>[].obs;
-  
+
   final RxBool isLoading = false.obs;
   final RxString errorMessage = ''.obs;
   final RxString searchQuery = ''.obs;
-  
+
   // نستخدم String ليتوافق مع الـ 'all' ومع الـ IDs الخاصة بالحالات
   final RxString selectedStatusId = 'all'.obs;
 
@@ -23,17 +23,16 @@ class OrdersController extends GetxController {
     // مراقبة التغيرات وتحديث الفلترة تلقائياً (Worker)
     debounce(searchQuery, (_) => _applyFilters(), time: 300.milliseconds);
     ever(selectedStatusId, (_) => _applyFilters());
-    
+
     fetchOrders();
   }
 
- void onSearchChanged(String query) {
+  void onSearchChanged(String query) {
+    searchQuery.value = query;
 
-searchQuery.value = query;
+    _applyFilters();
+  }
 
-_applyFilters();
-
-} 
   /// تحويل الـ Enum إلى قائمة متوافقة مع الـ HorizontalChipsSelector
   List<Map<String, String>> get statusItems {
     return OrderStatus.values.map((status) {
@@ -61,21 +60,23 @@ _applyFilters();
   void _applyFilters() {
     var result = _allOrders.where((order) {
       // 1. الفلترة حسب الحالة
-      final bool matchesStatus = selectedStatusId.value == 'all' || 
-                                order.status.name == selectedStatusId.value;
+      final bool matchesStatus =
+          selectedStatusId.value == 'all' ||
+          order.status.name == selectedStatusId.value;
 
       // 2. الفلترة حسب البحث
       final String query = searchQuery.value.toLowerCase();
-      final bool matchesSearch = query.isEmpty ||
-                                 order.id.toString().contains(query) ||
-                                 order.userId.toString().contains(query);
+      final bool matchesSearch =
+          query.isEmpty ||
+          order.id.toString().contains(query) ||
+          order.userId.toString().contains(query);
 
       return matchesStatus && matchesSearch;
     }).toList();
 
     // الترتيب: الأحدث أولاً
     result.sort((a, b) => b.orderDate.compareTo(a.orderDate));
-    
+
     filteredOrders.assignAll(result);
   }
 
@@ -83,21 +84,31 @@ _applyFilters();
 
   String getStatusText(OrderStatus status) {
     switch (status) {
-      case OrderStatus.pending: return 'قيد الانتظار';
-      case OrderStatus.processing: return 'قيد المعالجة';
-      case OrderStatus.shipped: return 'تم الشحن';
-      case OrderStatus.delivered: return 'تم التوصيل';
-      case OrderStatus.cancelled: return 'ملغي';
+      case OrderStatus.pending:
+        return 'قيد الانتظار';
+      case OrderStatus.processing:
+        return 'قيد المعالجة';
+      case OrderStatus.shipped:
+        return 'تم الشحن';
+      case OrderStatus.delivered:
+        return 'تم التوصيل';
+      case OrderStatus.cancelled:
+        return 'ملغي';
     }
   }
 
   Color getStatusColor(OrderStatus status) {
     switch (status) {
-      case OrderStatus.pending: return Colors.orange;
-      case OrderStatus.processing: return Colors.blue;
-      case OrderStatus.shipped: return Colors.purple;
-      case OrderStatus.delivered: return Colors.green;
-      case OrderStatus.cancelled: return Colors.red;
+      case OrderStatus.pending:
+        return Colors.orange;
+      case OrderStatus.processing:
+        return Colors.blue;
+      case OrderStatus.shipped:
+        return Colors.purple;
+      case OrderStatus.delivered:
+        return Colors.green;
+      case OrderStatus.cancelled:
+        return Colors.red;
     }
   }
 }

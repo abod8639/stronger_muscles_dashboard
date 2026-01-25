@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
@@ -12,7 +11,8 @@ class CategoryListItem extends StatefulWidget {
   final VoidCallback onDelete;
   final int index;
 
-  const CategoryListItem({super.key, 
+  const CategoryListItem({
+    super.key,
     required this.category,
     required this.onEdit,
     required this.onDelete,
@@ -25,7 +25,6 @@ class CategoryListItem extends StatefulWidget {
 
 class _CategoryListItemState extends State<CategoryListItem>
     with SingleTickerProviderStateMixin {
-
   bool _isHovered = false;
 
   @override
@@ -52,7 +51,6 @@ class _CategoryListItemState extends State<CategoryListItem>
           ],
         ),
         child: GlassContainer(
-
           child: InkWell(
             borderRadius: BorderRadius.circular(16),
             onTap: widget.onEdit,
@@ -65,13 +63,16 @@ class _CategoryListItemState extends State<CategoryListItem>
                     width: 60,
                     height: 60,
                     decoration: BoxDecoration(
-                      color: isDark ? Colors.grey.shade900 : Colors.grey.shade100,
+                      color: isDark
+                          ? Colors.grey.shade900
+                          : Colors.grey.shade100,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: AppColors.primary.withValues(alpha: 0.1),
                       ),
                     ),
-                    child: widget.category.imageUrl != null &&
+                    child:
+                        widget.category.imageUrl != null &&
                             widget.category.imageUrl!.isNotEmpty
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(12),
@@ -90,7 +91,7 @@ class _CategoryListItemState extends State<CategoryListItem>
                           ),
                   ),
                   const SizedBox(width: 16),
-                  
+
                   // معلومات التصنيف
                   Expanded(
                     child: Column(
@@ -108,7 +109,9 @@ class _CategoryListItemState extends State<CategoryListItem>
                         Text(
                           'ID: ${widget.category.id}',
                           style: TextStyle(
-                            color: isDark ? Colors.white54 : Colors.grey.shade600,
+                            color: isDark
+                                ? Colors.white54
+                                : Colors.grey.shade600,
                             fontSize: 11,
                           ),
                         ),
@@ -136,7 +139,7 @@ class _CategoryListItemState extends State<CategoryListItem>
                       ],
                     ),
                   ),
-                  
+
                   // أزرار التحكم
                   Row(
                     mainAxisSize: MainAxisSize.min,
@@ -164,6 +167,4 @@ class _CategoryListItemState extends State<CategoryListItem>
       ),
     );
   }
-
-
 }

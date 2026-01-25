@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/controllers/categories_controller.dart';
@@ -11,10 +10,7 @@ class CategoryFormSheet extends StatefulWidget {
   final CategoriesController controller;
   final CategoryModel? category;
 
-  const CategoryFormSheet({super.key, 
-    required this.controller,
-    this.category,
-  });
+  const CategoryFormSheet({super.key, required this.controller, this.category});
 
   @override
   State<CategoryFormSheet> createState() => CategoryFormSheetState();
@@ -30,7 +26,9 @@ class CategoryFormSheetState extends State<CategoryFormSheet> {
     super.initState();
     idController = TextEditingController(text: widget.category?.id ?? '');
     nameController = TextEditingController(text: widget.category?.name ?? '');
-    imageController = TextEditingController(text: widget.category?.imageUrl ?? '');
+    imageController = TextEditingController(
+      text: widget.category?.imageUrl ?? '',
+    );
   }
 
   @override
@@ -101,7 +99,7 @@ class CategoryFormSheetState extends State<CategoryFormSheet> {
             enabled: widget.category == null,
           ),
           SizedBox(height: padding.top),
-          
+
           buildCategoryFormSheetModernTextField(
             enabled: true,
             nameController,
@@ -109,7 +107,7 @@ class CategoryFormSheetState extends State<CategoryFormSheet> {
             Icons.label_outline_rounded,
           ),
           SizedBox(height: padding.top),
-          
+
           buildCategoryFormSheetModernTextField(
             enabled: true,
             imageController,
@@ -126,10 +124,7 @@ class CategoryFormSheetState extends State<CategoryFormSheet> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
                 gradient: LinearGradient(
-                  colors: [
-                    AppColors.primary,
-                    AppColors.warning,
-                  ],
+                  colors: [AppColors.primary, AppColors.warning],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -182,9 +177,17 @@ class CategoryFormSheetState extends State<CategoryFormSheet> {
     }
 
     if (widget.category == null) {
-      widget.controller.addCategory(idController.text, nameController.text, imageController.text);
+      widget.controller.addCategory(
+        idController.text,
+        nameController.text,
+        imageController.text,
+      );
     } else {
-      widget.controller.updateCategory(widget.category!.id, nameController.text, imageController.text);
+      widget.controller.updateCategory(
+        widget.category!.id,
+        nameController.text,
+        imageController.text,
+      );
     }
   }
 }

@@ -61,8 +61,9 @@ class _EnhancedLoadingWidgetState extends State<EnhancedLoadingWidget>
                     ),
                   ),
                   const CircularProgressIndicator(
-                    valueColor:
-                        AlwaysStoppedAnimation<Color>(AppColors.primary),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AppColors.primary,
+                    ),
                     strokeWidth: 3,
                   ),
                 ],
@@ -73,16 +74,16 @@ class _EnhancedLoadingWidgetState extends State<EnhancedLoadingWidget>
           Text(
             widget.message ?? 'جاري التحميل...',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: AppColors.textLight,
-                  fontWeight: FontWeight.w500,
-                ),
+              color: AppColors.textLight,
+              fontWeight: FontWeight.w500,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
             'يرجى الانتظار قليلاً',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.textMuted,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: AppColors.textMuted),
           ),
         ],
       ),

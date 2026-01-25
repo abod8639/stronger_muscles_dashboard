@@ -22,7 +22,11 @@ class SignupScreen extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topRight,
             end: Alignment.bottomLeft,
-            colors: [AppColors.primaryDark, AppColors.primary, AppColors.primaryDark],
+            colors: [
+              AppColors.primaryDark,
+              AppColors.primary,
+              AppColors.primaryDark,
+            ],
           ),
         ),
         child: SafeArea(

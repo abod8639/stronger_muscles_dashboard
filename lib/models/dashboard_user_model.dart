@@ -12,7 +12,7 @@ class DashboardResponse with _$DashboardResponse {
     required List<DashboardUser> users,
   }) = _DashboardResponse;
 
-  factory DashboardResponse.fromJson(Map<String, dynamic> json) => 
+  factory DashboardResponse.fromJson(Map<String, dynamic> json) =>
       _$DashboardResponseFromJson(_mapDashboardResponse(json));
 }
 
@@ -36,7 +36,7 @@ class DashboardUser with _$DashboardUser {
     @HiveField(11) @Default(0) int ordersCount,
   }) = _DashboardUser;
 
-  factory DashboardUser.fromJson(Map<String, dynamic> json) => 
+  factory DashboardUser.fromJson(Map<String, dynamic> json) =>
       _$DashboardUserFromJson(_mapDashboardUser(json));
 }
 
@@ -52,10 +52,17 @@ Map<String, dynamic> _mapDashboardUser(Map<String, dynamic> json) {
   return {
     ...json,
     'photoUrl': json['photoUrl'] ?? json['photo_url'],
-    'totalSpent': double.tryParse((json['totalSpent'] ?? json['total_spent'] ?? 0.0).toString()) ?? 0.0,
+    'totalSpent':
+        double.tryParse(
+          (json['totalSpent'] ?? json['total_spent'] ?? 0.0).toString(),
+        ) ??
+        0.0,
     'createdAt': json['createdAt'] ?? json['created_at'],
     'lastLogin': json['lastLogin'] ?? json['last_login'],
     'ordersCount': json['ordersCount'] ?? json['orders_count'] ?? 0,
-    'isActive': json['isActive'] == true || json['is_active'] == true || json['is_active'] == 1,
+    'isActive':
+        json['isActive'] == true ||
+        json['is_active'] == true ||
+        json['is_active'] == 1,
   };
 }

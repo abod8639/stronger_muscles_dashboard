@@ -36,7 +36,6 @@ class CategoriesScreen extends StatelessWidget {
             onSearch: (value) => controller.onSearchChanged(value),
           ),
 
-
           // قائمة التصنيفات
           Expanded(
             child: Obx(() {
@@ -70,9 +69,13 @@ class CategoriesScreen extends StatelessWidget {
                         return CategoryListItem(
                           category: category,
                           index: index,
-                          onEdit: () =>
-                              _showCategoryForm(context, controller, category: category),
-                          onDelete: () => controller.deleteCategory(category.id),
+                          onEdit: () => _showCategoryForm(
+                            context,
+                            controller,
+                            category: category,
+                          ),
+                          onDelete: () =>
+                              controller.deleteCategory(category.id),
                         );
                       },
                     )
@@ -90,9 +93,13 @@ class CategoriesScreen extends StatelessWidget {
                         final category = controller.filteredCategories[index];
                         return CategoryGridItem(
                           category: category,
-                          onEdit: () =>
-                              _showCategoryForm(context, controller, category: category),
-                          onDelete: () => controller.deleteCategory(category.id),
+                          onEdit: () => _showCategoryForm(
+                            context,
+                            controller,
+                            category: category,
+                          ),
+                          onDelete: () =>
+                              controller.deleteCategory(category.id),
                         );
                       },
                     );
@@ -103,15 +110,17 @@ class CategoriesScreen extends StatelessWidget {
     );
   }
 
-  void _showCategoryForm(BuildContext context, CategoriesController controller, {CategoryModel? category}) {
+  void _showCategoryForm(
+    BuildContext context,
+    CategoriesController controller, {
+    CategoryModel? category,
+  }) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => CategoryFormSheet(
-        controller: controller,
-        category: category,
-      ),
+      builder: (context) =>
+          CategoryFormSheet(controller: controller, category: category),
     );
   }
 }

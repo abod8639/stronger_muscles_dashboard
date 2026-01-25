@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/components/enhanced_error_widget.dart';
@@ -19,7 +18,8 @@ class UsersScreen extends StatelessWidget {
     final responsive = context.responsive;
 
     return Scaffold(
-      backgroundColor: Colors.transparent, // Let MainNavigationScreen handle background
+      backgroundColor:
+          Colors.transparent, // Let MainNavigationScreen handle background
       appBar: BaseAppBar(
         title: 'المستخدمون',
         onPressed: controller.fetchUsersStats,
@@ -28,27 +28,29 @@ class UsersScreen extends StatelessWidget {
       ),
       body: Obx(() {
         if (controller.isLoading.value && controller.filteredUsers.isEmpty) {
-          return const EnhancedLoadingWidget(message: 'جاري تحميل بيانات المستخدمين...');
+          return const EnhancedLoadingWidget(
+            message: 'جاري تحميل بيانات المستخدمين...',
+          );
         }
 
         return Column(
           children: [
             // Search Bar
-           CustomSearchBar(
-            hintText: 'ابحث عن المستخدم بالاسم أو البريد الإلكتروني...',
-            padding: responsive.defaultPadding,
-            onSearch: (value) => controller.onSearchChanged(value),
-          ),
+            CustomSearchBar(
+              hintText: 'ابحث عن المستخدم بالاسم أو البريد الإلكتروني...',
+              padding: responsive.defaultPadding,
+              onSearch: (value) => controller.onSearchChanged(value),
+            ),
 
             // ملخص الإحصائيات
-            buildStatsHeader( controller),
-            
+            buildStatsHeader(controller),
+
             // قائمة المستخدمين
             Expanded(
               child: controller.filteredUsers.isEmpty
                   ? EnhancedErrorWidget(
                       title: 'لا يوجد مستخدمين',
-                      message: controller.searchQuery.isEmpty 
+                      message: controller.searchQuery.isEmpty
                           ? 'لم يتم العثور على أي مستخدمين مسجلين'
                           : 'لا توجد نتائج لبحثك: "${controller.searchQuery.value}"',
                       icon: Icons.people_outline,
@@ -59,7 +61,7 @@ class UsersScreen extends StatelessWidget {
                       itemCount: controller.filteredUsers.length,
                       itemBuilder: (context, index) {
                         final user = controller.filteredUsers[index];
-                        return buildUserCard( user);
+                        return buildUserCard(user);
                       },
                     ),
             ),

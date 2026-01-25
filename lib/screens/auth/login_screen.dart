@@ -110,51 +110,60 @@ class LoginScreen extends StatelessWidget {
                         const SizedBox(height: 40),
 
                         // Email Field
-                        Obx(() => buildTextField(
-                              controller: controller.emailController,
-                              label: 'البريد الإلكتروني',
-                              icon: Icons.email_outlined,
-                              keyboardType: TextInputType.emailAddress,
-                              errorText: controller.emailError.value,
-                            )),
+                        Obx(
+                          () => buildTextField(
+                            controller: controller.emailController,
+                            label: 'البريد الإلكتروني',
+                            icon: Icons.email_outlined,
+                            keyboardType: TextInputType.emailAddress,
+                            errorText: controller.emailError.value,
+                          ),
+                        ),
                         const SizedBox(height: 20),
 
                         // Password Field
-                        Obx(() => buildTextField(
-                              controller: controller.passwordController,
-                              label: 'كلمة المرور',
-                              icon: Icons.lock_outline,
-                              isPassword: true,
-                              isPasswordVisible: controller.isPasswordVisible.value,
-                              onTogglePassword: controller.togglePasswordVisibility,
-                              errorText: controller.passwordError.value,
-                            )),
+                        Obx(
+                          () => buildTextField(
+                            controller: controller.passwordController,
+                            label: 'كلمة المرور',
+                            icon: Icons.lock_outline,
+                            isPassword: true,
+                            isPasswordVisible:
+                                controller.isPasswordVisible.value,
+                            onTogglePassword:
+                                controller.togglePasswordVisibility,
+                            errorText: controller.passwordError.value,
+                          ),
+                        ),
                         const SizedBox(height: 16),
 
                         // Remember Me & Forgot Password
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Obx(() => Row(
-                                  children: [
-                                    Checkbox(
-                                      value: controller.rememberMe.value,
-                                      onChanged: (value) {
-                                        controller.rememberMe.value = value ?? false;
-                                      },
-                                      fillColor: WidgetStateProperty.all(
-                                        Colors.white.withOpacity(0.3),
-                                      ),
-                                      checkColor: AppColors.primary,
+                            Obx(
+                              () => Row(
+                                children: [
+                                  Checkbox(
+                                    value: controller.rememberMe.value,
+                                    onChanged: (value) {
+                                      controller.rememberMe.value =
+                                          value ?? false;
+                                    },
+                                    fillColor: WidgetStateProperty.all(
+                                      Colors.white.withOpacity(0.3),
                                     ),
-                                    Text(
-                                      'تذكرني',
-                                      style: TextStyle(
-                                        color: Colors.white.withOpacity(0.9),
-                                      ),
+                                    checkColor: AppColors.primary,
+                                  ),
+                                  Text(
+                                    'تذكرني',
+                                    style: TextStyle(
+                                      color: Colors.white.withOpacity(0.9),
                                     ),
-                                  ],
-                                )),
+                                  ),
+                                ],
+                              ),
+                            ),
                             TextButton(
                               onPressed: () {
                                 // TODO: Implement forgot password
@@ -172,11 +181,13 @@ class LoginScreen extends StatelessWidget {
                         const SizedBox(height: 32),
 
                         // Login Button
-                        Obx(() => buildPrimaryButton(
-                              label: 'تسجيل الدخول',
-                              isLoading: controller.isLoading.value,
-                              onPressed: controller.login,
-                            )),
+                        Obx(
+                          () => buildPrimaryButton(
+                            label: 'تسجيل الدخول',
+                            isLoading: controller.isLoading.value,
+                            onPressed: controller.login,
+                          ),
+                        ),
                         const SizedBox(height: 24),
 
                         // Signup Link
@@ -191,8 +202,10 @@ class LoginScreen extends StatelessWidget {
                             ),
                             TextButton(
                               onPressed: () {
-                                Get.to(() => const SignupScreen(),
-                                    transition: Transition.rightToLeft);
+                                Get.to(
+                                  () => const SignupScreen(),
+                                  transition: Transition.rightToLeft,
+                                );
                               },
                               child: const Text(
                                 'إنشاء حساب',

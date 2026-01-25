@@ -42,13 +42,15 @@ class _AnimatedStatCardState extends State<AnimatedStatCard>
       vsync: this,
     );
 
-    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 0.8,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
 
     _controller.forward();
   }
@@ -79,10 +81,7 @@ class _AnimatedStatCardState extends State<AnimatedStatCard>
                 widget.color.withOpacity(0.05),
               ],
             ),
-            border: Border.all(
-              color: widget.color.withOpacity(0.3),
-              width: 1,
-            ),
+            border: Border.all(color: widget.color.withOpacity(0.3), width: 1),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -96,9 +95,7 @@ class _AnimatedStatCardState extends State<AnimatedStatCard>
                         children: [
                           Text(
                             widget.title.toUpperCase(),
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
+                            style: Theme.of(context).textTheme.bodyMedium
                                 ?.copyWith(
                                   color: AppColors.textMuted,
                                   fontWeight: FontWeight.bold,
@@ -116,9 +113,7 @@ class _AnimatedStatCardState extends State<AnimatedStatCard>
                             ).createShader(bounds),
                             child: Text(
                               widget.value,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineSmall
+                              style: Theme.of(context).textTheme.headlineSmall
                                   ?.copyWith(
                                     fontWeight: FontWeight.w900,
                                     color: Colors.white,
@@ -130,12 +125,8 @@ class _AnimatedStatCardState extends State<AnimatedStatCard>
                             const SizedBox(height: 6),
                             Text(
                               widget.subtitle!,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.copyWith(
-                                    color: AppColors.textMuted,
-                                  ),
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(color: AppColors.textMuted),
                             ),
                           ],
                         ],
@@ -154,13 +145,11 @@ class _AnimatedStatCardState extends State<AnimatedStatCard>
                             spreadRadius: 2,
                           ),
                         ],
-                        border: Border.all(color: widget.color.withOpacity(0.5)),
+                        border: Border.all(
+                          color: widget.color.withOpacity(0.5),
+                        ),
                       ),
-                      child: Icon(
-                        widget.icon,
-                        color: Colors.white,
-                        size: 24,
-                      ),
+                      child: Icon(widget.icon, color: Colors.white, size: 24),
                     ),
                   ],
                 ),

@@ -159,7 +159,11 @@ class StockStatusBadge extends StatelessWidget {
               color: color,
               shape: BoxShape.circle,
               boxShadow: [
-                BoxShadow(color: color.withOpacity(0.5), blurRadius: 4, spreadRadius: 1),
+                BoxShadow(
+                  color: color.withOpacity(0.5),
+                  blurRadius: 4,
+                  spreadRadius: 1,
+                ),
               ],
             ),
           ),

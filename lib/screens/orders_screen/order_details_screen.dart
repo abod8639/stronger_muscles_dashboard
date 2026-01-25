@@ -61,20 +61,36 @@ class OrderDetailsScreen extends StatelessWidget {
             buildSection(
               child: Column(
                 children: [
-                  buildDetailRow(Icons.person, 'اسم العميل', order.phoneNumber ?? 'غير متوفر (ID: ${order.userId})'),
+                  buildDetailRow(
+                    Icons.person,
+                    'اسم العميل',
+                    order.phoneNumber ?? 'غير متوفر (ID: ${order.userId})',
+                  ),
                   // if(user?.email != null) ...[
                   //     const Divider(),
                   //     buildDetailRow(Icons.email, 'البريد الإلكتروني', order!.),
                   // ],
                   // if(order.phoneNumber != null && order.phoneNumber!.isNotEmpty) ...[
-                      const Divider(),
-                      buildDetailRow(Icons.phone, 'رقم الهاتف', order.phoneNumber?? "000"),
+                  const Divider(),
+                  buildDetailRow(
+                    Icons.phone,
+                    'رقم الهاتف',
+                    order.phoneNumber ?? "000",
+                  ),
                   // ],
                   const Divider(),
-                  buildDetailRow(Icons.payment, 'طريقة الدفع', order.paymentMethod),
+                  buildDetailRow(
+                    Icons.payment,
+                    'طريقة الدفع',
+                    order.paymentMethod,
+                  ),
                   const Divider(),
-                  buildDetailRow(Icons.check_circle, 'حالة الدفع', '', 
-                    trailing: PaymentStatusBadge(status: order.paymentStatus)),
+                  buildDetailRow(
+                    Icons.check_circle,
+                    'حالة الدفع',
+                    '',
+                    trailing: PaymentStatusBadge(status: order.paymentStatus),
+                  ),
                 ],
               ),
             ),
@@ -113,13 +129,27 @@ class OrderDetailsScreen extends StatelessWidget {
             buildSection(
               child: Column(
                 children: [
-                  buildSummaryRow('المجموع الفرعي', '${order.subtotal.toStringAsFixed(2)} ر.س'),
-                  buildSummaryRow('تكلفة الشحن', '${order.shippingCost.toStringAsFixed(2)} ر.س'),
+                  buildSummaryRow(
+                    'المجموع الفرعي',
+                    '${order.subtotal.toStringAsFixed(2)} ر.س',
+                  ),
+                  buildSummaryRow(
+                    'تكلفة الشحن',
+                    '${order.shippingCost.toStringAsFixed(2)} ر.س',
+                  ),
                   if (order.discount > 0)
-                    buildSummaryRow('الخصم', '-${order.discount.toStringAsFixed(2)} ر.س', color: Colors.green),
+                    buildSummaryRow(
+                      'الخصم',
+                      '-${order.discount.toStringAsFixed(2)} ر.س',
+                      color: Colors.green,
+                    ),
                   const Divider(),
-                  buildSummaryRow('الإجمالي', '${order.totalAmount.toStringAsFixed(2)} ر.س', 
-                    isTotal: true, color: AppColors.primary),
+                  buildSummaryRow(
+                    'الإجمالي',
+                    '${order.totalAmount.toStringAsFixed(2)} ر.س',
+                    isTotal: true,
+                    color: AppColors.primary,
+                  ),
                 ],
               ),
             ),
@@ -129,9 +159,7 @@ class OrderDetailsScreen extends StatelessWidget {
             // --- Notes ---
             if (order.notes != null && order.notes!.isNotEmpty) ...[
               buildSectionTitle('ملاحظات'),
-              buildSection(
-                child: Text(order.notes!),
-              ),
+              buildSection(child: Text(order.notes!)),
               const SizedBox(height: 16),
             ],
           ],
@@ -140,13 +168,3 @@ class OrderDetailsScreen extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-

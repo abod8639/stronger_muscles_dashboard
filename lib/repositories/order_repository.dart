@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../models/order_model.dart'; 
+import '../models/order_model.dart';
 import '../services/api_service.dart';
 
 class OrderRepository {
@@ -8,10 +8,10 @@ class OrderRepository {
 
   OrderRepository(this._apiService);
 
-Future<List<OrderModel>> getOrders() async {
+  Future<List<OrderModel>> getOrders() async {
     try {
       final List<dynamic> data = await _apiService.fetchOrders();
-      
+
       return data.map((json) {
         try {
           return OrderModel.fromJson(json as Map<String, dynamic>);
@@ -28,11 +28,15 @@ Future<List<OrderModel>> getOrders() async {
 
   Future<OrderModel> getOrderDetail(String orderId) async {
     try {
-      final Map<String, dynamic> data = await _apiService.fetchOrderDetail(orderId);
-      
+      final Map<String, dynamic> data = await _apiService.fetchOrderDetail(
+        orderId,
+      );
+
       return OrderModel.fromJson(data);
     } catch (e) {
-      debugPrint('Error in OrderRepository (getOrderDetail) for ID $orderId: $e');
+      debugPrint(
+        'Error in OrderRepository (getOrderDetail) for ID $orderId: $e',
+      );
       rethrow;
     }
   }

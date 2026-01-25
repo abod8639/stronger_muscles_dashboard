@@ -30,7 +30,9 @@ class DashboardScreen extends GetView<DashboardController> {
         }
 
         if (controller.isLoading.value && controller.orders.isEmpty) {
-          return const EnhancedLoadingWidget(message: 'جاري تحميل لوحة التحكم...');
+          return const EnhancedLoadingWidget(
+            message: 'جاري تحميل لوحة التحكم...',
+          );
         }
 
         return RefreshIndicator(
@@ -40,19 +42,18 @@ class DashboardScreen extends GetView<DashboardController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 _buildHeaderStatus(),
 
-                Obx(() =>
-                HorizontalChipsSelector(
-                  items: controller.periodItems,
-                  selectedId: controller.selectPeriod.value,
-                  onSelect: (id) => controller.selectPeriod.value = id,
-                  labelKey: 'name',
-                  idKey: 'id',
-                  showAllOption: false,
-                  allLabel: 'الكل',
-                )
+                Obx(
+                  () => HorizontalChipsSelector(
+                    items: controller.periodItems,
+                    selectedId: controller.selectPeriod.value,
+                    onSelect: (id) => controller.selectPeriod.value = id,
+                    labelKey: 'name',
+                    idKey: 'id',
+                    showAllOption: false,
+                    allLabel: 'الكل',
+                  ),
                 ),
 
                 SizedBox(height: res.itemSpacing),
@@ -164,11 +165,31 @@ class DashboardScreen extends GetView<DashboardController> {
 
   List<PieChartItemData> _getPieChartData() {
     return [
-      PieChartItemData(label: 'معلقة', value: controller.pendingOrders.value.toDouble(), color: AppColors.warning),
-      PieChartItemData(label: 'معالجة', value: controller.processingOrders.value.toDouble(), color: AppColors.info),
-      PieChartItemData(label: 'مرسلة', value: controller.shippedOrders.value.toDouble(), color: AppColors.accent),
-      PieChartItemData(label: 'تم التسليم', value: controller.deliveredOrders.value.toDouble(), color: AppColors.success),
-      PieChartItemData(label: 'ملغاة', value: controller.cancelledOrders.value.toDouble(), color: AppColors.error),
+      PieChartItemData(
+        label: 'معلقة',
+        value: controller.pendingOrders.value.toDouble(),
+        color: AppColors.warning,
+      ),
+      PieChartItemData(
+        label: 'معالجة',
+        value: controller.processingOrders.value.toDouble(),
+        color: AppColors.info,
+      ),
+      PieChartItemData(
+        label: 'مرسلة',
+        value: controller.shippedOrders.value.toDouble(),
+        color: AppColors.accent,
+      ),
+      PieChartItemData(
+        label: 'تم التسليم',
+        value: controller.deliveredOrders.value.toDouble(),
+        color: AppColors.success,
+      ),
+      PieChartItemData(
+        label: 'ملغاة',
+        value: controller.cancelledOrders.value.toDouble(),
+        color: AppColors.error,
+      ),
     ];
   }
 
@@ -180,14 +201,29 @@ class DashboardScreen extends GetView<DashboardController> {
       controller.deliveredOrders.value,
       controller.cancelledOrders.value,
     ];
-    return List.generate(values.length, (i) => BarChartGroupData(
-      x: i,
-      barRods: [BarChartRodData(toY: values[i].toDouble(), color: _getStatusColor(i), width: 16)],
-    ));
+    return List.generate(
+      values.length,
+      (i) => BarChartGroupData(
+        x: i,
+        barRods: [
+          BarChartRodData(
+            toY: values[i].toDouble(),
+            color: _getStatusColor(i),
+            width: 16,
+          ),
+        ],
+      ),
+    );
   }
 
   Color _getStatusColor(int index) {
-    List<Color> colors = [AppColors.warning, AppColors.info, AppColors.accent, AppColors.success, AppColors.error];
+    List<Color> colors = [
+      AppColors.warning,
+      AppColors.info,
+      AppColors.accent,
+      AppColors.success,
+      AppColors.error,
+    ];
     return colors[index];
   }
 }

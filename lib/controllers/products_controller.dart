@@ -13,12 +13,10 @@ class ProductsController extends GetxController {
   late final ApiService _apiService;
   RxBool isFeatured = false.obs;
 
-  
-
   // --- States ---
   final isLoading = true.obs;
   final isUploadingImage = false.obs;
-  
+
   // --- Data Lists ---
   final products = <ProductModel>[].obs;
   final categories = <CategoryModel>[].obs;
@@ -48,7 +46,7 @@ class ProductsController extends GetxController {
   Future<void> fetchData() async {
     try {
       isLoading.value = true;
-      
+
       // جلب البيانات بالتوازي لتقليل وقت الانتظار
       final results = await Future.wait([
         _categoryRepository.getCategories(),
@@ -90,27 +88,32 @@ class ProductsController extends GetxController {
     _applyFiltering();
   }
 
-
   void _applyFiltering() {
     Iterable<ProductModel> filtered = products;
 
     // 1. التصفية حسب القسم
     if (selectedCategoryId.value != 'all') {
-      filtered = filtered.where((p) => p.categoryId == selectedCategoryId.value);
+      filtered = filtered.where(
+        (p) => p.categoryId == selectedCategoryId.value,
+      );
     }
 
     // 2. التصفية حسب النكهة
     if (selectedFlavorId.value != 'all') {
-      filtered = filtered.where((p) => p.flavor?.contains(selectedFlavorId.value) ?? false);
+      filtered = filtered.where(
+        (p) => p.flavor?.contains(selectedFlavorId.value) ?? false,
+      );
     }
 
     // 3. التصفية حسب البحث (الاسم، الماركة، أو الكود)
     if (searchQuery.isNotEmpty) {
       final query = searchQuery.value.toLowerCase();
-      filtered = filtered.where((p) =>
-          p.name.toLowerCase().contains(query) ||
-          (p.brand?.toLowerCase().contains(query) ?? false) ||
-          p.id.contains(query));
+      filtered = filtered.where(
+        (p) =>
+            p.name.toLowerCase().contains(query) ||
+            (p.brand?.toLowerCase().contains(query) ?? false) ||
+            p.id.contains(query),
+      );
     }
 
     filteredProducts.assignAll(filtered.toList());
@@ -121,10 +124,10 @@ class ProductsController extends GetxController {
   Future<void> addProduct(ProductModel product) async {
     try {
       isLoading.value = true;
-      
+
       // إنشاء ID تلقائي إذا لم يوجد
-      final String productId = product.id.isEmpty 
-          ? 'PROD-${DateTime.now().millisecondsSinceEpoch}' 
+      final String productId = product.id.isEmpty
+          ? 'PROD-${DateTime.now().millisecondsSinceEpoch}'
           : product.id;
 
       final productData = product.toJson();
@@ -132,7 +135,7 @@ class ProductsController extends GetxController {
 
       final newProduct = await _productRepository.addProduct(productData);
       products.insert(0, newProduct);
-      
+
       _applyFiltering();
       Get.back(); // إغلاق النموذج
       Get.snackbar('نجاح', 'تم إضافة ${newProduct.name} بنجاح');
@@ -146,7 +149,10 @@ class ProductsController extends GetxController {
   Future<void> updateProduct(ProductModel product) async {
     try {
       isLoading.value = true;
-      final updatedProduct = await _productRepository.updateProduct(product.id, product.toJson());
+      final updatedProduct = await _productRepository.updateProduct(
+        product.id,
+        product.toJson(),
+      );
 
       final index = products.indexWhere((p) => p.id == product.id);
       if (index != -1) {
@@ -163,47 +169,53 @@ class ProductsController extends GetxController {
     }
   }
 
-void confirmDelete(String id, String productName) {
-  Get.defaultDialog(
-    title: 'تأكيد الحذف',
-    middleText: 'هل أنت متأكد أنك تريد حذف المنتج "$productName"؟',
-    // backgroundColor: Colors.white,
-    // titleStyle: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-    textConfirm: 'حذف',
-    textCancel: 'إلغاء',
-    // confirmTextColor: Colors.white,
-    buttonColor: Colors.red,
-    onConfirm: () {
-      Get.back(); 
-      _executeDelete(id); 
-    },
-  );
-}
-
-Future<void> _executeDelete(String id) async {
-  try {
-    isLoading.value = true;
-    final success = await _productRepository.deleteProduct(id);
-    if (success) {
-      products.removeWhere((p) => p.id == id);
-      _applyFiltering();
-      Get.snackbar('نجاح', 'تم حذف المنتج بنجاح', 
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.withOpacity(0.1));
-    }
-  } catch (e) {
-    _showErrorSnackbar('خطأ في الحذف', e.toString());
-  } finally {
-    isLoading.value = false;
+  void confirmDelete(String id, String productName) {
+    Get.defaultDialog(
+      title: 'تأكيد الحذف',
+      middleText: 'هل أنت متأكد أنك تريد حذف المنتج "$productName"؟',
+      // backgroundColor: Colors.white,
+      // titleStyle: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+      textConfirm: 'حذف',
+      textCancel: 'إلغاء',
+      // confirmTextColor: Colors.white,
+      buttonColor: Colors.red,
+      onConfirm: () {
+        Get.back();
+        _executeDelete(id);
+      },
+    );
   }
-}
+
+  Future<void> _executeDelete(String id) async {
+    try {
+      isLoading.value = true;
+      final success = await _productRepository.deleteProduct(id);
+      if (success) {
+        products.removeWhere((p) => p.id == id);
+        _applyFiltering();
+        Get.snackbar(
+          'نجاح',
+          'تم حذف المنتج بنجاح',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green.withOpacity(0.1),
+        );
+      }
+    } catch (e) {
+      _showErrorSnackbar('خطأ في الحذف', e.toString());
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
   // --- Media Upload ---
 
-  Future<String?> uploadImage(String filePath, {bool isCategory = false}) async {
+  Future<String?> uploadImage(
+    String filePath, {
+    bool isCategory = false,
+  }) async {
     try {
       isUploadingImage.value = true;
-      final imageUrl = isCategory 
+      final imageUrl = isCategory
           ? await _apiService.uploadCategoryImage(filePath)
           : await _apiService.uploadProductImage(filePath);
       return imageUrl;

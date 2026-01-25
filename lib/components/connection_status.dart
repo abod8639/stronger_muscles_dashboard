@@ -22,7 +22,9 @@ class ConnectionStatusBar extends StatelessWidget {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       padding: const EdgeInsets.all(12),
-      color: isConnected ? AppColors.warning.withValues(alpha: 0.1) : AppColors.error.withValues(alpha: 0.1),
+      color: isConnected
+          ? AppColors.warning.withValues(alpha: 0.1)
+          : AppColors.error.withValues(alpha: 0.1),
       child: Row(
         children: [
           Icon(
@@ -63,7 +65,10 @@ class ConnectionStatusBar extends StatelessWidget {
             GestureDetector(
               onTap: onRetry,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: isConnected ? AppColors.warning : AppColors.error,
                   borderRadius: BorderRadius.circular(4),
@@ -107,26 +112,22 @@ class ErrorScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              size: 64,
-              color: AppColors.error,
-            ),
+            Icon(icon, size: 64, color: AppColors.error),
             const SizedBox(height: 24),
             Text(
               title,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textMuted,
-                  ),
+                fontWeight: FontWeight.bold,
+                color: AppColors.textMuted,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
             Text(
               message,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textLight,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: AppColors.textLight),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
@@ -137,7 +138,10 @@ class ErrorScreen extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 12,
+                ),
               ),
             ),
           ],
@@ -167,26 +171,22 @@ class NoDataScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              size: 64,
-              color: AppColors.textMuted,
-            ),
+            Icon(icon, size: 64, color: AppColors.textMuted),
             const SizedBox(height: 24),
             Text(
               title,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textMuted,
-                  ),
+                fontWeight: FontWeight.bold,
+                color: AppColors.textMuted,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
             Text(
               message,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textLight,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: AppColors.textLight),
               textAlign: TextAlign.center,
             ),
           ],

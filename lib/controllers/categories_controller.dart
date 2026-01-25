@@ -43,10 +43,15 @@ class CategoriesController extends GetxController {
       filteredCategories.assignAll(categories);
     } else {
       filteredCategories.assignAll(
-        categories.where((c) => 
-          c.name.toLowerCase().contains(searchQuery.value.toLowerCase()) ||
-          c.id.contains(searchQuery.value)
-        ).toList()
+        categories
+            .where(
+              (c) =>
+                  c.name.toLowerCase().contains(
+                    searchQuery.value.toLowerCase(),
+                  ) ||
+                  c.id.contains(searchQuery.value),
+            )
+            .toList(),
       );
     }
   }
@@ -70,7 +75,10 @@ class CategoriesController extends GetxController {
     } catch (e) {
       isLoading.value = false;
       print('Error adding category: $e');
-      Get.snackbar('خطأ', 'فشل في إضافة التصنيف. يرجى التأكد من البيانات والمحاولة مرة أخرى.');
+      Get.snackbar(
+        'خطأ',
+        'فشل في إضافة التصنيف. يرجى التأكد من البيانات والمحاولة مرة أخرى.',
+      );
     }
   }
 
@@ -84,13 +92,13 @@ class CategoriesController extends GetxController {
         'sort_order': 0,
         'is_active': 1,
       });
-      
+
       final index = categories.indexWhere((c) => c.id == id);
       if (index != -1) {
         categories[index] = updatedCategory;
         applySearch();
       }
-      
+
       isLoading.value = false;
       Get.back(); // Close modal
       Get.snackbar('نجاح', 'تم تحديث التصنيف بنجاح');
@@ -106,7 +114,8 @@ class CategoriesController extends GetxController {
       Get.dialog(
         ConfirmDialog(
           title: 'حذف التصنيف',
-          message: 'هل أنت متأكد من رغبتك في حذف هذا التصنيف؟ لا يمكن التراجع عن هذا الإجراء.',
+          message:
+              'هل أنت متأكد من رغبتك في حذف هذا التصنيف؟ لا يمكن التراجع عن هذا الإجراء.',
           confirmText: 'حذف',
           onConfirm: () async {
             Get.back(); // Close confirm dialog
@@ -117,7 +126,10 @@ class CategoriesController extends GetxController {
               applySearch();
               Get.snackbar('نجاح', 'تم حذف التصنيف بنجاح');
             } else {
-              Get.snackbar('خطأ', 'فشل في حذف التصنيف. قد يكون مرتبطاً بمنتجات.');
+              Get.snackbar(
+                'خطأ',
+                'فشل في حذف التصنيف. قد يكون مرتبطاً بمنتجات.',
+              );
             }
             isLoading.value = false;
           },

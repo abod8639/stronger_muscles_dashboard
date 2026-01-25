@@ -33,9 +33,7 @@ class ConfirmDialog extends StatelessWidget {
       ),
       content: Text(
         message,
-        style: TextStyle(
-          color: isDark ? Colors.white70 : Colors.black87,
-        ),
+        style: TextStyle(color: isDark ? Colors.white70 : Colors.black87),
       ),
       actions: [
         TextButton(
@@ -49,12 +47,11 @@ class ConfirmDialog extends StatelessWidget {
           onPressed: onConfirm,
           style: ElevatedButton.styleFrom(
             backgroundColor: confirmColor ?? Colors.red.shade900,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
           ),
-          child: Text(
-            confirmText,
-            style: const TextStyle(color: Colors.white),
-          ),
+          child: Text(confirmText, style: const TextStyle(color: Colors.white)),
         ),
       ],
     );

@@ -58,17 +58,14 @@ class AuthService {
   }) async {
     try {
       final url = Uri.parse('${_apiConfig.baseUrl.value}${ApiConfig.login}');
-      
+
       final response = await http.post(
         url,
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: jsonEncode({
-          'email': email,
-          'password': password,
-        }),
+        body: jsonEncode({'email': email, 'password': password}),
       );
 
       final responseData = jsonDecode(response.body);
@@ -112,19 +109,17 @@ class AuthService {
     required String password,
   }) async {
     try {
-      final url = Uri.parse('${_apiConfig.baseUrl.value}${ApiConfig.googleSignIn}');
-      
+      final url = Uri.parse(
+        '${_apiConfig.baseUrl.value}${ApiConfig.googleSignIn}',
+      );
+
       final response = await http.post(
         url,
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: jsonEncode({
-          'name': name,
-          'email': email,
-          'password': password,
-        }),
+        body: jsonEncode({'name': name, 'email': email, 'password': password}),
       );
 
       final responseData = jsonDecode(response.body);

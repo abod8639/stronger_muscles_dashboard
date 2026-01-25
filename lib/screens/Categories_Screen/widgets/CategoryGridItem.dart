@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
@@ -10,7 +9,8 @@ class CategoryGridItem extends StatefulWidget {
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
-  const CategoryGridItem({super.key, 
+  const CategoryGridItem({
+    super.key,
     required this.category,
     required this.onEdit,
     required this.onDelete,
@@ -36,7 +36,9 @@ class _CategoryGridItemState extends State<CategoryGridItem> {
         duration: const Duration(milliseconds: 200),
         child: Card(
           elevation: _isHovered ? 8 : 2,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: widget.onEdit,
@@ -44,13 +46,16 @@ class _CategoryGridItemState extends State<CategoryGridItem> {
               children: [
                 // صورة الخلفية
                 Positioned.fill(
-                  child: widget.category.imageUrl != null && widget.category.imageUrl!.isNotEmpty
-                    ? Image.network(
-                        widget.category.imageUrl!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => buildPlaceholder(isDark),
-                      )
-                    : buildPlaceholder(isDark),
+                  child:
+                      widget.category.imageUrl != null &&
+                          widget.category.imageUrl!.isNotEmpty
+                      ? Image.network(
+                          widget.category.imageUrl!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) =>
+                              buildPlaceholder(isDark),
+                        )
+                      : buildPlaceholder(isDark),
                 ),
 
                 // طبقة التعتيم المتدرجة
@@ -98,14 +103,21 @@ class _CategoryGridItemState extends State<CategoryGridItem> {
                       const SizedBox(height: 2),
                       if (!widget.category.isActive)
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.error.withValues(alpha: 0.9),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: const Text(
                             'معطل',
-                            style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                     ],
@@ -121,9 +133,16 @@ class _CategoryGridItemState extends State<CategoryGridItem> {
                       color: Colors.black.withValues(alpha: 0.3),
                       shape: const CircleBorder(),
                       child: IconButton(
-                        icon: const Icon(Icons.delete_outline, color: Colors.white, size: 18),
+                        icon: const Icon(
+                          Icons.delete_outline,
+                          color: Colors.white,
+                          size: 18,
+                        ),
                         onPressed: widget.onDelete,
-                        constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                        constraints: const BoxConstraints(
+                          minWidth: 32,
+                          minHeight: 32,
+                        ),
                         padding: EdgeInsets.zero,
                       ),
                     ),
@@ -135,6 +154,4 @@ class _CategoryGridItemState extends State<CategoryGridItem> {
       ),
     );
   }
-
-
 }

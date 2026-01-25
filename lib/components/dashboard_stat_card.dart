@@ -55,7 +55,8 @@ class DashboardStatCard extends StatelessWidget {
                       children: [
                         Text(
                           title,
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          style: Theme.of(context).textTheme.bodyLarge
+                              ?.copyWith(
                                 color: AppColors.textLight,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -65,7 +66,8 @@ class DashboardStatCard extends StatelessWidget {
                         const SizedBox(height: 8),
                         Text(
                           value,
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          style: Theme.of(context).textTheme.headlineSmall
+                              ?.copyWith(
                                 color: color,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -74,9 +76,8 @@ class DashboardStatCard extends StatelessWidget {
                           const SizedBox(height: 4),
                           Text(
                             subtitle!,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: AppColors.textMuted,
-                                ),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(color: AppColors.textMuted),
                           ),
                         ],
                       ],
@@ -89,11 +90,7 @@ class DashboardStatCard extends StatelessWidget {
                       color: color.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Icon(
-                      icon,
-                      color: color,
-                      size: 24,
-                    ),
+                    child: Icon(icon, color: color, size: 24),
                   ),
                 ],
               ),
@@ -103,7 +100,9 @@ class DashboardStatCard extends StatelessWidget {
                   children: [
                     Icon(
                       isTrendPositive ? Icons.trending_up : Icons.trending_down,
-                      color: isTrendPositive ? AppColors.success : AppColors.error,
+                      color: isTrendPositive
+                          ? AppColors.success
+                          : AppColors.error,
                       size: 16,
                     ),
                     const SizedBox(width: 4),
@@ -111,7 +110,9 @@ class DashboardStatCard extends StatelessWidget {
                       isTrendPositive ? '+12% هذا الأسبوع' : '-8% هذا الأسبوع',
                       style: TextStyle(
                         fontSize: 12,
-                        color: isTrendPositive ? AppColors.success : AppColors.error,
+                        color: isTrendPositive
+                            ? AppColors.success
+                            : AppColors.error,
                         fontWeight: FontWeight.w600,
                       ),
                     ),

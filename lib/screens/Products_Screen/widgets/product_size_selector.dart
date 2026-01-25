@@ -7,10 +7,20 @@ class ProductSizeSelector extends StatelessWidget {
 
   // الأحجام الافتراضية الشائعة في عالم المكملات
   final List<String> availableSizes = [
-    '500g', '1kg', '2kg','4kg', '5kg', 
-    '2lb', '5lb', '10lb', 
-    '30 Servings', '60 Servings', '120 Caps',
-    'Medium', 'Large', 'Small'
+    '500g',
+    '1kg',
+    '2kg',
+    '4kg',
+    '5kg',
+    '2lb',
+    '5lb',
+    '10lb',
+    '30 Servings',
+    '60 Servings',
+    '120 Caps',
+    'Medium',
+    'Large',
+    'Small',
   ];
 
   ProductSizeSelector({
@@ -40,7 +50,9 @@ class ProductSizeSelector extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: isDark ? Colors.white.withOpacity(0.05) : Colors.grey.shade100,
+            color: isDark
+                ? Colors.white.withOpacity(0.05)
+                : Colors.grey.shade100,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: AppColors.primary.withOpacity(0.1)),
           ),
@@ -66,26 +78,38 @@ class ProductSizeSelector extends StatelessWidget {
                   selectedColor: AppColors.primary.withOpacity(0.2),
                   checkmarkColor: AppColors.primary,
                   labelStyle: TextStyle(
-                    color: isSelected ? AppColors.primary : (isDark ? Colors.white70 : Colors.black87),
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    color: isSelected
+                        ? AppColors.primary
+                        : (isDark ? Colors.white70 : Colors.black87),
+                    fontWeight: isSelected
+                        ? FontWeight.bold
+                        : FontWeight.normal,
                     fontSize: 12,
                   ),
                   backgroundColor: Colors.transparent,
                   shape: StadiumBorder(
                     side: BorderSide(
-                      color: isSelected ? AppColors.primary : Colors.grey.withOpacity(0.3),
+                      color: isSelected
+                          ? AppColors.primary
+                          : Colors.grey.withOpacity(0.3),
                     ),
                   ),
                 );
               }),
-              
+
               // زر إضافة حجم مخصص (ActionChip)
               ActionChip(
-                avatar: const Icon(Icons.add, size: 16, color: AppColors.primary),
+                avatar: const Icon(
+                  Icons.add,
+                  size: 16,
+                  color: AppColors.primary,
+                ),
                 label: const Text("حجم مخصص", style: TextStyle(fontSize: 12)),
                 onPressed: () => _showAddSizeDialog(context),
                 backgroundColor: AppColors.primary.withOpacity(0.05),
-                shape: const StadiumBorder(side: BorderSide(color: AppColors.primary)),
+                shape: const StadiumBorder(
+                  side: BorderSide(color: AppColors.primary),
+                ),
               ),
             ],
           ),

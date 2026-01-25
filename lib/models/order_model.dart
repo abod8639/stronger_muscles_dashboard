@@ -1,24 +1,33 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:hive/hive.dart'; 
+import 'package:hive/hive.dart';
 
 part 'order_model.freezed.dart';
 part 'order_model.g.dart';
 
-@HiveType(typeId: 9) 
+@HiveType(typeId: 9)
 enum OrderStatus {
-  @HiveField(0) pending,
-  @HiveField(1) processing,
-  @HiveField(2) shipped,
-  @HiveField(3) delivered,
-  @HiveField(4) cancelled
+  @HiveField(0)
+  pending,
+  @HiveField(1)
+  processing,
+  @HiveField(2)
+  shipped,
+  @HiveField(3)
+  delivered,
+  @HiveField(4)
+  cancelled,
 }
 
 @HiveType(typeId: 10)
 enum PaymentStatus {
-  @HiveField(0) pending,
-  @HiveField(1) paid,
-  @HiveField(2) failed,
-  @HiveField(3) refunded
+  @HiveField(0)
+  pending,
+  @HiveField(1)
+  paid,
+  @HiveField(2)
+  failed,
+  @HiveField(3)
+  refunded,
 }
 
 @freezed
@@ -46,7 +55,7 @@ class OrderModel with _$OrderModel {
     @HiveField(15) List<OrderItemModel>? items,
   }) = _OrderModel;
 
-  factory OrderModel.fromJson(Map<String, dynamic> json) => 
+  factory OrderModel.fromJson(Map<String, dynamic> json) =>
       _$OrderModelFromJson(_mapOrderJson(json));
 }
 
@@ -66,7 +75,7 @@ class OrderItemModel with _$OrderItemModel {
     @HiveField(7) String? imageUrl,
   }) = _OrderItemModel;
 
-  factory OrderItemModel.fromJson(Map<String, dynamic> json) => 
+  factory OrderItemModel.fromJson(Map<String, dynamic> json) =>
       _$OrderItemModelFromJson(_mapItemJson(json));
 }
 
@@ -84,7 +93,10 @@ Map<String, dynamic> _mapOrderJson(Map<String, dynamic> json) {
     ...json,
     'id': (json['id'] ?? '').toString(),
     'userId': extractUserId(),
-    'orderDate': json['orderDate'] ?? json['order_date'] ?? DateTime.now().toIso8601String(),
+    'orderDate':
+        json['orderDate'] ??
+        json['order_date'] ??
+        DateTime.now().toIso8601String(),
     'addressId': (json['addressId'] ?? json['address_id'] ?? '').toString(),
     'shippingCost': json['shippingCost'] ?? json['shipping_cost'] ?? 0.0,
     'totalAmount': json['totalAmount'] ?? json['total_amount'] ?? 0.0,
@@ -93,7 +105,8 @@ Map<String, dynamic> _mapOrderJson(Map<String, dynamic> json) {
     'paymentMethod': json['paymentMethod'] ?? json['payment_method'] ?? 'card',
     'trackingNumber': json['trackingNumber'] ?? json['tracking_number'],
     'phoneNumber': json['phoneNumber'] ?? json['phone_number'],
-    'shippingAddressSnapshot': json['shippingAddressSnapshot'] ?? json['shipping_address_snapshot'],
+    'shippingAddressSnapshot':
+        json['shippingAddressSnapshot'] ?? json['shipping_address_snapshot'],
   };
 }
 

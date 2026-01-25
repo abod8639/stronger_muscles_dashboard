@@ -6,7 +6,6 @@ import 'package:stronger_muscles_dashboard/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/controllers/navigation_controller.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/build_nav_item.dart';
 
-
 class Sidebar extends StatelessWidget {
   final bool isDrawer;
   const Sidebar({super.key, this.isDrawer = false});
@@ -44,10 +43,14 @@ class Sidebar extends StatelessWidget {
                         ),
                       ],
                     ),
-                    child: const Icon(Icons.flash_on_rounded, color: Colors.white, size: 22),
+                    child: const Icon(
+                      Icons.flash_on_rounded,
+                      color: Colors.white,
+                      size: 22,
+                    ),
                   ),
                   const SizedBox(width: 12),
-                   Text(
+                  Text(
                     'STRONGER',
                     style: TextStyle(
                       color: Colors.white,
@@ -70,15 +73,57 @@ class Sidebar extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 children: [
                   _sectionTitle('MAIN MENU'),
-                  buildNavItem(isDrawer, controller, 0, Icons.dashboard_outlined, Icons.dashboard_rounded, 'Dashboard'),
-                  buildNavItem(isDrawer, controller, 2, Icons.inventory_2_outlined, Icons.inventory_2_rounded, 'Products'),
-                  buildNavItem(isDrawer, controller, 4, Icons.people_outline, Icons.people_rounded, 'Users'),
-                  
+                  buildNavItem(
+                    isDrawer,
+                    controller,
+                    0,
+                    Icons.dashboard_outlined,
+                    Icons.dashboard_rounded,
+                    'Dashboard',
+                  ),
+                  buildNavItem(
+                    isDrawer,
+                    controller,
+                    2,
+                    Icons.inventory_2_outlined,
+                    Icons.inventory_2_rounded,
+                    'Products',
+                  ),
+                  buildNavItem(
+                    isDrawer,
+                    controller,
+                    4,
+                    Icons.people_outline,
+                    Icons.people_rounded,
+                    'Users',
+                  ),
+
                   const SizedBox(height: 20),
                   _sectionTitle('MANAGEMENT'),
-                  buildNavItem(isDrawer, controller, 1, Icons.category_outlined, Icons.category_rounded, 'Categories'),
-                  buildNavItem(isDrawer, controller, 3, Icons.local_shipping_outlined, Icons.local_shipping_rounded, 'Orders'),
-                  buildNavItem(isDrawer, controller, 5, Icons.settings_outlined, Icons.settings_rounded, 'Settings'),
+                  buildNavItem(
+                    isDrawer,
+                    controller,
+                    1,
+                    Icons.category_outlined,
+                    Icons.category_rounded,
+                    'Categories',
+                  ),
+                  buildNavItem(
+                    isDrawer,
+                    controller,
+                    3,
+                    Icons.local_shipping_outlined,
+                    Icons.local_shipping_rounded,
+                    'Orders',
+                  ),
+                  buildNavItem(
+                    isDrawer,
+                    controller,
+                    5,
+                    Icons.settings_outlined,
+                    Icons.settings_rounded,
+                    'Settings',
+                  ),
                 ],
               ),
             ),
@@ -122,7 +167,10 @@ class Sidebar extends StatelessWidget {
             padding: const EdgeInsets.all(2),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: AppColors.primary.withOpacity(0.5), width: 1.5),
+              border: Border.all(
+                color: AppColors.primary.withOpacity(0.5),
+                width: 1.5,
+              ),
             ),
             child: CircleAvatar(
               radius: 18,
@@ -141,17 +189,14 @@ class Sidebar extends StatelessWidget {
                 const Text(
                   'Dexter',
                   style: TextStyle(
-                    color: Colors.white, 
-                    fontWeight: FontWeight.w600, 
-                    fontSize: 14
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
                   ),
                 ),
                 Text(
                   'Admin Account',
-                  style: TextStyle(
-                    color: Colors.white54, 
-                    fontSize: 11
-                  ),
+                  style: TextStyle(color: Colors.white54, fontSize: 11),
                 ),
               ],
             ),
@@ -163,7 +208,11 @@ class Sidebar extends StatelessWidget {
               onTap: () {},
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Icon(Icons.logout_rounded, color: Colors.redAccent.withOpacity(0.8), size: 20),
+                child: Icon(
+                  Icons.logout_rounded,
+                  color: Colors.redAccent.withOpacity(0.8),
+                  size: 20,
+                ),
               ),
             ),
           ),

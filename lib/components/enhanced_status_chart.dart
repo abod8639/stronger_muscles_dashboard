@@ -165,36 +165,34 @@ class _EnhancedStatusChartState extends State<EnhancedStatusChart>
           ),
           child: Text(
             widget.title,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
         ),
         Padding(
           padding: widget.padding,
           child: Column(
-            children: List.generate(
-              widget.items.length,
-              (index) {
-                final item = widget.items[index];
-                return Padding(
-                  padding: EdgeInsets.only(
-                    bottom: index < widget.items.length - 1 ? 16 : 0,
+            children: List.generate(widget.items.length, (index) {
+              final item = widget.items[index];
+              return Padding(
+                padding: EdgeInsets.only(
+                  bottom: index < widget.items.length - 1 ? 16 : 0,
+                ),
+                child: ScaleTransition(
+                  scale: Tween<double>(
+                    begin: 0.95,
+                    end: 1.0,
+                  ).animate(_animations[index]),
+                  child: GradientProgressBar(
+                    label: item.label,
+                    count: item.count,
+                    total: item.total,
+                    color: item.color,
                   ),
-                  child: ScaleTransition(
-                    scale: Tween<double>(begin: 0.95, end: 1.0).animate(
-                      _animations[index],
-                    ),
-                    child: GradientProgressBar(
-                      label: item.label,
-                      count: item.count,
-                      total: item.total,
-                      color: item.color,
-                    ),
-                  ),
-                );
-              },
-            ),
+                ),
+              );
+            }),
           ),
         ),
       ],

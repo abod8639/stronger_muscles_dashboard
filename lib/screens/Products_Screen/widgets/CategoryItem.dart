@@ -29,38 +29,46 @@ class CategoryItem extends StatelessWidget {
           blur: isSelected ? 20 : 10,
           borderRadius: BorderRadius.circular(15),
           border: Border.all(
-            color: isSelected ? AppColors.primary : Colors.white.withOpacity(0.1),
+            color: isSelected
+                ? AppColors.primary
+                : Colors.white.withOpacity(0.1),
             width: isSelected ? 1.5 : 1,
           ),
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: isSelected
-                ? [AppColors.primary.withOpacity(0.3), AppColors.primary.withOpacity(0.1)]
-                : [Colors.white.withOpacity(0.05), Colors.white.withOpacity(0.01)],
+                ? [
+                    AppColors.primary.withOpacity(0.3),
+                    AppColors.primary.withOpacity(0.1),
+                  ]
+                : [
+                    Colors.white.withOpacity(0.05),
+                    Colors.white.withOpacity(0.01),
+                  ],
           ),
           child: InkWell(
             onTap: onTap,
             borderRadius: BorderRadius.circular(15),
-            child:  Center(
-                child: Text(
-                  name.toUpperCase(),
-                  style: TextStyle(
-                    color: Colors.white,// AppColors.textLight,
-                    fontWeight: isSelected ? FontWeight.w900 : FontWeight.bold,
-                    fontSize: 12,
-                    letterSpacing: 1,
-                    shadows: isSelected
-                        ? [
-                            Shadow(
-                              color: AppColors.primary.withOpacity(0.5),
-                              blurRadius: 10,
-                            )
-                          ]
-                        : null,
-                  ),
+            child: Center(
+              child: Text(
+                name.toUpperCase(),
+                style: TextStyle(
+                  color: Colors.white, // AppColors.textLight,
+                  fontWeight: isSelected ? FontWeight.w900 : FontWeight.bold,
+                  fontSize: 12,
+                  letterSpacing: 1,
+                  shadows: isSelected
+                      ? [
+                          Shadow(
+                            color: AppColors.primary.withOpacity(0.5),
+                            blurRadius: 10,
+                          ),
+                        ]
+                      : null,
                 ),
               ),
+            ),
           ),
         ),
       ),
