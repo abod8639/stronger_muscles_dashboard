@@ -4,6 +4,7 @@ import 'package:stronger_muscles_dashboard/components/enhanced_error_widget.dart
 import 'package:stronger_muscles_dashboard/screens/Categories_Screen/widgets/CategoryFormSheet.dart';
 import 'package:stronger_muscles_dashboard/screens/Categories_Screen/widgets/CategoryGridItem.dart';
 import 'package:stronger_muscles_dashboard/screens/Categories_Screen/widgets/CategoryListItem.dart';
+import 'package:stronger_muscles_dashboard/screens/widgets/custom_dashboard_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/custom_search_bar.dart';
 import '../../controllers/categories_controller.dart';
 import '../../models/index.dart';
@@ -21,22 +22,10 @@ class CategoriesScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        title: Text(
-          'إدارة التصنيفات',
-          style: TextStyle(
-            fontSize: responsive.getTitleFontSize(),
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () => _showCategoryForm(context, controller),
-            icon: Icon(Icons.add_circle_outline, size: responsive.iconSize),
-            tooltip: 'إضافة تصنيف جديد',
-          ),
-          SizedBox(width: responsive.itemSpacing),
-        ],
+      appBar: CustomDashboardAppBar(
+        title: 'إدارة التصنيفات',
+        onPressed: () => _showCategoryForm(context, controller),
+        icon: Icons.add_circle_outline,
       ),
       body: Column(
         children: [
