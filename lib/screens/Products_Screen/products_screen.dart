@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
+import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/ProductFormPage.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/ProductListItem.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/build_empty_state.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/custom_dashboard_app_bar.dart';
@@ -22,7 +23,7 @@ class ProductsScreen extends StatelessWidget {
       backgroundColor: AppColors.backgroundDark,
       appBar: CustomDashboardAppBar(
         title: 'المنتجات',
-        onPressed: controller.fetchData,
+        onPressed:()=> Get.to(ProductFormPage()),
         icon: Icons.add,
         
 
