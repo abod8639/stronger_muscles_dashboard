@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_empty_state.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_status_tabs.dart';
+import 'package:stronger_muscles_dashboard/screens/widgets/horizontal_chips_selector.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/search_bar.dart';
 import '../../components/enhanced_error_widget.dart';
 import '../../controllers/orders_controller.dart';
@@ -20,26 +21,42 @@ class OrdersScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: buildAppBar( controller, responsive),
+      appBar: buildAppBar(controller, responsive),
       body: Column(
         children: [
-
-          Search_Bar(
+          CustomSearchBar(
             hintText: 'ابحث عن الطلبات بالرقم أو رقم الطلب...',
             padding: responsive.defaultPadding,
-            isDark: true,
-            controller: controller,
-            responsive: responsive,
+            onSearch: (String p1) {
+              controller.onSearchChanged(p1);
+            },
           ),
-          buildStatusTabs(controller),
+          // داخل كود الـ UI (Build Method)
+          Obx(
+            () => HorizontalChipsSelector(
+              items:
+                  controller.statusItems, // نمرر القائمة الجاهزة من الكنترولر
+              selectedId: controller.selectedStatusId.value,
+              onSelect: (id) => controller.selectedStatusId.value = id,
+              showAllOption: true,
+              allLabel: 'جميع الطلبات',
+            ),
+          ),
+          // buildStatusTabs(controller),
           const SizedBox(height: 8),
           Expanded(
             child: Obx(() {
-              if (controller.isLoading.value && controller.filteredOrders.isEmpty) {
-                return const Center(child: EnhancedLoadingWidget(message: 'جاري تحميل الطلبات...'));
+              if (controller.isLoading.value &&
+                  controller.filteredOrders.isEmpty) {
+                return const Center(
+                  child: EnhancedLoadingWidget(
+                    message: 'جاري تحميل الطلبات...',
+                  ),
+                );
               }
 
-              if (controller.errorMessage.isNotEmpty && controller.filteredOrders.isEmpty) {
+              if (controller.errorMessage.isNotEmpty &&
+                  controller.filteredOrders.isEmpty) {
                 return EnhancedErrorWidget(
                   title: 'حدث خطأ',
                   icon: Icons.error,

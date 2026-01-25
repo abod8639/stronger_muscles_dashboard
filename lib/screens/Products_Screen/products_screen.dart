@@ -4,7 +4,7 @@ import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/ProductListItem.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/build_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/build_empty_state.dart';
-import 'package:stronger_muscles_dashboard/screens/widgets/screen_widget.dart';
+import 'package:stronger_muscles_dashboard/screens/widgets/horizontal_chips_selector.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/search_bar.dart';
 import '../../controllers/products_controller.dart';
 import '../../config/responsive.dart';
@@ -24,16 +24,15 @@ class ProductsScreen extends StatelessWidget {
       body: Column(
         children: [
 
-          Search_Bar(
+          CustomSearchBar(
             hintText: 'ابحث عن منتج بالاسم أو الماركة...',
             padding: responsive.defaultPadding,
-            isDark: true,
-            controller: controller,
-            responsive: responsive,
+
+             onSearch: (value) => controller.onSearchChanged(value),
           ),
 
           // const ProductsCategoriesScreen(),
-          HorizontalChipsSelector(
+     Obx(() =>      HorizontalChipsSelector(
             items: controller.categories,
             selectedId: controller.selectedCategoryId.value,
             onSelect: (id) => controller.selectedCategoryId.value = id,
@@ -41,7 +40,8 @@ class ProductsScreen extends StatelessWidget {
             idKey: 'id',
             showAllOption: true,
             allLabel: 'الكل',
-          ),
+
+          ),),
 
           const SizedBox(height: 8),
 

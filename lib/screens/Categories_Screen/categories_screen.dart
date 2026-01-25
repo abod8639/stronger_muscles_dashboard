@@ -4,7 +4,7 @@ import 'package:stronger_muscles_dashboard/components/enhanced_error_widget.dart
 import 'package:stronger_muscles_dashboard/screens/Categories_Screen/widgets/CategoryFormSheet.dart';
 import 'package:stronger_muscles_dashboard/screens/Categories_Screen/widgets/CategoryGridItem.dart';
 import 'package:stronger_muscles_dashboard/screens/Categories_Screen/widgets/CategoryListItem.dart';
-import 'package:stronger_muscles_dashboard/screens/widgets/search_bar.dart';
+import 'package:stronger_muscles_dashboard/screens/widgets/custom_search_bar.dart';
 import '../../controllers/categories_controller.dart';
 import '../../models/index.dart';
 import '../../config/responsive.dart';
@@ -43,12 +43,11 @@ class CategoriesScreen extends StatelessWidget {
         children: [
           // شريط البحث المتطور
           //Search Bar
-          Search_Bar(
+          CustomSearchBar(
             hintText: 'ابحث عن تصنيف بالاسم أو الكود...',
-            padding: padding, 
-            isDark: isDark, 
-            controller: controller, 
-            responsive: responsive),
+            padding: padding,
+            onSearch: (value) => controller.onSearchChanged(value),
+          ),
 
 
           // قائمة التصنيفات

@@ -10,16 +10,16 @@ Widget buildEmptyState(OrdersController controller) {
           Icon(Icons.shopping_bag_outlined, size: 80, color: Colors.grey.withOpacity(0.3)),
           const SizedBox(height: 16),
           Text(
-            controller.searchQuery.value.isEmpty && controller.selectedStatus.value == null
+            controller.searchQuery.value.isEmpty && controller.selectedStatusId.value == 'all'
                 ? 'لا توجد طلبات حالياً'
                 : 'لا توجد نتائج تطابق بحثك',
             style: const TextStyle(color: Colors.grey, fontSize: 16),
           ),
-          if (controller.searchQuery.value.isNotEmpty || controller.selectedStatus.value != null)
+          if (controller.searchQuery.value.isNotEmpty || controller.selectedStatusId.value != 'all')
             TextButton(
               onPressed: () {
-                controller.setSearchQuery('');
-                controller.setFilterStatus(null);
+                controller.selectedStatusId.value = 'all';
+                controller.searchQuery.value = '';
               },
               child: const Text('مسح الفلاتر'),
             ),
