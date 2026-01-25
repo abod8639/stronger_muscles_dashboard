@@ -16,7 +16,6 @@ class UsersScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(UsersController());
     final responsive = context.responsive;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: Colors.transparent, // Let MainNavigationScreen handle background

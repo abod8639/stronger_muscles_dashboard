@@ -7,7 +7,8 @@ class CustomDashboardAppBar extends StatelessWidget implements PreferredSizeWidg
   final Widget? leading;
   final bool centerTitle;
   final double elevation;
-  final VoidCallback? onRefresh;
+  final IconData? icon;
+  final VoidCallback? onPressed;
 
   const CustomDashboardAppBar({
     super.key,
@@ -16,7 +17,8 @@ class CustomDashboardAppBar extends StatelessWidget implements PreferredSizeWidg
     this.leading,
     this.centerTitle = true,
     this.elevation = 0,
-    this.onRefresh,
+    this.icon,
+    this.onPressed,
   });
 
   @override
@@ -39,10 +41,10 @@ class CustomDashboardAppBar extends StatelessWidget implements PreferredSizeWidg
         ),
       ),
       actions: [
-        if (onRefresh != null)
+        if (onPressed != null)
           IconButton(
-            onPressed: onRefresh,
-            icon: const Icon(Icons.refresh_rounded),
+            onPressed: onPressed,
+            icon: Icon(icon ?? Icons.refresh_rounded),
             tooltip: 'تحديث البيانات',
           ),
         ...?actions, // دمج الـ Actions الإضافية إذا وجدت
