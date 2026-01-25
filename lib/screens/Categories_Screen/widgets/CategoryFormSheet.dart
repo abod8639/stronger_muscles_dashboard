@@ -91,7 +91,7 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
                           message:
                               'تعديل المعرف قد يؤثر على الروابط المرتبطة بهذا التصنيف. هل تريد الاستمرار؟',
                           confirmText: 'تفعيل التعديل',
-                          confirmColor: AppColors.primary,
+                          confirmColor: AppColors.primaryDark,
                           onConfirm: () {
                             setState(() => _isIdFieldEnabled = true);
                             Get.back(); // إغلاق الحوار
