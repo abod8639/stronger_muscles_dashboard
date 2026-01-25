@@ -1,4 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/functions/cache_manager.dart';
 import 'package:stronger_muscles_dashboard/models/order_model.dart';
 
 Widget buildOrderItem(OrderItemModel item, bool isDark) {
@@ -11,9 +13,10 @@ Widget buildOrderItem(OrderItemModel item, bool isDark) {
         borderRadius: BorderRadius.circular(8),
       ),
       child: item.imageUrl != null
-          ? Image.network(
-              item.imageUrl!,
-              errorBuilder: (c, e, s) => Icon(Icons.image),
+          ? CachedNetworkImage(
+              cacheManager: CustomCacheManager.instance,
+              imageUrl: item.imageUrl!,
+              errorWidget: (c, e, s) => Icon(Icons.image),
             )
           : Icon(Icons.image, color: Colors.grey),
     ),
