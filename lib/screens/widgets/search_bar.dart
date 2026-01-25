@@ -1,8 +1,8 @@
 
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
-import 'package:stronger_muscles_dashboard/controllers/categories_controller.dart';
 
 class Search_Bar extends StatelessWidget {
   const Search_Bar({
@@ -11,29 +11,20 @@ class Search_Bar extends StatelessWidget {
     required this.isDark,
     required this.controller,
     required this.responsive,
+    required this.hintText,
   });
 
   final EdgeInsets padding;
   final bool isDark;
-  final CategoriesController controller;
+  final controller;
   final ResponsiveLayout responsive;
+  final String hintText;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: padding,
-      child: Container(
-        decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF2C2C2C) : Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withValues(alpha: isDark ? 0.1 : 0.08),
-              blurRadius: 15,
-              offset: const Offset(0, 5),
-            ),
-          ],
-        ),
+      child: GlassContainer(
         child: TextField(
           onChanged: controller.onSearchChanged,
           cursorColor: AppColors.primary,
@@ -42,7 +33,7 @@ class Search_Bar extends StatelessWidget {
             fontSize: responsive.getBodyFontSize(),
           ),
           decoration: InputDecoration(
-            hintText: 'ابحث عن تصنيف بالاسم أو الكود...',
+            hintText: hintText,
             hintStyle: TextStyle(
               color: isDark ? Colors.white54 : Colors.grey.shade400,
               fontSize: responsive.getBodyFontSize(),

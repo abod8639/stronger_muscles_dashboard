@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/ProductListItem.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/ProductsCategoriesScreen.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/build_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/build_empty_state.dart';
-import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/build_search_bar.dart';
+import 'package:stronger_muscles_dashboard/screens/widgets/search_bar.dart';
 import '../../controllers/products_controller.dart';
 import '../../config/responsive.dart';
 import '../../components/index.dart';
@@ -18,10 +19,19 @@ class ProductsScreen extends StatelessWidget {
     final responsive = context.responsive;
 
     return Scaffold(
+      backgroundColor: AppColors.backgroundDark,
       appBar: buildAppBar(context, controller, responsive),
       body: Column(
         children: [
-          buildSearchBar(context, controller, responsive),
+
+          Search_Bar(
+            hintText: 'ابحث عن منتج بالاسم أو الماركة...',
+            padding: responsive.defaultPadding,
+            isDark: true,
+            controller: controller,
+            responsive: responsive,
+          ),
+          // buildSearchBar(context, controller, responsive),
 
           const ProductsCategoriesScreen(),
 
