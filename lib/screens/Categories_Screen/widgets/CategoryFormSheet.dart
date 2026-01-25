@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:stronger_muscles_dashboard/components/confirm_dialog.dart';
 import 'package:stronger_muscles_dashboard/controllers/categories_controller.dart';
 import 'package:stronger_muscles_dashboard/models/category_model.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
@@ -22,7 +23,7 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
   late final TextEditingController idController;
   late final TextEditingController nameController;
   late final TextEditingController imageController;
-  
+
   bool _isIdFieldEnabled = false;
 
   @override
@@ -30,8 +31,10 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
     super.initState();
     idController = TextEditingController(text: widget.category?.id ?? '');
     nameController = TextEditingController(text: widget.category?.name ?? '');
-    imageController = TextEditingController(text: widget.category?.imageUrl ?? '');
-    
+    imageController = TextEditingController(
+      text: widget.category?.imageUrl ?? '',
+    );
+
     if (widget.category == null) _isIdFieldEnabled = true;
 
     imageController.addListener(() => setState(() {}));
@@ -72,17 +75,61 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
               const SizedBox(height: 20),
               _buildHeader(res),
               const SizedBox(height: 24),
-              
-              // حقل الـ ID مع ميزة النقر المزدوج للتفعيل
-              GestureDetector(
-                onDoubleTap: () => setState(() => _isIdFieldEnabled = !_isIdFieldEnabled),
-                child: buildCategoryFormSheetModernTextField(
-                  idController,
-                  'كود التصنيف (Unique ID)',
-                  Icons.fingerprint_rounded,
-                  enabled: _isIdFieldEnabled && !widget.controller.isLoading.value,
+
+              // حقل الـ ID مع حماية متقدمة وتجربة مستخدم محسنة
+              Tooltip(
+                message: _isIdFieldEnabled
+                    ? 'الحقل مفعل حالياً'
+                    : 'انقر مرتين لتعديل الكود المعرف',
+                child: GestureDetector(
+                  onDoubleTap: () {
+                    // إذا كان الحقل مغلقاً، نطلب التأكيد لتفعيله
+                    if (!_isIdFieldEnabled) {
+                      Get.dialog(
+                        ConfirmDialog(
+                          title: 'فتح قفل المعرف (ID)',
+                          message:
+                              'تعديل المعرف قد يؤثر على الروابط المرتبطة بهذا التصنيف. هل تريد الاستمرار؟',
+                          confirmText: 'تفعيل التعديل',
+                          confirmColor: AppColors.primary,
+                          onConfirm: () {
+                            setState(() => _isIdFieldEnabled = true);
+                            Get.back(); // إغلاق الحوار
+                          },
+                        ),
+                      );
+                    } else {
+                      // إذا كان مفعلاً، نقوم بقفله فوراً دون الحاجة لحوار تأكيد
+                      setState(() => _isIdFieldEnabled = false);
+                    }
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      // إضافة وميض بسيط أو ظل خفيف عندما يكون الحقل مفعلاً للتنبيه
+                      boxShadow: _isIdFieldEnabled
+                          ? [
+                              BoxShadow(
+                                color: AppColors.warning.withOpacity(0.1),
+                                blurRadius: 10,
+                              ),
+                            ]
+                          : [],
+                    ),
+                    child: buildCategoryFormSheetModernTextField(
+                      idController,
+                      'كود التصنيف (Unique ID)',
+                      Icons.fingerprint_rounded,
+                      // الحقل يكون مفعلاً فقط إذا تحقق الشرطان
+                      enabled:
+                          _isIdFieldEnabled &&
+                          !widget.controller.isLoading.value,
+                    ),
+                  ),
                 ),
               ),
+
               const SizedBox(height: 16),
 
               buildCategoryFormSheetModernTextField(
@@ -120,7 +167,9 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
     return Row(
       children: [
         Icon(
-          widget.category == null ? Icons.add_circle_outline : Icons.edit_note_rounded,
+          widget.category == null
+              ? Icons.add_circle_outline
+              : Icons.edit_note_rounded,
           color: AppColors.primary,
           size: 28,
         ),
@@ -147,7 +196,7 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
         if (imageController.text.isNotEmpty) ...[
           const SizedBox(height: 12),
           _buildImagePreview(),
-        ]
+        ],
       ],
     );
   }
@@ -165,7 +214,8 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
         child: CachedNetworkImage(
           imageUrl: imageController.text,
           fit: BoxFit.cover,
-          placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
+          placeholder: (_, __) =>
+              const Center(child: CircularProgressIndicator()),
           errorWidget: (_, __, ___) => const Center(
             child: Icon(Icons.broken_image_outlined, color: Colors.grey),
           ),
@@ -184,8 +234,8 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(18),
             gradient: LinearGradient(
-              colors: isLoading 
-                  ? [Colors.grey, Colors.grey.shade400] 
+              colors: isLoading
+                  ? [Colors.grey, Colors.grey.shade400]
                   : [AppColors.primary, const Color(0xFF6366F1)],
             ),
             boxShadow: [
@@ -207,11 +257,18 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
                     ? const SizedBox(
                         width: 24,
                         height: 24,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2.5,
+                        ),
                       )
                     : const Text(
                         'حفظ وإرسال البيانات',
-                        style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
               ),
             ),
@@ -222,9 +279,10 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
   }
 
   void _submitForm() async {
-    if (idController.text.trim().isEmpty || nameController.text.trim().isEmpty) {
+    if (idController.text.trim().isEmpty ||
+        nameController.text.trim().isEmpty) {
       Get.snackbar(
-        'تنبيه', 
+        'تنبيه',
         'يجب ملء حقل الكود والاسم على الأقل',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: AppColors.error.withOpacity(0.8),
@@ -248,6 +306,6 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
       );
     }
 
-    if (success) Get.back(); 
+    if (success) Get.back();
   }
 }

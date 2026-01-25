@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/components/category_card.dart';
-import '../config/theme.dart';
-import '../config/responsive.dart';
-import '../models/index.dart';
+import '../../../config/theme.dart';
+import '../../../config/responsive.dart';
+import '../../../models/index.dart';
 
 class CategoriesGrid extends StatelessWidget {
   final List<CategoryModel> categories;
