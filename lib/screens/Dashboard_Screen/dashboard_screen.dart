@@ -7,7 +7,7 @@ import '../../config/responsive.dart';
 import '../../config/theme.dart';
 import '../../controllers/dashboard_controller.dart';
 import '../../components/index.dart';
-import './widget/buildDashboardScreenStatsCards.dart';
+import 'widget/dashboard_stats_grid.dart';
 
 class DashboardScreen extends GetView<DashboardController> {
   const DashboardScreen({super.key});

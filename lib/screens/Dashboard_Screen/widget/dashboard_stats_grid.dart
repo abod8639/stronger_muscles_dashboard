@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/components/animated_stat_card.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
-import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/controllers/dashboard_controller.dart';
 
 class DashboardStatsGrid extends GetView<DashboardController> {
@@ -12,40 +11,40 @@ class DashboardStatsGrid extends GetView<DashboardController> {
   Widget build(BuildContext context) {
     final res = context.responsive;
 
-    // تحديد عدد الأعمدة بناءً على حجم الشاشة
-    int crossAxisCount = 4; // الافتراضي لسطح المكتب
-    if (res.isMobile) crossAxisCount = 2;
-    else if (res.isTablet) crossAxisCount = 3;
+    int crossAxisCount = 4;
+    if (res.isMobile)
+      crossAxisCount = 2;
+    else if (res.isTablet)
+      crossAxisCount = 3;
 
     return Obx(() {
-      // مصفوفة البيانات لسهولة الإدارة ومنع التكرار
       final List<Map<String, dynamic>> statsData = [
         {
           'title': 'إجمالي الإيرادات',
           'value': '${controller.totalRevenue.value.toStringAsFixed(0)} L.E',
-          'icon': Icons.trending_up,
-          'color': AppColors.primary,
+          'icon': Icons.account_balance_wallet_rounded,
+          'color': const Color(0xFF6366F1),
           'trend': true,
         },
         {
           'title': 'إجمالي الطلبات',
           'value': controller.totalOrders.value.toString(),
-          'icon': Icons.shopping_bag_outlined,
-          'color': AppColors.warning,
+          'icon': Icons.shopping_cart_rounded,
+          'color': const Color(0xFFF59E0B),
           'trend': true,
         },
         {
           'title': 'إجمالي المستخدمين',
           'value': controller.totalUsers.value.toString(),
-          'icon': Icons.people_outline,
-          'color': AppColors.success,
+          'icon': Icons.people_alt_rounded,
+          'color': const Color(0xFF10B981),
           'trend': true,
         },
         {
           'title': 'إجمالي المنتجات',
           'value': controller.totalProducts.value.toString(),
-          'icon': Icons.inventory_2_outlined,
-          'color': Colors.purple, // غيرنا اللون للتمييز
+          'icon': Icons.layers_rounded,
+          'color': const Color(0xFF8B5CF6),
           'trend': false,
         },
       ];
@@ -60,8 +59,7 @@ class DashboardStatsGrid extends GetView<DashboardController> {
             crossAxisCount: crossAxisCount,
             crossAxisSpacing: res.itemSpacing,
             mainAxisSpacing: res.itemSpacing,
-            // تحديد ارتفاع الكارت بناءً على الجهاز
-            mainAxisExtent: res.isMobile ? 140 : 160, 
+            mainAxisExtent: res.isMobile ? 140 : 160,
           ),
           itemBuilder: (context, index) {
             final data = statsData[index];
@@ -71,7 +69,7 @@ class DashboardStatsGrid extends GetView<DashboardController> {
               icon: data['icon'],
               color: data['color'],
               showTrendIcon: data['trend'],
-              isTrendPositive: index != 1, // مثال منطقي بسيط
+              isTrendPositive: index != 1,
             );
           },
         ),
