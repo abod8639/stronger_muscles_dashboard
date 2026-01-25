@@ -4,6 +4,7 @@ import 'package:stronger_muscles_dashboard/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/components/status_badge.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
+import 'package:stronger_muscles_dashboard/functions/cache_manager.dart';
 import 'package:stronger_muscles_dashboard/models/product_model.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/buildActionButtons.dart';
 
@@ -121,6 +122,7 @@ class ProductCard extends StatelessWidget {
           children: [
             if (product.imageUrls.isNotEmpty)
               CachedNetworkImage(
+                cacheManager: CustomCacheManager.instance,
                 imageUrl: product.imageUrls.first,
                 fit: BoxFit.cover,
                 width: double.infinity,
