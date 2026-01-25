@@ -319,6 +319,12 @@ class ProductFormSheetState extends State<ProductFormSheet> {
 
   void _submitForm() {
     if (!_formKey.currentState!.validate()) return;
+
+    if (selectedCategoryId == null || selectedCategoryId!.isEmpty) {
+      Get.snackbar('خطأ', 'يرجى اختيار قسم للمنتج', snackPosition: SnackPosition.BOTTOM);
+      return;
+    }
+
     if (imageUrls.isEmpty) {
       Get.snackbar('خطأ', 'يرجى إضافة صورة واحدة على الأقل للمنتج', snackPosition: SnackPosition.BOTTOM);
       return;
@@ -344,6 +350,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
 
     );
 
+ debugPrint(productData.toString());
     widget.product == null 
       ? controller.addProduct(productData) 
       : controller.updateProduct(productData);

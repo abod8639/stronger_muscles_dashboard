@@ -277,8 +277,14 @@ class _ProductFormPageState extends State<ProductFormPage> {
 
   void _submitForm() {
     if (!_formKey.currentState!.validate()) return;
+
+    if (selectedCategoryId == null || selectedCategoryId!.isEmpty) {
+      Get.snackbar('خطأ', 'يرجى اختيار قسم للمنتج', snackPosition: SnackPosition.BOTTOM);
+      return;
+    }
+
     if (imageUrls.isEmpty) {
-      Get.snackbar('تنبيه', 'يجب إضافة صورة واحدة على الأقل');
+      Get.snackbar('خطأ', 'يرجى إضافة صورة واحدة على الأقل للمنتج', snackPosition: SnackPosition.BOTTOM);
       return;
     }
 
@@ -297,9 +303,14 @@ class _ProductFormPageState extends State<ProductFormPage> {
       servingsPerContainer: int.tryParse(numberOfSessionsController.text) ?? 0,
       flavor: controller.productFlavors.toList(),
       size: controller.productSizes.toList(),
-      weight: 1.0,
+      weight: controller.productWeight.value,
+      isBackgroundWhite: controller.isBackgroundWhite.value,
+
     );
 
-    widget.product == null ? controller.addProduct(productData) : controller.updateProduct(productData);
+ debugPrint(productData.toString());
+    widget.product == null 
+      ? controller.addProduct(productData) 
+      : controller.updateProduct(productData);
   }
 }

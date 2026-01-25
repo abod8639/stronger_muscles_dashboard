@@ -26,28 +26,38 @@ mixin _$ProductModel {
   String get name => throw _privateConstructorUsedError;
   @HiveField(2)
   double get price => throw _privateConstructorUsedError;
+  @JsonKey(name: 'discount_price')
   @HiveField(3)
   double? get discountPrice => throw _privateConstructorUsedError;
+  @JsonKey(name: 'image_urls')
   @HiveField(4)
   List<String> get imageUrls => throw _privateConstructorUsedError;
   @HiveField(5)
   String get description => throw _privateConstructorUsedError;
+  @JsonKey(name: 'category_id')
   @HiveField(6)
   String get categoryId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'stock_quantity')
   @HiveField(7)
   int get stockQuantity => throw _privateConstructorUsedError;
+  @JsonKey(name: 'average_rating')
   @HiveField(8)
   double get averageRating => throw _privateConstructorUsedError;
+  @JsonKey(name: 'review_count')
   @HiveField(9)
   int get reviewCount => throw _privateConstructorUsedError;
   @HiveField(10)
   String? get brand => throw _privateConstructorUsedError;
+  @JsonKey(name: 'serving_size')
   @HiveField(11)
   String? get servingSize => throw _privateConstructorUsedError;
+  @JsonKey(name: 'servings_per_container')
   @HiveField(12)
   int? get servingsPerContainer => throw _privateConstructorUsedError;
+  @JsonKey(name: 'is_active')
   @HiveField(13)
   bool get isActive => throw _privateConstructorUsedError;
+  @JsonKey(name: 'is_background_white')
   @HiveField(14)
   bool? get isBackgroundWhite => throw _privateConstructorUsedError;
   @HiveField(15)
@@ -58,39 +68,51 @@ mixin _$ProductModel {
   double? get weight => throw _privateConstructorUsedError;
   @HiveField(18)
   List<String>? get size => throw _privateConstructorUsedError;
+  @JsonKey(name: 'flavors')
   @HiveField(19)
   List<String>? get flavor => throw _privateConstructorUsedError;
+  @JsonKey(name: 'nutrition_facts')
   @HiveField(20)
   Map<String, dynamic>? get nutritionFacts =>
       throw _privateConstructorUsedError;
   @HiveField(21)
   bool get featured => throw _privateConstructorUsedError;
+  @JsonKey(name: 'new_arrival')
   @HiveField(22)
   bool get newArrival => throw _privateConstructorUsedError;
+  @JsonKey(name: 'best_seller')
   @HiveField(23)
   bool get bestSeller => throw _privateConstructorUsedError;
+  @JsonKey(name: 'total_sales')
   @HiveField(24)
   int get totalSales => throw _privateConstructorUsedError;
+  @JsonKey(name: 'views_count')
   @HiveField(25)
   int get viewsCount => throw _privateConstructorUsedError;
+  @JsonKey(name: 'shipping_weight')
   @HiveField(26)
   double? get shippingWeight => throw _privateConstructorUsedError;
   @HiveField(27)
   Map<String, dynamic>? get dimensions => throw _privateConstructorUsedError;
   @HiveField(28)
   List<String> get ingredients => throw _privateConstructorUsedError;
+  @JsonKey(name: 'usage_instructions')
   @HiveField(29)
   String? get usageInstructions => throw _privateConstructorUsedError;
   @HiveField(30)
   String? get warnings => throw _privateConstructorUsedError;
+  @JsonKey(name: 'expiry_date')
   @HiveField(31)
   DateTime? get expiryDate => throw _privateConstructorUsedError;
   @HiveField(32)
   String? get manufacturer => throw _privateConstructorUsedError;
+  @JsonKey(name: 'country_of_origin')
   @HiveField(33)
   String? get countryOfOrigin => throw _privateConstructorUsedError;
+  @JsonKey(name: 'meta_title')
   @HiveField(34)
   String? get metaTitle => throw _privateConstructorUsedError;
+  @JsonKey(name: 'meta_description')
   @HiveField(35)
   String? get metaDescription => throw _privateConstructorUsedError;
   @HiveField(36)
@@ -112,39 +134,49 @@ abstract class $ProductModelCopyWith<$Res> {
       {@HiveField(0) String id,
       @HiveField(1) String name,
       @HiveField(2) double price,
-      @HiveField(3) double? discountPrice,
-      @HiveField(4) List<String> imageUrls,
+      @JsonKey(name: 'discount_price') @HiveField(3) double? discountPrice,
+      @JsonKey(name: 'image_urls') @HiveField(4) List<String> imageUrls,
       @HiveField(5) String description,
-      @HiveField(6) String categoryId,
-      @HiveField(7) int stockQuantity,
-      @HiveField(8) double averageRating,
-      @HiveField(9) int reviewCount,
+      @JsonKey(name: 'category_id') @HiveField(6) String categoryId,
+      @JsonKey(name: 'stock_quantity') @HiveField(7) int stockQuantity,
+      @JsonKey(name: 'average_rating') @HiveField(8) double averageRating,
+      @JsonKey(name: 'review_count') @HiveField(9) int reviewCount,
       @HiveField(10) String? brand,
-      @HiveField(11) String? servingSize,
-      @HiveField(12) int? servingsPerContainer,
-      @HiveField(13) bool isActive,
-      @HiveField(14) bool? isBackgroundWhite,
+      @JsonKey(name: 'serving_size') @HiveField(11) String? servingSize,
+      @JsonKey(name: 'servings_per_container')
+      @HiveField(12)
+      int? servingsPerContainer,
+      @JsonKey(name: 'is_active') @HiveField(13) bool isActive,
+      @JsonKey(name: 'is_background_white')
+      @HiveField(14)
+      bool? isBackgroundWhite,
       @HiveField(15) String? sku,
       @HiveField(16) List<String>? tags,
       @HiveField(17) double? weight,
       @HiveField(18) List<String>? size,
-      @HiveField(19) List<String>? flavor,
-      @HiveField(20) Map<String, dynamic>? nutritionFacts,
+      @JsonKey(name: 'flavors') @HiveField(19) List<String>? flavor,
+      @JsonKey(name: 'nutrition_facts')
+      @HiveField(20)
+      Map<String, dynamic>? nutritionFacts,
       @HiveField(21) bool featured,
-      @HiveField(22) bool newArrival,
-      @HiveField(23) bool bestSeller,
-      @HiveField(24) int totalSales,
-      @HiveField(25) int viewsCount,
-      @HiveField(26) double? shippingWeight,
+      @JsonKey(name: 'new_arrival') @HiveField(22) bool newArrival,
+      @JsonKey(name: 'best_seller') @HiveField(23) bool bestSeller,
+      @JsonKey(name: 'total_sales') @HiveField(24) int totalSales,
+      @JsonKey(name: 'views_count') @HiveField(25) int viewsCount,
+      @JsonKey(name: 'shipping_weight') @HiveField(26) double? shippingWeight,
       @HiveField(27) Map<String, dynamic>? dimensions,
       @HiveField(28) List<String> ingredients,
-      @HiveField(29) String? usageInstructions,
+      @JsonKey(name: 'usage_instructions')
+      @HiveField(29)
+      String? usageInstructions,
       @HiveField(30) String? warnings,
-      @HiveField(31) DateTime? expiryDate,
+      @JsonKey(name: 'expiry_date') @HiveField(31) DateTime? expiryDate,
       @HiveField(32) String? manufacturer,
-      @HiveField(33) String? countryOfOrigin,
-      @HiveField(34) String? metaTitle,
-      @HiveField(35) String? metaDescription,
+      @JsonKey(name: 'country_of_origin')
+      @HiveField(33)
+      String? countryOfOrigin,
+      @JsonKey(name: 'meta_title') @HiveField(34) String? metaTitle,
+      @JsonKey(name: 'meta_description') @HiveField(35) String? metaDescription,
       @HiveField(36) String? slug});
 }
 
@@ -364,39 +396,49 @@ abstract class _$$ProductModelImplCopyWith<$Res>
       {@HiveField(0) String id,
       @HiveField(1) String name,
       @HiveField(2) double price,
-      @HiveField(3) double? discountPrice,
-      @HiveField(4) List<String> imageUrls,
+      @JsonKey(name: 'discount_price') @HiveField(3) double? discountPrice,
+      @JsonKey(name: 'image_urls') @HiveField(4) List<String> imageUrls,
       @HiveField(5) String description,
-      @HiveField(6) String categoryId,
-      @HiveField(7) int stockQuantity,
-      @HiveField(8) double averageRating,
-      @HiveField(9) int reviewCount,
+      @JsonKey(name: 'category_id') @HiveField(6) String categoryId,
+      @JsonKey(name: 'stock_quantity') @HiveField(7) int stockQuantity,
+      @JsonKey(name: 'average_rating') @HiveField(8) double averageRating,
+      @JsonKey(name: 'review_count') @HiveField(9) int reviewCount,
       @HiveField(10) String? brand,
-      @HiveField(11) String? servingSize,
-      @HiveField(12) int? servingsPerContainer,
-      @HiveField(13) bool isActive,
-      @HiveField(14) bool? isBackgroundWhite,
+      @JsonKey(name: 'serving_size') @HiveField(11) String? servingSize,
+      @JsonKey(name: 'servings_per_container')
+      @HiveField(12)
+      int? servingsPerContainer,
+      @JsonKey(name: 'is_active') @HiveField(13) bool isActive,
+      @JsonKey(name: 'is_background_white')
+      @HiveField(14)
+      bool? isBackgroundWhite,
       @HiveField(15) String? sku,
       @HiveField(16) List<String>? tags,
       @HiveField(17) double? weight,
       @HiveField(18) List<String>? size,
-      @HiveField(19) List<String>? flavor,
-      @HiveField(20) Map<String, dynamic>? nutritionFacts,
+      @JsonKey(name: 'flavors') @HiveField(19) List<String>? flavor,
+      @JsonKey(name: 'nutrition_facts')
+      @HiveField(20)
+      Map<String, dynamic>? nutritionFacts,
       @HiveField(21) bool featured,
-      @HiveField(22) bool newArrival,
-      @HiveField(23) bool bestSeller,
-      @HiveField(24) int totalSales,
-      @HiveField(25) int viewsCount,
-      @HiveField(26) double? shippingWeight,
+      @JsonKey(name: 'new_arrival') @HiveField(22) bool newArrival,
+      @JsonKey(name: 'best_seller') @HiveField(23) bool bestSeller,
+      @JsonKey(name: 'total_sales') @HiveField(24) int totalSales,
+      @JsonKey(name: 'views_count') @HiveField(25) int viewsCount,
+      @JsonKey(name: 'shipping_weight') @HiveField(26) double? shippingWeight,
       @HiveField(27) Map<String, dynamic>? dimensions,
       @HiveField(28) List<String> ingredients,
-      @HiveField(29) String? usageInstructions,
+      @JsonKey(name: 'usage_instructions')
+      @HiveField(29)
+      String? usageInstructions,
       @HiveField(30) String? warnings,
-      @HiveField(31) DateTime? expiryDate,
+      @JsonKey(name: 'expiry_date') @HiveField(31) DateTime? expiryDate,
       @HiveField(32) String? manufacturer,
-      @HiveField(33) String? countryOfOrigin,
-      @HiveField(34) String? metaTitle,
-      @HiveField(35) String? metaDescription,
+      @JsonKey(name: 'country_of_origin')
+      @HiveField(33)
+      String? countryOfOrigin,
+      @JsonKey(name: 'meta_title') @HiveField(34) String? metaTitle,
+      @JsonKey(name: 'meta_description') @HiveField(35) String? metaDescription,
       @HiveField(36) String? slug});
 }
 
@@ -609,39 +651,51 @@ class _$ProductModelImpl extends _ProductModel with DiagnosticableTreeMixin {
       {@HiveField(0) required this.id,
       @HiveField(1) required this.name,
       @HiveField(2) required this.price,
-      @HiveField(3) this.discountPrice,
-      @HiveField(4) final List<String> imageUrls = const [],
+      @JsonKey(name: 'discount_price') @HiveField(3) this.discountPrice,
+      @JsonKey(name: 'image_urls')
+      @HiveField(4)
+      final List<String> imageUrls = const [],
       @HiveField(5) required this.description,
-      @HiveField(6) required this.categoryId,
-      @HiveField(7) this.stockQuantity = 0,
-      @HiveField(8) this.averageRating = 0.0,
-      @HiveField(9) this.reviewCount = 0,
+      @JsonKey(name: 'category_id') @HiveField(6) required this.categoryId,
+      @JsonKey(name: 'stock_quantity') @HiveField(7) this.stockQuantity = 0,
+      @JsonKey(name: 'average_rating') @HiveField(8) this.averageRating = 0.0,
+      @JsonKey(name: 'review_count') @HiveField(9) this.reviewCount = 0,
       @HiveField(10) this.brand,
-      @HiveField(11) this.servingSize,
-      @HiveField(12) this.servingsPerContainer,
-      @HiveField(13) this.isActive = true,
-      @HiveField(14) this.isBackgroundWhite = false,
+      @JsonKey(name: 'serving_size') @HiveField(11) this.servingSize,
+      @JsonKey(name: 'servings_per_container')
+      @HiveField(12)
+      this.servingsPerContainer,
+      @JsonKey(name: 'is_active') @HiveField(13) this.isActive = true,
+      @JsonKey(name: 'is_background_white')
+      @HiveField(14)
+      this.isBackgroundWhite = false,
       @HiveField(15) this.sku,
       @HiveField(16) final List<String>? tags = const [],
       @HiveField(17) this.weight,
       @HiveField(18) final List<String>? size = const [],
-      @HiveField(19) final List<String>? flavor = const [],
-      @HiveField(20) final Map<String, dynamic>? nutritionFacts,
+      @JsonKey(name: 'flavors')
+      @HiveField(19)
+      final List<String>? flavor = const [],
+      @JsonKey(name: 'nutrition_facts')
+      @HiveField(20)
+      final Map<String, dynamic>? nutritionFacts,
       @HiveField(21) this.featured = false,
-      @HiveField(22) this.newArrival = false,
-      @HiveField(23) this.bestSeller = false,
-      @HiveField(24) this.totalSales = 0,
-      @HiveField(25) this.viewsCount = 0,
-      @HiveField(26) this.shippingWeight,
+      @JsonKey(name: 'new_arrival') @HiveField(22) this.newArrival = false,
+      @JsonKey(name: 'best_seller') @HiveField(23) this.bestSeller = false,
+      @JsonKey(name: 'total_sales') @HiveField(24) this.totalSales = 0,
+      @JsonKey(name: 'views_count') @HiveField(25) this.viewsCount = 0,
+      @JsonKey(name: 'shipping_weight') @HiveField(26) this.shippingWeight,
       @HiveField(27) final Map<String, dynamic>? dimensions,
       @HiveField(28) final List<String> ingredients = const [],
-      @HiveField(29) this.usageInstructions,
+      @JsonKey(name: 'usage_instructions')
+      @HiveField(29)
+      this.usageInstructions,
       @HiveField(30) this.warnings,
-      @HiveField(31) this.expiryDate,
+      @JsonKey(name: 'expiry_date') @HiveField(31) this.expiryDate,
       @HiveField(32) this.manufacturer,
-      @HiveField(33) this.countryOfOrigin,
-      @HiveField(34) this.metaTitle,
-      @HiveField(35) this.metaDescription,
+      @JsonKey(name: 'country_of_origin') @HiveField(33) this.countryOfOrigin,
+      @JsonKey(name: 'meta_title') @HiveField(34) this.metaTitle,
+      @JsonKey(name: 'meta_description') @HiveField(35) this.metaDescription,
       @HiveField(36) this.slug})
       : _imageUrls = imageUrls,
         _tags = tags,
@@ -665,11 +719,12 @@ class _$ProductModelImpl extends _ProductModel with DiagnosticableTreeMixin {
   @HiveField(2)
   final double price;
   @override
+  @JsonKey(name: 'discount_price')
   @HiveField(3)
   final double? discountPrice;
   final List<String> _imageUrls;
   @override
-  @JsonKey()
+  @JsonKey(name: 'image_urls')
   @HiveField(4)
   List<String> get imageUrls {
     if (_imageUrls is EqualUnmodifiableListView) return _imageUrls;
@@ -681,35 +736,38 @@ class _$ProductModelImpl extends _ProductModel with DiagnosticableTreeMixin {
   @HiveField(5)
   final String description;
   @override
+  @JsonKey(name: 'category_id')
   @HiveField(6)
   final String categoryId;
   @override
-  @JsonKey()
+  @JsonKey(name: 'stock_quantity')
   @HiveField(7)
   final int stockQuantity;
   @override
-  @JsonKey()
+  @JsonKey(name: 'average_rating')
   @HiveField(8)
   final double averageRating;
   @override
-  @JsonKey()
+  @JsonKey(name: 'review_count')
   @HiveField(9)
   final int reviewCount;
   @override
   @HiveField(10)
   final String? brand;
   @override
+  @JsonKey(name: 'serving_size')
   @HiveField(11)
   final String? servingSize;
   @override
+  @JsonKey(name: 'servings_per_container')
   @HiveField(12)
   final int? servingsPerContainer;
   @override
-  @JsonKey()
+  @JsonKey(name: 'is_active')
   @HiveField(13)
   final bool isActive;
   @override
-  @JsonKey()
+  @JsonKey(name: 'is_background_white')
   @HiveField(14)
   final bool? isBackgroundWhite;
   @override
@@ -744,7 +802,7 @@ class _$ProductModelImpl extends _ProductModel with DiagnosticableTreeMixin {
 
   final List<String>? _flavor;
   @override
-  @JsonKey()
+  @JsonKey(name: 'flavors')
   @HiveField(19)
   List<String>? get flavor {
     final value = _flavor;
@@ -756,6 +814,7 @@ class _$ProductModelImpl extends _ProductModel with DiagnosticableTreeMixin {
 
   final Map<String, dynamic>? _nutritionFacts;
   @override
+  @JsonKey(name: 'nutrition_facts')
   @HiveField(20)
   Map<String, dynamic>? get nutritionFacts {
     final value = _nutritionFacts;
@@ -770,22 +829,23 @@ class _$ProductModelImpl extends _ProductModel with DiagnosticableTreeMixin {
   @HiveField(21)
   final bool featured;
   @override
-  @JsonKey()
+  @JsonKey(name: 'new_arrival')
   @HiveField(22)
   final bool newArrival;
   @override
-  @JsonKey()
+  @JsonKey(name: 'best_seller')
   @HiveField(23)
   final bool bestSeller;
   @override
-  @JsonKey()
+  @JsonKey(name: 'total_sales')
   @HiveField(24)
   final int totalSales;
   @override
-  @JsonKey()
+  @JsonKey(name: 'views_count')
   @HiveField(25)
   final int viewsCount;
   @override
+  @JsonKey(name: 'shipping_weight')
   @HiveField(26)
   final double? shippingWeight;
   final Map<String, dynamic>? _dimensions;
@@ -810,24 +870,29 @@ class _$ProductModelImpl extends _ProductModel with DiagnosticableTreeMixin {
   }
 
   @override
+  @JsonKey(name: 'usage_instructions')
   @HiveField(29)
   final String? usageInstructions;
   @override
   @HiveField(30)
   final String? warnings;
   @override
+  @JsonKey(name: 'expiry_date')
   @HiveField(31)
   final DateTime? expiryDate;
   @override
   @HiveField(32)
   final String? manufacturer;
   @override
+  @JsonKey(name: 'country_of_origin')
   @HiveField(33)
   final String? countryOfOrigin;
   @override
+  @JsonKey(name: 'meta_title')
   @HiveField(34)
   final String? metaTitle;
   @override
+  @JsonKey(name: 'meta_description')
   @HiveField(35)
   final String? metaDescription;
   @override
@@ -1016,39 +1081,57 @@ abstract class _ProductModel extends ProductModel {
       {@HiveField(0) required final String id,
       @HiveField(1) required final String name,
       @HiveField(2) required final double price,
-      @HiveField(3) final double? discountPrice,
-      @HiveField(4) final List<String> imageUrls,
+      @JsonKey(name: 'discount_price')
+      @HiveField(3)
+      final double? discountPrice,
+      @JsonKey(name: 'image_urls') @HiveField(4) final List<String> imageUrls,
       @HiveField(5) required final String description,
-      @HiveField(6) required final String categoryId,
-      @HiveField(7) final int stockQuantity,
-      @HiveField(8) final double averageRating,
-      @HiveField(9) final int reviewCount,
+      @JsonKey(name: 'category_id')
+      @HiveField(6)
+      required final String categoryId,
+      @JsonKey(name: 'stock_quantity') @HiveField(7) final int stockQuantity,
+      @JsonKey(name: 'average_rating') @HiveField(8) final double averageRating,
+      @JsonKey(name: 'review_count') @HiveField(9) final int reviewCount,
       @HiveField(10) final String? brand,
-      @HiveField(11) final String? servingSize,
-      @HiveField(12) final int? servingsPerContainer,
-      @HiveField(13) final bool isActive,
-      @HiveField(14) final bool? isBackgroundWhite,
+      @JsonKey(name: 'serving_size') @HiveField(11) final String? servingSize,
+      @JsonKey(name: 'servings_per_container')
+      @HiveField(12)
+      final int? servingsPerContainer,
+      @JsonKey(name: 'is_active') @HiveField(13) final bool isActive,
+      @JsonKey(name: 'is_background_white')
+      @HiveField(14)
+      final bool? isBackgroundWhite,
       @HiveField(15) final String? sku,
       @HiveField(16) final List<String>? tags,
       @HiveField(17) final double? weight,
       @HiveField(18) final List<String>? size,
-      @HiveField(19) final List<String>? flavor,
-      @HiveField(20) final Map<String, dynamic>? nutritionFacts,
+      @JsonKey(name: 'flavors') @HiveField(19) final List<String>? flavor,
+      @JsonKey(name: 'nutrition_facts')
+      @HiveField(20)
+      final Map<String, dynamic>? nutritionFacts,
       @HiveField(21) final bool featured,
-      @HiveField(22) final bool newArrival,
-      @HiveField(23) final bool bestSeller,
-      @HiveField(24) final int totalSales,
-      @HiveField(25) final int viewsCount,
-      @HiveField(26) final double? shippingWeight,
+      @JsonKey(name: 'new_arrival') @HiveField(22) final bool newArrival,
+      @JsonKey(name: 'best_seller') @HiveField(23) final bool bestSeller,
+      @JsonKey(name: 'total_sales') @HiveField(24) final int totalSales,
+      @JsonKey(name: 'views_count') @HiveField(25) final int viewsCount,
+      @JsonKey(name: 'shipping_weight')
+      @HiveField(26)
+      final double? shippingWeight,
       @HiveField(27) final Map<String, dynamic>? dimensions,
       @HiveField(28) final List<String> ingredients,
-      @HiveField(29) final String? usageInstructions,
+      @JsonKey(name: 'usage_instructions')
+      @HiveField(29)
+      final String? usageInstructions,
       @HiveField(30) final String? warnings,
-      @HiveField(31) final DateTime? expiryDate,
+      @JsonKey(name: 'expiry_date') @HiveField(31) final DateTime? expiryDate,
       @HiveField(32) final String? manufacturer,
-      @HiveField(33) final String? countryOfOrigin,
-      @HiveField(34) final String? metaTitle,
-      @HiveField(35) final String? metaDescription,
+      @JsonKey(name: 'country_of_origin')
+      @HiveField(33)
+      final String? countryOfOrigin,
+      @JsonKey(name: 'meta_title') @HiveField(34) final String? metaTitle,
+      @JsonKey(name: 'meta_description')
+      @HiveField(35)
+      final String? metaDescription,
       @HiveField(36) final String? slug}) = _$ProductModelImpl;
   const _ProductModel._() : super._();
 
@@ -1065,39 +1148,49 @@ abstract class _ProductModel extends ProductModel {
   @HiveField(2)
   double get price;
   @override
+  @JsonKey(name: 'discount_price')
   @HiveField(3)
   double? get discountPrice;
   @override
+  @JsonKey(name: 'image_urls')
   @HiveField(4)
   List<String> get imageUrls;
   @override
   @HiveField(5)
   String get description;
   @override
+  @JsonKey(name: 'category_id')
   @HiveField(6)
   String get categoryId;
   @override
+  @JsonKey(name: 'stock_quantity')
   @HiveField(7)
   int get stockQuantity;
   @override
+  @JsonKey(name: 'average_rating')
   @HiveField(8)
   double get averageRating;
   @override
+  @JsonKey(name: 'review_count')
   @HiveField(9)
   int get reviewCount;
   @override
   @HiveField(10)
   String? get brand;
   @override
+  @JsonKey(name: 'serving_size')
   @HiveField(11)
   String? get servingSize;
   @override
+  @JsonKey(name: 'servings_per_container')
   @HiveField(12)
   int? get servingsPerContainer;
   @override
+  @JsonKey(name: 'is_active')
   @HiveField(13)
   bool get isActive;
   @override
+  @JsonKey(name: 'is_background_white')
   @HiveField(14)
   bool? get isBackgroundWhite;
   @override
@@ -1113,27 +1206,34 @@ abstract class _ProductModel extends ProductModel {
   @HiveField(18)
   List<String>? get size;
   @override
+  @JsonKey(name: 'flavors')
   @HiveField(19)
   List<String>? get flavor;
   @override
+  @JsonKey(name: 'nutrition_facts')
   @HiveField(20)
   Map<String, dynamic>? get nutritionFacts;
   @override
   @HiveField(21)
   bool get featured;
   @override
+  @JsonKey(name: 'new_arrival')
   @HiveField(22)
   bool get newArrival;
   @override
+  @JsonKey(name: 'best_seller')
   @HiveField(23)
   bool get bestSeller;
   @override
+  @JsonKey(name: 'total_sales')
   @HiveField(24)
   int get totalSales;
   @override
+  @JsonKey(name: 'views_count')
   @HiveField(25)
   int get viewsCount;
   @override
+  @JsonKey(name: 'shipping_weight')
   @HiveField(26)
   double? get shippingWeight;
   @override
@@ -1143,24 +1243,29 @@ abstract class _ProductModel extends ProductModel {
   @HiveField(28)
   List<String> get ingredients;
   @override
+  @JsonKey(name: 'usage_instructions')
   @HiveField(29)
   String? get usageInstructions;
   @override
   @HiveField(30)
   String? get warnings;
   @override
+  @JsonKey(name: 'expiry_date')
   @HiveField(31)
   DateTime? get expiryDate;
   @override
   @HiveField(32)
   String? get manufacturer;
   @override
+  @JsonKey(name: 'country_of_origin')
   @HiveField(33)
   String? get countryOfOrigin;
   @override
+  @JsonKey(name: 'meta_title')
   @HiveField(34)
   String? get metaTitle;
   @override
+  @JsonKey(name: 'meta_description')
   @HiveField(35)
   String? get metaDescription;
   @override

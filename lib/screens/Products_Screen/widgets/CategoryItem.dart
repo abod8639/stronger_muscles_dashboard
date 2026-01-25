@@ -47,9 +47,10 @@ class CategoryItem extends StatelessWidget {
               constraints: const BoxConstraints(minWidth: 80),
               child: Center(
                 child: Text(
+                  
                   name.toUpperCase(),
                   style: TextStyle(
-                    color:  AppColors.textLight,
+                    color: Colors.white,// AppColors.textLight,
                     fontWeight: isSelected ? FontWeight.w900 : FontWeight.bold,
                     fontSize: 12,
                     letterSpacing: 1,
