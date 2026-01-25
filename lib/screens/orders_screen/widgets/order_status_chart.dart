@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../config/theme.dart';
-import 'enhanced_status_chart.dart';
+import '../../../config/theme.dart';
+import '../../../components/enhanced_status_chart.dart';
 
 class OrderStatusChart extends StatelessWidget {
   final int pending;

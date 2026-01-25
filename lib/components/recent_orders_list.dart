@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/components/order_list_tile.dart';
+import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/order_list_tile.dart';
 import '../config/theme.dart';
 import '../config/responsive.dart';
 import '../models/index.dart';

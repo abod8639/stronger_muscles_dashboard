@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/components/glass_container.dart';
+import 'package:stronger_muscles_dashboard/components/trend_card.dart';
 import '../config/theme.dart';
 
 class AnimatedStatCard extends StatefulWidget {
@@ -155,51 +156,8 @@ class _AnimatedStatCardState extends State<AnimatedStatCard>
                 ),
                 if (widget.showTrendIcon) ...[
                   const SizedBox(height: 16),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: widget.isTrendPositive
-                          ? AppColors.success.withOpacity(0.1)
-                          : AppColors.error.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: widget.isTrendPositive
-                            ? AppColors.success.withOpacity(0.3)
-                            : AppColors.error.withOpacity(0.3),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          widget.isTrendPositive
-                              ? Icons.trending_up
-                              : Icons.trending_down,
-                          color: widget.isTrendPositive
-                              ? AppColors.success
-                              : AppColors.error,
-                          size: 14,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          widget.isTrendPositive
-                              ? '+12% THIS WEEK'
-                              : '-8% THIS WEEK',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: widget.isTrendPositive
-                                ? AppColors.success
-                                : AppColors.error,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  // trend 
+                  TrendCard(widget: widget),
                 ],
               ],
             ),
@@ -209,3 +167,5 @@ class _AnimatedStatCardState extends State<AnimatedStatCard>
     );
   }
 }
+
+
