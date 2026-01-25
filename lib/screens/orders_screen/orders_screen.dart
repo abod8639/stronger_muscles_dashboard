@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_empty_state.dart';
-import 'package:stronger_muscles_dashboard/screens/widgets/custom_dashboard_app_bar.dart';
+import 'package:stronger_muscles_dashboard/screens/widgets/base_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/horizontal_chips_selector.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/custom_search_bar.dart';
 import '../../components/enhanced_error_widget.dart';

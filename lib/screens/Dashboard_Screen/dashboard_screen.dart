@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:stronger_muscles_dashboard/screens/widgets/custom_dashboard_app_bar.dart';
+import 'package:stronger_muscles_dashboard/screens/widgets/base_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/horizontal_chips_selector.dart';
 import '../../config/responsive.dart';
 import '../../config/theme.dart';
@@ -43,7 +43,6 @@ class DashboardScreen extends GetView<DashboardController> {
 
                 _buildHeaderStatus(),
 
-                // buildDashboardScreenPeriodSelector(),
                 Obx(() =>
                 HorizontalChipsSelector(
                   items: controller.periodItems,
@@ -55,10 +54,13 @@ class DashboardScreen extends GetView<DashboardController> {
                   allLabel: 'الكل',
                 )
                 ),
+
+                SizedBox(height: res.itemSpacing),
+
                 if (controller.orders.isEmpty)
                   _buildNoDataState(res)
                 else ...[
-                  buildDashboardScreenStatsCards(),
+                  DashboardStatsGrid(),
                   _buildSectionTitle('التحليلات البيانية', res, isDark),
                   _buildChartsSection(res),
                   _buildRecentOrders(res),

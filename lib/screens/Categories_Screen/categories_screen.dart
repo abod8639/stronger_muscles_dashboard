@@ -4,7 +4,7 @@ import 'package:stronger_muscles_dashboard/components/enhanced_error_widget.dart
 import 'package:stronger_muscles_dashboard/screens/Categories_Screen/widgets/CategoryFormSheet.dart';
 import 'package:stronger_muscles_dashboard/screens/Categories_Screen/widgets/CategoryGridItem.dart';
 import 'package:stronger_muscles_dashboard/screens/Categories_Screen/widgets/CategoryListItem.dart';
-import 'package:stronger_muscles_dashboard/screens/widgets/custom_dashboard_app_bar.dart';
+import 'package:stronger_muscles_dashboard/screens/widgets/base_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/custom_search_bar.dart';
 import '../../controllers/categories_controller.dart';
 import '../../models/index.dart';

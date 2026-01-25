@@ -4,7 +4,7 @@ import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/ProductFormPage.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/ProductListItem.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/build_empty_state.dart';
-import 'package:stronger_muscles_dashboard/screens/widgets/custom_dashboard_app_bar.dart';
+import 'package:stronger_muscles_dashboard/screens/widgets/base_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/horizontal_chips_selector.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/custom_search_bar.dart';
 import '../../controllers/products_controller.dart';

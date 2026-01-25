@@ -7,7 +7,7 @@ import 'package:stronger_muscles_dashboard/controllers/users_controller.dart';
 import 'package:stronger_muscles_dashboard/components/index.dart';
 import 'package:stronger_muscles_dashboard/screens/Users_Screen/widgets/buildUserCard.dart';
 import 'package:stronger_muscles_dashboard/screens/Users_Screen/widgets/build_stats_header.dart';
-import 'package:stronger_muscles_dashboard/screens/widgets/custom_dashboard_app_bar.dart';
+import 'package:stronger_muscles_dashboard/screens/widgets/base_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/custom_search_bar.dart';
 
 class UsersScreen extends StatelessWidget {
