@@ -31,7 +31,6 @@ class ProductsScreen extends StatelessWidget {
             controller: controller,
             responsive: responsive,
           ),
-          // buildSearchBar(context, controller, responsive),
 
           const ProductsCategoriesScreen(),
 
@@ -39,7 +38,6 @@ class ProductsScreen extends StatelessWidget {
 
           Expanded(
             child: Obx(() {
-              // حالة التحميل الأولى
               if (controller.isLoading.value && controller.products.isEmpty) {
                 return const EnhancedLoadingWidget(
                   message: 'جاري تحميل المنتجات...',

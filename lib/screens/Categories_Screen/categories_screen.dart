@@ -9,7 +9,6 @@ import '../../controllers/categories_controller.dart';
 import '../../models/index.dart';
 import '../../config/responsive.dart';
 import '../../components/index.dart';
-import '../../config/theme.dart';
 
 class CategoriesScreen extends StatelessWidget {
   const CategoriesScreen({super.key});

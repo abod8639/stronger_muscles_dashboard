@@ -4,6 +4,7 @@ import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_s
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_empty_state.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_status_tabs.dart';
+import 'package:stronger_muscles_dashboard/screens/widgets/search_bar.dart';
 import '../../components/enhanced_error_widget.dart';
 import '../../controllers/orders_controller.dart';
 import '../../components/index.dart';
@@ -23,7 +24,14 @@ class OrdersScreen extends StatelessWidget {
       appBar: buildAppBar( controller, responsive),
       body: Column(
         children: [
-          buildSearchBar( controller),
+          // buildSearchBar( controller),
+          Search_Bar(
+            hintText: 'ابحث عن منتج بالاسم أو الماركة...',
+            padding: responsive.defaultPadding,
+            isDark: true,
+            controller: controller,
+            responsive: responsive,
+          ),
           buildStatusTabs(controller),
           const SizedBox(height: 8),
           Expanded(

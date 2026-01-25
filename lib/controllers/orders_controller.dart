@@ -70,6 +70,11 @@ class OrdersController extends GetxController {
     filteredOrders.assignAll(result);
   }
 
+    void onSearchChanged(String query) {
+    searchQuery.value = query;
+    _applyFilters();
+  }
+
   Color getStatusColor(OrderStatus status) {
     switch (status) {
       case OrderStatus.pending:
