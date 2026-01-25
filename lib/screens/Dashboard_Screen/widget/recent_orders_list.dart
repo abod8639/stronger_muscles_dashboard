@@ -70,7 +70,7 @@ class RecentOrdersList extends StatelessWidget {
                 physics: const NeverScrollableScrollPhysics(),
                 padding: EdgeInsets.symmetric(horizontal: padding.left),
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
+                  crossAxisCount: 1,
                   crossAxisSpacing: spacing,
                   mainAxisSpacing: spacing,
                   childAspectRatio: 2.5,

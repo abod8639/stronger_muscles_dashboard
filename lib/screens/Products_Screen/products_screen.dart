@@ -20,7 +20,7 @@ class ProductsScreen extends StatelessWidget {
     final responsive = context.responsive;
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundDark,
+      backgroundColor: Colors.transparent,
       appBar: BaseAppBar(
         title: 'المنتجات',
         onPressed: () => Get.to(ProductFormPage()),
@@ -34,8 +34,6 @@ class ProductsScreen extends StatelessWidget {
 
             onSearch: (value) => controller.onSearchChanged(value),
           ),
-
-          // const ProductsCategoriesScreen(),
           Obx(
             () => HorizontalChipsSelector(
               items: controller.categories,
@@ -58,12 +56,10 @@ class ProductsScreen extends StatelessWidget {
                 );
               }
 
-              // حالة عدم وجود بيانات
               if (controller.filteredProducts.isEmpty) {
                 return buildEmptyState(controller);
               }
 
-              // القائمة مع دعم "السحب للتحديث"
               return RefreshIndicator(
                 onRefresh: () => controller.fetchData(),
                 child: ListView.separated(
