@@ -148,7 +148,6 @@ class ProductCard extends StatelessWidget {
   }
 
   Widget _buildFlavorTags(dynamic responsive) {
-    // عرض نكهتين فقط في الجوال و 3 في الشاشات الأكبر لمنع الازدحام
     final int limit = responsive.isMobile ? 1 : 3;
     return Wrap(
       spacing: 6,

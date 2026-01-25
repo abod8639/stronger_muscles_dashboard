@@ -10,7 +10,7 @@ Widget buildActionButtons({
 }) {
   return Builder(
     builder: (context) {
-      final responsive = context.responsive;
+      final ResponsiveLayout responsive = context.responsive;
       return AnimatedOpacity(
         opacity: isHovered ? 1 : 0.6,
         duration: const Duration(milliseconds: 300),
@@ -46,12 +46,13 @@ Widget _buildActionButton({
   required IconData icon,
   required Color color,
   required bool isHovered,
-  required dynamic responsive,
+  required ResponsiveLayout responsive,
 }) {
   return AnimatedScale(
     scale: isHovered ? 1.1 : 1.0,
     duration: const Duration(milliseconds: 300),
     child: GlassContainer(
+      padding: EdgeInsets.all(responsive.isMobile ? 3 : 8),
       opacity: isHovered ? 0.2 : 0.1,
       blur: 10,
       borderRadius: BorderRadius.circular(12),
@@ -59,12 +60,14 @@ Widget _buildActionButton({
         color: color.withOpacity(isHovered ? 0.6 : 0.3),
         width: 1,
       ),
-      child: IconButton(
-        onPressed: onPressed,
-        icon: Icon(icon, size: 18, color: color),
-        padding: const EdgeInsets.all(8),
-        constraints: const BoxConstraints(),
-        visualDensity: VisualDensity.compact,
+      child: Center(
+        child: IconButton(
+          onPressed: onPressed,
+          icon: Icon(icon, size:responsive.isMobile ? 16 : 18, color: color),
+          padding:  EdgeInsets.all( responsive.isMobile ? 0 : 8),
+          constraints: const BoxConstraints(),
+          visualDensity: VisualDensity.compact,
+        ),
       ),
     ),
   );
