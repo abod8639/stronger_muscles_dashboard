@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:stronger_muscles_dashboard/components/glass_container.dart';
-import '../config/theme.dart';
-import '../config/responsive.dart';
+import '../../../config/theme.dart';
+import '../../../config/responsive.dart';
 
 class BarChartWidget extends StatefulWidget {
   final String title;

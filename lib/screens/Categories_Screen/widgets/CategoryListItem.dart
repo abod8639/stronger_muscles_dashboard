@@ -1,7 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
+import 'package:stronger_muscles_dashboard/functions/cache_manager.dart';
 import 'package:stronger_muscles_dashboard/models/category_model.dart';
 import 'package:stronger_muscles_dashboard/screens/Categories_Screen/widgets/buildActionBtn.dart';
 
@@ -76,10 +78,11 @@ class _CategoryListItemState extends State<CategoryListItem>
                             widget.category.imageUrl!.isNotEmpty
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(12),
-                            child: Image.network(
-                              widget.category.imageUrl!,
+                            child: CachedNetworkImage(
+                              imageUrl: widget.category.imageUrl!,
+                              cacheManager: CustomCacheManager.instance,
                               fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => const Icon(
+                              errorWidget: (_, __, ___) => const Icon(
                                 Icons.category_outlined,
                                 color: AppColors.primary,
                               ),

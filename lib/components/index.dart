@@ -14,5 +14,5 @@ export 'enhanced_status_chart.dart';
 // export 'category_card.dart';
 export 'enhanced_loading_widget.dart';
 export 'pie_chart_widget.dart';
-export 'bar_chart_widget.dart';
+export '../screens/Dashboard_Screen/widget/bar_chart_widget.dart';
 export 'line_chart_widget.dart';
