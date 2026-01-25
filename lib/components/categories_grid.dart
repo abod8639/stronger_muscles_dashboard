@@ -71,7 +71,7 @@ class CategoriesGrid extends StatelessWidget {
           itemCount: categories.length,
           itemBuilder: (context, index) {
             final category = categories[index];
-            return AnimatedCategoryCard(
+            return CategoryCard(
               category: category,
               index: index,
               onTap: () => onCategoryTap?.call(category),
@@ -79,112 +79,6 @@ class CategoriesGrid extends StatelessWidget {
           },
         ),
       ],
-    );
-  }
-}
-
-class CategoryCard extends StatelessWidget {
-  final CategoryModel category;
-  final VoidCallback? onTap;
-
-  const CategoryCard({super.key, required this.category, this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.backgroundDark),
-          color: Colors.white,
-        ),
-        child: Stack(
-          children: [
-            // صورة الخلفية
-            if (category.imageUrl != null && category.imageUrl!.isNotEmpty)
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  image: DecorationImage(
-                    image: NetworkImage(category.imageUrl!),
-                    fit: BoxFit.cover,
-                    onError: (exception, stackTrace) {},
-                  ),
-                ),
-              )
-            else
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: AppColors.primary.withValues(alpha: 0.1),
-                ),
-                child: const Icon(
-                  Icons.category_outlined,
-                  color: AppColors.primary,
-                  size: 32,
-                ),
-              ),
-            // الطبقة العلوية للنص
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withValues(alpha: 0.6),
-                  ],
-                ),
-              ),
-            ),
-            // النص
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (!category.isActive)
-                    Align(
-                      alignment: Alignment.topRight,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.error,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: const Text(
-                          'معطل',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  Expanded(child: Container()),
-                  Text(
-                    category.name,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/components/animated_stat_card.dart';
+import 'package:stronger_muscles_dashboard/components/stat_card.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/controllers/dashboard_controller.dart';
 
