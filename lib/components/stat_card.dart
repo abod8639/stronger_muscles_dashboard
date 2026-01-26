@@ -98,9 +98,9 @@ class StatCard extends StatelessWidget {
               ),
               
               if (subtitle != null || showTrendIcon) ...[
-                const SizedBox(height: 12),
+                const SizedBox(height: 5),
                 const Divider(color: Colors.white10, height: 1),
-                const SizedBox(height: 12),
+                const SizedBox(height: 5),
               ],
               
               if (subtitle != null)
@@ -115,7 +115,7 @@ class StatCard extends StatelessWidget {
                 ),
                 
               if (showTrendIcon) ...[
-                const SizedBox(height: 8),
+                const SizedBox(height: 5),
                 TrendCard(isTrendPositive: isTrendPositive),
               ],
             ],
@@ -140,7 +140,7 @@ class StatCard extends StatelessWidget {
         ],
         border: Border.all(color: color.withOpacity(0.3)),
       ),
-      child: Icon(icon, color: Colors.white, size: 20), // تصغير الأيقونة قليلاً
+      child: Icon(icon, color: Colors.white, size: 20), 
     );
   }
 }
