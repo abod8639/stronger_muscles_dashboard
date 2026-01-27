@@ -22,17 +22,13 @@ class ProductListItem extends StatefulWidget {
 
 class _ProductListItemState extends State<ProductListItem>
     with SingleTickerProviderStateMixin {
-  bool _isHovered = false;
+  final bool _isHovered = false;
 
   @override
   void initState() {
     super.initState();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {

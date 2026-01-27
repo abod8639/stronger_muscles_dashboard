@@ -12,9 +12,9 @@ class DashboardStatsGrid extends GetView<DashboardController> {
     final res = context.responsive;
 
     int crossAxisCount = 4;
-    if (res.isMobile)
+    if (res.isMobile) {
       crossAxisCount = 2;
-    else if (res.isTablet)
+    } else if (res.isTablet)
       crossAxisCount = 3;
 
     return Obx(() {

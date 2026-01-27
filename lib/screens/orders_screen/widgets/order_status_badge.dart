@@ -3,7 +3,7 @@ import 'package:stronger_muscles_dashboard/models/order_model.dart';
 
 class OrderStatusBadge extends StatelessWidget {
   final OrderStatus status;
-  const OrderStatusBadge({required this.status});
+  const OrderStatusBadge({super.key, required this.status});
 
   @override
   Widget build(BuildContext context) {

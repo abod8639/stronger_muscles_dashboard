@@ -64,10 +64,14 @@ class DashboardScreen extends GetView<DashboardController> {
                   _buildNoDataState(res)
                 else ...[
                   DashboardStatsGrid(),
+                  SizedBox(height: res.itemSpacing * 2),
                   _buildSectionTitle('التحليلات البيانية', res, isDark),
                   _buildChartsSection(res),
-                  _buildRecentOrders(res),
-                  _buildCategoriesSection(res),
+                  SizedBox(height: res.itemSpacing * 2),
+                  _buildRecentOrdersSection(res),
+                  SizedBox(height: res.itemSpacing * 2),
+                  if (controller.categories.isNotEmpty)
+                    _buildCategoriesSectionWithTitle(res, isDark),
                 ],
                 SizedBox(height: res.itemSpacing * 3),
               ],
@@ -105,26 +109,56 @@ class DashboardScreen extends GetView<DashboardController> {
   Widget _buildChartsSection(var res) {
     return Column(
       children: [
-        // الرسم البياني الدائري
-        Padding(
-          padding: res.defaultPadding,
-          child: PieChartWidget(
-            showLegend: true,
-            title: 'توزيع حالات الطلبات',
-            data: _getPieChartData(),
+        // تخطيط الرسوم البيانية بشكل متجاوب
+        if (res.isDesktop)
+          Row(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: res.defaultPadding,
+                  child: PieChartWidget(
+                    showLegend: true,
+                    title: 'توزيع حالات الطلبات',
+                    data: _getPieChartData(),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: res.defaultPadding,
+                  child: BarChartWidget(
+                    title: 'إجمالي الطلبات حسب الحالة',
+                    groups: _getBarChartGroups(),
+                    bottomTitles: const ['معلقة', 'معالجة', 'مرسلة', 'تسليم', 'ملغاة'],
+                    maxY: controller.orders.length.toDouble() + 5,
+                  ),
+                ),
+              ),
+            ],
+          )
+        else
+          Column(
+            children: [
+              Padding(
+                padding: res.defaultPadding,
+                child: PieChartWidget(
+                  showLegend: true,
+                  title: 'توزيع حالات الطلبات',
+                  data: _getPieChartData(),
+                ),
+              ),
+              SizedBox(height: res.itemSpacing),
+              Padding(
+                padding: res.defaultPadding,
+                child: BarChartWidget(
+                  title: 'إجمالي الطلبات حسب الحالة',
+                  groups: _getBarChartGroups(),
+                  bottomTitles: const ['معلقة', 'معالجة', 'مرسلة', 'تسليم', 'ملغاة'],
+                  maxY: controller.orders.length.toDouble() + 5,
+                ),
+              ),
+            ],
           ),
-        ),
-        SizedBox(height: res.itemSpacing),
-        // الرسم البياني بالأعمدة
-        Padding(
-          padding: res.defaultPadding,
-          child: BarChartWidget(
-            title: 'إجمالي الطلبات حسب الحالة',
-            groups: _getBarChartGroups(),
-            bottomTitles: const ['معلقة', 'معالجة', 'مرسلة', 'تسليم', 'ملغاة'],
-            maxY: controller.orders.length.toDouble() + 5,
-          ),
-        ),
       ],
     );
   }
@@ -141,6 +175,15 @@ class DashboardScreen extends GetView<DashboardController> {
     return CategoriesGrid(
       categories: controller.categories,
       onSeeAll: () => Get.toNamed('/categories'),
+    );
+  }
+
+  Widget _buildCategoriesSectionWithTitle(var res, bool isDark) {
+    return Column(
+      children: [
+        _buildSectionTitle('الفئات', res, isDark),
+        _buildCategoriesSection(res),
+      ],
     );
   }
 
