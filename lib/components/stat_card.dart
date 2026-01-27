@@ -32,115 +32,115 @@ class StatCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: GlassContainer(
-        padding: EdgeInsets.all(responsive.isMobile ? 12 : 20),
-        opacity: 0.08,
-        blur: 20,
-        borderRadius: BorderRadius.circular(24),
+        padding: EdgeInsets.all(responsive.isMobile ? 5 : 16), // إضافة padding داخلي ثابت
+        opacity: 0.05,
+        blur: 15,
+        borderRadius: BorderRadius.circular(20),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [color.withOpacity(0.2), color.withOpacity(0.08)],
+          colors: [color.withOpacity(0.15), color.withOpacity(0.05)],
         ),
-        border: Border.all(color: color.withOpacity(0.4), width: 1.5),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min, 
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.textMuted,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.5,
-                          fontSize: responsive.isMobile ? 12 : 13,
+        border: Border.all(color: color.withOpacity(0.3), width: 1),
+        child: Padding(
+          padding: EdgeInsets.all(responsive.isMobile ? 5 : 16), // إضافة padding داخلي ثابت
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min, 
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start, // محاذاة الأيقونة مع أعلى النص
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title.toUpperCase(),
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith( // استخدام حجم أصغر قليلاً للعنوان
+                            color: AppColors.textMuted,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.8,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      SizedBox(height: responsive.isMobile ? 6 : 8),
-                      
-                      FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: Alignment.centerLeft,
-                        child: ShaderMask(
-                          shaderCallback: (bounds) => LinearGradient(
-                            colors: [color, color.withOpacity(0.7)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ).createShader(bounds),
-                          child: Text(
-                            value,
-                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.w800,
-                              color: Colors.white,
-                              letterSpacing: 0.3,
-                              fontSize: responsive.isMobile ? 18 : 22,
+                        const SizedBox(height: 8),
+                        
+                        // استخدام FittedBox لمنع خروج الأرقام الطويلة عن الحواف
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: ShaderMask(
+                            shaderCallback: (bounds) => LinearGradient(
+                              colors: [Colors.white, color],
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                            ).createShader(bounds),
+                            child: Text(
+                              value,
+                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.w900,
+                                color: Colors.white,
+                                letterSpacing: 0.5,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                SizedBox(width: responsive.isMobile ? 6 : 8),
-                _buildIcon(responsive),
-              ],
-            ),
-            
-            if (subtitle != null || showTrendIcon) ...[
-              SizedBox(height: responsive.isMobile ? 6 : 8),
-              Divider(color: Colors.white.withOpacity(0.1), height: 1),
-              SizedBox(height: responsive.isMobile ? 6 : 8),
-            ],
-            
-            if (subtitle != null)
-              Text(
-                subtitle!,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.textMuted,
-                  fontSize: responsive.isMobile ? 10 : 11,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+                  const SizedBox(width: 8),
+                  
+                  // الأيقونة بحجم مرن
+                  _buildIcon(),
+                ],
               ),
+              
+              if (subtitle != null || showTrendIcon) ...[
+                const SizedBox(height: 5),
+                const Divider(color: Colors.white10, height: 1),
+                const SizedBox(height: 5),
+              ],
+              
+              if (subtitle != null)
+                Text(
+                  subtitle!,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textMuted,
+                    fontSize: 10,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 
-            if (showTrendIcon) ...[
-              SizedBox(height: responsive.isMobile ? 4 : 6),
-              TrendCard(isTrendPositive: isTrendPositive),
+              if (showTrendIcon) ...[
+                const SizedBox(height: 5),
+                TrendCard(isTrendPositive: isTrendPositive),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildIcon(ResponsiveLayout responsive) {
-    final iconSize = responsive.isMobile ? 18 : 22;
-    final padding = responsive.isMobile ? 8 : 12;
-    
+  Widget _buildIcon() {
     return Container(
-      padding: EdgeInsets.all(padding),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: color.withOpacity(0.15),
+        color: color.withOpacity(0.1),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.3),
-            blurRadius: 12,
-            spreadRadius: 2,
+            color: color.withOpacity(0.2),
+            blurRadius: 10,
+            spreadRadius: 1,
           ),
         ],
-        border: Border.all(color: color.withOpacity(0.4), width: 1),
+        border: Border.all(color: color.withOpacity(0.3)),
       ),
-      child: Icon(icon, color: color, size: iconSize), 
+      child: Icon(icon, color: Colors.white, size: 20), 
     );
   }
 }
