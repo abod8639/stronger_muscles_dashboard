@@ -87,7 +87,7 @@ class DashboardScreen extends GetView<DashboardController> {
     );
   }
 
-  Widget _buildPeriodSelector(var res) {
+  Widget _buildPeriodSelector(ResponsiveLayout res) {
     return Obx(
       () => HorizontalChipsSelector(
         items: controller.periodItems,
@@ -101,7 +101,7 @@ class DashboardScreen extends GetView<DashboardController> {
     );
   }
 
-  Widget _buildSectionTitle(String title, var res, bool isDark) {
+  Widget _buildSectionTitle(String title, ResponsiveLayout res, bool isDark) {
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: res.defaultPadding.left,
@@ -118,7 +118,7 @@ class DashboardScreen extends GetView<DashboardController> {
     );
   }
 
-  Widget _buildTopAssetsSection(var res, bool isDark) {
+  Widget _buildTopAssetsSection(ResponsiveLayout res, bool isDark) {
     final assetCards = [
       {
         'title': 'معلقة',
@@ -148,8 +148,9 @@ class DashboardScreen extends GetView<DashboardController> {
           height: 200,
           child: GridView.builder(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: res.isMobile ? 1 : (res.isTablet ? 2 : 3),
-              childAspectRatio: 1.2,
+              // crossAxisCount: res.isMobile ? 1 : (res.isDesktop ? 1 : 2),
+              crossAxisCount: 1,
+              childAspectRatio: res.isMobile ? 1.5 : (res.isTablet ? 1 : 1),
               crossAxisSpacing: res.itemSpacing,
               mainAxisSpacing: res.itemSpacing,
             ),
@@ -176,7 +177,7 @@ class DashboardScreen extends GetView<DashboardController> {
     required int value,
     required IconData icon,
     required Color color,
-    required var res,
+    required ResponsiveLayout res,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -185,12 +186,12 @@ class DashboardScreen extends GetView<DashboardController> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            color.withOpacity(0.1),
-            color.withOpacity(0.05),
+            color.withValues(alpha: 0.1),
+            color.withValues(alpha: 0.05),
           ],
         ),
         border: Border.all(
-          color: color.withOpacity(0.3),
+          color: color.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -205,12 +206,12 @@ class DashboardScreen extends GetView<DashboardController> {
               Container(
                 padding: EdgeInsets.all(res.itemSpacing * 0.75),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.2),
+                  color: color.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(icon, color: color, size: 20),
               ),
-              Icon(Icons.open_in_new, size: 16, color: color.withOpacity(0.6)),
+              Icon(Icons.open_in_new, size: 16, color: color.withValues(alpha: 0.6)),
             ],
           ),
           Column(
@@ -238,7 +239,7 @@ class DashboardScreen extends GetView<DashboardController> {
     );
   }
 
-  Widget _buildMainGrid(var res, bool isDark) {
+  Widget _buildMainGrid(ResponsiveLayout res, bool isDark) {
     return Column(
       children: [
         // الصف الأول: الإحصائيات
@@ -301,7 +302,7 @@ class DashboardScreen extends GetView<DashboardController> {
     );
   }
 
-  Widget _buildBottomSection(var res) {
+  Widget _buildBottomSection(ResponsiveLayout res) {
     return Column(
       children: [
         _buildRecentOrders(res),
@@ -311,14 +312,14 @@ class DashboardScreen extends GetView<DashboardController> {
     );
   }
 
-  Widget _buildRecentOrders(var res) {
+  Widget _buildRecentOrders(ResponsiveLayout res) {
     return RecentOrdersList(
       orders: controller.orders.take(5).toList(),
       onSeeAll: () => Get.toNamed('/orders'),
     );
   }
 
-  Widget _buildCategoriesSection(var res) {
+  Widget _buildCategoriesSection(ResponsiveLayout res) {
     if (controller.categories.isEmpty) return const SizedBox();
     return CategoriesGrid(
       categories: controller.categories,
@@ -335,7 +336,7 @@ class DashboardScreen extends GetView<DashboardController> {
     );
   }
 
-  Widget _buildNoDataState(var res) {
+  Widget _buildNoDataState(ResponsiveLayout res) {
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: res.defaultPadding.left,
