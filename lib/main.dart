@@ -8,6 +8,7 @@ import 'package:stronger_muscles_dashboard/screens/widgets/my_bottomnavigationba
 import 'package:stronger_muscles_dashboard/screens/widgets/sidebar.dart';
 import 'package:stronger_muscles_dashboard/services/auth_service.dart';
 import 'config/theme.dart';
+import 'config/theme_extended.dart';
 import 'screens/index.dart';
 
 Future<void> main() async {
@@ -31,7 +32,7 @@ class StrongerMusclesDashboard extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'لوحة تحكم Stronger Muscles',
       theme: AppTheme.getLightTheme(),
-      darkTheme: AppTheme.getDarkTheme(),
+      darkTheme: AppThemeExtended.getDarkTheme(),
       themeMode: ThemeMode.dark,
       // initialRoute: isLoggedIn ? '/dashboard' : '/login',
       initialRoute: '/dashboard',
