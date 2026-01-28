@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/components/top_section.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/ProductFormPage.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/ProductListItem.dart';
 import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/build_empty_state.dart';
@@ -27,12 +28,15 @@ class ProductsScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
+
+           TopSection(children: [
           CustomSearchBar(
             hintText: 'ابحث عن منتج بالاسم أو الماركة...',
             padding: responsive.defaultPadding,
 
             onSearch: (value) => controller.onSearchChanged(value),
           ),
+
           Obx(
             () => HorizontalChipsSelector(
               items: controller.categories,
@@ -43,8 +47,10 @@ class ProductsScreen extends StatelessWidget {
               idKey: 'id',
               showAllOption: true,
               allLabel: 'الكل',
-            ),
-          ),
+              ),
+             ),
+            ],
+           ),
 
           const SizedBox(height: 8),
 

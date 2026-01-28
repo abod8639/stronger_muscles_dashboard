@@ -10,6 +10,7 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onPressed;
   final bool centerTitle;
   final IconData icon;
+  final Color? surfaceTintColor;
 
   const BaseAppBar({
     super.key,
@@ -18,7 +19,8 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.showStatus = false,
     this.onPressed,
     this.centerTitle = true,
-    this.icon = Icons.refresh_rounded,
+    this.icon = Icons.refresh_rounded, 
+    this.surfaceTintColor,
   });
 
   @override
@@ -30,6 +32,9 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
         Get.find<DashboardController>();
 
     return AppBar(
+      // foregroundColor: Colors.white,
+      // shadowColor:shadowColor?? Colors.transparent,
+      surfaceTintColor: surfaceTintColor ?? Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.transparent,
       centerTitle: centerTitle,

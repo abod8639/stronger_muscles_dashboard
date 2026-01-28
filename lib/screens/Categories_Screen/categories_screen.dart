@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/components/enhanced_error_widget.dart';
+import 'package:stronger_muscles_dashboard/components/top_section.dart';
 import 'package:stronger_muscles_dashboard/screens/Categories_Screen/widgets/CategoryFormSheet.dart';
 import 'package:stronger_muscles_dashboard/screens/Categories_Screen/widgets/CategoryGridItem.dart';
 import 'package:stronger_muscles_dashboard/screens/Categories_Screen/widgets/CategoryListItem.dart';
@@ -29,12 +30,14 @@ class CategoriesScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
+          TopSection(children:  [
           // شريط البحث المتطور
           CustomSearchBar(
             hintText: 'ابحث عن تصنيف بالاسم أو الكود...',
             padding: padding,
             onSearch: (value) => controller.onSearchChanged(value),
           ),
+          ]),
 
           // قائمة التصنيفات
           Expanded(

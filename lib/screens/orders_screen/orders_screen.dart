@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/components/top_section.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/order_list_tile.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_empty_state.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/base_app_bar.dart';
@@ -28,6 +29,7 @@ class OrdersScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
+            TopSection(children: [
           CustomSearchBar(
             hintText: 'ابحث عن الطلبات بالرقم أو رقم الطلب...',
             padding: responsive.defaultPadding,
@@ -42,6 +44,7 @@ class OrdersScreen extends StatelessWidget {
               allLabel: 'جميع الطلبات',
             ),
           ),
+            ]),
           // buildStatusTabs(controller),
           const SizedBox(height: 8),
           Expanded(

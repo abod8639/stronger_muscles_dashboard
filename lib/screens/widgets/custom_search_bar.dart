@@ -59,56 +59,51 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                 ]
               : [],
         ),
-        child: GlassContainer(
-          opacity: 0.08,
-          blur: 15,
-          borderRadius: BorderRadius.circular(16),
-          child: TextField(
-            controller: _textController,
-            focusNode: _focusNode,
-            onChanged: widget.onSearch,
-            cursorColor: AppColors.primary,
-            style: TextStyle(
-              color: isDark ? Colors.white : AppColors.textMuted,
+        child: TextField(
+          controller: _textController,
+          focusNode: _focusNode,
+          onChanged: widget.onSearch,
+          cursorColor: AppColors.primary,
+          style: TextStyle(
+            color: isDark ? Colors.white : AppColors.textMuted,
+            fontSize: responsive.getBodyFontSize(),
+          ),
+          decoration: InputDecoration(
+            hintText: widget.hintText,
+            hintStyle: TextStyle(
+              color: isDark ? Colors.white54 : Colors.grey.shade500,
               fontSize: responsive.getBodyFontSize(),
             ),
-            decoration: InputDecoration(
-              hintText: widget.hintText,
-              hintStyle: TextStyle(
-                color: isDark ? Colors.white54 : Colors.grey.shade500,
-                fontSize: responsive.getBodyFontSize(),
-              ),
-              prefixIcon: Icon(
-                Icons.search_rounded,
-                color: _focusNode.hasFocus ? AppColors.primary : Colors.grey,
-                size: responsive.iconSize,
-              ),
-              suffixIcon: _hasText
-                  ? IconButton(
-                      icon: const Icon(Icons.close_rounded, size: 20),
-                      onPressed: () {
-                        _textController.clear();
-                        widget.onSearch('');
-                      },
-                    )
-                  : null,
-              filled: true,
-              fillColor: Colors.transparent,
-              border: InputBorder.none, // نعتمد على GlassContainer في الشكل
-              contentPadding: const EdgeInsets.symmetric(
-                vertical: 15,
-                horizontal: 20,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide(color: Colors.white.withOpacity(0.05)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide(
-                  color: AppColors.primary.withOpacity(0.5),
-                  width: 1.5,
-                ),
+            prefixIcon: Icon(
+              Icons.search_rounded,
+              color: _focusNode.hasFocus ? AppColors.primary : Colors.grey,
+              size: responsive.iconSize,
+            ),
+            suffixIcon: _hasText
+                ? IconButton(
+                    icon: const Icon(Icons.close_rounded, size: 20),
+                    onPressed: () {
+                      _textController.clear();
+                      widget.onSearch('');
+                    },
+                  )
+                : null,
+            filled: true,
+            fillColor: Colors.transparent,
+            border: InputBorder.none, // نعتمد على GlassContainer في الشكل
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 15,
+              horizontal: 20,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(color: Colors.white.withOpacity(0.05)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(
+                color: AppColors.primary.withOpacity(0.5),
+                width: 1.5,
               ),
             ),
           ),

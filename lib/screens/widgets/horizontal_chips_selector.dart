@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
+import 'package:stronger_muscles_dashboard/screens/widgets/chipItem.dart';
 
 class HorizontalChipsSelector extends StatelessWidget {
   final List<dynamic> items; // قائمة العناصر (Categories, Flavors, etc.)
@@ -26,7 +27,7 @@ class HorizontalChipsSelector extends StatelessWidget {
     final responsive = context.responsive;
 
     return SizedBox(
-      height: 45, // تقليل الارتفاع قليلاً ليكون أكثر رشاقة
+      height: 50, // تقليل الارتفاع قليلاً ليكون أكثر رشاقة
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(
@@ -48,10 +49,11 @@ class HorizontalChipsSelector extends StatelessWidget {
 
           final bool isSelected = selectedId == itemId;
 
-          return _ChipItem(
+          return ChipItem(
             label: displayLabel,
             isSelected: isSelected,
             onTap: () => onSelect(itemId),
+            index: index,
           );
         },
       ),
@@ -66,54 +68,5 @@ class HorizontalChipsSelector extends StatelessWidget {
       // إذا لم يكن Model يحتوي على toJson (مثل Map عادية)
       return item[key]?.toString() ?? '';
     }
-  }
-}
-
-// عنصر الـ Chip المنفصل لتحسين الأداء وشكل الواجهة
-class _ChipItem extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _ChipItem({
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 10),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? Theme.of(context).primaryColor
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: isSelected
-                  ? Theme.of(context).primaryColor
-                  : Colors.grey.withOpacity(0.2),
-            ),
-          ),
-          child: Center(
-            child: Text(
-              label,
-              style: TextStyle(
-                color: isSelected ? Colors.white : Colors.grey,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                fontSize: 13,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/components/enhanced_error_widget.dart';
+import 'package:stronger_muscles_dashboard/components/top_section.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/controllers/users_controller.dart';
 import 'package:stronger_muscles_dashboard/components/index.dart';
@@ -36,14 +37,15 @@ class UsersScreen extends StatelessWidget {
         return Column(
           children: [
             // Search Bar
-            CustomSearchBar(
-              hintText: 'ابحث عن المستخدم بالاسم أو البريد الإلكتروني...',
-              padding: responsive.defaultPadding,
-              onSearch: (value) => controller.onSearchChanged(value),
-            ),
-
-            // ملخص الإحصائيات
-            buildStatsHeader(controller),
+            TopSection(
+              children: [
+                CustomSearchBar(
+                    hintText: 'ابحث عن المستخدم بالاسم أو البريد الإلكتروني...',
+                    padding: responsive.defaultPadding,
+                    onSearch: (value) => controller.onSearchChanged(value),
+                  ),
+              buildStatsHeader(),
+            ],),
 
             // قائمة المستخدمين
             Expanded(
@@ -71,3 +73,4 @@ class UsersScreen extends StatelessWidget {
     );
   }
 }
+
