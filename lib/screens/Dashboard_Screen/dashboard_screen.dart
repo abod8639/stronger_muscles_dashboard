@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:stronger_muscles_dashboard/models/indicators_model.dart';
 import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/widget/build_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/widget/build_dashboard_title.dart';
+import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/widget/build_indicator_card.dart';
 import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/widget/build_main_chart_card.dart';
 import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/widget/error_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/widget/no_data_screen.dart';
@@ -149,26 +149,20 @@ class DashboardScreen extends GetView<DashboardController> {
 Widget buildMainIndicatorsSection(ResponsiveLayout res) {
   final bool isSmallScreen = res.isMobile;
   
-  // توزيع ذكي لعدد الكروت بناءً على حجم الشاشة
   final int crossAxisCount = isSmallScreen 
       ? 1 
       : (res.screenWidth < 1200 ? 2 : 3);
 
-  // حساب النسبة التناسبية للكارت لمنع تداخل النصوص
   final double childAspectRatio = isSmallScreen 
-      ? 1.5  // للموبايل يكون الكارت أعرض قليلاً
+      ? 1.5 
       : (res.screenWidth < 1400 ? 1.1 : 1.5);
 
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
+  
           buildSectionTitle('المؤشرات الرئيسية', res),
-          // _buildLiveStatusBadge(), // إضافة مؤشر "مباشر" يعطي انطباع بالاحترافية
-        ],
-      ),
+    
       SizedBox(height: res.itemSpacing),
       
       GridView.builder(
@@ -268,91 +262,6 @@ Widget buildMainIndicatorsSection(ResponsiveLayout res) {
       ),
     );
   }
-
-  Widget buildIndicatorCard(int index) {
-
-    final controller = Get.find<DashboardController>();
-    final List<IndicatorsModel> indicators = [
-      IndicatorsModel(
-        title: 'معلقة',
-        subtitle: 'Pending Orders',
-        value: controller.pendingOrders.value.toString(),
-        color: AppColorsExtended.purpleDark,
-        icon: Icons.hourglass_empty,
-        trend: '${5 + index * 4}%',
-        isUp: true,
-        chartColor: AppColorsExtended.orangeAccent,
-      ),
-      // IndicatorsModel(
-      //   title: 'معالجة',
-      //   subtitle: 'Processing Orders',
-      //   value: controller.processingOrders.value.toString(),
-      //   color: AppColorsExtended.purpleDark,
-      //   icon: Icons.hourglass_bottom,
-      //   trend: '${3 + index * 1}%',
-      //   isUp: true,
-      //   chartColor: AppColorsExtended.orangeDark,
-      // ),
-      // IndicatorsModel(
-      //   title: 'مرسلة',
-      //   subtitle: 'Shipped Orders',
-      //   value: controller.shippedOrders.value.toString(),
-      //   color: AppColorsExtended.purpleDark,
-      //   icon: Icons.local_shipping,
-      //   trend: '${8 + index}%',
-      //   isUp: true,
-      //   chartColor: AppColorsExtended.purpleDark,
-      // ),
-      IndicatorsModel(
-        title: ' المسلمة',
-        subtitle: 'Delivered Orders',
-        value: controller.deliveredOrders.value.toString(),
-        color: AppColorsExtended.purpleDark,
-        icon: Icons.check_circle,
-        trend: '${12 + index}%',
-        isUp: true,
-        chartColor: AppColorsExtended.greenAccent,
-      ),
-      IndicatorsModel(
-        title: 'ملغاة',
-        subtitle: 'Cancelled Orders',
-        value: controller.cancelledOrders.value.toString(),
-        color: AppColorsExtended.purpleDark,
-        icon: Icons.cancel,
-        trend: '${2 - index}%',
-        isUp: false,
-        chartColor: AppColorsExtended.redAccent,
-      ),
-      // IndicatorsModel(
-      //   title: 'إجمالي',
-      //   subtitle: 'Total Orders',
-      //   value: controller.orders.length.toString(),
-      //   color: AppColorsExtended.purpleDark,
-      //   icon: Icons.dashboard,
-      //   trend: '${15 + index * 3}%',
-      //   isUp: true,
-      //   chartColor: AppColorsExtended.cyanAccent,
-      // ),
-    ];
-
-    if (index >= indicators.length) return const SizedBox();
-
-    final indicator = indicators[index];
-    final chartSpots = generateChartSpots();
-
-    return PremiumIndicatorCard(
-      title: indicator.title,
-      subtitle: indicator.subtitle,
-      value: indicator.value,
-      icon: indicator.icon,
-      accentColor: indicator.color,
-      trend: indicator.trend,
-      trendUp: indicator.isUp,
-      chartSpots: chartSpots,
-      chartColor: indicator.chartColor,
-    );
-  }
-
 
 
 

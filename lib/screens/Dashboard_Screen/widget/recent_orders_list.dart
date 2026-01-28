@@ -12,17 +12,16 @@ class RecentOrdersList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final res = context.responsive;
+    final bool isSmallScreen = res.isMobile;
+    
+    final int crossAxisCount = isSmallScreen
+        ? 1
+        : (res.screenWidth < 1200 ? 2 : 3);
 
-      final res = context.responsive;
-      final bool isSmallScreen = res.isMobile;
-      final int crossAxisCount = isSmallScreen 
-      ? 1 
-      : (res.screenWidth < 1200 ? 2 : 3);
-
-      final double childAspectRatio = isSmallScreen 
-      ? 1.5   
-      : (res.screenWidth < 1400 ? 1.1 : 1.8);
-
+    final double childAspectRatio = isSmallScreen
+        ? 1.5
+        : (res.screenWidth < 1400 ? 1.1 : 1.8);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,7 +77,9 @@ class RecentOrdersList extends StatelessWidget {
             : GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                padding: EdgeInsets.symmetric(horizontal: res.defaultPadding.left),
+                padding: EdgeInsets.symmetric(
+                  horizontal: res.defaultPadding.left,
+                ),
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: crossAxisCount,
                   crossAxisSpacing: res.itemSpacing,
