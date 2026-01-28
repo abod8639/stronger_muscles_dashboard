@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/widget/build_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/widget/error_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/widget/no_data_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/horizontal_chips_selector.dart';
@@ -19,10 +20,10 @@ class DashboardScreen extends GetView<DashboardController> {
 
     return Scaffold(
       backgroundColor: AppColorsExtended.darkBg,
-      appBar: _buildAppBar(),
+      appBar: buildAppBar(),
       body: Obx(() {
         if (!controller.isConnected.value && controller.orders.isEmpty) {
-          return _buildErrorState();
+          return buildErrorState();
         }
 
         if (controller.isLoading.value && controller.orders.isEmpty) {
@@ -56,30 +57,30 @@ class DashboardScreen extends GetView<DashboardController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildHeaderStatus(),
+                    buildHeaderStatus(),
                     SizedBox(height: res.itemSpacing * 2),
 
                     // عنوان رئيسي جذاب
-                    _buildDashboardTitle(res),
+                    buildDashboardTitle(res),
                     SizedBox(height: res.itemSpacing * 2),
 
                     // فترة المراقبة
-                    _buildPeriodSelector(res),
+                    buildPeriodSelector(res),
                     SizedBox(height: res.itemSpacing * 3),
 
                     if (controller.orders.isEmpty)
-                      _buildNoDataState(res)
+                      buildNoDataState(res)
                     else ...[
                       // البطاقات الرئيسية للمؤشرات
-                      _buildMainIndicatorsSection(res),
+                      buildMainIndicatorsSection(res),
                       SizedBox(height: res.itemSpacing * 3),
 
                       // الرسوم البيانية
-                      _buildChartsSection(res),
+                      buildChartsSection(res),
                       SizedBox(height: res.itemSpacing * 3),
 
                       // الطلبات الأخيرة والفئات
-                      _buildBottomSection(res),
+                      buildBottomSection(res),
                     ],
                     SizedBox(height: res.itemSpacing * 3),
                   ],
@@ -92,81 +93,9 @@ class DashboardScreen extends GetView<DashboardController> {
     );
   }
 }
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      title: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppColorsExtended.purpleAccent,
-                  AppColorsExtended.cyanAccent,
-                ],
-              ),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Icon(Icons.dashboard, size: 20),
-          ),
-          const SizedBox(width: 12),
-          const Text(
-            'لوحة التحكم',
-            style: TextStyle(
-              fontWeight: FontWeight.w800,
-              fontSize: 20,
-              letterSpacing: 0.5,
-            ),
-          ),
-        ],
-      ),
-      backgroundColor: AppColorsExtended.cardBg,
-      elevation: 0,
-      centerTitle: false,
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 16),
-          child: Center(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: AppColorsExtended.surfaceDark,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: AppColorsExtended.borderColor,
-                  width: 1,
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.refresh,
-                    color: AppColorsExtended.cyanAccent,
-                    size: 18,
-                  ),
-                  const SizedBox(width: 8),
-                  GestureDetector(
-                    onTap: () => controller.fetchDashboardData(),
-                    child: Text(
-                      'تحديث',
-                      style: TextStyle(
-                        color: AppColorsExtended.cyanAccent,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 
-  Widget _buildDashboardTitle(ResponsiveLayout res) {
+
+  Widget buildDashboardTitle(ResponsiveLayout res) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -194,7 +123,7 @@ class DashboardScreen extends GetView<DashboardController> {
 
   // --- مكونات الواجهة الصغيرة لتبسيط الكود الرئيسي ---
 
-  Widget _buildHeaderStatus() {
+  Widget buildHeaderStatus() {
     return ConnectionStatusBar(
       isConnected: controller.isConnected.value,
       errorMessage: controller.errorMessage.value,
@@ -202,7 +131,7 @@ class DashboardScreen extends GetView<DashboardController> {
     );
   }
 
-  Widget _buildPeriodSelector(ResponsiveLayout res) {
+  Widget buildPeriodSelector(ResponsiveLayout res) {
     return Obx(
       () => HorizontalChipsSelector(
         items: controller.periodItems,
@@ -216,7 +145,7 @@ class DashboardScreen extends GetView<DashboardController> {
     );
   }
 
-  Widget _buildSectionTitle(String title, ResponsiveLayout res) {
+  Widget buildSectionTitle(String title, ResponsiveLayout res) {
     return Padding(
       padding: EdgeInsets.only(bottom: res.itemSpacing),
       child: Row(
@@ -244,14 +173,14 @@ class DashboardScreen extends GetView<DashboardController> {
     );
   }
 
-  Widget _buildMainIndicatorsSection(ResponsiveLayout res) {
+  Widget buildMainIndicatorsSection(ResponsiveLayout res) {
     final isSmallScreen = res.isMobile;
     final crossAxisCount = isSmallScreen ? 1 : (res.isTablet ? 2 : 3);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionTitle('المؤشرات الرئيسية', res),
+        buildSectionTitle('المؤشرات الرئيسية', res),
         SizedBox(height: res.itemSpacing),
         GridView.builder(
           shrinkWrap: true,
@@ -264,14 +193,14 @@ class DashboardScreen extends GetView<DashboardController> {
           ),
           itemCount: 6,
           itemBuilder: (context, index) {
-            return _buildIndicatorCard(index);
+            return buildIndicatorCard(index);
           },
         ),
       ],
     );
   }
 
-  Widget _buildIndicatorCard(int index) {
+  Widget buildIndicatorCard(int index) {
     final indicators = [
       {
         'title': 'معلقة',
@@ -346,36 +275,36 @@ class DashboardScreen extends GetView<DashboardController> {
     );
   }
 
-  Widget _buildChartsSection(ResponsiveLayout res) {
+  Widget buildChartsSection(ResponsiveLayout res) {
     final isSmallScreen = res.isMobile;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionTitle('تحليل البيانات', res),
+        buildSectionTitle('تحليل البيانات', res),
         SizedBox(height: res.itemSpacing),
         if (isSmallScreen)
           Column(
             children: [
-              _buildMainChartCard(res),
+              buildMainChartCard(res),
               SizedBox(height: res.itemSpacing * 2.5),
-              _buildDetailedCard(res),
+              buildDetailedCard(res),
             ],
           )
         else
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(flex: 1, child: _buildMainChartCard(res)),
+              Expanded(flex: 1, child: buildMainChartCard(res)),
               SizedBox(width: res.itemSpacing * 2.5),
-              Expanded(flex: 1, child: _buildDetailedCard(res)),
+              Expanded(flex: 1, child: buildDetailedCard(res)),
             ],
           ),
       ],
     );
   }
 
-  Widget _buildMainChartCard(ResponsiveLayout res) {
+  Widget buildMainChartCard(ResponsiveLayout res) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
@@ -471,7 +400,7 @@ class DashboardScreen extends GetView<DashboardController> {
     return random;
   }
 
-  Widget _buildDetailedCard(ResponsiveLayout res) {
+  Widget buildDetailedCard(ResponsiveLayout res) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
@@ -533,24 +462,24 @@ class DashboardScreen extends GetView<DashboardController> {
     );
   }
 
-  Widget _buildBottomSection(ResponsiveLayout res) {
+  Widget buildBottomSection(ResponsiveLayout res) {
     return Column(
       children: [
-        _buildRecentOrders(res),
+        buildRecentOrders(res),
         SizedBox(height: res.itemSpacing * 2),
-        _buildCategoriesSection(res),
+        buildCategoriesSection(res),
       ],
     );
   }
 
-  Widget _buildRecentOrders(ResponsiveLayout res) {
+  Widget buildRecentOrders(ResponsiveLayout res) {
     return RecentOrdersList(
       orders: controller.orders.take(5).toList(),
       onSeeAll: () => Get.toNamed('/orders'),
     );
   }
 
-  Widget _buildCategoriesSection(ResponsiveLayout res) {
+  Widget buildCategoriesSection(ResponsiveLayout res) {
     if (controller.categories.isEmpty) return const SizedBox();
     return CategoriesGrid(
       categories: controller.categories,
@@ -558,7 +487,7 @@ class DashboardScreen extends GetView<DashboardController> {
     );
   }
 
-  Widget _buildErrorState() {
+  Widget buildErrorState() {
     return ErrorScreen(
       title: 'فشل الاتصال',
       message: controller.errorMessage.value,
@@ -567,7 +496,7 @@ class DashboardScreen extends GetView<DashboardController> {
     );
   }
 
-  Widget _buildNoDataState(ResponsiveLayout res) {
+  Widget buildNoDataState(ResponsiveLayout res) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: res.defaultPadding.left),
       child: const NoDataScreen(
