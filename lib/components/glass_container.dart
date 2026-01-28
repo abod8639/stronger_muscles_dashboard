@@ -12,6 +12,7 @@ class GlassContainer extends StatelessWidget {
   final Border? border;
   final Gradient? gradient;
   final EdgeInsetsGeometry? margin;
+  final VoidCallback? onTap;
 
   const GlassContainer({
     super.key,
@@ -25,11 +26,14 @@ class GlassContainer extends StatelessWidget {
     this.border,
     this.gradient,
     this.margin,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
+    return GestureDetector(
+      onTap: onTap,
+      child: ClipRRect(
       borderRadius: borderRadius ?? BorderRadius.circular(20),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
@@ -65,6 +69,7 @@ class GlassContainer extends StatelessWidget {
           child: child,
         ),
       ),
+      )
     );
   }
 }

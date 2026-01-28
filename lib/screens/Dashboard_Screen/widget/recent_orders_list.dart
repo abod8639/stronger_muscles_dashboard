@@ -14,14 +14,14 @@ class RecentOrdersList extends StatelessWidget {
   Widget build(BuildContext context) {
     final res = context.responsive;
     final bool isSmallScreen = res.isMobile;
-    
+
     final int crossAxisCount = isSmallScreen
         ? 1
         : (res.screenWidth < 1200 ? 2 : 3);
 
     final double childAspectRatio = isSmallScreen
         ? 1.5
-        : (res.screenWidth < 1400 ? 1.1 : 1.8);
+        : (res.screenWidth < 1400 ? 1.6 : 1.8);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

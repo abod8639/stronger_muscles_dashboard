@@ -22,8 +22,8 @@ class DashboardScreen extends GetView<DashboardController> {
     final res = context.responsive;
 
     return Scaffold(
-      // backgroundColor: AppColorsExtended.darkBg,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColorsExtended.darkBg.withAlpha(100),
+      // backgroundColor: Colors.transparent,
       appBar: buildAppBar(),
       body: Obx(() {
         if (!controller.isConnected.value && controller.orders.isEmpty) {
@@ -44,44 +44,41 @@ class DashboardScreen extends GetView<DashboardController> {
           onRefresh: () => controller.fetchDashboardData(),
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
-            child: Container(
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: res.defaultPadding.left,
+                vertical: res.defaultPadding.top,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  buildHeaderStatus(),
+                  SizedBox(height: res.itemSpacing * 2),
             
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: res.defaultPadding.left,
-                  vertical: res.defaultPadding.top,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    buildHeaderStatus(),
-                    SizedBox(height: res.itemSpacing * 2),
-
-                    // عنوان رئيسي جذاب
-                    buildDashboardTitle(res),
-                    SizedBox(height: res.itemSpacing * 2),
-
-                    // فترة المراقبة
-                    buildPeriodSelector(res),
+                  // عنوان رئيسي جذاب
+                  buildDashboardTitle(res),
+                  SizedBox(height: res.itemSpacing * 2),
+            
+                  // فترة المراقبة
+                  buildPeriodSelector(res),
+                  SizedBox(height: res.itemSpacing * 3),
+            
+                  if (controller.orders.isEmpty)
+                    buildNoDataState(res)
+                  else ...[
+                    // البطاقات الرئيسية للمؤشرات
+                    buildMainIndicatorsSection(res),
                     SizedBox(height: res.itemSpacing * 3),
-
-                    if (controller.orders.isEmpty)
-                      buildNoDataState(res)
-                    else ...[
-                      // البطاقات الرئيسية للمؤشرات
-                      buildMainIndicatorsSection(res),
-                      SizedBox(height: res.itemSpacing * 3),
-
-                      // الرسوم البيانية
-                      buildChartsSection(res),
-                      SizedBox(height: res.itemSpacing * 3),
-
-                      // الطلبات الأخيرة والفئات
-                      buildBottomSection(res),
-                    ],
+            
+                    // الرسوم البيانية
+                    buildChartsSection(res),
                     SizedBox(height: res.itemSpacing * 3),
+            
+                    // الطلبات الأخيرة والفئات
+                    buildBottomSection(res),
                   ],
-                ),
+                  SizedBox(height: res.itemSpacing * 3),
+                ],
               ),
             ),
           ),
