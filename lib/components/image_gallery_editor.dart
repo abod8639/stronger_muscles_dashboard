@@ -1,6 +1,5 @@
-// import 'dart:io';
 import 'package:flutter/material.dart';
-// import 'package:image_picker/image_picker.dart';
+import 'package:stronger_muscles_dashboard/components/glass_container.dart';
 import '../config/theme.dart';
 
 class ImageGalleryEditor extends StatelessWidget {
@@ -8,7 +7,7 @@ class ImageGalleryEditor extends StatelessWidget {
   final Function(String) onAddUrl;
   final Function(int) onRemove;
   final VoidCallback onPickImage;
-  // إضافة هذه الـ Function للتعامل مع إعادة الترتيب
+  
   final Function(int oldIndex, int newIndex) onReorder;
 
   const ImageGalleryEditor({
@@ -17,7 +16,7 @@ class ImageGalleryEditor extends StatelessWidget {
     required this.onAddUrl,
     required this.onRemove,
     required this.onPickImage,
-    required this.onReorder, // مررها هنا
+    required this.onReorder, 
   });
 
   @override
@@ -139,33 +138,24 @@ class ImageGalleryEditor extends StatelessWidget {
   // باقي الكود (_buildAddButton و _showAddUrlDialog) يبقى كما هو...
 
   Widget _buildAddButton(BuildContext context, bool isDark) {
-    return GestureDetector(
-      onTap: onPickImage,
-      child: Container(
-        width: 100,
-        margin: const EdgeInsets.only(left: 12),
-        decoration: BoxDecoration(
-          color: isDark ? Colors.grey.shade900 : Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isDark ? Colors.white10 : Colors.grey.shade300,
-            style: BorderStyle.solid,
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.add_a_photo_outlined, color: AppColors.primary),
-            const SizedBox(height: 8),
-            Text(
-              'إضافة صورة',
-              style: TextStyle(
-                fontSize: 12,
-                color: isDark ? Colors.white70 : Colors.black54,
-              ),
+    return GlassContainer(
+      onTap: onPickImage ,
+      padding: EdgeInsets.all(12),
+      width: 100,
+      margin: const EdgeInsets.only(left: 19),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.add_a_photo_outlined, color: AppColors.primary),
+          const SizedBox(height: 8),
+          Text(
+            'إضافة صورة',
+            style: TextStyle(
+              fontSize: 12,
+              color: isDark ? Colors.white70 : Colors.black54,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

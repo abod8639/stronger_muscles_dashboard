@@ -25,13 +25,11 @@ class AvailabilitySwitch extends StatelessWidget {
         duration: const Duration(milliseconds: 300),
         decoration: BoxDecoration(
           // تغيير لون الخلفية حسب الحالة
-          color: isAvailable.value
-              ? AppColors.primary.withOpacity(0.05)
-              : theme.cardColor,
+         
           borderRadius: BorderRadius.circular(15),
           border: Border.all(
             color: isAvailable.value
-                ? AppColors.primary.withOpacity(0.3)
+                ? AppColors.primary .withAlpha(100)
                 : theme.dividerColor,
             width: 1.5,
           ),
@@ -43,8 +41,8 @@ class AvailabilitySwitch extends StatelessWidget {
             if (onChanged != null) onChanged!(value);
           },
           // تحسين الألوان والمظهر
-          activeThumbColor: AppColors.primary,
-          activeTrackColor: AppColors.primary.withOpacity(0.2),
+          activeThumbColor: AppColors.success.withAlpha(150) ,
+          activeTrackColor: AppColors.success.withAlpha(50) ,
           inactiveThumbColor: Colors.grey[400],
           secondary: Icon(
             isAvailable.value ? Icons.check_circle : Icons.do_not_disturb_on,
@@ -61,7 +59,7 @@ class AvailabilitySwitch extends StatelessWidget {
             ),
           ),
           subtitle: Text(
-            isAvailable.value ? "متاح  الآن" : "غير متاح حالياً",
+            isAvailable.value ? "مفعل " : "غير مفعل",
             style: TextStyle(fontSize: 12, color: Colors.grey[600]),
           ),
         ),

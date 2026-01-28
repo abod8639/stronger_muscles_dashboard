@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 
@@ -13,22 +14,13 @@ Widget buildProductFormSheetModernTextField(
     builder: (context) {
       final isDark = Theme.of(context).brightness == Brightness.dark;
       final responsive = context.responsive;
-      return Container(
-        decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF2C2C2C) : Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.08),
-              blurRadius: 12,
-              spreadRadius: 1,
-            ),
-          ],
-        ),
+      return GlassContainer(
+        padding: EdgeInsets.all(10),
         child: TextField(
           controller: controller,
           cursorColor: AppColors.primary,
           style: TextStyle(
+
             color: isDark ? Colors.white : AppColors.textMuted,
             fontSize: responsive.getBodyFontSize(),
           ),

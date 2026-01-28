@@ -18,9 +18,10 @@ Widget buildStatsHeader() {
           padding: EdgeInsetsGeometry.all(0),
           width: double.infinity,
           child: Row(
+
             children: [
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
                   color: AppColors.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
@@ -28,7 +29,7 @@ Widget buildStatsHeader() {
                 child: const Icon(
                   Icons.people_alt_rounded,
                   color: AppColors.primary,
-                  size: 24,
+                  size: 20,
                 ),
               ),
               const SizedBox(width: 16),

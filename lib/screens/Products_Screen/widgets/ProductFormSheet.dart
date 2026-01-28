@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:stronger_muscles_dashboard/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/components/image_gallery_editor.dart';
+import 'package:stronger_muscles_dashboard/config/app_colors.dart';
 import 'package:stronger_muscles_dashboard/controllers/products_controller.dart';
 import 'package:stronger_muscles_dashboard/models/product_model.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
@@ -103,61 +105,65 @@ class ProductFormSheetState extends State<ProductFormSheet> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      height: MediaQuery.of(context).size.height * 0.9,
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1A1A1A) : Colors.white,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-      ),
-      child: Column(
-        children: [
-          _buildDragHandle(),
-          _buildHeader(responsive),
-          Expanded(
-            child: Form(
-              key: _formKey,
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                physics: const BouncingScrollPhysics(),
-                child: Column(
-                  children: [
-                    _buildImageSection(),
-                    const SizedBox(height: 24),
-                    _buildBasicInfoSection(responsive),
-                    const SizedBox(height: 16),
-                    _buildPricingSection(responsive),
-                    const SizedBox(height: 16),
-                    _buildStockAndBrandSection(responsive),
-                    const SizedBox(height: 16),
-                    _buildNutritionalSection(responsive),
-
-                    const SizedBox(height: 24),
-                    AvailabilitySwitch(
-                      title: "Featured",
-                      onChanged: (value) {
-                        controller.isFeatured.value = value;
-                      },
-                      isAvailable: controller.isFeatured,
-                    ),
-                    const SizedBox(height: 24),
-                    AvailabilitySwitch(
-                      onChanged: (value) {
-                        controller.isBackgroundWhite.value = value;
-                      },
-                      title: "Background White",
-                      isAvailable: controller.isBackgroundWhite,
-                    ),
-
-                    _buildSelectorsSection(),
-                    const SizedBox(height: 16),
-                    _buildDescriptionSection(controller),
-                    const SizedBox(height: 100), // مساحة للزر بالأسفل
-                  ],
+      width: double.infinity,
+      color: AppColorsExtended.darkBg.withAlpha(200),
+      child: GlassContainer(
+        height: MediaQuery.of(context).size.height * 0.9,
+        // decoration: BoxDecoration(
+        //   color: isDark ? const Color(0xFF1A1A1A) : Colors.white,
+        //   borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+        // ),
+        child: Column(
+          children: [
+            _buildDragHandle(),
+            _buildHeader(responsive),
+            Expanded(
+              child: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                    children: [
+                      _buildImageSection(),
+                      const SizedBox(height: 24),
+                      _buildBasicInfoSection(responsive),
+                      const SizedBox(height: 16),
+                      _buildPricingSection(responsive),
+                      const SizedBox(height: 16),
+                      _buildStockAndBrandSection(responsive),
+                      const SizedBox(height: 16),
+                      _buildNutritionalSection(responsive),
+      
+                      const SizedBox(height: 24),
+                      AvailabilitySwitch(
+                        title: "Featured",
+                        onChanged: (value) {
+                          controller.isFeatured.value = value;
+                        },
+                        isAvailable: controller.isFeatured,
+                      ),
+                      const SizedBox(height: 24),
+                      AvailabilitySwitch(
+                        onChanged: (value) {
+                          controller.isBackgroundWhite.value = value;
+                        },
+                        title: "Background White",
+                        isAvailable: controller.isBackgroundWhite,
+                      ),
+      
+                      _buildSelectorsSection(),
+                      const SizedBox(height: 16),
+                      _buildDescriptionSection(controller),
+                      const SizedBox(height: 100), // مساحة للزر بالأسفل
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          _buildSubmitButton(responsive),
-        ],
+            _buildSubmitButton(responsive),
+          ],
+        ),
       ),
     );
   }
@@ -334,18 +340,8 @@ class ProductFormSheetState extends State<ProductFormSheet> {
   }
 
   Widget _buildSubmitButton(var responsive) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 10,
-            offset: Offset(0, -5),
-          ),
-        ],
-      ),
+    return GlassContainer(
+      padding: const EdgeInsets.all(10),
       child: SizedBox(
         width: double.infinity,
         height: 55,

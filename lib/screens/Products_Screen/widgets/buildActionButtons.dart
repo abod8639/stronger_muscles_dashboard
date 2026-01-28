@@ -52,7 +52,8 @@ Widget _buildActionButton({
     scale: isHovered ? 1.1 : 1.0,
     duration: const Duration(milliseconds: 300),
     child: GlassContainer(
-      padding: EdgeInsets.all(responsive.isMobile ? 3 : 8),
+      onTap:onPressed ,
+      padding: EdgeInsets.all(responsive.isMobile ? 10 : 12),
       opacity: isHovered ? 0.2 : 0.1,
       blur: 10,
       borderRadius: BorderRadius.circular(12),
@@ -61,12 +62,10 @@ Widget _buildActionButton({
         width: 1,
       ),
       child: Center(
-        child: IconButton(
-          onPressed: onPressed,
-          icon: Icon(icon, size: responsive.isMobile ? 16 : 18, color: color),
-          padding: EdgeInsets.all(responsive.isMobile ? 0 : 8),
-          constraints: const BoxConstraints(),
-          visualDensity: VisualDensity.compact,
+        child: Icon(
+          icon,
+          size: responsive.isMobile ? 16 : 18,
+          color: color,
         ),
       ),
     ),

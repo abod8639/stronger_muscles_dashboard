@@ -25,8 +25,7 @@ class StrongerMusclesDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authService = AuthService();
-    final isLoggedIn = authService.isLoggedIn();
+    // final isLoggedIn = AuthService().isLoggedIn();
 
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
@@ -105,9 +104,9 @@ class MainNavigationScreen extends StatelessWidget {
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.only(
-                        top: 20,
-                        right: 20,
+                        top: 10,
                         bottom: 20,
+                        right: 10,
                         left: 10,
                       ),
                       child: ClipRRect(

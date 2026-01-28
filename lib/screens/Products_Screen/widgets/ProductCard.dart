@@ -33,6 +33,7 @@ class ProductCard extends StatelessWidget {
         vertical: responsive.itemSpacing / 2,
       ),
       child: GlassContainer(
+        onTap: onEdit,
         opacity: isHovered ? 0.1 : 0.05,
         blur: isHovered ? 20 : 10,
         borderRadius: BorderRadius.circular(24),

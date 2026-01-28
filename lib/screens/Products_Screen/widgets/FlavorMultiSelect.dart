@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 
 class ProductFlavorSelector extends StatelessWidget {
@@ -40,16 +41,9 @@ class ProductFlavorSelector extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 10),
-        Container(
+        GlassContainer(
           width: double.infinity,
           padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: isDark
-                ? Colors.white.withOpacity(0.05)
-                : Colors.grey.shade100,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.primary.withOpacity(0.1)),
-          ),
           child: Wrap(
             spacing: 8,
             runSpacing: 8,
