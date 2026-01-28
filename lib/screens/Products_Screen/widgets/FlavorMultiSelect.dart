@@ -31,78 +31,81 @@ class ProductFlavorSelector extends StatelessWidget {
     // دمج النكهات الثابتة مع أي نكهات مخصصة تمت إضافتها سابقاً
     final combinedFlavors = {...availableFlavors, ...selectedFlavors}.toList();
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Center(
-          child: Text(
-            "النكهات المتوفرة لهذا المنتج",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+    return GlassContainer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Center(
+            child: Text(
+              "النكهات المتوفرة لهذا المنتج",
+              style: TextStyle(
+                fontWeight: FontWeight.bold, 
+                fontSize: 14),
+            ),
           ),
-        ),
-        const SizedBox(height: 10),
-        GlassContainer(
-          width: double.infinity,
-          padding: const EdgeInsets.all(12),
-          child: Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              // عرض النكهات الموجودة
-              ...combinedFlavors.map((flavor) {
-                final isSelected = selectedFlavors.contains(flavor);
-                return FilterChip(
-                  label: Text(flavor),
-                  selected: isSelected,
-                  onSelected: (bool selected) {
-                    List<String> updatedList = List.from(selectedFlavors);
-                    if (selected) {
-                      updatedList.add(flavor);
-                    } else {
-                      updatedList.remove(flavor);
-                    }
-                    onSelectionChanged(updatedList);
-                  },
-                  selectedColor: AppColors.primary.withOpacity(0.2),
-                  checkmarkColor: AppColors.primary,
-                  labelStyle: TextStyle(
-                    color: isSelected
-                        ? AppColors.primary
-                        : (isDark ? Colors.white70 : Colors.black87),
-                    fontWeight: isSelected
-                        ? FontWeight.bold
-                        : FontWeight.normal,
-                    fontSize: 12,
-                  ),
-                  backgroundColor: Colors.transparent,
-                  shape: StadiumBorder(
-                    side: BorderSide(
+          const SizedBox(height: 10),
+          GlassContainer(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                ...combinedFlavors.map((flavor) {
+                  final isSelected = selectedFlavors.contains(flavor);
+                  return FilterChip(
+                    label: Text(flavor),
+                    selected: isSelected,
+                    onSelected: (bool selected) {
+                      List<String> updatedList = List.from(selectedFlavors);
+                      if (selected) {
+                        updatedList.add(flavor);
+                      } else {
+                        updatedList.remove(flavor);
+                      }
+                      onSelectionChanged(updatedList);
+                    },
+                    selectedColor: AppColors.primary.withOpacity(0.2),
+                    checkmarkColor: AppColors.primary,
+                    labelStyle: TextStyle(
                       color: isSelected
                           ? AppColors.primary
-                          : Colors.grey.withOpacity(0.3),
+                          : (isDark ? Colors.white70 : Colors.black87),
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.normal,
+                      fontSize: 12,
                     ),
+                    backgroundColor: Colors.transparent,
+                    shape: StadiumBorder(
+                      side: BorderSide(
+                        color: isSelected
+                            ? AppColors.primary
+                            : Colors.grey.withOpacity(0.3),
+                      ),
+                    ),
+                  );
+                }),
+      
+                // زر إضافة نكهة جديدة
+                ActionChip(
+                  avatar: const Icon(
+                    Icons.add,
+                    size: 16,
+                    color: AppColors.primary,
                   ),
-                );
-              }),
-
-              // زر إضافة نكهة جديدة
-              ActionChip(
-                avatar: const Icon(
-                  Icons.add,
-                  size: 16,
-                  color: AppColors.primary,
+                  label: const Text("نكهة مخصصة"),
+                  onPressed: () => _showAddFlavorDialog(context),
+                  backgroundColor: AppColors.primary.withOpacity(0.05),
+                  shape: const StadiumBorder(
+                    side: BorderSide(color: AppColors.primary),
+                  ),
                 ),
-                label: const Text("نكهة مخصصة"),
-                onPressed: () => _showAddFlavorDialog(context),
-                backgroundColor: AppColors.primary.withOpacity(0.05),
-                shape: const StadiumBorder(
-                  side: BorderSide(color: AppColors.primary),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
