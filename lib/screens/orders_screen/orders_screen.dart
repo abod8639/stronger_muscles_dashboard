@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/components/top_section.dart';
+import 'package:stronger_muscles_dashboard/screens/components/top_section.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/order_list_tile.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_empty_state.dart';
-import 'package:stronger_muscles_dashboard/screens/widgets/base_app_bar.dart';
-import 'package:stronger_muscles_dashboard/screens/widgets/horizontal_chips_selector.dart';
-import 'package:stronger_muscles_dashboard/screens/widgets/custom_search_bar.dart';
-import '../../components/enhanced_error_widget.dart';
+import 'package:stronger_muscles_dashboard/screens/components/base_app_bar.dart';
+import 'package:stronger_muscles_dashboard/screens/components/horizontal_chips_selector.dart';
+import 'package:stronger_muscles_dashboard/screens/components/custom_search_bar.dart';
+import '../components/enhanced_error_widget.dart';
 import '../../controllers/orders_controller.dart';
-import '../../components/index.dart';
+import '../components/index.dart';
 import '../../config/responsive.dart';
 import 'order_details_screen.dart';
 

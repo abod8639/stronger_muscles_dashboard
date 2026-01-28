@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/models/flavors_model.dart';
-import 'package:stronger_muscles_dashboard/screens/Products_Screen/widgets/ProductFormSheet.dart';
+import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/ProductFormSheet.dart';
 import '../models/index.dart';
 import '../repositories/index.dart';
 import '../services/api_service.dart';

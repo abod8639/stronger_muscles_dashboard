@@ -3,7 +3,7 @@ import 'package:stronger_muscles_dashboard/config/theme.dart';
 import '../models/index.dart';
 import '../services/api_service.dart';
 import '../repositories/index.dart';
-import '../components/index.dart';
+import '../screens/components/index.dart';
 
 class CategoriesController extends GetxController {
   late final CategoryRepository _categoryRepository;
