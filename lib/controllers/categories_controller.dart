@@ -44,7 +44,6 @@ class CategoriesController extends GetxController {
 
   void onSearchChanged(String query) {
     searchQuery.value = query;
-    // لا نحتاج لاستدعاء applySearch هنا لأن debounce سيقوم بذلك
   }
 
   void _applySearch() {

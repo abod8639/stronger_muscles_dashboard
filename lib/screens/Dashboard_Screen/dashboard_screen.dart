@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:stronger_muscles_dashboard/models/indicators_model.dart';
 import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/widget/build_app_bar.dart';
+import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/widget/build_dashboard_title.dart';
 import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/widget/error_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/widget/no_data_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/horizontal_chips_selector.dart';
@@ -95,35 +97,8 @@ class DashboardScreen extends GetView<DashboardController> {
 }
 
 
-  Widget buildDashboardTitle(ResponsiveLayout res) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'مرحباً بك مجدداً! 👋',
-          style: TextStyle(
-            fontSize: res.getTitleFontSize() + 2,
-            fontWeight: FontWeight.w900,
-            color: AppColorsExtended.textPrimary,
-            letterSpacing: -0.5,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'إليك ملخص أداء عملك اليوم',
-          style: TextStyle(
-            fontSize: 14,
-            color: AppColorsExtended.textSecondary,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
-    );
-  }
-
-  // --- مكونات الواجهة الصغيرة لتبسيط الكود الرئيسي ---
-
   Widget buildHeaderStatus() {
+    final controller = Get.find<DashboardController>();
     return ConnectionStatusBar(
       isConnected: controller.isConnected.value,
       errorMessage: controller.errorMessage.value,
@@ -132,6 +107,8 @@ class DashboardScreen extends GetView<DashboardController> {
   }
 
   Widget buildPeriodSelector(ResponsiveLayout res) {
+        final controller = Get.find<DashboardController>();
+
     return Obx(
       () => HorizontalChipsSelector(
         items: controller.periodItems,
@@ -187,7 +164,7 @@ class DashboardScreen extends GetView<DashboardController> {
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: crossAxisCount,
-            childAspectRatio: isSmallScreen ? 1.35 : 1.25,
+            childAspectRatio: isSmallScreen ? 1.5 : 1.25,
             crossAxisSpacing: res.itemSpacing * 1.8,
             mainAxisSpacing: res.itemSpacing * 1.8,
           ),
@@ -200,62 +177,73 @@ class DashboardScreen extends GetView<DashboardController> {
     );
   }
 
+// indicators models
+
+
   Widget buildIndicatorCard(int index) {
-    final indicators = [
-      {
-        'title': 'معلقة',
-        'subtitle': 'Pending Orders',
-        'value': controller.pendingOrders.value.toString(),
-        'color': AppColorsExtended.purpleDark,
-        'icon': Icons.hourglass_empty,
-        'trend': '${5 + index * 2}%',
-        'isUp': true,
-      },
-      {
-        'title': 'معالجة',
-        'subtitle': 'Processing Orders',
-        'value': controller.processingOrders.value.toString(),
-        'color': AppColorsExtended.purpleDark,
-        'icon': Icons.hourglass_bottom,
-        'trend': '${3 + index * 1}%',
-        'isUp': true,
-      },
-      {
-        'title': 'مرسلة',
-        'subtitle': 'Shipped Orders',
-        'value': controller.shippedOrders.value.toString(),
-        'color': AppColorsExtended.purpleDark,
-        'icon': Icons.local_shipping,
-        'trend': '${8 + index}%',
-        'isUp': true,
-      },
-      {
-        'title': 'مسلمة',
-        'subtitle': 'Delivered Orders',
-        'value': controller.deliveredOrders.value.toString(),
-        'color': AppColorsExtended.purpleDark,
-        'icon': Icons.check_circle,
-        'trend': '${12 + index}%',
-        'isUp': true,
-      },
-      {
-        'title': 'ملغاة',
-        'subtitle': 'Cancelled Orders',
-        'value': controller.cancelledOrders.value.toString(),
-        'color': AppColorsExtended.purpleDark,
-        'icon': Icons.cancel,
-        'trend': '${2 - index}%',
-        'isUp': false,
-      },
-      {
-        'title': 'إجمالي',
-        'subtitle': 'Total Orders',
-        'value': controller.orders.length.toString(),
-        'color': AppColorsExtended.purpleDark,
-        'icon': Icons.dashboard,
-        'trend': '${15 + index * 3}%',
-        'isUp': true,
-      },
+        final controller = Get.find<DashboardController>();
+
+    final List<IndicatorsModel> indicators = [
+      IndicatorsModel(
+        title: 'معلقة',
+        subtitle: 'Pending Orders',
+        value: controller.pendingOrders.value.toString(),
+        color: AppColorsExtended.purpleDark,
+        icon: Icons.hourglass_empty,
+        trend: '${5 + index * 2}%',
+        isUp: true,
+        chartColor: AppColorsExtended.redAccent,
+      ),
+      IndicatorsModel(
+        title: 'معالجة',
+        subtitle: 'Processing Orders',
+        value: controller.processingOrders.value.toString(),
+        color: AppColorsExtended.purpleDark,
+        icon: Icons.hourglass_bottom,
+        trend: '${3 + index * 1}%',
+        isUp: true,
+        chartColor: AppColorsExtended.purpleAccent,
+      ),
+      IndicatorsModel(
+        title: 'مرسلة',
+        subtitle: 'Shipped Orders',
+        value: controller.shippedOrders.value.toString(),
+        color: AppColorsExtended.purpleDark,
+        icon: Icons.local_shipping,
+        trend: '${8 + index}%',
+        isUp: true,
+        chartColor: AppColorsExtended.purpleAccent,
+      ),
+      IndicatorsModel(
+        title: ' المسلمة',
+        subtitle: 'Delivered Orders',
+        value: controller.deliveredOrders.value.toString(),
+        color: AppColorsExtended.purpleDark,
+        icon: Icons.check_circle,
+        trend: '${12 + index}%',
+        isUp: true,
+        chartColor: AppColorsExtended.purpleAccent,
+      ),
+      IndicatorsModel(
+        title: 'ملغاة',
+        subtitle: 'Cancelled Orders',
+        value: controller.cancelledOrders.value.toString(),
+        color: AppColorsExtended.purpleDark,
+        icon: Icons.cancel,
+        trend: '${2 - index}%',
+        isUp: false,
+        chartColor: AppColorsExtended.purpleAccent,
+      ),
+      IndicatorsModel(
+        title: 'إجمالي',
+        subtitle: 'Total Orders',
+        value: controller.orders.length.toString(),
+        color: AppColorsExtended.purpleDark,
+        icon: Icons.dashboard,
+        trend: '${15 + index * 3}%',
+        isUp: true,
+        chartColor: AppColorsExtended.purpleAccent,
+      ),
     ];
 
     if (index >= indicators.length) return const SizedBox();
@@ -264,14 +252,15 @@ class DashboardScreen extends GetView<DashboardController> {
     final chartSpots = _generateChartSpots();
 
     return PremiumIndicatorCard(
-      title: indicator['title'] as String,
-      subtitle: indicator['subtitle'] as String,
-      value: indicator['value'] as String,
-      icon: indicator['icon'] as IconData,
-      accentColor: indicator['color'] as Color,
-      trend: indicator['trend'] as String,
-      trendUp: indicator['isUp'] as bool,
+      title: indicator.title,
+      subtitle: indicator.subtitle,
+      value: indicator.value,
+      icon: indicator.icon,
+      accentColor: indicator.color,
+      trend: indicator.trend,
+      trendUp: indicator.isUp,
       chartSpots: chartSpots,
+      chartColor: indicator.chartColor,
     );
   }
 
@@ -305,6 +294,8 @@ class DashboardScreen extends GetView<DashboardController> {
   }
 
   Widget buildMainChartCard(ResponsiveLayout res) {
+        final controller = Get.find<DashboardController>();
+
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
@@ -389,6 +380,8 @@ class DashboardScreen extends GetView<DashboardController> {
   }
 
   List<FlSpot> _generateChartSpots() {
+        final controller = Get.find<DashboardController>();
+
     final random = List.generate(30, (i) {
       final baseValue = (controller.orders.length / 30) * (i + 1);
       final variation = (baseValue * 0.3 * (i % 3 == 0 ? -1 : 1)).toInt();
@@ -401,6 +394,8 @@ class DashboardScreen extends GetView<DashboardController> {
   }
 
   Widget buildDetailedCard(ResponsiveLayout res) {
+        final controller = Get.find<DashboardController>();
+
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
@@ -473,6 +468,8 @@ class DashboardScreen extends GetView<DashboardController> {
   }
 
   Widget buildRecentOrders(ResponsiveLayout res) {
+        final controller = Get.find<DashboardController>();
+
     return RecentOrdersList(
       orders: controller.orders.take(5).toList(),
       onSeeAll: () => Get.toNamed('/orders'),
@@ -480,6 +477,8 @@ class DashboardScreen extends GetView<DashboardController> {
   }
 
   Widget buildCategoriesSection(ResponsiveLayout res) {
+        final controller = Get.find<DashboardController>();
+
     if (controller.categories.isEmpty) return const SizedBox();
     return CategoriesGrid(
       categories: controller.categories,
@@ -488,6 +487,8 @@ class DashboardScreen extends GetView<DashboardController> {
   }
 
   Widget buildErrorState() {
+        final controller = Get.find<DashboardController>();
+
     return ErrorScreen(
       title: 'فشل الاتصال',
       message: controller.errorMessage.value,

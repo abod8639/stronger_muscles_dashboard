@@ -10,6 +10,7 @@ class PremiumIndicatorCard extends StatefulWidget {
   final String trend;
   final bool trendUp;
   final List<FlSpot>? chartSpots;
+  final Color? chartColor;
   final Color accentColor;
   final IconData? icon;
 
@@ -22,6 +23,7 @@ class PremiumIndicatorCard extends StatefulWidget {
     required this.trendUp,
     this.chartSpots,
     required this.accentColor,
+    this.chartColor,
     this.icon,
   });
 
@@ -247,7 +249,7 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard>
                         LineChartBarData(
                           spots: widget.chartSpots!,
                           isCurved: true,
-                          color: widget.accentColor,
+                          color: widget.chartColor ??  Colors.amber,
                           barWidth: 2.5,
                           isStrokeCapRound: true,
                           dotData: FlDotData(show: false),
