@@ -15,6 +15,7 @@ Widget buildStatsHeader() {
           horizontal: responsive.defaultPadding.left,
         ),
         child: GlassContainer(
+          padding: EdgeInsetsGeometry.all(0),
           width: double.infinity,
           child: Row(
             children: [
