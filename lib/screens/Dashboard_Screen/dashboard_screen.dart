@@ -8,9 +8,6 @@ import '../../config/responsive.dart';
 import '../../config/app_colors.dart';
 import '../../controllers/dashboard_controller.dart';
 import '../../components/index.dart';
-import '../../components/premium_indicator_card.dart';
-import '../../components/detailed_staking_card.dart';
-import '../../components/enhanced_line_chart.dart';
 
 class DashboardScreen extends GetView<DashboardController> {
   const DashboardScreen({super.key});
@@ -94,7 +91,7 @@ class DashboardScreen extends GetView<DashboardController> {
       }),
     );
   }
-
+}
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       title: Row(
@@ -280,7 +277,7 @@ class DashboardScreen extends GetView<DashboardController> {
         'title': 'معلقة',
         'subtitle': 'Pending Orders',
         'value': controller.pendingOrders.value.toString(),
-        'color': AppColorsExtended.orangeAccent,
+        'color': AppColorsExtended.purpleDark,
         'icon': Icons.hourglass_empty,
         'trend': '${5 + index * 2}%',
         'isUp': true,
@@ -289,7 +286,7 @@ class DashboardScreen extends GetView<DashboardController> {
         'title': 'معالجة',
         'subtitle': 'Processing Orders',
         'value': controller.processingOrders.value.toString(),
-        'color': AppColorsExtended.cyanAccent,
+        'color': AppColorsExtended.purpleDark,
         'icon': Icons.hourglass_bottom,
         'trend': '${3 + index * 1}%',
         'isUp': true,
@@ -298,7 +295,7 @@ class DashboardScreen extends GetView<DashboardController> {
         'title': 'مرسلة',
         'subtitle': 'Shipped Orders',
         'value': controller.shippedOrders.value.toString(),
-        'color': AppColorsExtended.purpleAccent,
+        'color': AppColorsExtended.purpleDark,
         'icon': Icons.local_shipping,
         'trend': '${8 + index}%',
         'isUp': true,
@@ -307,7 +304,7 @@ class DashboardScreen extends GetView<DashboardController> {
         'title': 'مسلمة',
         'subtitle': 'Delivered Orders',
         'value': controller.deliveredOrders.value.toString(),
-        'color': AppColorsExtended.greenAccent,
+        'color': AppColorsExtended.purpleDark,
         'icon': Icons.check_circle,
         'trend': '${12 + index}%',
         'isUp': true,
@@ -316,7 +313,7 @@ class DashboardScreen extends GetView<DashboardController> {
         'title': 'ملغاة',
         'subtitle': 'Cancelled Orders',
         'value': controller.cancelledOrders.value.toString(),
-        'color': AppColorsExtended.redAccent,
+        'color': AppColorsExtended.purpleDark,
         'icon': Icons.cancel,
         'trend': '${2 - index}%',
         'isUp': false,
@@ -579,4 +576,4 @@ class DashboardScreen extends GetView<DashboardController> {
       ),
     );
   }
-}
+

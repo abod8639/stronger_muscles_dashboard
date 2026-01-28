@@ -14,7 +14,7 @@ class PremiumIndicatorCard extends StatefulWidget {
   final IconData? icon;
 
   const PremiumIndicatorCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.value,
     this.subtitle,
@@ -23,7 +23,7 @@ class PremiumIndicatorCard extends StatefulWidget {
     this.chartSpots,
     required this.accentColor,
     this.icon,
-  }) : super(key: key);
+  });
 
   @override
   State<PremiumIndicatorCard> createState() => _PremiumIndicatorCardState();

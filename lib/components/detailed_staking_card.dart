@@ -13,7 +13,7 @@ class DetailedStakingCard extends StatelessWidget {
   final LinearGradient? backgroundGradient;
 
   const DetailedStakingCard({
-    Key? key,
+    super.key,
     required this.title,
     this.subtitle,
     required this.mainValue,
@@ -22,7 +22,7 @@ class DetailedStakingCard extends StatelessWidget {
     required this.accentColor,
     this.icon,
     this.backgroundGradient,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

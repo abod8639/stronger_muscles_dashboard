@@ -15,7 +15,7 @@ class ModernIndicatorCard extends StatefulWidget {
   final String? trendValue;
 
   const ModernIndicatorCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.value,
     this.subtitle,
@@ -26,7 +26,7 @@ class ModernIndicatorCard extends StatefulWidget {
     this.showTrend = false,
     this.trendUp = true,
     this.trendValue,
-  }) : super(key: key);
+  });
 
   @override
   State<ModernIndicatorCard> createState() => _ModernIndicatorCardState();

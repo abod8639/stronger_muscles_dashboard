@@ -14,7 +14,7 @@ class EnhancedLineChartWidget extends StatelessWidget {
   final int? touchTooltipIndex;
 
   const EnhancedLineChartWidget({
-    Key? key,
+    super.key,
     required this.title,
     required this.spots,
     required this.lineColor,
@@ -23,7 +23,7 @@ class EnhancedLineChartWidget extends StatelessWidget {
     this.xAxisLabel,
     this.maxY = 100,
     this.touchTooltipIndex,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -12,7 +12,6 @@ class AppThemeExtended {
         primary: AppColorsExtended.purpleAccent,
         secondary: AppColorsExtended.cyanAccent,
         surface: AppColorsExtended.cardBg,
-        background: AppColorsExtended.darkBg,
         error: AppColorsExtended.redAccent,
       ),
       appBarTheme: AppBarTheme(
