@@ -118,7 +118,10 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard>
                 // Value with Gradient Mask
                 ShaderMask(
                   shaderCallback: (bounds) => LinearGradient(
-                    colors: [Colors.white, widget.accentColor.withOpacity(0.7)],
+                    colors: [
+                      Colors.white, 
+                      // widget.accentColor.withOpacity(0.7),
+                      widget.chartColor!.withOpacity(0.7)],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ).createShader(bounds),
@@ -150,9 +153,9 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard>
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: widget.accentColor.withOpacity(0.15),
+        color: widget.chartColor!.withOpacity(0.09),
         shape: BoxShape.circle,
-        border: Border.all(color: widget.accentColor.withOpacity(0.2)),
+        border: Border.all(color: widget.chartColor!.withOpacity(0.2)),
       ),
       child: Icon(
         widget.icon ?? Icons.analytics,

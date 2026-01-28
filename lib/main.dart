@@ -61,43 +61,43 @@ class MainNavigationScreen extends StatelessWidget {
           backgroundColor: AppColors.backgroundDark,
           drawer: isDesktop ? null : myDrawer(),
           body: 
-          // Stack(
-            // children: [
-              // // Ambient Gradient Background
-              // Positioned(
-              //   top: -100,
-              //   right: -100,
-              //   child: Container(
-              //     width: 500,
-              //     height: 500,
-              //     decoration: BoxDecoration(
-              //       shape: BoxShape.circle,
-              //       gradient: RadialGradient(
-              //         colors: [
-              //           AppColors.primary.withOpacity(0.15),
-              //           Colors.transparent,
-              //         ],
-              //       ),
-              //     ),
-              //   ),
-              // ),
-              // Positioned(
-              //   bottom: -150,
-              //   left: -150,
-              //   child: Container(
-              //     width: 600,
-              //     height: 600,
-              //     decoration: BoxDecoration(
-              //       shape: BoxShape.circle,
-              //       gradient: RadialGradient(
-              //         colors: [
-              //           AppColors.accent.withOpacity(0.1),
-              //           Colors.transparent,
-              //         ],
-              //       ),
-              //     ),
-              //   ),
-              // ),
+          Stack(
+            children: [
+              // Ambient Gradient Background
+              Positioned(
+                top: -100,
+                right: -100,
+                child: Container(
+                  width: 500,
+                  height: 500,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        AppColors.primary.withOpacity(0.15),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: -150,
+                left: -150,
+                child: Container(
+                  width: 600,
+                  height: 600,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        AppColors.accent.withOpacity(0.1),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
 
               // Main Layout
               Row(
@@ -131,8 +131,8 @@ class MainNavigationScreen extends StatelessWidget {
                   ),
                 ],
               ),
-            // ],
-          // ),
+            ],
+          ),
           bottomNavigationBar: isDesktop ? null : MyBottomNavigationBar(),
         );
       },

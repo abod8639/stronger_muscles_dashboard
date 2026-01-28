@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:stronger_muscles_dashboard/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/models/indicators_model.dart';
 import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/widget/build_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/widget/build_dashboard_title.dart';
@@ -21,7 +22,8 @@ class DashboardScreen extends GetView<DashboardController> {
     final res = context.responsive;
 
     return Scaffold(
-      backgroundColor: AppColorsExtended.darkBg,
+      // backgroundColor: AppColorsExtended.darkBg,
+      backgroundColor: Colors.transparent,
       appBar: buildAppBar(),
       body: Obx(() {
         if (!controller.isConnected.value && controller.orders.isEmpty) {
@@ -35,22 +37,15 @@ class DashboardScreen extends GetView<DashboardController> {
         }
 
         return RefreshIndicator(
-          backgroundColor: AppColorsExtended.cardBg,
-          color: AppColorsExtended.cyanAccent,
+          // backgroundColor: AppColorsExtended.cardBg,
+          backgroundColor: Colors.transparent,
+          // color: AppColorsExtended.cyanAccent,
+          color: Colors.transparent,
           onRefresh: () => controller.fetchDashboardData(),
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    AppColorsExtended.darkBg,
-                    AppColorsExtended.surfaceDark.withValues(alpha: 0.2),
-                  ],
-                ),
-              ),
+            
               child: Padding(
                 padding: EdgeInsets.symmetric(
                   horizontal: res.defaultPadding.left,
@@ -177,7 +172,124 @@ class DashboardScreen extends GetView<DashboardController> {
       ],
     );
   }
+//
 
+  Widget buildMainChartCard(ResponsiveLayout res) {
+    final controller = Get.find<DashboardController>();
+
+    return GlassContainer(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'اتجاه الطلبات',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: AppColorsExtended.textPrimary,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'آخر 30 يوم',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColorsExtended.textMuted,
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColorsExtended.cyanAccent.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: AppColorsExtended.cyanAccent.withValues(alpha: 0.2),
+                    width: 1,
+                  ),
+                ),
+                child: Icon(
+                  Icons.trending_up,
+                  color: AppColorsExtended.cyanAccent,
+                  size: 20,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          SizedBox(
+            height: 400,
+            child: EnhancedLineChartWidget(
+              title: '',
+              spots: _generateChartSpots(),
+              lineColor: AppColorsExtended.cyanAccent,
+              gradientColor: AppColorsExtended.cyanAccent,
+              maxY: (controller.orders.length.toDouble() + 100),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildBottomSection(ResponsiveLayout res) {
+    return Column(
+      children: [
+        buildRecentOrders(res),
+        SizedBox(height: res.itemSpacing * 2),
+        buildCategoriesSection(res),
+      ],
+    );
+  }
+
+  Widget buildRecentOrders(ResponsiveLayout res) {
+        final controller = Get.find<DashboardController>();
+
+    return RecentOrdersList(
+      orders: controller.orders.take(5).toList(),
+      onSeeAll: () => Get.toNamed('/orders'),
+    );
+  }
+
+  Widget buildCategoriesSection(ResponsiveLayout res) {
+        final controller = Get.find<DashboardController>();
+
+    if (controller.categories.isEmpty) return const SizedBox();
+    return CategoriesGrid(
+      categories: controller.categories,
+      onSeeAll: () => Get.toNamed('/categories'),
+    );
+  }
+
+  Widget buildErrorState() {
+        final controller = Get.find<DashboardController>();
+
+    return ErrorScreen(
+      title: 'فشل الاتصال',
+      message: controller.errorMessage.value,
+      onRetry: () => controller.retryConnection(),
+      icon: Icons.cloud_off_outlined,
+    );
+  }
+
+  Widget buildNoDataState(ResponsiveLayout res) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: res.defaultPadding.left),
+      child: const NoDataScreen(
+        title: 'لا توجد بيانات',
+        message: 'لم نتمكن من جلب أي بيانات حالياً.',
+      ),
+    );
+  }
 
   Widget buildIndicatorCard(int index) {
 
@@ -275,8 +387,7 @@ class DashboardScreen extends GetView<DashboardController> {
           Column(
             children: [
               buildMainChartCard(res),
-              SizedBox(height: res.itemSpacing * 2.5),
-              buildDetailedCard(res),
+
             ],
           )
         else
@@ -284,99 +395,13 @@ class DashboardScreen extends GetView<DashboardController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(flex: 1, child: buildMainChartCard(res)),
-              SizedBox(width: res.itemSpacing * 2.5),
-              Expanded(flex: 1, child: buildDetailedCard(res)),
             ],
           ),
       ],
     );
   }
 
-  Widget buildMainChartCard(ResponsiveLayout res) {
-    final controller = Get.find<DashboardController>();
 
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColorsExtended.surfaceDark.withValues(alpha: 0.3),
-            AppColorsExtended.surfaceDark.withValues(alpha: 0.05),
-          ],
-        ),
-        border: Border.all(color: AppColorsExtended.borderColor, width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'اتجاه الطلبات',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: AppColorsExtended.textPrimary,
-                      letterSpacing: 0.3,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'آخر 30 يوم',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColorsExtended.textMuted,
-                    ),
-                  ),
-                ],
-              ),
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: AppColorsExtended.cyanAccent.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: AppColorsExtended.cyanAccent.withValues(alpha: 0.2),
-                    width: 1,
-                  ),
-                ),
-                child: Icon(
-                  Icons.trending_up,
-                  color: AppColorsExtended.cyanAccent,
-                  size: 20,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          SizedBox(
-            height: 400,
-            child: EnhancedLineChartWidget(
-              title: '',
-              spots: _generateChartSpots(),
-              lineColor: AppColorsExtended.cyanAccent,
-              gradientColor: AppColorsExtended.cyanAccent,
-              maxY: (controller.orders.length.toDouble() + 10),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   List<FlSpot> _generateChartSpots() {
       final controller = Get.find<DashboardController>();
@@ -390,119 +415,5 @@ class DashboardScreen extends GetView<DashboardController> {
       );
     });
     return random;
-  }
-
-  Widget buildDetailedCard(ResponsiveLayout res) {
-    final controller = Get.find<DashboardController>();
-
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColorsExtended.purpleAccent.withValues(alpha: 0.08),
-            AppColorsExtended.purpleAccent.withValues(alpha: 0.02),
-          ],
-        ),
-        border: Border.all(
-          color: AppColorsExtended.purpleAccent.withValues(alpha: 0.15),
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColorsExtended.purpleAccent.withValues(alpha: 0.1),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      padding: const EdgeInsets.all(24),
-      child: DetailedStakingCard(
-        title: 'ملخص الأداء',
-        subtitle: 'إحصائيات سريعة',
-        mainValue: '${controller.orders.length}',
-        mainLabel: 'إجمالي الطلبات',
-        icon: Icons.analytics_outlined,
-        accentColor: AppColorsExtended.purpleAccent,
-        details: [
-          StakingDetail(
-            label: 'معدل الإنجاز',
-            value: controller.orders.isEmpty
-                ? '0%'
-                : '${((controller.deliveredOrders.value / controller.orders.length) * 100).toStringAsFixed(1)}%',
-            color: AppColorsExtended.greenAccent,
-          ),
-          StakingDetail(
-            label: 'معدل الإلغاء',
-            value: controller.orders.isEmpty
-                ? '0%'
-                : '${((controller.cancelledOrders.value / controller.orders.length) * 100).toStringAsFixed(1)}%',
-            color: AppColorsExtended.redAccent,
-          ),
-          StakingDetail(
-            label: 'قيد المعالجة',
-            value: controller.processingOrders.value.toString(),
-            color: AppColorsExtended.orangeAccent,
-          ),
-          StakingDetail(
-            label: 'المعلقة',
-            value: controller.pendingOrders.value.toString(),
-            color: AppColorsExtended.cyanAccent,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget buildBottomSection(ResponsiveLayout res) {
-    return Column(
-      children: [
-        buildRecentOrders(res),
-        SizedBox(height: res.itemSpacing * 2),
-        buildCategoriesSection(res),
-      ],
-    );
-  }
-
-  Widget buildRecentOrders(ResponsiveLayout res) {
-        final controller = Get.find<DashboardController>();
-
-    return RecentOrdersList(
-      orders: controller.orders.take(5).toList(),
-      onSeeAll: () => Get.toNamed('/orders'),
-    );
-  }
-
-  Widget buildCategoriesSection(ResponsiveLayout res) {
-        final controller = Get.find<DashboardController>();
-
-    if (controller.categories.isEmpty) return const SizedBox();
-    return CategoriesGrid(
-      categories: controller.categories,
-      onSeeAll: () => Get.toNamed('/categories'),
-    );
-  }
-
-  Widget buildErrorState() {
-        final controller = Get.find<DashboardController>();
-
-    return ErrorScreen(
-      title: 'فشل الاتصال',
-      message: controller.errorMessage.value,
-      onRetry: () => controller.retryConnection(),
-      icon: Icons.cloud_off_outlined,
-    );
-  }
-
-  Widget buildNoDataState(ResponsiveLayout res) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: res.defaultPadding.left),
-      child: const NoDataScreen(
-        title: 'لا توجد بيانات',
-        message: 'لم نتمكن من جلب أي بيانات حالياً.',
-      ),
-    );
   }
 
