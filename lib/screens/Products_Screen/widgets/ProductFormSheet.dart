@@ -102,17 +102,13 @@ class ProductFormSheetState extends State<ProductFormSheet> {
   @override
   Widget build(BuildContext context) {
     final responsive = context.responsive;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    // final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
       width: double.infinity,
       color: AppColorsExtended.darkBg.withAlpha(200),
       child: GlassContainer(
         height: MediaQuery.of(context).size.height * 0.9,
-        // decoration: BoxDecoration(
-        //   color: isDark ? const Color(0xFF1A1A1A) : Colors.white,
-        //   borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-        // ),
         child: Column(
           children: [
             _buildDragHandle(),
@@ -152,6 +148,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                         isAvailable: controller.isBackgroundWhite,
                       ),
       
+                      const SizedBox(height: 16),
                       _buildSelectorsSection(),
                       const SizedBox(height: 16),
                       _buildDescriptionSection(controller),
@@ -318,6 +315,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
         ),
         const SizedBox(height: 16),
         CustomModernDropdown<String>(
+          
           value: selectedCategoryId,
           items: controller.categories
               .map(
@@ -335,7 +333,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
       descriptionController,
       'وصف المنتج بالتفصيل...',
       Icons.description_outlined,
-      maxLines: 4,
+      maxLines: 8,
     );
   }
 

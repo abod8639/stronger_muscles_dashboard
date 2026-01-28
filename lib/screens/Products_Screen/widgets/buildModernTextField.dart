@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/components/glass_container.dart';
+import 'package:stronger_muscles_dashboard/config/app_colors.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 
@@ -17,6 +18,7 @@ Widget buildProductFormSheetModernTextField(
       return GlassContainer(
         padding: EdgeInsets.all(10),
         child: TextField(
+          
           controller: controller,
           cursorColor: AppColors.primary,
           style: TextStyle(
@@ -27,6 +29,7 @@ Widget buildProductFormSheetModernTextField(
           keyboardType: isNumber ? TextInputType.number : TextInputType.text,
           maxLines: maxLines,
           decoration: InputDecoration(
+            focusColor: AppColorsExtended.darkBg.withAlpha(250),
             labelText: label,
             prefixIcon: Icon(
               icon,

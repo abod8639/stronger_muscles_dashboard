@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/components/glass_container.dart';
+import 'package:stronger_muscles_dashboard/config/app_colors.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 
 // جعلنا الكلاس Generic <T> لكي يتقبل أي نوع من القيم (String, Int, أو حتى Model)
@@ -29,11 +30,13 @@ class CustomModernDropdown<T> extends StatelessWidget {
     return GlassContainer(
       padding: EdgeInsets.all(10),
       child: DropdownButtonFormField<T>(
+        // focusColor: ,
+        
         initialValue: value,
         items: items,
         onChanged: onChanged,
         validator: validator,
-        dropdownColor: isDark ? const Color(0xFF2C2C2C) : Colors.white,
+        dropdownColor: AppColorsExtended.darkBg.withAlpha(250),
         icon: Icon(
           Icons.keyboard_arrow_down,
           color: AppColors.primary.withOpacity(0.7),
