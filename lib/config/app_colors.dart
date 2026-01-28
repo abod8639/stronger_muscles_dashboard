@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 /// تعريف جميع الألوان المستخدمة في التطبيق بأسلوب احترافي وحديث
 class AppColorsExtended {
   // --- الألوان الأساسية (Primary Palette) ---
-  static const Color darkBg = Color(0xFF0F0F1E); // خلفية داكنة جداً (almost black)
+  static const Color darkBg = Color(
+    0xFF0F0F1E,
+  ); // خلفية داكنة جداً (almost black)
   static const Color surfaceDark = Color(0xFF1A1A2E); // سطح داكن
   static const Color cardBg = Color(0xFF16213E); // خلفية البطاقات
   static const Color cardBgLight = Color(0xFF1F2937); // خلفية بطاقة أفتح قليلاً

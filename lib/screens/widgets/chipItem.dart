@@ -1,4 +1,3 @@
-
 // عنصر الـ Chip المنفصل لتحسين الأداء وشكل الواجهة
 import 'package:flutter/material.dart';
 
@@ -9,17 +8,17 @@ class ChipItem extends StatelessWidget {
   final int index;
 
   const ChipItem({
-    super.key, 
+    super.key,
     required this.label,
     required this.isSelected,
     required this.onTap,
-    required this.index
+    required this.index,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding:  EdgeInsets.only(left: index < 1 ? 1 : 10),
+      padding: EdgeInsets.only(left: index < 1 ? 1 : 10),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),

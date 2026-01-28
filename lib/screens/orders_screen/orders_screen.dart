@@ -29,22 +29,24 @@ class OrdersScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-            TopSection(children: [
-          CustomSearchBar(
-            hintText: 'ابحث عن الطلبات بالرقم أو رقم الطلب...',
-            padding: responsive.defaultPadding,
-            onSearch: (value) => controller.onSearchChanged(value),
+          TopSection(
+            children: [
+              CustomSearchBar(
+                hintText: 'ابحث عن الطلبات بالرقم أو رقم الطلب...',
+                padding: responsive.defaultPadding,
+                onSearch: (value) => controller.onSearchChanged(value),
+              ),
+              Obx(
+                () => HorizontalChipsSelector(
+                  items: controller.statusItems,
+                  selectedId: controller.selectedStatusId.value,
+                  onSelect: (id) => controller.selectedStatusId.value = id,
+                  showAllOption: true,
+                  allLabel: 'جميع الطلبات',
+                ),
+              ),
+            ],
           ),
-          Obx(
-            () => HorizontalChipsSelector(
-              items: controller.statusItems,
-              selectedId: controller.selectedStatusId.value,
-              onSelect: (id) => controller.selectedStatusId.value = id,
-              showAllOption: true,
-              allLabel: 'جميع الطلبات',
-            ),
-          ),
-            ]),
           // buildStatusTabs(controller),
           const SizedBox(height: 8),
           Expanded(

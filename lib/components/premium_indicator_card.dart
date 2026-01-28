@@ -22,7 +22,7 @@ class PremiumIndicatorCard extends StatefulWidget {
     required this.trendUp,
     this.chartSpots,
     required this.accentColor,
-    this.icon, 
+    this.icon,
     this.chartColor,
   });
 
@@ -120,9 +120,10 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard>
                 ShaderMask(
                   shaderCallback: (bounds) => LinearGradient(
                     colors: [
-                      Colors.white, 
+                      Colors.white,
                       // widget.accentColor.withOpacity(0.7),
-                      widget.chartColor!.withOpacity(0.7)],
+                      widget.chartColor!.withOpacity(0.7),
+                    ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ).createShader(bounds),

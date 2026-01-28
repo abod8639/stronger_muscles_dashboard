@@ -49,7 +49,7 @@ class ProductCard extends StatelessWidget {
             children: [
               // 1. الصورة بحجم مرن
               _buildProductImage(responsive),
-              
+
               SizedBox(width: responsive.isMobile ? 12 : 20),
 
               // 2. تفاصيل المنتج (Expanded لمنع الـ Overflow)
@@ -61,12 +61,13 @@ class ProductCard extends StatelessWidget {
                     _buildProductName(responsive),
                     const SizedBox(height: 4),
                     _buildBrandInfo(),
-                    
-                    if (product.flavor != null && product.flavor!.isNotEmpty) ...[
+
+                    if (product.flavor != null &&
+                        product.flavor!.isNotEmpty) ...[
                       const SizedBox(height: 10),
                       _buildFlavorTags(responsive),
                     ],
-                    
+
                     const SizedBox(height: 12),
                     _buildPriceAndStock(responsive),
                   ],
@@ -108,9 +109,14 @@ class ProductCard extends StatelessWidget {
                 imageUrl: product.imageUrls.first,
                 fit: BoxFit.cover,
                 placeholder: (_, __) => Container(color: Colors.white54),
-                errorWidget: (_, __, ___) => const Icon(Icons.image_not_supported),
+                errorWidget: (_, __, ___) =>
+                    const Icon(Icons.image_not_supported),
               )
-            : const Icon(Icons.inventory_2_rounded, color: Colors.white24, size: 30),
+            : const Icon(
+                Icons.inventory_2_rounded,
+                color: Colors.white24,
+                size: 30,
+              ),
       ),
     );
   }
@@ -154,7 +160,9 @@ class ProductCard extends StatelessWidget {
       runSpacing: 4,
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        ...product.flavor!.take(limit).map(
+        ...product.flavor!
+            .take(limit)
+            .map(
               (f) => Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
@@ -190,7 +198,11 @@ class ProductCard extends StatelessWidget {
             children: [
               Text(
                 'SAR',
-                style: TextStyle(color: AppColors.primary, fontSize: 10, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(width: 4),
               Text(
@@ -204,7 +216,7 @@ class ProductCard extends StatelessWidget {
             ],
           ),
         ),
-        
+
         // حالة المخزن
         StockStatusBadge(quantity: product.stockQuantity),
       ],

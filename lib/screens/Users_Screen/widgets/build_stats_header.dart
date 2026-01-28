@@ -11,7 +11,9 @@ Widget buildStatsHeader() {
     builder: (context) {
       final responsive = context.responsive;
       return Padding(
-      padding:  EdgeInsets.symmetric(horizontal: responsive.defaultPadding.left),
+        padding: EdgeInsets.symmetric(
+          horizontal: responsive.defaultPadding.left,
+        ),
         child: GlassContainer(
           width: double.infinity,
           child: Row(

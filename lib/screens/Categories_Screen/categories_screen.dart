@@ -30,14 +30,16 @@ class CategoriesScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          TopSection(children:  [
-          // شريط البحث المتطور
-          CustomSearchBar(
-            hintText: 'ابحث عن تصنيف بالاسم أو الكود...',
-            padding: padding,
-            onSearch: (value) => controller.onSearchChanged(value),
+          TopSection(
+            children: [
+              // شريط البحث المتطور
+              CustomSearchBar(
+                hintText: 'ابحث عن تصنيف بالاسم أو الكود...',
+                padding: padding,
+                onSearch: (value) => controller.onSearchChanged(value),
+              ),
+            ],
           ),
-          ]),
 
           // قائمة التصنيفات
           Expanded(

@@ -60,8 +60,7 @@ class MainNavigationScreen extends StatelessWidget {
           extendBodyBehindAppBar: true,
           backgroundColor: AppColors.backgroundDark,
           drawer: isDesktop ? null : myDrawer(),
-          body: 
-          Stack(
+          body: Stack(
             children: [
               // Ambient Gradient Background
               Positioned(

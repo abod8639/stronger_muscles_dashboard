@@ -29,7 +29,8 @@ class DetailedStakingCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        gradient: backgroundGradient ??
+        gradient:
+            backgroundGradient ??
             LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -85,11 +86,7 @@ class DetailedStakingCard extends StatelessWidget {
                     color: accentColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Icon(
-                    icon,
-                    color: accentColor,
-                    size: 20,
-                  ),
+                  child: Icon(icon, color: accentColor, size: 20),
                 ),
             ],
           ),

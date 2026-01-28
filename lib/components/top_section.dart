@@ -11,15 +11,12 @@ class TopSection extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColorsExtended.darkBg.withAlpha(250),
-      borderRadius:  BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: GlassContainer(
-        padding: EdgeInsets.only(
-          bottom: 12),
-                child: Column(
-                  children: children
-                ),
-              ),
+        padding: EdgeInsets.only(bottom: 12),
+        child: Column(children: children),
+      ),
     );
   }
 }

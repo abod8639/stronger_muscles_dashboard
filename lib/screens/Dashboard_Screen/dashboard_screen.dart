@@ -54,26 +54,26 @@ class DashboardScreen extends GetView<DashboardController> {
                 children: [
                   buildHeaderStatus(),
                   SizedBox(height: res.itemSpacing * 2),
-            
+
                   // عنوان رئيسي جذاب
                   buildDashboardTitle(res),
                   SizedBox(height: res.itemSpacing * 2),
-            
+
                   // فترة المراقبة
                   buildPeriodSelector(res),
                   SizedBox(height: res.itemSpacing * 3),
-            
+
                   if (controller.orders.isEmpty)
                     buildNoDataState(res)
                   else ...[
                     // البطاقات الرئيسية للمؤشرات
                     buildMainIndicatorsSection(res),
                     SizedBox(height: res.itemSpacing * 3),
-            
+
                     // الرسوم البيانية
                     buildChartsSection(res),
                     SizedBox(height: res.itemSpacing * 3),
-            
+
                     // الطلبات الأخيرة والفئات
                     buildBottomSection(res),
                   ],
@@ -88,80 +88,77 @@ class DashboardScreen extends GetView<DashboardController> {
   }
 }
 
+Widget buildHeaderStatus() {
+  final controller = Get.find<DashboardController>();
+  return ConnectionStatusBar(
+    isConnected: controller.isConnected.value,
+    errorMessage: controller.errorMessage.value,
+    onRetry: () => controller.retryConnection(),
+  );
+}
 
-  Widget buildHeaderStatus() {
-    final controller = Get.find<DashboardController>();
-    return ConnectionStatusBar(
-      isConnected: controller.isConnected.value,
-      errorMessage: controller.errorMessage.value,
-      onRetry: () => controller.retryConnection(),
-    );
-  }
+Widget buildPeriodSelector(ResponsiveLayout res) {
+  final controller = Get.find<DashboardController>();
 
-  Widget buildPeriodSelector(ResponsiveLayout res) {
-        final controller = Get.find<DashboardController>();
+  return Obx(
+    () => HorizontalChipsSelector(
+      items: controller.periodItems,
+      selectedId: controller.selectPeriod.value,
+      onSelect: (id) => controller.selectPeriod.value = id,
+      labelKey: 'name',
+      idKey: 'id',
+      showAllOption: false,
+      allLabel: 'الكل',
+    ),
+  );
+}
 
-    return Obx(
-      () => HorizontalChipsSelector(
-        items: controller.periodItems,
-        selectedId: controller.selectPeriod.value,
-        onSelect: (id) => controller.selectPeriod.value = id,
-        labelKey: 'name',
-        idKey: 'id',
-        showAllOption: false,
-        allLabel: 'الكل',
-      ),
-    );
-  }
-
-  Widget buildSectionTitle(String title, ResponsiveLayout res) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: res.itemSpacing),
-      child: Row(
-        children: [
-          Container(
-            width: 4,
-            height: 24,
-            decoration: BoxDecoration(
-              color: AppColorsExtended.cyanAccent,
-              borderRadius: BorderRadius.circular(2),
-            ),
+Widget buildSectionTitle(String title, ResponsiveLayout res) {
+  return Padding(
+    padding: EdgeInsets.only(bottom: res.itemSpacing),
+    child: Row(
+      children: [
+        Container(
+          width: 4,
+          height: 24,
+          decoration: BoxDecoration(
+            color: AppColorsExtended.cyanAccent,
+            borderRadius: BorderRadius.circular(2),
           ),
-          const SizedBox(width: 12),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: res.getTitleFontSize(),
-              fontWeight: FontWeight.bold,
-              color: AppColorsExtended.textPrimary,
-              letterSpacing: 0.5,
-            ),
+        ),
+        const SizedBox(width: 12),
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: res.getTitleFontSize(),
+            fontWeight: FontWeight.bold,
+            color: AppColorsExtended.textPrimary,
+            letterSpacing: 0.5,
           ),
-        ],
-      ),
-    );
-  }
-
+        ),
+      ],
+    ),
+  );
+}
 
 Widget buildMainIndicatorsSection(ResponsiveLayout res) {
   final bool isSmallScreen = res.isMobile;
-  
-  final int crossAxisCount = isSmallScreen 
-      ? 1 
+
+  final int crossAxisCount = isSmallScreen
+      ? 1
       : (res.screenWidth < 1200 ? 2 : 3);
 
-  final double childAspectRatio = isSmallScreen 
-      ? 1.5 
+  final double childAspectRatio = isSmallScreen
+      ? 1.5
       : (res.screenWidth < 1400 ? 1.1 : 1.5);
 
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-  
-          buildSectionTitle('المؤشرات الرئيسية', res),
-    
+      buildSectionTitle('المؤشرات الرئيسية', res),
+
       SizedBox(height: res.itemSpacing),
-      
+
       GridView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
@@ -209,71 +206,67 @@ Widget buildMainIndicatorsSection(ResponsiveLayout res) {
 //   );
 // }
 //
- 
-  Widget buildBottomSection(ResponsiveLayout res) {
-    return Column(
-      children: [
-        buildRecentOrders(res),
-        SizedBox(height: res.itemSpacing * 2),
-        buildCategoriesSection(res),
-      ],
+
+Widget buildBottomSection(ResponsiveLayout res) {
+  return Column(
+    children: [
+      buildRecentOrders(res),
+      SizedBox(height: res.itemSpacing * 2),
+      buildCategoriesSection(res),
+    ],
+  );
+}
+
+Widget buildRecentOrders(ResponsiveLayout res) {
+  final controller = Get.find<DashboardController>();
+
+  return RecentOrdersList(
+    orders: controller.orders.take(5).toList(),
+    onSeeAll: () => Get.toNamed('/orders'),
+  );
+}
+
+Widget buildCategoriesSection(ResponsiveLayout res) {
+  final controller = Get.find<DashboardController>();
+
+  if (controller.categories.isEmpty) return const SizedBox();
+  return CategoriesGrid(
+    categories: controller.categories,
+    onSeeAll: () => Get.toNamed('/categories'),
+  );
+}
+
+Widget buildErrorState() {
+  final controller = Get.find<DashboardController>();
+
+  return ErrorScreen(
+    title: 'فشل الاتصال',
+    message: controller.errorMessage.value,
+    onRetry: () => controller.retryConnection(),
+    icon: Icons.cloud_off_outlined,
+  );
+}
+
+Widget buildNoDataState(ResponsiveLayout res) {
+  return Padding(
+    padding: EdgeInsets.symmetric(horizontal: res.defaultPadding.left),
+    child: const NoDataScreen(
+      title: 'لا توجد بيانات',
+      message: 'لم نتمكن من جلب أي بيانات حالياً.',
+    ),
+  );
+}
+
+List<FlSpot> generateChartSpots() {
+  final controller = Get.find<DashboardController>();
+
+  final random = List.generate(15, (i) {
+    final baseValue = (controller.orders.length / 1) * (i + 1);
+    final variation = (baseValue * 0.1 * (i % 2 == 0 ? -1 : 1)).toInt();
+    return FlSpot(
+      i.toDouble(),
+      (baseValue + variation).clamp(1, double.infinity),
     );
-  }
-
-  Widget buildRecentOrders(ResponsiveLayout res) {
-        final controller = Get.find<DashboardController>();
-
-    return RecentOrdersList(
-      orders: controller.orders.take(5).toList(),
-      onSeeAll: () => Get.toNamed('/orders'),
-    );
-  }
-
-  Widget buildCategoriesSection(ResponsiveLayout res) {
-        final controller = Get.find<DashboardController>();
-
-    if (controller.categories.isEmpty) return const SizedBox();
-    return CategoriesGrid(
-      categories: controller.categories,
-      onSeeAll: () => Get.toNamed('/categories'),
-    );
-  }
-
-  Widget buildErrorState() {
-        final controller = Get.find<DashboardController>();
-
-    return ErrorScreen(
-      title: 'فشل الاتصال',
-      message: controller.errorMessage.value,
-      onRetry: () => controller.retryConnection(),
-      icon: Icons.cloud_off_outlined,
-    );
-  }
-
-  Widget buildNoDataState(ResponsiveLayout res) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: res.defaultPadding.left),
-      child: const NoDataScreen(
-        title: 'لا توجد بيانات',
-        message: 'لم نتمكن من جلب أي بيانات حالياً.',
-      ),
-    );
-  }
-
-
-
-  List<FlSpot> generateChartSpots() {
-      final controller = Get.find<DashboardController>();
-
-      final random = List.generate(15, (i) {
-      final baseValue = (controller.orders.length / 1) * (i + 1);
-      final variation = (baseValue * 0.1 * (i % 2 == 0 ? -1 : 1)).toInt();
-      return FlSpot(
-        i.toDouble(),
-        (baseValue + variation).clamp(1, double.infinity),
-      );
-    });
-    return random;
-  }
-
-
+  });
+  return random;
+}

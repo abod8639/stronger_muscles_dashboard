@@ -40,12 +40,13 @@ class UsersScreen extends StatelessWidget {
             TopSection(
               children: [
                 CustomSearchBar(
-                    hintText: 'ابحث عن المستخدم بالاسم أو البريد الإلكتروني...',
-                    padding: responsive.defaultPadding,
-                    onSearch: (value) => controller.onSearchChanged(value),
-                  ),
-              buildStatsHeader(),
-            ],),
+                  hintText: 'ابحث عن المستخدم بالاسم أو البريد الإلكتروني...',
+                  padding: responsive.defaultPadding,
+                  onSearch: (value) => controller.onSearchChanged(value),
+                ),
+                buildStatsHeader(),
+              ],
+            ),
 
             // قائمة المستخدمين
             Expanded(
@@ -73,4 +74,3 @@ class UsersScreen extends StatelessWidget {
     );
   }
 }
-

@@ -3,13 +3,13 @@ import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/chipItem.dart';
 
 class HorizontalChipsSelector extends StatelessWidget {
-  final List<dynamic> items; // قائمة العناصر (Categories, Flavors, etc.)
-  final String selectedId; // المعرف المختار حالياً
-  final Function(String id) onSelect; // ماذا يحدث عند الضغط
-  final String labelKey; // اسم الحقل الذي يحتوي على النص (مثلاً 'name')
-  final String idKey; // اسم الحقل الذي يحتوي على المعرف (مثلاً 'id')
-  final bool showAllOption; // هل تريد إظهار خيار "الكل"؟
-  final String allLabel; // نص خيار "الكل"
+  final List<dynamic> items;
+  final String selectedId;
+  final Function(String id) onSelect;
+  final String labelKey;
+  final String idKey;
+  final bool showAllOption;
+  final String allLabel;
 
   const HorizontalChipsSelector({
     super.key,
@@ -27,18 +27,16 @@ class HorizontalChipsSelector extends StatelessWidget {
     final responsive = context.responsive;
 
     return SizedBox(
-      height: 50, // تقليل الارتفاع قليلاً ليكون أكثر رشاقة
+      height: 50,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(
           horizontal: responsive.defaultPadding.left,
         ),
-        // زيادة العدد بمقدار 1 إذا كان خيار "الكل" مفعلاً
         itemCount: showAllOption ? items.length + 1 : items.length,
         itemBuilder: (context, index) {
           final bool isAllItem = showAllOption && index == 0;
 
-          // استخراج البيانات بناءً على كون العنصر هو "الكل" أو عنصر من القائمة
           final String displayLabel = isAllItem
               ? allLabel
               : _getValue(items[showAllOption ? index - 1 : index], labelKey);
@@ -60,12 +58,10 @@ class HorizontalChipsSelector extends StatelessWidget {
     );
   }
 
-  // دالة مساعدة لاستخراج القيمة من Object أو Map
   String _getValue(dynamic item, String key) {
     try {
       return item.toJson()[key]?.toString() ?? '';
     } catch (_) {
-      // إذا لم يكن Model يحتوي على toJson (مثل Map عادية)
       return item[key]?.toString() ?? '';
     }
   }

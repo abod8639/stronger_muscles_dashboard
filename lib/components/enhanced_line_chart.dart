@@ -30,10 +30,7 @@ class EnhancedLineChartWidget extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColorsExtended.borderColor,
-          width: 1,
-        ),
+        border: Border.all(color: AppColorsExtended.borderColor, width: 1),
         boxShadow: AppColorsExtended.softShadow,
       ),
       child: ClipRRect(
@@ -64,8 +61,9 @@ class EnhancedLineChartWidget extends StatelessWidget {
                       horizontalInterval: maxY / 4,
                       getDrawingHorizontalLine: (value) {
                         return FlLine(
-                          color: AppColorsExtended.borderColor
-                              .withValues(alpha: 0.3),
+                          color: AppColorsExtended.borderColor.withValues(
+                            alpha: 0.3,
+                          ),
                           strokeWidth: 0.8,
                           dashArray: [5, 5],
                         );
@@ -111,9 +109,7 @@ class EnhancedLineChartWidget extends StatelessWidget {
                         ),
                       ),
                     ),
-                    borderData: FlBorderData(
-                      show: false,
-                    ),
+                    borderData: FlBorderData(show: false),
                     lineBarsData: [
                       LineChartBarData(
                         spots: spots,
@@ -150,7 +146,6 @@ class EnhancedLineChartWidget extends StatelessWidget {
                     maxY: maxY,
                     minY: 0,
                   ),
-
                 ),
               ),
             ],

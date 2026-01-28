@@ -19,7 +19,7 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.showStatus = false,
     this.onPressed,
     this.centerTitle = true,
-    this.icon = Icons.refresh_rounded, 
+    this.icon = Icons.refresh_rounded,
     this.surfaceTintColor,
   });
 

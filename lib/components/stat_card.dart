@@ -32,7 +32,9 @@ class StatCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: GlassContainer(
-        padding: EdgeInsets.all(responsive.isMobile ? 5 : 16), // إضافة padding داخلي ثابت
+        padding: EdgeInsets.all(
+          responsive.isMobile ? 5 : 16,
+        ), // إضافة padding داخلي ثابت
         opacity: 0.05,
         blur: 15,
         borderRadius: BorderRadius.circular(20),
@@ -43,13 +45,16 @@ class StatCard extends StatelessWidget {
         ),
         border: Border.all(color: color.withOpacity(0.3), width: 1),
         child: Padding(
-          padding: EdgeInsets.all(responsive.isMobile ? 5 : 16), // إضافة padding داخلي ثابت
+          padding: EdgeInsets.all(
+            responsive.isMobile ? 5 : 16,
+          ), // إضافة padding داخلي ثابت
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min, 
+            mainAxisSize: MainAxisSize.min,
             children: [
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start, // محاذاة الأيقونة مع أعلى النص
+                crossAxisAlignment:
+                    CrossAxisAlignment.start, // محاذاة الأيقونة مع أعلى النص
                 children: [
                   Expanded(
                     child: Column(
@@ -57,16 +62,18 @@ class StatCard extends StatelessWidget {
                       children: [
                         Text(
                           title.toUpperCase(),
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith( // استخدام حجم أصغر قليلاً للعنوان
-                            color: AppColors.textMuted,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0.8,
-                          ),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                // استخدام حجم أصغر قليلاً للعنوان
+                                color: AppColors.textMuted,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.8,
+                              ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 8),
-                        
+
                         // استخدام FittedBox لمنع خروج الأرقام الطويلة عن الحواف
                         FittedBox(
                           fit: BoxFit.scaleDown,
@@ -79,11 +86,12 @@ class StatCard extends StatelessWidget {
                             ).createShader(bounds),
                             child: Text(
                               value,
-                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                fontWeight: FontWeight.w900,
-                                color: Colors.white,
-                                letterSpacing: 0.5,
-                              ),
+                              style: Theme.of(context).textTheme.headlineSmall
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.white,
+                                    letterSpacing: 0.5,
+                                  ),
                             ),
                           ),
                         ),
@@ -91,18 +99,18 @@ class StatCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  
+
                   // الأيقونة بحجم مرن
                   _buildIcon(),
                 ],
               ),
-              
+
               if (subtitle != null || showTrendIcon) ...[
                 const SizedBox(height: 5),
                 const Divider(color: Colors.white10, height: 1),
                 const SizedBox(height: 5),
               ],
-              
+
               if (subtitle != null)
                 Text(
                   subtitle!,
@@ -113,7 +121,7 @@ class StatCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                
+
               if (showTrendIcon) ...[
                 const SizedBox(height: 5),
                 TrendCard(isTrendPositive: isTrendPositive),
@@ -140,7 +148,7 @@ class StatCard extends StatelessWidget {
         ],
         border: Border.all(color: color.withOpacity(0.3)),
       ),
-      child: Icon(icon, color: Colors.white, size: 20), 
+      child: Icon(icon, color: Colors.white, size: 20),
     );
   }
 }

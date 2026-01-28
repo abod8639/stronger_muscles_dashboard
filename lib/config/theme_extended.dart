@@ -25,15 +25,11 @@ class AppThemeExtended {
           fontWeight: FontWeight.w600,
           letterSpacing: 0.5,
         ),
-        iconTheme: IconThemeData(
-          color: AppColorsExtended.textPrimary,
-        ),
+        iconTheme: IconThemeData(color: AppColorsExtended.textPrimary),
       ),
       cardTheme: CardThemeData(
         elevation: 8,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         color: AppColorsExtended.cardBg,
         shadowColor: Colors.black.withValues(alpha: 0.3),
       ),
@@ -65,10 +61,7 @@ class AppThemeExtended {
           horizontal: 16,
           vertical: 14,
         ),
-        hintStyle: TextStyle(
-          color: AppColorsExtended.textMuted,
-          fontSize: 14,
-        ),
+        hintStyle: TextStyle(color: AppColorsExtended.textMuted, fontSize: 14),
         labelStyle: TextStyle(
           color: AppColorsExtended.textSecondary,
           fontSize: 14,

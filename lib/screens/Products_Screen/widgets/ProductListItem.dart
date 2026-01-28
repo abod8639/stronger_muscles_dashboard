@@ -29,7 +29,6 @@ class _ProductListItemState extends State<ProductListItem>
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return ProductCard(

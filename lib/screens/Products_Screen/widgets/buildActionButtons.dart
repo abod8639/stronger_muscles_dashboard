@@ -63,8 +63,8 @@ Widget _buildActionButton({
       child: Center(
         child: IconButton(
           onPressed: onPressed,
-          icon: Icon(icon, size:responsive.isMobile ? 16 : 18, color: color),
-          padding:  EdgeInsets.all( responsive.isMobile ? 0 : 8),
+          icon: Icon(icon, size: responsive.isMobile ? 16 : 18, color: color),
+          padding: EdgeInsets.all(responsive.isMobile ? 0 : 8),
           constraints: const BoxConstraints(),
           visualDensity: VisualDensity.compact,
         ),

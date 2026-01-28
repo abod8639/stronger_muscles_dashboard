@@ -70,13 +70,16 @@ class _ModernIndicatorCardState extends State<ModernIndicatorCard>
       child: GestureDetector(
         onTap: widget.onTap,
         child: ScaleTransition(
-          scale: Tween<double>(begin: 1.0, end: 1.02)
-              .animate(_animationController),
+          scale: Tween<double>(
+            begin: 1.0,
+            end: 1.02,
+          ).animate(_animationController),
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               // تدرج خلفية احترافي
-              gradient: widget.gradient ??
+              gradient:
+                  widget.gradient ??
                   LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -87,15 +90,17 @@ class _ModernIndicatorCardState extends State<ModernIndicatorCard>
                   ),
               // حدود ملونة
               border: Border.all(
-                color: widget.accentColor
-                    .withValues(alpha: _isHovered ? 0.4 : 0.15),
+                color: widget.accentColor.withValues(
+                  alpha: _isHovered ? 0.4 : 0.15,
+                ),
                 width: 2,
               ),
               // ظل احترافي
               boxShadow: [
                 BoxShadow(
-                  color: widget.accentColor
-                      .withValues(alpha: _isHovered ? 0.25 : 0.08),
+                  color: widget.accentColor.withValues(
+                    alpha: _isHovered ? 0.25 : 0.08,
+                  ),
                   blurRadius: _isHovered ? 25 : 15,
                   offset: const Offset(0, 8),
                   spreadRadius: _isHovered ? 2 : 0,
@@ -144,12 +149,14 @@ class _ModernIndicatorCardState extends State<ModernIndicatorCard>
                         duration: const Duration(milliseconds: 300),
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: widget.accentColor
-                              .withValues(alpha: _isHovered ? 0.25 : 0.12),
+                          color: widget.accentColor.withValues(
+                            alpha: _isHovered ? 0.25 : 0.12,
+                          ),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: widget.accentColor
-                                .withValues(alpha: _isHovered ? 0.3 : 0.1),
+                            color: widget.accentColor.withValues(
+                              alpha: _isHovered ? 0.3 : 0.1,
+                            ),
                             width: 1.5,
                           ),
                         ),
@@ -178,19 +185,23 @@ class _ModernIndicatorCardState extends State<ModernIndicatorCard>
                 if (widget.showTrend) ...[
                   SizedBox(height: _isHovered ? 16 : 12),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
-                      color: (widget.trendUp
-                              ? AppColorsExtended.greenAccent
-                              : AppColorsExtended.redAccent)
-                          .withValues(alpha: 0.15),
+                      color:
+                          (widget.trendUp
+                                  ? AppColorsExtended.greenAccent
+                                  : AppColorsExtended.redAccent)
+                              .withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: (widget.trendUp
-                                ? AppColorsExtended.greenAccent
-                                : AppColorsExtended.redAccent)
-                            .withValues(alpha: 0.3),
+                        color:
+                            (widget.trendUp
+                                    ? AppColorsExtended.greenAccent
+                                    : AppColorsExtended.redAccent)
+                                .withValues(alpha: 0.3),
                         width: 1,
                       ),
                     ),
