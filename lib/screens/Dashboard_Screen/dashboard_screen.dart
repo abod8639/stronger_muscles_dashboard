@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:stronger_muscles_dashboard/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/models/indicators_model.dart';
 import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/widget/build_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/widget/build_dashboard_title.dart';
+import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/widget/build_main_chart_card.dart';
 import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/widget/error_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/widget/no_data_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/widgets/horizontal_chips_selector.dart';
@@ -146,101 +146,79 @@ class DashboardScreen extends GetView<DashboardController> {
   }
 
 
-  Widget buildMainIndicatorsSection(ResponsiveLayout res) {
-    final isSmallScreen = res.isMobile;
-    final crossAxisCount = isSmallScreen ? 1 : (res.isTablet ? 2 : 3);
+Widget buildMainIndicatorsSection(ResponsiveLayout res) {
+  final bool isSmallScreen = res.isMobile;
+  
+  // توزيع ذكي لعدد الكروت بناءً على حجم الشاشة
+  final int crossAxisCount = isSmallScreen 
+      ? 1 
+      : (res.screenWidth < 1200 ? 2 : 3);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        buildSectionTitle('المؤشرات الرئيسية', res),
-        SizedBox(height: res.itemSpacing),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: crossAxisCount,
-            childAspectRatio: isSmallScreen ? 1.4 : 1.25,
-            crossAxisSpacing: res.itemSpacing * 1.8,
-            mainAxisSpacing: res.itemSpacing * 1.8,
-          ),
-          itemCount: 6,
-          itemBuilder: (context, index) {
-            return buildIndicatorCard(index);
-          },
-        ),
-      ],
-    );
-  }
-//
+  // حساب النسبة التناسبية للكارت لمنع تداخل النصوص
+  final double childAspectRatio = isSmallScreen 
+      ? 1.5  // للموبايل يكون الكارت أعرض قليلاً
+      : (res.screenWidth < 1400 ? 1.1 : 1.5);
 
-  Widget buildMainChartCard(ResponsiveLayout res) {
-    final controller = Get.find<DashboardController>();
-
-    return GlassContainer(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'اتجاه الطلبات',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: AppColorsExtended.textPrimary,
-                      letterSpacing: 0.3,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'آخر 30 يوم',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColorsExtended.textMuted,
-                    ),
-                  ),
-                ],
-              ),
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: AppColorsExtended.cyanAccent.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: AppColorsExtended.cyanAccent.withValues(alpha: 0.2),
-                    width: 1,
-                  ),
-                ),
-                child: Icon(
-                  Icons.trending_up,
-                  color: AppColorsExtended.cyanAccent,
-                  size: 20,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          SizedBox(
-            height: 400,
-            child: EnhancedLineChartWidget(
-              title: '',
-              spots: _generateChartSpots(),
-              lineColor: AppColorsExtended.cyanAccent,
-              gradientColor: AppColorsExtended.cyanAccent,
-              maxY: (controller.orders.length.toDouble() + 100),
-            ),
-          ),
+          buildSectionTitle('المؤشرات الرئيسية', res),
+          // _buildLiveStatusBadge(), // إضافة مؤشر "مباشر" يعطي انطباع بالاحترافية
         ],
       ),
-    );
-  }
+      SizedBox(height: res.itemSpacing),
+      
+      GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: crossAxisCount,
+          childAspectRatio: childAspectRatio,
+          crossAxisSpacing: res.itemSpacing * 1.5,
+          mainAxisSpacing: res.itemSpacing * 1.5,
+        ),
+        itemCount: 3,
+        itemBuilder: (context, index) {
+          // إضافة انيميشن بسيط عند ظهور الكروت
+          return AnimatedContainer(
+            duration: Duration(milliseconds: 300 + (index * 100)),
+            curve: Curves.easeOut,
+            child: buildIndicatorCard(index),
+          );
+        },
+      ),
+    ],
+  );
+}
 
+// Widget _buildLiveStatusBadge() {
+//   return Container(
+//     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+//     decoration: BoxDecoration(
+//       color: Colors.greenAccent.withOpacity(0.1),
+//       borderRadius: BorderRadius.circular(20),
+//       border: Border.all(color: Colors.greenAccent.withOpacity(0.2)),
+//     ),
+//     child: Row(
+//       children: [
+//         Container(
+//           width: 8, height: 8,
+//           decoration: const BoxDecoration(color: Colors.greenAccent, shape: BoxShape.circle),
+//         ),
+//         const SizedBox(width: 8),
+//         const Text(
+//           'تحديث مباشر',
+//           style: TextStyle(color: Colors.greenAccent, fontSize: 10, fontWeight: FontWeight.bold),
+//         ),
+//       ],
+//     ),
+//   );
+// }
+//
+ 
   Widget buildBottomSection(ResponsiveLayout res) {
     return Column(
       children: [
@@ -305,26 +283,26 @@ class DashboardScreen extends GetView<DashboardController> {
         isUp: true,
         chartColor: AppColorsExtended.orangeAccent,
       ),
-      IndicatorsModel(
-        title: 'معالجة',
-        subtitle: 'Processing Orders',
-        value: controller.processingOrders.value.toString(),
-        color: AppColorsExtended.purpleDark,
-        icon: Icons.hourglass_bottom,
-        trend: '${3 + index * 1}%',
-        isUp: true,
-        chartColor: AppColorsExtended.orangeDark,
-      ),
-      IndicatorsModel(
-        title: 'مرسلة',
-        subtitle: 'Shipped Orders',
-        value: controller.shippedOrders.value.toString(),
-        color: AppColorsExtended.purpleDark,
-        icon: Icons.local_shipping,
-        trend: '${8 + index}%',
-        isUp: true,
-        chartColor: AppColorsExtended.purpleDark,
-      ),
+      // IndicatorsModel(
+      //   title: 'معالجة',
+      //   subtitle: 'Processing Orders',
+      //   value: controller.processingOrders.value.toString(),
+      //   color: AppColorsExtended.purpleDark,
+      //   icon: Icons.hourglass_bottom,
+      //   trend: '${3 + index * 1}%',
+      //   isUp: true,
+      //   chartColor: AppColorsExtended.orangeDark,
+      // ),
+      // IndicatorsModel(
+      //   title: 'مرسلة',
+      //   subtitle: 'Shipped Orders',
+      //   value: controller.shippedOrders.value.toString(),
+      //   color: AppColorsExtended.purpleDark,
+      //   icon: Icons.local_shipping,
+      //   trend: '${8 + index}%',
+      //   isUp: true,
+      //   chartColor: AppColorsExtended.purpleDark,
+      // ),
       IndicatorsModel(
         title: ' المسلمة',
         subtitle: 'Delivered Orders',
@@ -345,22 +323,22 @@ class DashboardScreen extends GetView<DashboardController> {
         isUp: false,
         chartColor: AppColorsExtended.redAccent,
       ),
-      IndicatorsModel(
-        title: 'إجمالي',
-        subtitle: 'Total Orders',
-        value: controller.orders.length.toString(),
-        color: AppColorsExtended.purpleDark,
-        icon: Icons.dashboard,
-        trend: '${15 + index * 3}%',
-        isUp: true,
-        chartColor: AppColorsExtended.cyanAccent,
-      ),
+      // IndicatorsModel(
+      //   title: 'إجمالي',
+      //   subtitle: 'Total Orders',
+      //   value: controller.orders.length.toString(),
+      //   color: AppColorsExtended.purpleDark,
+      //   icon: Icons.dashboard,
+      //   trend: '${15 + index * 3}%',
+      //   isUp: true,
+      //   chartColor: AppColorsExtended.cyanAccent,
+      // ),
     ];
 
     if (index >= indicators.length) return const SizedBox();
 
     final indicator = indicators[index];
-    final chartSpots = _generateChartSpots();
+    final chartSpots = generateChartSpots();
 
     return PremiumIndicatorCard(
       title: indicator.title,
@@ -375,35 +353,10 @@ class DashboardScreen extends GetView<DashboardController> {
     );
   }
 
-  Widget buildChartsSection(ResponsiveLayout res) {
-    final isSmallScreen = res.isMobile;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        buildSectionTitle('تحليل البيانات', res),
-        SizedBox(height: res.itemSpacing),
-        if (isSmallScreen)
-          Column(
-            children: [
-              buildMainChartCard(res),
-
-            ],
-          )
-        else
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(flex: 1, child: buildMainChartCard(res)),
-            ],
-          ),
-      ],
-    );
-  }
 
 
 
-  List<FlSpot> _generateChartSpots() {
+  List<FlSpot> generateChartSpots() {
       final controller = Get.find<DashboardController>();
 
       final random = List.generate(15, (i) {
@@ -416,4 +369,5 @@ class DashboardScreen extends GetView<DashboardController> {
     });
     return random;
   }
+
 

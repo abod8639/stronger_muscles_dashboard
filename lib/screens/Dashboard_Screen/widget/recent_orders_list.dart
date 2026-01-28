@@ -12,17 +12,25 @@ class RecentOrdersList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final responsive = context.responsive;
-    final padding = responsive.defaultPadding;
-    final spacing = responsive.itemSpacing;
+
+      final res = context.responsive;
+      final bool isSmallScreen = res.isMobile;
+      final int crossAxisCount = isSmallScreen 
+      ? 1 
+      : (res.screenWidth < 1200 ? 2 : 3);
+
+      final double childAspectRatio = isSmallScreen 
+      ? 1.5   
+      : (res.screenWidth < 1400 ? 1.1 : 1.8);
+
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: EdgeInsets.symmetric(
-            horizontal: padding.left,
-            vertical: padding.top / 2,
+            horizontal: res.defaultPadding.left,
+            vertical: res.defaultPadding.top / 2,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -31,7 +39,7 @@ class RecentOrdersList extends StatelessWidget {
                 'الطلبات الأخيرة',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
-                  fontSize: responsive.getTitleFontSize(),
+                  fontSize: res.getTitleFontSize(),
                 ),
               ),
               if (onSeeAll != null)
@@ -42,7 +50,7 @@ class RecentOrdersList extends StatelessWidget {
                     style: TextStyle(
                       color: AppColors.primary,
                       fontWeight: FontWeight.w600,
-                      fontSize: responsive.getBodyFontSize() - 1,
+                      fontSize: res.getBodyFontSize() - 1,
                     ),
                   ),
                 ),
@@ -50,7 +58,7 @@ class RecentOrdersList extends StatelessWidget {
           ),
         ),
 
-        responsive.isMobile
+        isSmallScreen
             ? ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -58,9 +66,9 @@ class RecentOrdersList extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: EdgeInsets.fromLTRB(
-                      padding.left,
+                      res.defaultPadding.left,
                       0,
-                      padding.left,
+                      res.defaultPadding.left,
                       12,
                     ),
                     child: OrderListTile(order: orders[index], index: index),
@@ -70,12 +78,12 @@ class RecentOrdersList extends StatelessWidget {
             : GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                padding: EdgeInsets.symmetric(horizontal: padding.left),
+                padding: EdgeInsets.symmetric(horizontal: res.defaultPadding.left),
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: spacing,
-                  mainAxisSpacing: spacing,
-                  childAspectRatio: responsive.isTablet ? 1.8 : 1.5,
+                  crossAxisCount: crossAxisCount,
+                  crossAxisSpacing: res.itemSpacing,
+                  mainAxisSpacing: res.itemSpacing,
+                  childAspectRatio: childAspectRatio,
                 ),
                 itemCount: orders.length,
                 itemBuilder: (context, index) {

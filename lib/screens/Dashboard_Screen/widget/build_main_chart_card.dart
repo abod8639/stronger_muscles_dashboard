@@ -1,5 +1,4 @@
 
-  import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/components/enhanced_line_chart.dart';
@@ -8,6 +7,32 @@ import 'package:stronger_muscles_dashboard/config/app_colors.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/controllers/dashboard_controller.dart';
 import 'package:stronger_muscles_dashboard/screens/Dashboard_Screen/dashboard_screen.dart';
+
+  Widget buildChartsSection(ResponsiveLayout res) {
+    final isSmallScreen = res.isMobile;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        buildSectionTitle('تحليل البيانات', res),
+        SizedBox(height: res.itemSpacing),
+        if (isSmallScreen)
+          Column(
+            children: [
+              buildMainChartCard(res),
+
+            ],
+          )
+        else
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(flex: 1, child: buildMainChartCard(res)),
+            ],
+          ),
+      ],
+    );
+  }
 
 Widget buildMainChartCard(ResponsiveLayout res) {
     final controller = Get.find<DashboardController>();

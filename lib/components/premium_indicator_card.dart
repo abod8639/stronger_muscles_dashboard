@@ -66,6 +66,7 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard>
         duration: const Duration(milliseconds: 300),
         child: GlassContainer(
           opacity: _isHovered ? 0.12 : 0.07,
+          padding: const EdgeInsets.all(0),
           blur: 20,
           borderRadius: BorderRadius.circular(28),
           border: Border.all(
