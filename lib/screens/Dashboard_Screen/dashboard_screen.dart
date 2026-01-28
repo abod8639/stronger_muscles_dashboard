@@ -150,6 +150,7 @@ class DashboardScreen extends GetView<DashboardController> {
     );
   }
 
+
   Widget buildMainIndicatorsSection(ResponsiveLayout res) {
     final isSmallScreen = res.isMobile;
     final crossAxisCount = isSmallScreen ? 1 : (res.isTablet ? 2 : 3);
@@ -164,7 +165,7 @@ class DashboardScreen extends GetView<DashboardController> {
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: crossAxisCount,
-            childAspectRatio: isSmallScreen ? 1.5 : 1.25,
+            childAspectRatio: isSmallScreen ? 1.4 : 1.25,
             crossAxisSpacing: res.itemSpacing * 1.8,
             mainAxisSpacing: res.itemSpacing * 1.8,
           ),
@@ -177,12 +178,10 @@ class DashboardScreen extends GetView<DashboardController> {
     );
   }
 
-// indicators models
-
 
   Widget buildIndicatorCard(int index) {
-        final controller = Get.find<DashboardController>();
 
+    final controller = Get.find<DashboardController>();
     final List<IndicatorsModel> indicators = [
       IndicatorsModel(
         title: 'معلقة',
@@ -190,9 +189,9 @@ class DashboardScreen extends GetView<DashboardController> {
         value: controller.pendingOrders.value.toString(),
         color: AppColorsExtended.purpleDark,
         icon: Icons.hourglass_empty,
-        trend: '${5 + index * 2}%',
+        trend: '${5 + index * 4}%',
         isUp: true,
-        chartColor: AppColorsExtended.redAccent,
+        chartColor: AppColorsExtended.orangeAccent,
       ),
       IndicatorsModel(
         title: 'معالجة',
@@ -202,7 +201,7 @@ class DashboardScreen extends GetView<DashboardController> {
         icon: Icons.hourglass_bottom,
         trend: '${3 + index * 1}%',
         isUp: true,
-        chartColor: AppColorsExtended.purpleAccent,
+        chartColor: AppColorsExtended.orangeDark,
       ),
       IndicatorsModel(
         title: 'مرسلة',
@@ -212,7 +211,7 @@ class DashboardScreen extends GetView<DashboardController> {
         icon: Icons.local_shipping,
         trend: '${8 + index}%',
         isUp: true,
-        chartColor: AppColorsExtended.purpleAccent,
+        chartColor: AppColorsExtended.purpleDark,
       ),
       IndicatorsModel(
         title: ' المسلمة',
@@ -222,7 +221,7 @@ class DashboardScreen extends GetView<DashboardController> {
         icon: Icons.check_circle,
         trend: '${12 + index}%',
         isUp: true,
-        chartColor: AppColorsExtended.purpleAccent,
+        chartColor: AppColorsExtended.greenAccent,
       ),
       IndicatorsModel(
         title: 'ملغاة',
@@ -232,7 +231,7 @@ class DashboardScreen extends GetView<DashboardController> {
         icon: Icons.cancel,
         trend: '${2 - index}%',
         isUp: false,
-        chartColor: AppColorsExtended.purpleAccent,
+        chartColor: AppColorsExtended.redAccent,
       ),
       IndicatorsModel(
         title: 'إجمالي',
@@ -242,7 +241,7 @@ class DashboardScreen extends GetView<DashboardController> {
         icon: Icons.dashboard,
         trend: '${15 + index * 3}%',
         isUp: true,
-        chartColor: AppColorsExtended.purpleAccent,
+        chartColor: AppColorsExtended.cyanAccent,
       ),
     ];
 
@@ -294,7 +293,7 @@ class DashboardScreen extends GetView<DashboardController> {
   }
 
   Widget buildMainChartCard(ResponsiveLayout res) {
-        final controller = Get.find<DashboardController>();
+    final controller = Get.find<DashboardController>();
 
     return Container(
       decoration: BoxDecoration(
@@ -365,7 +364,7 @@ class DashboardScreen extends GetView<DashboardController> {
           ),
           const SizedBox(height: 24),
           SizedBox(
-            height: 280,
+            height: 400,
             child: EnhancedLineChartWidget(
               title: '',
               spots: _generateChartSpots(),
@@ -380,21 +379,21 @@ class DashboardScreen extends GetView<DashboardController> {
   }
 
   List<FlSpot> _generateChartSpots() {
-        final controller = Get.find<DashboardController>();
+      final controller = Get.find<DashboardController>();
 
-    final random = List.generate(30, (i) {
-      final baseValue = (controller.orders.length / 30) * (i + 1);
-      final variation = (baseValue * 0.3 * (i % 3 == 0 ? -1 : 1)).toInt();
+      final random = List.generate(15, (i) {
+      final baseValue = (controller.orders.length / 1) * (i + 1);
+      final variation = (baseValue * 0.1 * (i % 2 == 0 ? -1 : 1)).toInt();
       return FlSpot(
         i.toDouble(),
-        (baseValue + variation).clamp(0, double.infinity),
+        (baseValue + variation).clamp(1, double.infinity),
       );
     });
     return random;
   }
 
   Widget buildDetailedCard(ResponsiveLayout res) {
-        final controller = Get.find<DashboardController>();
+    final controller = Get.find<DashboardController>();
 
     return Container(
       decoration: BoxDecoration(
