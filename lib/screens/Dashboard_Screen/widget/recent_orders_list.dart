@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/screens/orders_screen/order_details_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/order_list_tile.dart';
 import '../../../config/theme.dart';
 import '../../../config/responsive.dart';
@@ -70,7 +72,13 @@ class RecentOrdersList extends StatelessWidget {
                       res.defaultPadding.left,
                       12,
                     ),
-                    child: OrderListTile(order: orders[index], index: index),
+                    child: OrderListTile(
+                      order: orders[index], 
+                      index: index,
+                      onTap: () => 
+                      Get.to(() => OrderDetailsScreen(order: orders[index])),
+                    )
+
                   );
                 },
               )
