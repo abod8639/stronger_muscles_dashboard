@@ -32,6 +32,21 @@ class ProductsController extends GetxController {
   final isAvailable = false.obs;
   final isBackgroundWhite = false.obs;
 
+  RxBool isSaving = false.obs;
+  RxList<String> imageUrls = <String>[].obs;
+
+  final Map<String, TextEditingController> controllers = {
+    'name': TextEditingController(),
+    'price': TextEditingController(),
+    'discount': TextEditingController(),
+    'desc': TextEditingController(),
+    'stock': TextEditingController(),
+    'brand': TextEditingController(),
+    'serving': TextEditingController(),
+    'sessions': TextEditingController(),
+  };
+
+
   @override
   void onInit() {
     super.onInit();
@@ -249,4 +264,73 @@ class ProductsController extends GetxController {
       builder: (context) => ProductFormSheet(product: product),
     );
   }
+
+
+/// الدالة الرئيسية لحفظ المنتج
+  Future<void> saveProduct({
+    formKey,
+    ProductModel? existingProduct
+    
+    }) async {
+    // 1. التحقق من صحة البيانات (Validation)
+    if (!formKey.currentState!.validate()) return;
+
+
+    if (imageUrls.isEmpty) {
+      _showWarning('تنبيه', 'يجب إضافة صورة واحدة على الأقل');
+      return;
+    }
+
+    try {
+      isSaving.value = true;
+
+      // 2. تجميع البيانات في الكائن
+      final productData = ProductModel(
+        id: existingProduct?.id ?? 'PROD-${DateTime.now().millisecondsSinceEpoch}',
+        name: controllers['name']!.text.trim(),
+        price: double.tryParse(controllers['price']!.text) ?? 0.0,
+        discountPrice: double.tryParse(controllers['discount']!.text),
+        imageUrls: imageUrls.toList(),
+        description: controllers['desc']!.text.trim(),
+        categoryId: selectedCategoryId.value,
+        stockQuantity: int.tryParse(controllers['stock']!.text) ?? 0,
+        brand: controllers['brand']!.text.trim(),
+        isActive: isFeatured.value,
+        isBackgroundWhite: isBackgroundWhite.value,
+        servingSize: controllers['serving']!.text,
+        servingsPerContainer: int.tryParse(controllers['sessions']!.text) ?? 0,
+        flavor: productFlavors.toList(),
+        size: productSizes.toList(),
+        weight: productWeight.value,
+      );
+
+      // 3. التنفيذ (إضافة أو تحديث)
+      if (existingProduct == null) {
+        await addProduct(productData);
+      } else {
+        await updateProduct(productData);
+      }
+
+      Get.back(); // العودة بعد النجاح
+      _showSuccess('تم بنجاح', 'تم حفظ بيانات المنتج بنجاح');
+      
+    } catch (e) {
+      _showError('خطأ', 'حدث خطأ أثناء حفظ المنتج: $e');
+    } finally {
+      isSaving.value = false;
+    }
+  }
+
+  // دوال مساعدة للرسائل (Helpers)
+  void _showWarning(String title, String msg) => Get.snackbar(title, msg, 
+      snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.orange, colorText: Colors.white);
+      
+  void _showError(String title, String msg) => Get.snackbar(title, msg, 
+      snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red, colorText: Colors.white);
+
+  void _showSuccess(String title, String msg) => Get.snackbar(title, msg, 
+      snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.green, colorText: Colors.white);
 }
+
+
+

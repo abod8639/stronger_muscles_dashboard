@@ -84,7 +84,10 @@ class _ProductFormPageState extends State<ProductFormPage> {
         ),
         actions: [
           IconButton(
-            onPressed: _submitForm,
+            onPressed: () => controller.saveProduct(
+              existingProduct: widget.product,
+              formKey: _formKey,
+            ),
             icon: const Icon(Icons.save_as_rounded, color: AppColors.primary),
           ),
         ],
@@ -347,7 +350,11 @@ class _ProductFormPageState extends State<ProductFormPage> {
           ),
           elevation: 0,
         ),
-        onPressed: controller.isLoading.value ? null : _submitForm,
+        onPressed:()=> controller.isLoading.value ? null :
+         controller.saveProduct(
+          existingProduct: widget.product,
+          formKey: _formKey,
+        ),
         child: controller.isLoading.value
             ? const CircularProgressIndicator(color: Colors.white)
             : const Text(
@@ -373,47 +380,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
     }
   }
 
-  void _submitForm() {
-    if (!_formKey.currentState!.validate()) return;
-    if (_selectedCategoryId == null) {
-      Get.snackbar(
-        'تنبيه',
-        'يرجى اختيار القسم',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.orange,
-      );
-      return;
-    }
-    if (_imageUrls.isEmpty) {
-      Get.snackbar(
-        'تنبيه',
-        'يجب إضافة صورة واحدة على الأقل',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      return;
-    }
 
-    final productData = ProductModel(
-      id: widget.product?.id ?? 'PROD-${DateTime.now().millisecondsSinceEpoch}',
-      name: _controllers['name']!.text.trim(),
-      price: double.tryParse(_controllers['price']!.text) ?? 0.0,
-      discountPrice: double.tryParse(_controllers['discount']!.text),
-      imageUrls: _imageUrls.toList(),
-      description: _controllers['desc']!.text.trim(),
-      categoryId: _selectedCategoryId!,
-      stockQuantity: int.tryParse(_controllers['stock']!.text) ?? 0,
-      brand: _controllers['brand']!.text.trim(),
-      isActive: controller.isFeatured.value,
-      isBackgroundWhite: controller.isBackgroundWhite.value,
-      servingSize: _controllers['serving']!.text,
-      servingsPerContainer: int.tryParse(_controllers['sessions']!.text) ?? 0,
-      flavor: controller.productFlavors.toList(),
-      size: controller.productSizes.toList(),
-      weight: controller.productWeight.value,
-    );
 
-    widget.product == null
-        ? controller.addProduct(productData)
-        : controller.updateProduct(productData);
-  }
+
 }

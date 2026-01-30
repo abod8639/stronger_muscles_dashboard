@@ -52,7 +52,7 @@ class ImageGalleryEditor extends StatelessWidget {
         const SizedBox(height: 12),
 
         SizedBox(
-          height: 120,
+          height: 130,
           // استخدام ReorderableListView بدلاً من ListView العادي
           child: ReorderableListView.builder(
             scrollDirection: Axis.horizontal,
@@ -93,77 +93,73 @@ class ImageGalleryEditor extends StatelessWidget {
     );
   }
 
-  // أضفنا Key هنا ليعمل الـ Reorderable بشكل صحيح
-Widget _buildImageItem(
+  Widget _buildImageItem(
   BuildContext context,
   int index,
   String url,
   bool isDark, {
   required Key key,
 }) {
-  return Container(
+  return Material( 
     key: key,
-    width: 130,
-    height: 150, // تحديد الارتفاع لضمان التناسق
-    margin: const EdgeInsets.only(left: 12),
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(16), // حواف أنعم
-      border: Border.all(color: isDark ? Colors.white10 : Colors.black12 ),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.1),
-          blurRadius: 8,
-          offset: const Offset(0, 4),
-        ),
-      ],
-    ),
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: Stack(
-        fit: StackFit.expand, // لجعل الصورة تأخذ كامل المساحة
-        children: [
-          // عرض الصورة مع معالجة حالة التحميل والخطأ
-          CachedNetworkImage(
-           imageUrl:  url,
-            fit: BoxFit.cover,
-            placeholder: (context, url) => const Center(child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))),
-            errorWidget: (context, url, error) => const Icon(Icons.broken_image, color: Colors.grey),
-          ),
-
-          // طبقة تعتيم خفيفة لإبراز الأيقونات
-          Container(decoration: BoxDecoration(color: Colors.black.withOpacity(0.2))),
-
-          // أيقونة السحب (أصبحت أكثر أناقة)
-          const Center(
-            child: Icon(Icons.drag_indicator_rounded, color: Colors.white, size: 28),
-          ),
-
-          // زر الحذف المحسن
-          Positioned(
-            top: 6,
-            right: 6,
-            child: Material( // إضافة Material لإظهار تأثير اللمس (Ripple Effect)
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () => onRemove(index),
-                customBorder: const CircleBorder(),
-                child: Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: Colors.redAccent.withOpacity(0.9), // لون أحمر يعطي انطباع الحذف
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.close_rounded, size: 14, color: Colors.white),
-                ),
-              ),
-            ),
+    color: Colors.transparent,
+    child: Container(
+      width: 120,
+      height: 130,
+      margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 8), 
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: isDark ? Colors.white10 : Colors.black12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            CachedNetworkImage(
+              imageUrl: url,
+              fit: BoxFit.cover,
+              placeholder: (context, url) => const Center(
+                child: SizedBox(width: 20, height: 20, 
+                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.blueAccent))
+              ),
+              errorWidget: (context, url, error) => const Icon(Icons.broken_image, color: Colors.grey),
+            ),
+
+            Container(color: Colors.black.withOpacity(0.25)),
+
+            const Center(
+              child: Icon(Icons.drag_indicator_rounded, color: Colors.white, size: 28),
+            ),
+
+            Positioned(
+              top: 8,
+              right: 8,
+              child: IconButton(
+                constraints: const BoxConstraints(),
+                padding: const EdgeInsets.all(6),
+                style: IconButton.styleFrom(
+                  backgroundColor: Colors.redAccent.withOpacity(0.9),
+                  shape: const CircleBorder(),
+                ),
+                icon: const Icon(Icons.close_rounded, size: 14, color: Colors.white),
+                onPressed: () => onRemove(index),
+              ),
+            ),
+          ],
+        ),
       ),
     ),
   );
 }
-
+ 
   // باقي الكود (_buildAddButton و _showAddUrlDialog) يبقى كما هو...
 
   Widget _buildAddButton(BuildContext context, bool isDark) {
