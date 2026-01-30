@@ -27,14 +27,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
   final ProductsController controller = Get.find<ProductsController>();
 
   // Controllers
-  late final TextEditingController nameController;
-  late final TextEditingController priceController;
-  late final TextEditingController discountPriceController;
-  late final TextEditingController stockController;
-  late final TextEditingController descriptionController;
-  late final TextEditingController brandController;
-  late final TextEditingController servingSizeController;
-  late final TextEditingController numberOfSessionsController;
+
 
   String? selectedCategoryId;
   List<String> imageUrls = [];
@@ -46,24 +39,24 @@ class ProductFormSheetState extends State<ProductFormSheet> {
   }
 
   void _initializeFields() {
-    nameController = TextEditingController(text: widget.product?.name);
-    priceController = TextEditingController(
+    controller.textcontrollers['name'] = TextEditingController(text: widget.product?.name);
+    controller.textcontrollers['price'] = TextEditingController(
       text: widget.product?.price.toString(),
     );
-    discountPriceController = TextEditingController(
+    controller.textcontrollers['discount'] = TextEditingController(
       text: widget.product?.discountPrice?.toString(),
     );
-    stockController = TextEditingController(
+    controller.textcontrollers['stock'] = TextEditingController(
       text: widget.product?.stockQuantity.toString(),
     );
-    descriptionController = TextEditingController(
+    controller.textcontrollers['desc'] = TextEditingController(
       text: widget.product?.description,
     );
-    brandController = TextEditingController(text: widget.product?.brand);
-    servingSizeController = TextEditingController(
+    controller.textcontrollers['brand'] = TextEditingController(text: widget.product?.brand);
+    controller.textcontrollers['serving'] = TextEditingController(
       text: widget.product?.servingSize,
     );
-    numberOfSessionsController = TextEditingController(
+    controller.textcontrollers['sessions'] = TextEditingController(
       text: widget.product?.servingsPerContainer.toString(),
     );
 
@@ -85,14 +78,14 @@ class ProductFormSheetState extends State<ProductFormSheet> {
   @override
   void dispose() {
     for (var c in [
-      nameController,
-      priceController,
-      discountPriceController,
-      stockController,
-      descriptionController,
-      brandController,
-      servingSizeController,
-      numberOfSessionsController,
+      controller.textcontrollers['name']!,
+      controller.textcontrollers['price']!,
+      controller.textcontrollers['discount']!,
+      controller.textcontrollers['stock']!,
+      controller.textcontrollers['desc']!,
+      controller.textcontrollers['brand']!,
+      controller.textcontrollers['serving']!,
+      controller.textcontrollers['sessions']!,
     ]) {
       c.dispose();
     }
@@ -219,7 +212,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
 
   Widget _buildBasicInfoSection(var responsive) {
     return buildProductFormSheetModernTextField(
-      nameController,
+      controller.textcontrollers['name']!,
       'اسم المنتج الكامل',
       Icons.shopping_bag_outlined,
     );
@@ -230,7 +223,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
       children: [
         Expanded(
           child: buildProductFormSheetModernTextField(
-            priceController,
+            controller.textcontrollers['price']!,
             'السعر الأساسي',
             Icons.payments_outlined,
             isNumber: true,
@@ -239,7 +232,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
         const SizedBox(width: 12),
         Expanded(
           child: buildProductFormSheetModernTextField(
-            discountPriceController,
+            controller.textcontrollers['discount']!,
             'سعر الخصم',
             Icons.sell_outlined,
             isNumber: true,
@@ -254,7 +247,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
       children: [
         Expanded(
           child: buildProductFormSheetModernTextField(
-            stockController,
+            controller.textcontrollers['stock']!,
             'الكمية متوفرة',
             Icons.inventory_2_outlined,
             isNumber: true,
@@ -263,7 +256,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
         const SizedBox(width: 12),
         Expanded(
           child: buildProductFormSheetModernTextField(
-            brandController,
+            controller.textcontrollers['brand']!,
             'العلامة التجارية',
             Icons.verified_outlined,
           ),
@@ -277,7 +270,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
       children: [
         Expanded(
           child: buildProductFormSheetModernTextField(
-            servingSizeController,
+            controller.textcontrollers['serving']!,
             'حجم الحصة (جرام)',
             Icons.scale_outlined,
           ),
@@ -285,7 +278,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
         const SizedBox(width: 12),
         Expanded(
           child: buildProductFormSheetModernTextField(
-            numberOfSessionsController,
+            controller.textcontrollers['sessions']!,
             'عدد الحصص',
             Icons.format_list_numbered_rtl_outlined,
             isNumber: true,
@@ -330,7 +323,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
 
   Widget _buildDescriptionSection(ProductsController controller) {
     return buildProductFormSheetModernTextField(
-      descriptionController,
+      controller.textcontrollers['desc']!,
       'وصف المنتج بالتفصيل...',
       Icons.description_outlined,
       maxLines: 8,
@@ -351,7 +344,12 @@ class ProductFormSheetState extends State<ProductFormSheet> {
             ),
             elevation: 5,
           ),
-          onPressed: _submitForm,
+          onPressed: ()=> controller.saveProduct(
+            existingProduct: widget.product,
+            formKey: _formKey,
+            categoryId: selectedCategoryId! ,
+            productImages: imageUrls,
+          ),
           child: Obx(
             () => controller.isLoading.value
                 ? const CircularProgressIndicator(color: Colors.white)
@@ -386,49 +384,5 @@ class ProductFormSheetState extends State<ProductFormSheet> {
     }
   }
 
-  void _submitForm() {
-    if (!_formKey.currentState!.validate()) return;
 
-    if (selectedCategoryId == null || selectedCategoryId!.isEmpty) {
-      Get.snackbar(
-        'خطأ',
-        'يرجى اختيار قسم للمنتج',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      return;
-    }
-
-    if (imageUrls.isEmpty) {
-      Get.snackbar(
-        'خطأ',
-        'يرجى إضافة صورة واحدة على الأقل للمنتج',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      return;
-    }
-
-    final productData = ProductModel(
-      id: widget.product?.id ?? 'PROD-${DateTime.now().millisecondsSinceEpoch}',
-      name: nameController.text,
-      price: double.tryParse(priceController.text) ?? 0.0,
-      discountPrice: double.tryParse(discountPriceController.text),
-      imageUrls: imageUrls,
-      description: descriptionController.text,
-      categoryId: selectedCategoryId ?? '',
-      stockQuantity: int.tryParse(stockController.text) ?? 0,
-      brand: brandController.text,
-      isActive: controller.isFeatured.value,
-      servingSize: servingSizeController.text,
-      servingsPerContainer: int.tryParse(numberOfSessionsController.text) ?? 0,
-      flavor: controller.productFlavors.toList(),
-      size: controller.productSizes.toList(),
-      weight: controller.productWeight.value,
-      isBackgroundWhite: controller.isBackgroundWhite.value,
-    );
-
-    debugPrint(productData.toString());
-    widget.product == null
-        ? controller.addProduct(productData)
-        : controller.updateProduct(productData);
-  }
 }

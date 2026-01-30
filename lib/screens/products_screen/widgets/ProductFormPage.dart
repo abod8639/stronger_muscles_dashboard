@@ -22,12 +22,6 @@ class ProductFormPage extends StatefulWidget {
 class _ProductFormPageState extends State<ProductFormPage> {
   final _formKey = GlobalKey<FormState>();
   final ProductsController controller = Get.find<ProductsController>();
-
-  // تجميع الـ Controllers في Map لسهولة الإدارة أو تعريفها بوضوح
-  late final Map<String, TextEditingController> _controllers;
-
-  // استخدام RxList للصور لتقليل استخدام setState
-  final RxList<String> _imageUrls = <String>[].obs;
   String? _selectedCategoryId;
 
   @override
@@ -37,41 +31,45 @@ class _ProductFormPageState extends State<ProductFormPage> {
   }
 
   void _initializeFields() {
-    _controllers = {
-      'name': TextEditingController(text: widget.product?.name),
-      'price': TextEditingController(text: widget.product?.price.toString()),
-      'discount': TextEditingController(
-        text: widget.product?.discountPrice?.toString() ?? '',
-      ),
-      'stock': TextEditingController(
-        text: widget.product?.stockQuantity.toString(),
-      ),
-      'desc': TextEditingController(text: widget.product?.description),
-      'brand': TextEditingController(text: widget.product?.brand),
-      'serving': TextEditingController(text: widget.product?.servingSize),
-      'sessions': TextEditingController(
-        text: widget.product?.servingsPerContainer.toString(),
-      ),
-    };
+    controller.textcontrollers['name'] = TextEditingController(text: widget.product?.name);
+    controller.textcontrollers['price'] = TextEditingController(
+      text: widget.product?.price.toString(),
+    );
+    controller.textcontrollers['discount'] = TextEditingController(
+      text: widget.product?.discountPrice?.toString(),
+    );
+    controller.textcontrollers['stock'] = TextEditingController(
+      text: widget.product?.stockQuantity.toString(),
+    );
+    controller.textcontrollers['desc'] = TextEditingController(
+      text: widget.product?.description,
+    );
+    controller.textcontrollers['brand'] = TextEditingController(text: widget.product?.brand);
+    controller.textcontrollers['serving'] = TextEditingController(
+      text: widget.product?.servingSize,
+    );
+    controller.textcontrollers['sessions'] = TextEditingController(
+      text: widget.product?.servingsPerContainer.toString(),
+    );
 
-    if (widget.product != null) {
-      _imageUrls.assignAll(widget.product!.imageUrls);
-      _selectedCategoryId = widget.product!.categoryId;
-      controller.productFlavors.assignAll(widget.product!.flavor ?? []);
-      controller.productSizes.assignAll(widget.product!.size ?? []);
-      controller.isFeatured.value = widget.product!.isActive;
-      controller.isBackgroundWhite.value =
-          widget.product!.isBackgroundWhite ?? false;
-    } else {
-      _selectedCategoryId = controller.categories.isNotEmpty
-          ? controller.categories.first.id
-          : null;
-    }
+    controller.imageUrls.assignAll(widget.product?.imageUrls ?? []);
+    _selectedCategoryId =
+        widget.product?.categoryId ??
+        (controller.categories.isNotEmpty
+            ? controller.categories.first.id
+            : null);
+
+    // تحديث قيم GetX
+    controller.productFlavors.assignAll(widget.product?.flavor ?? []);
+    controller.productSizes.assignAll(widget.product?.size ?? []);
+    controller.isFeatured.value = widget.product?.isActive ?? true;
+    controller.isBackgroundWhite.value =
+        widget.product?.isBackgroundWhite ?? false;
   }
 
   @override
   void dispose() {
-    _controllers.forEach((_, c) => c.dispose());
+    controller.textcontrollers.forEach((_, c) => c.dispose());
     super.dispose();
   }
 
@@ -87,6 +85,8 @@ class _ProductFormPageState extends State<ProductFormPage> {
             onPressed: () => controller.saveProduct(
               existingProduct: widget.product,
               formKey: _formKey,
+              categoryId: _selectedCategoryId ?? '',
+              productImages: controller.imageUrls.toList(),
             ),
             icon: const Icon(Icons.save_as_rounded, color: AppColors.primary),
           ),
@@ -124,14 +124,14 @@ class _ProductFormPageState extends State<ProductFormPage> {
       icon: Icons.image_outlined,
       child: Obx(
         () => ImageGalleryEditor(
-          imageUrls: _imageUrls.toList(),
-          onAddUrl: (url) => _imageUrls.add(url),
-          onRemove: (index) => _imageUrls.removeAt(index),
+          imageUrls: controller.imageUrls.toList(),
+          onAddUrl: (url) => controller.imageUrls.add(url),
+          onRemove: (index) => controller.imageUrls.removeAt(index),
           onPickImage: _handleImagePick,
           onReorder: (oldIdx, newIdx) {
             if (newIdx > oldIdx) newIdx -= 1;
-            final item = _imageUrls.removeAt(oldIdx);
-            _imageUrls.insert(newIdx, item);
+            final item = controller.imageUrls.removeAt(oldIdx);
+            controller.imageUrls.insert(newIdx, item);
           },
         ),
       ),
@@ -145,7 +145,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
       child: Column(
         children: [
           buildProductFormSheetModernTextField(
-            _controllers['name']!,
+            controller.textcontrollers['name']!,
             'اسم المنتج بالكامل',
             Icons.drive_file_rename_outline,
           ),
@@ -154,7 +154,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
             children: [
               Expanded(
                 child: buildProductFormSheetModernTextField(
-                  _controllers['price']!,
+                  controller.textcontrollers['price']!,
                   'السعر الأساسي',
                   Icons.payments_outlined,
                   isNumber: true,
@@ -163,7 +163,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
               const SizedBox(width: 12),
               Expanded(
                 child: buildProductFormSheetModernTextField(
-                  _controllers['discount']!,
+                  controller.textcontrollers['discount']!,
                   'سعر الخصم',
                   Icons.sell_outlined,
                   isNumber: true,
@@ -223,7 +223,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
             children: [
               Expanded(
                 child: buildProductFormSheetModernTextField(
-                  _controllers['stock']!,
+                  controller.textcontrollers['stock']!,
                   'الكمية المتاحة',
                   Icons.numbers,
                   isNumber: true,
@@ -232,7 +232,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
               const SizedBox(width: 12),
               Expanded(
                 child: buildProductFormSheetModernTextField(
-                  _controllers['brand']!,
+                  controller.textcontrollers['brand']!,
                   'العلامة التجارية',
                   Icons.verified_outlined,
                 ),
@@ -244,7 +244,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
             children: [
               Expanded(
                 child: buildProductFormSheetModernTextField(
-                  _controllers['serving']!,
+                  controller.textcontrollers['serving']!,
                   'حجم الحصة',
                   Icons.fitness_center,
                 ),
@@ -252,29 +252,28 @@ class _ProductFormPageState extends State<ProductFormPage> {
               const SizedBox(width: 12),
               Expanded(
                 child: buildProductFormSheetModernTextField(
-                  _controllers['sessions']!,
+                  controller.textcontrollers['sessions']!,
                   'إجمالي الحصص',
                   Icons.reorder,
                   isNumber: true,
+                  
                 ),
               ),
             ],
           ),
           const Divider(height: 32),
-          Obx(
-            () => AvailabilitySwitch(
+           AvailabilitySwitch(
               title: "منتج مميز (Featured)",
               isAvailable: controller.isFeatured,
               onChanged: (val) => controller.isFeatured.value = val,
             ),
-          ),
-          Obx(
-            () => AvailabilitySwitch(
+          
+          AvailabilitySwitch(
               title: "خلفية بيضاء (White Background)",
               isAvailable: controller.isBackgroundWhite,
               onChanged: (val) => controller.isBackgroundWhite.value = val,
             ),
-          ),
+          
         ],
       ),
     );
@@ -285,7 +284,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
       title: 'الوصف التفصيلي',
       icon: Icons.description_outlined,
       child: buildProductFormSheetModernTextField(
-        _controllers['desc']!,
+        controller.textcontrollers['desc']!,
         'أدخل مواصفات المنتج وفوائده...',
         Icons.text_snippet_outlined,
         maxLines: 4,
@@ -350,11 +349,14 @@ class _ProductFormPageState extends State<ProductFormPage> {
           ),
           elevation: 0,
         ),
-        onPressed:()=> controller.isLoading.value ? null :
-         controller.saveProduct(
-          existingProduct: widget.product,
-          formKey: _formKey,
-        ),
+        onPressed: () => controller.isLoading.value
+            ? null
+            : controller.saveProduct(
+                existingProduct: widget.product,
+                formKey: _formKey,
+                categoryId: _selectedCategoryId ?? '',
+                productImages: controller.imageUrls.toList(),
+              ),
         child: controller.isLoading.value
             ? const CircularProgressIndicator(color: Colors.white)
             : const Text(
@@ -376,7 +378,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
     );
     if (image != null) {
       final url = await controller.uploadImage(image.path);
-      if (url != null) _imageUrls.add(url);
+      if (url != null) controller.imageUrls.add(url);
     }
   }
 

@@ -12,6 +12,7 @@ class ProductsController extends GetxController {
   RxList<String> productFlavors = <String>[].obs;
   late final ApiService _apiService;
   RxBool isFeatured = false.obs;
+  // final RxList<String> imageUrls = <String>[].obs;
 
   // --- States ---
   final isLoading = true.obs;
@@ -35,7 +36,7 @@ class ProductsController extends GetxController {
   RxBool isSaving = false.obs;
   RxList<String> imageUrls = <String>[].obs;
 
-  final Map<String, TextEditingController> controllers = {
+  final Map<String, TextEditingController> textcontrollers = {
     'name': TextEditingController(),
     'price': TextEditingController(),
     'discount': TextEditingController(),
@@ -268,17 +269,22 @@ class ProductsController extends GetxController {
 
 /// الدالة الرئيسية لحفظ المنتج
   Future<void> saveProduct({
-    formKey,
-    ProductModel? existingProduct
-    
-    }) async {
+    required GlobalKey<FormState> formKey,
+    required String categoryId,
+    required List<String> productImages,
+    ProductModel? existingProduct,
+  }) async {
     // 1. التحقق من صحة البيانات (Validation)
     if (!formKey.currentState!.validate()) return;
 
-
-    if (imageUrls.isEmpty) {
+    if (productImages.isEmpty) {
       _showWarning('تنبيه', 'يجب إضافة صورة واحدة على الأقل');
       return;
+    }
+
+    if (categoryId.isEmpty || categoryId == 'all') {
+       _showWarning('تنبيه', 'يرجى اختيار القسم');
+       return;
     }
 
     try {
@@ -286,19 +292,21 @@ class ProductsController extends GetxController {
 
       // 2. تجميع البيانات في الكائن
       final productData = ProductModel(
-        id: existingProduct?.id ?? 'PROD-${DateTime.now().millisecondsSinceEpoch}',
-        name: controllers['name']!.text.trim(),
-        price: double.tryParse(controllers['price']!.text) ?? 0.0,
-        discountPrice: double.tryParse(controllers['discount']!.text),
-        imageUrls: imageUrls.toList(),
-        description: controllers['desc']!.text.trim(),
-        categoryId: selectedCategoryId.value,
-        stockQuantity: int.tryParse(controllers['stock']!.text) ?? 0,
-        brand: controllers['brand']!.text.trim(),
+        id: existingProduct?.id ??
+            'PROD-${DateTime.now().millisecondsSinceEpoch}',
+        name: textcontrollers['name']!.text.trim(),
+        price: double.tryParse(textcontrollers['price']!.text) ?? 0.0,
+        discountPrice: double.tryParse(textcontrollers['discount']!.text),
+        imageUrls: productImages,
+        description: textcontrollers['desc']!.text.trim(),
+        categoryId: categoryId,
+        stockQuantity: int.tryParse(textcontrollers['stock']!.text) ?? 0,
+        brand: textcontrollers['brand']!.text.trim(),
         isActive: isFeatured.value,
         isBackgroundWhite: isBackgroundWhite.value,
-        servingSize: controllers['serving']!.text,
-        servingsPerContainer: int.tryParse(controllers['sessions']!.text) ?? 0,
+        servingSize: textcontrollers['serving']!.text,
+        servingsPerContainer:
+            int.tryParse(textcontrollers['sessions']!.text) ?? 0,
         flavor: productFlavors.toList(),
         size: productSizes.toList(),
         weight: productWeight.value,
@@ -313,7 +321,6 @@ class ProductsController extends GetxController {
 
       Get.back(); // العودة بعد النجاح
       _showSuccess('تم بنجاح', 'تم حفظ بيانات المنتج بنجاح');
-      
     } catch (e) {
       _showError('خطأ', 'حدث خطأ أثناء حفظ المنتج: $e');
     } finally {
@@ -324,7 +331,7 @@ class ProductsController extends GetxController {
   // دوال مساعدة للرسائل (Helpers)
   void _showWarning(String title, String msg) => Get.snackbar(title, msg, 
       snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.orange, colorText: Colors.white);
-      
+
   void _showError(String title, String msg) => Get.snackbar(title, msg, 
       snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red, colorText: Colors.white);
 
