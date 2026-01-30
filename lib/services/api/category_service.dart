@@ -147,21 +147,6 @@ class CategoryService extends ApiBase {
               '${ApiConfigController().baseUrl.value}${ApiConfig.adminCategoryDetail(id)}',
             ),
             headers: getAuthHeaders(),
-            body: json.encode(data), // Note: original code body: json.encode(data) but data is not defined in deleteCategory except in the original block it was copied from. Wait, deleteCategory only needs ID. Original code passed empty or ??? 
-            // Checking original code again...
-            // Original code:
-            /*
-            Future<bool> deleteCategory(String id) async {
-              try {
-                final response = await http
-                    .delete(
-                       Uri.parse(...),
-                       headers: getAuthHeaders(),
-                     ) ...
-            */
-            // It did NOT pass body in logic, but wait, look at my previous `view_file` output for lines 417-439.
-            // It just calls .delete(Uri..., headers...). No body.
-            // I should be careful not to introduce bugs.
           )
           .timeout(
             const Duration(seconds: ApiBase.timeoutSeconds),
