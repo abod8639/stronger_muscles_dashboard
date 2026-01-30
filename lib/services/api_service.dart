@@ -1,4 +1,4 @@
-import 'package:http/http.dart' as http;
+// import 'package:http/http.dart' as http;
 import 'api/api_base.dart';
 import 'api/category_service.dart';
 import 'api/order_service.dart';
@@ -15,14 +15,14 @@ class ApiService {
   final UserService _userService = UserService();
 
   // Helper method to get authenticated headers
-  Map<String, String> _getAuthHeaders() {
-    return _apiBase.getAuthHeaders();
-  }
+  // Map<String, String> _getAuthHeaders() {
+  //   return _apiBase.getAuthHeaders();
+  // }
 
-  // Handle authentication errors
-  void _handleAuthErrors(http.Response response) {
-    _apiBase.handleAuthErrors(response);
-  }
+  // // Handle authentication errors
+  // void _handleAuthErrors(http.Response response) {
+  //   _apiBase.handleAuthErrors(response);
+  // }
 
   // التحقق من الاتصال
   Future<bool> checkConnection() async {

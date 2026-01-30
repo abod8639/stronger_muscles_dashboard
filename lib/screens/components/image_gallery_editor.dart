@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 import '../../config/theme.dart';
@@ -93,47 +94,75 @@ class ImageGalleryEditor extends StatelessWidget {
   }
 
   // أضفنا Key هنا ليعمل الـ Reorderable بشكل صحيح
-  Widget _buildImageItem(
-    BuildContext context,
-    int index,
-    String url,
-    bool isDark, {
-    required Key key,
-  }) {
-    return Container(
-      key: key,
-      width: 100,
-      margin: const EdgeInsets.only(left: 12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        image: DecorationImage(image: NetworkImage(url), fit: BoxFit.cover),
-      ),
+Widget _buildImageItem(
+  BuildContext context,
+  int index,
+  String url,
+  bool isDark, {
+  required Key key,
+}) {
+  return Container(
+    key: key,
+    width: 130,
+    height: 150, // تحديد الارتفاع لضمان التناسق
+    margin: const EdgeInsets.only(left: 12),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(16), // حواف أنعم
+      border: Border.all(color: isDark ? Colors.white10 : Colors.black12 ),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.1),
+          blurRadius: 8,
+          offset: const Offset(0, 4),
+        ),
+      ],
+    ),
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(16),
       child: Stack(
+        fit: StackFit.expand, // لجعل الصورة تأخذ كامل المساحة
         children: [
-          // تلميح بصري: أيقونة للسحب (اختياري)
-          const Align(
-            alignment: Alignment.center,
-            child: Icon(Icons.drag_indicator, color: Colors.white70),
+          // عرض الصورة مع معالجة حالة التحميل والخطأ
+          CachedNetworkImage(
+           imageUrl:  url,
+            fit: BoxFit.cover,
+            placeholder: (context, url) => const Center(child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))),
+            errorWidget: (context, url, error) => const Icon(Icons.broken_image, color: Colors.grey),
           ),
+
+          // طبقة تعتيم خفيفة لإبراز الأيقونات
+          Container(decoration: BoxDecoration(color: Colors.black.withOpacity(0.2))),
+
+          // أيقونة السحب (أصبحت أكثر أناقة)
+          const Center(
+            child: Icon(Icons.drag_indicator_rounded, color: Colors.white, size: 28),
+          ),
+
+          // زر الحذف المحسن
           Positioned(
-            top: 4,
-            right: 4,
-            child: GestureDetector(
-              onTap: () => onRemove(index),
-              child: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: const BoxDecoration(
-                  color: Colors.black54,
-                  shape: BoxShape.circle,
+            top: 6,
+            right: 6,
+            child: Material( // إضافة Material لإظهار تأثير اللمس (Ripple Effect)
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => onRemove(index),
+                customBorder: const CircleBorder(),
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.redAccent.withOpacity(0.9), // لون أحمر يعطي انطباع الحذف
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.close_rounded, size: 14, color: Colors.white),
                 ),
-                child: const Icon(Icons.close, size: 16, color: Colors.white),
               ),
             ),
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   // باقي الكود (_buildAddButton و _showAddUrlDialog) يبقى كما هو...
 
