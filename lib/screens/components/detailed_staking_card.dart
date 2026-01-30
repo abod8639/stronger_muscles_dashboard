@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/models/staking_detail.dart';
 import '../../../config/app_colors.dart';
 
-/// مكون بطاقة للمعلومات الرئيسية مع شكل احترافي
 class DetailedStakingCard extends StatelessWidget {
   final String title;
   final String? subtitle;
@@ -188,14 +188,3 @@ class DetailedStakingCard extends StatelessWidget {
   }
 }
 
-class StakingDetail {
-  final String label;
-  final String value;
-  final Color color;
-
-  StakingDetail({
-    required this.label,
-    required this.value,
-    required this.color,
-  });
-}

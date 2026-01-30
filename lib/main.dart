@@ -6,7 +6,6 @@ import 'package:stronger_muscles_dashboard/controllers/navigation_controller.dar
 import 'package:stronger_muscles_dashboard/functions/hive_init.dart';
 import 'package:stronger_muscles_dashboard/screens/components/my_bottomnavigationbar.dart';
 import 'package:stronger_muscles_dashboard/screens/components/sidebar.dart';
-import 'package:stronger_muscles_dashboard/services/auth_service.dart';
 import 'config/theme.dart';
 import 'config/theme_extended.dart';
 import 'screens/index.dart';
