@@ -142,7 +142,7 @@ class DetailedStakingCard extends StatelessWidget {
             itemCount: details.length,
             itemBuilder: (context, index) {
               final detail = details[index];
-              return _buildDetailItem(detail);
+              return buildDetailItem(detail);
             },
           ),
         ],
@@ -150,7 +150,7 @@ class DetailedStakingCard extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailItem(StakingDetail detail) {
+  Widget buildDetailItem(StakingDetail detail) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(

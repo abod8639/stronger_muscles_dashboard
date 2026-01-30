@@ -4,35 +4,32 @@ import 'package:http/http.dart' as http;
 import '../config/api_config.dart';
 import '../models/user_model.dart';
 
+import 'package:get/get.dart';
+
 class AuthService {
+  final int timeoutSeconds = 30;
   final GetStorage _storage = GetStorage();
   final ApiConfigController _apiConfig = ApiConfigController();
 
-  // مفاتيح التخزين
   static const String _tokenKey = 'auth_token';
   static const String _userKey = 'user_data';
 
-  // حفظ التوكن
   Future<void> saveToken(String token) async {
     await _storage.write(_tokenKey, token);
   }
 
-  // استرجاع التوكن
   String? getToken() {
     return _storage.read(_tokenKey);
   }
 
-  // حذف التوكن
   Future<void> deleteToken() async {
     await _storage.remove(_tokenKey);
   }
-
-  // حفظ بيانات المستخدم
+ 
   Future<void> saveUser(UserModel user) async {
     await _storage.write(_userKey, user.toJson());
   }
 
-  // استرجاع بيانات المستخدم
   UserModel? getUser() {
     final userData = _storage.read(_userKey);
     if (userData != null) {
@@ -41,17 +38,14 @@ class AuthService {
     return null;
   }
 
-  // حذف بيانات المستخدم
   Future<void> deleteUser() async {
     await _storage.remove(_userKey);
   }
-
-  // فحص حالة تسجيل الدخول
+ 
   bool isLoggedIn() {
     return getToken() != null;
   }
 
-  // تسجيل الدخول
   Future<Map<String, dynamic>> login({
     required String email,
     required String password,
@@ -71,12 +65,9 @@ class AuthService {
       final responseData = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        // حفظ التوكن
         if (responseData['token'] != null) {
           await saveToken(responseData['token']);
         }
-
-        // حفظ بيانات المستخدم
         if (responseData['user'] != null) {
           final user = UserModel.fromJson(responseData['user']);
           await saveUser(user);
@@ -102,7 +93,6 @@ class AuthService {
     }
   }
 
-  // إنشاء حساب جديد
   Future<Map<String, dynamic>> signup({
     required String name,
     required String email,
@@ -125,12 +115,9 @@ class AuthService {
       final responseData = jsonDecode(response.body);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // حفظ التوكن
         if (responseData['token'] != null) {
           await saveToken(responseData['token']);
         }
-
-        // حفظ بيانات المستخدم
         if (responseData['user'] != null) {
           final user = UserModel.fromJson(responseData['user']);
           await saveUser(user);
@@ -156,13 +143,11 @@ class AuthService {
     }
   }
 
-  // تسجيل الخروج
   Future<void> logout() async {
     await deleteToken();
     await deleteUser();
   }
-
-  // الحصول على headers مع التوكن
+ 
   Map<String, String> getAuthHeaders() {
     final token = getToken();
     return {
@@ -170,5 +155,25 @@ class AuthService {
       'Accept': 'application/json',
       if (token != null) 'Authorization': 'Bearer $token',
     };
+  }
+
+  // Handle authentication errors
+  void handleAuthErrors(http.Response response) {
+    if (response.statusCode == 401) {
+      // Unauthorized - redirect to login
+      Get.offAllNamed('/login');
+      Get.snackbar(
+        'خطأ',
+        'انتهت صلاحية الجلسة. يرجى تسجيل الدخول مرة أخرى',
+        snackPosition: SnackPosition.TOP,
+      );
+    } else if (response.statusCode == 403) {
+      // Forbidden - user is not admin
+      Get.snackbar(
+        'خطأ',
+        'ليس لديك صلاحية للوصول إلى هذا المورد',
+        snackPosition: SnackPosition.TOP,
+      );
+    }
   }
 }
