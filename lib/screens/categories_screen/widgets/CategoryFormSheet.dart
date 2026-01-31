@@ -7,46 +7,37 @@ import 'package:stronger_muscles_dashboard/models/category_model.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/screens/components/buildModernTextField.dart';
+import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/availability_switch.dart';
 
 class CategoryFormSheet extends StatefulWidget {
-  final CategoriesController controller;
   final CategoryModel? category;
 
-  const CategoryFormSheet({super.key, required this.controller, this.category});
+  const CategoryFormSheet({super.key, this.category});
 
   @override
   State<CategoryFormSheet> createState() => _CategoryFormSheetState();
 }
 
 class _CategoryFormSheetState extends State<CategoryFormSheet> {
+
+  final controller = Get.find<CategoriesController>();
+
   final _formKey = GlobalKey<FormState>();
-  late final TextEditingController idController;
-  late final TextEditingController nameController;
-  late final TextEditingController imageController;
 
   bool _isIdFieldEnabled = false;
 
   @override
   void initState() {
     super.initState();
-    idController = TextEditingController(text: widget.category?.id ?? '');
-    nameController = TextEditingController(text: widget.category?.name ?? '');
-    imageController = TextEditingController(
-      text: widget.category?.imageUrl ?? '',
-    );
-
-    if (widget.category == null) _isIdFieldEnabled = true;
-
-    imageController.addListener(() => setState(() {}));
+    if (widget.category != null) {
+      controller.prepareFormForEdit(widget.category!);
+      _isIdFieldEnabled = false;
+    } else {
+      controller.clearForm();
+      _isIdFieldEnabled = true;
+    }
   }
 
-  @override
-  void dispose() {
-    idController.dispose();
-    nameController.dispose();
-    imageController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -118,13 +109,13 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
                           : [],
                     ),
                     child: buildCategoryFormSheetModernTextField(
-                      idController,
+                      controller.idController,
                       'كود التصنيف (Unique ID)',
                       Icons.fingerprint_rounded,
                       // الحقل يكون مفعلاً فقط إذا تحقق الشرطان
                       enabled:
                           _isIdFieldEnabled &&
-                          !widget.controller.isLoading.value,
+                          !controller.isLoading.value,
                     ),
                   ),
                 ),
@@ -133,14 +124,25 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
               const SizedBox(height: 16),
 
               buildCategoryFormSheetModernTextField(
-                nameController,
-                'اسم التصنيف العربي',
+                controller.nameController,
+                'اسم التصنيف',
                 Icons.label_important_outline_rounded,
+              ),
+              const SizedBox(height: 16),
+
+              buildCategoryFormSheetModernTextField(
+                controller.descriptionController,
+                'وصف التصنيف',
+                Icons.description_outlined,
               ),
               const SizedBox(height: 16),
 
               _buildImageSection(res),
               const SizedBox(height: 32),
+
+           AvailabilitySwitch(
+            isAvailable: controller.isActive,
+            title: 'التصنيف مفعل'),
 
               _buildSubmitButton(),
             ],
@@ -189,11 +191,11 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
     return Column(
       children: [
         buildCategoryFormSheetModernTextField(
-          imageController,
+          controller.imageController,
           'رابط الصورة (URL)',
           Icons.link_rounded,
         ),
-        if (imageController.text.isNotEmpty) ...[
+        if (controller.imageController.text.isNotEmpty) ...[
           const SizedBox(height: 12),
           _buildImagePreview(),
         ],
@@ -212,7 +214,7 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(15),
         child: CachedNetworkImage(
-          imageUrl: imageController.text,
+          imageUrl: controller.imageController.text,
           fit: BoxFit.cover,
           placeholder: (_, __) =>
               const Center(child: CircularProgressIndicator()),
@@ -229,7 +231,7 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
       width: double.infinity,
       height: 58,
       child: Obx(() {
-        final isLoading = widget.controller.isLoading.value;
+        final isLoading = controller.isLoading.value;
         return Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(18),
@@ -279,8 +281,8 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
   }
 
   void _submitForm() async {
-    if (idController.text.trim().isEmpty ||
-        nameController.text.trim().isEmpty) {
+    if (controller.idController.text.trim().isEmpty ||
+        controller.nameController.text.trim().isEmpty) {
       Get.snackbar(
         'تنبيه',
         'يجب ملء حقل الكود والاسم على الأقل',
@@ -293,16 +295,26 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
 
     bool success;
     if (widget.category == null) {
-      success = await widget.controller.addCategory(
-        idController.text.trim(),
-        nameController.text.trim(),
-        imageController.text.trim(),
+      success = await controller.addCategory(
+        CategoryModel(
+        id: controller.idController.text.trim(),
+        name: controller.nameController.text.trim(),
+        imageUrl: controller.imageController.text.trim(),
+        description: controller.descriptionController.text.trim(),
+        isActive: controller.isActive.value,
+        icon: controller.iconController.text.trim(),
+      )
       );
     } else {
-      success = await widget.controller.updateCategory(
-        widget.category!.id,
-        nameController.text.trim(),
-        imageController.text.trim(),
+      success = await controller.updateCategory(
+        CategoryModel(
+        id: controller.idController.text.trim(),
+        name: controller.nameController.text.trim(),
+        imageUrl: controller.imageController.text.trim(),
+        description: controller.descriptionController.text.trim(),
+        isActive: controller.isActive.value,
+        icon: controller.iconController.text.trim(),
+      )
       );
     }
 

@@ -323,7 +323,8 @@ class _ProductFormPageState extends State<ProductFormPage> {
               const SizedBox(width: 10),
               Text(
                 title,
-                style: const TextStyle(
+                style:  TextStyle(
+                  color: AppColors.primary.withAlpha(200) ,
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
                 ),
@@ -332,7 +333,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
           ),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 12),
-            child: Divider(thickness: 0.5),
+            // child: Divider(thickness: 0.5),
           ),
           child,
         ],

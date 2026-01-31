@@ -132,7 +132,7 @@ class CategoriesScreen extends StatelessWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) =>
-          CategoryFormSheet(controller: controller, category: category),
+          CategoryFormSheet( category: category),
     );
   }
 }

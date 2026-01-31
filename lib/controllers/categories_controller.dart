@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import '../models/index.dart';
@@ -6,16 +8,32 @@ import '../repositories/index.dart';
 import '../screens/components/index.dart';
 
 class CategoriesController extends GetxController {
-  late final CategoryRepository _categoryRepository;
 
-  final isLoading = true.obs;
-  final isProcessing = false.obs;
+
+
+  late final TextEditingController idController;
+  late final TextEditingController nameController;
+  late final TextEditingController imageController;
+  late final TextEditingController descriptionController;
+  late final TextEditingController iconController;
+
+
+  late final CategoryRepository _categoryRepository;
+  final RxBool isLoading = true.obs;
+  final RxBool isProcessing = false.obs;
   final categories = <CategoryModel>[].obs;
   final filteredCategories = <CategoryModel>[].obs;
   final searchQuery = ''.obs;
+  final RxBool isActive = true.obs ;
 
   @override
   void onInit() {
+    idController = TextEditingController();
+    nameController = TextEditingController();
+    imageController = TextEditingController();
+    descriptionController = TextEditingController();
+    iconController = TextEditingController();
+
     super.onInit();
     final apiService = Get.put(ApiService());
     _categoryRepository = CategoryRepository(apiService);
@@ -28,6 +46,17 @@ class CategoriesController extends GetxController {
 
     fetchCategories();
   }
+
+  @override
+  void onClose() {
+  idController.dispose();
+  nameController.dispose();
+  imageController.dispose();
+  descriptionController.dispose();
+  iconController.dispose();
+  super.onClose();
+}
+
 
   Future<void> fetchCategories() async {
     try {
@@ -60,16 +89,17 @@ class CategoriesController extends GetxController {
     }
   }
 
-  Future<bool> addCategory(String id, String name, String? imageUrl) async {
+  Future<bool> addCategory(CategoryModel category) async {
     try {
       isLoading.value = true;
       final newCategory = await _categoryRepository.addCategory({
-        'id': id,
-        'name': name,
-        'image_url': imageUrl ?? '',
-        'description': '',
+        'id': category.id,
+        'name': category.name,
+        'image_url': category.imageUrl,
+        'description': category.description,
         'sort_order': 0,
-        'is_active': 1,
+        'is_active': isActive.value,
+        // 'icon': category.icon,
       });
 
       categories.add(newCategory);
@@ -90,18 +120,19 @@ class CategoriesController extends GetxController {
     }
   }
 
-  Future<bool> updateCategory(String id, String name, String? imageUrl) async {
+  Future<bool> updateCategory(CategoryModel category) async {
     try {
       isLoading.value = true;
-      final updatedCategory = await _categoryRepository.updateCategory(id, {
-        'name': name,
-        'image_url': imageUrl ?? '',
-        'description': '',
+      final updatedCategory = await _categoryRepository.updateCategory(category.id, {
+        'name': category.name,
+        'image_url': category.imageUrl,
+        'description': category.description,
         'sort_order': 0,
-        'is_active': 1,
+        'is_active': isActive.value,
+        // 'icon': category.icon,
       });
 
-      final index = categories.indexWhere((c) => c.id == id);
+      final index = categories.indexWhere((c) => c.id == category.id);
       if (index != -1) {
         categories[index] = updatedCategory;
         _applySearch();
@@ -149,5 +180,23 @@ class CategoriesController extends GetxController {
     } finally {
       isProcessing.value = false;
     }
+  }
+
+  void clearForm() {
+    idController.clear();
+    nameController.clear();
+    imageController.clear();
+    descriptionController.clear();
+    iconController.clear();
+    isActive.value = true;
+  }
+
+  void prepareFormForEdit(CategoryModel category) {
+    idController.text = category.id;
+    nameController.text = category.name;
+    imageController.text = category.imageUrl ?? '';
+    descriptionController.text = category.description ?? '';
+    iconController.text = category.icon ?? '';
+    isActive.value = category.isActive;
   }
 }
