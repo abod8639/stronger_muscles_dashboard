@@ -320,6 +320,8 @@ class ProductsController extends GetxController {
       }
 
       Get.back(); // العودة بعد النجاح
+      debugPrint("======== success ========");
+      debugPrint(productData.toJson().toString());
       _showSuccess('تم بنجاح', 'تم حفظ بيانات المنتج بنجاح');
     } catch (e) {
       _showError('خطأ', 'حدث خطأ أثناء حفظ المنتج: $e');

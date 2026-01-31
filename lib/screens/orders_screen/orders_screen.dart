@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
 import 'package:stronger_muscles_dashboard/screens/components/top_section.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/order_list_tile.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_empty_state.dart';
@@ -74,7 +75,7 @@ class OrdersScreen extends StatelessWidget {
                 return buildEmptyState(controller);
               }
 
-              return RefreshIndicator(
+              return MyRefreshIndicator(
                 onRefresh: () => controller.fetchOrders(),
                 child: ListView.builder(
                   padding: EdgeInsets.symmetric(

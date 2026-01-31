@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
 import 'package:stronger_muscles_dashboard/screens/components/top_section.dart';
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/ProductFormPage.dart';
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/ProductListItem.dart';
@@ -66,7 +67,7 @@ class ProductsScreen extends StatelessWidget {
                 return buildEmptyState(controller);
               }
 
-              return RefreshIndicator(
+              return MyRefreshIndicator(
                 onRefresh: () => controller.fetchData(),
                 child: ListView.separated(
                   padding: EdgeInsets.symmetric(

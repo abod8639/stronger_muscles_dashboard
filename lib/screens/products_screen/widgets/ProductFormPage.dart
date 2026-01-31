@@ -31,7 +31,8 @@ class _ProductFormPageState extends State<ProductFormPage> {
   }
 
   void _initializeFields() {
-    controller.textcontrollers['name'] = TextEditingController(text: widget.product?.name);
+    controller.textcontrollers['name'] = TextEditingController(
+      text: widget.product?.name);
     controller.textcontrollers['price'] = TextEditingController(
       text: widget.product?.price.toString(),
     );
@@ -44,7 +45,8 @@ class _ProductFormPageState extends State<ProductFormPage> {
     controller.textcontrollers['desc'] = TextEditingController(
       text: widget.product?.description,
     );
-    controller.textcontrollers['brand'] = TextEditingController(text: widget.product?.brand);
+    controller.textcontrollers['brand'] = TextEditingController(
+      text: widget.product?.brand);
     controller.textcontrollers['serving'] = TextEditingController(
       text: widget.product?.servingSize,
     );
@@ -64,7 +66,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
     controller.productSizes.assignAll(widget.product?.size ?? []);
     controller.isFeatured.value = widget.product?.isActive ?? true;
     controller.isBackgroundWhite.value =
-        widget.product?.isBackgroundWhite ?? false;
+    widget.product?.isBackgroundWhite ?? false;
   }
 
   @override
@@ -183,7 +185,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
       child: Column(
         children: [
           CustomModernDropdown<String>(
-            value: _selectedCategoryId,
+            value: _selectedCategoryId ?? "",
             items: controller.categories
                 .map(
                   (cat) =>

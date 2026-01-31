@@ -94,7 +94,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final responsive = context.responsive;
+    final ResponsiveLayout responsive = context.responsive;
     // final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
@@ -172,7 +172,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
     );
   }
 
-  Widget _buildHeader(var responsive) {
+  Widget _buildHeader(ResponsiveLayout responsive) {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Row(
@@ -210,7 +210,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
     );
   }
 
-  Widget _buildBasicInfoSection(var responsive) {
+  Widget _buildBasicInfoSection(ResponsiveLayout responsive) {
     return buildProductFormSheetModernTextField(
       controller.textcontrollers['name']!,
       'اسم المنتج الكامل',
@@ -218,7 +218,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
     );
   }
 
-  Widget _buildPricingSection(var responsive) {
+  Widget _buildPricingSection(ResponsiveLayout responsive) {
     return Row(
       children: [
         Expanded(
@@ -242,7 +242,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
     );
   }
 
-  Widget _buildStockAndBrandSection(var responsive) {
+  Widget _buildStockAndBrandSection(ResponsiveLayout responsive) {
     return Row(
       children: [
         Expanded(
@@ -265,7 +265,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
     );
   }
 
-  Widget _buildNutritionalSection(var responsive) {
+  Widget _buildNutritionalSection(ResponsiveLayout responsive) {
     return Row(
       children: [
         Expanded(
@@ -330,7 +330,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
     );
   }
 
-  Widget _buildSubmitButton(var responsive) {
+  Widget _buildSubmitButton(ResponsiveLayout responsive) {
     return GlassContainer(
       padding: const EdgeInsets.all(10),
       child: SizedBox(

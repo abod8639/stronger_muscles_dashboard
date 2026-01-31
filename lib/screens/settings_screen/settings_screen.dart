@@ -1,33 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/config/api_config.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/controllers/auth_controller.dart';
-import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/buildModernDropdown.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
-  // تعريف القوائم كـ Static لتحسين الأداء
-  static const List<DropdownMenuItem<String>> _apiItems = [
-    DropdownMenuItem(
-      value: 'http://localhost:8080/api/v1',
-      child: Text('Localhost (Web)'),
-    ),
-    DropdownMenuItem(
-      value: 'http://10.0.2.2:8080/api/v1',
-      child: Text('Emulator (Android)'),
-    ),
-    DropdownMenuItem(
-      value: 'http://192.168.1.17:8080/api/v1',
-      child: Text('Local IP'),
-    ),
-  ];
+
 
   @override
   Widget build(BuildContext context) {
     // استدعاء الـ Controllers المتوفرة في الذاكرة
-    final apiConfig = Get.put(ApiConfigController());
     final authController = Get.put(AuthController());
 
     return Scaffold(
@@ -39,23 +22,6 @@ class SettingsScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // قسم إعدادات الـ API
-              _buildSectionCard(
-                title: 'إعدادات الاتصال',
-                child: Obx(
-                  () => CustomModernDropdown(
-                    value: apiConfig.baseUrl.value,
-                    items: _apiItems,
-                    onChanged: (newValue) {
-                      if (newValue != null) {
-                        apiConfig.baseUrl.value = newValue;
-                        // هنا يمكنك إضافة منطق لحفظ القيمة في GetStorage
-                      }
-                    },
-                  ),
-                ),
-              ),
-
               const SizedBox(height: 24),
 
               // قسم الحساب

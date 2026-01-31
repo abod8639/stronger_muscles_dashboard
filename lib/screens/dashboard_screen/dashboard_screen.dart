@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_dashboard_title.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_indicator_card.dart';
@@ -36,11 +37,11 @@ class DashboardScreen extends GetView<DashboardController> {
           );
         }
 
-        return RefreshIndicator(
+        return MyRefreshIndicator(
           // backgroundColor: AppColorsExtended.cardBg,
-          backgroundColor: Colors.transparent,
+          // backgroundColor: Colors.transparent,
           // color: AppColorsExtended.cyanAccent,
-          color: Colors.transparent,
+          // color: Colors.transparent,
           onRefresh: () => controller.fetchDashboardData(),
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
 import 'package:stronger_muscles_dashboard/screens/components/enhanced_error_widget.dart';
 import 'package:stronger_muscles_dashboard/screens/components/top_section.dart';
 import 'package:stronger_muscles_dashboard/screens/categories_screen/widgets/CategoryFormSheet.dart';
@@ -62,7 +63,9 @@ class CategoriesScreen extends StatelessWidget {
               }
 
               return responsive.isMobile
-                  ? ListView.builder(
+                  ?MyRefreshIndicator(
+        onRefresh: () => controller.fetchCategories(),
+        child:  ListView.builder(
                       physics: const BouncingScrollPhysics(),
                       padding: EdgeInsets.symmetric(
                         horizontal: padding.left,
@@ -83,8 +86,10 @@ class CategoriesScreen extends StatelessWidget {
                               controller.deleteCategory(category.id),
                         );
                       },
-                    )
-                  : GridView.builder(
+           )   )
+                  :MyRefreshIndicator(
+        onRefresh: () => controller.fetchCategories(),
+        child:  GridView.builder(
                       physics: const BouncingScrollPhysics(),
                       padding: padding,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -107,11 +112,13 @@ class CategoriesScreen extends StatelessWidget {
                               controller.deleteCategory(category.id),
                         );
                       },
-                    );
+                    )  );
             }),
+          
           ),
         ],
       ),
+      
     );
   }
 
