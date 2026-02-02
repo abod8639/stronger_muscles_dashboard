@@ -33,7 +33,7 @@ Widget buildProductFormSheetModernTextField(
             labelText: label,
             prefixIcon: Icon(
               icon,
-              color: AppColors.primary.withValues(alpha: 0.7),
+              color: AppColors.accent .withValues(alpha: 0.7),
               size: responsive.iconSize,
             ),
             filled: true,

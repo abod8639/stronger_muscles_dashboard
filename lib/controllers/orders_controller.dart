@@ -14,6 +14,12 @@ class OrdersController extends GetxController {
   final RxString errorMessage = ''.obs;
   final RxString searchQuery = ''.obs;
 
+  // Statistics Getters
+  int get totalOrders => _allOrders.length;
+  double get totalRevenue => _allOrders.fold(0, (sum, order) => sum + order.totalAmount);
+  int get pendingOrders => _allOrders.where((o) => o.status == OrderStatus.pending).length;
+  int get deliveredOrders => _allOrders.where((o) => o.status == OrderStatus.delivered).length;
+
   // نستخدم String ليتوافق مع الـ 'all' ومع الـ IDs الخاصة بالحالات
   final RxString selectedStatusId = 'all'.obs;
 

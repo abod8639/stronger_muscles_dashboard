@@ -92,7 +92,7 @@ class RecentOrdersList extends StatelessWidget {
                   crossAxisCount: crossAxisCount,
                   crossAxisSpacing: res.itemSpacing,
                   mainAxisSpacing: res.itemSpacing,
-                  childAspectRatio: childAspectRatio,
+                  mainAxisExtent: 180,
                 ),
                 itemCount: orders.length,
                 itemBuilder: (context, index) {

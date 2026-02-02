@@ -53,9 +53,9 @@ class ResponsiveLayout {
   }
 
   double getBodyFontSize() {
-    if (isMobile) return 13;
-    if (isTablet) return 14;
-    return 15;
+    if (isMobile) return 14;
+    if (isTablet) return 16;
+    return 18;
   }
 
   // الحصول على ارتفاع الكارد المناسب

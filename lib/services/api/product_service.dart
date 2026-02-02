@@ -8,34 +8,89 @@ class ProductService extends ApiBase {
   // جلب المنتجات (Admin)
   Future<List<dynamic>> fetchProducts() async {
     try {
-      final response = await http
-          .get(
-            Uri.parse(
-              '${ApiConfigController().baseUrl.value}${ApiConfig.adminProducts}',
-            ),
-            headers: getAuthHeaders(),
-          )
-          .timeout(
-            const Duration(seconds: ApiBase.timeoutSeconds),
-            onTimeout: () => http.Response('Connection timeout', 408),
-          );
+      List<dynamic> allProducts = [];
+      int currentPage = 1;
+      int lastPage = 1;
 
-      // Handle auth errors
-      handleAuthErrors(response);
+      do {
+        final response = await http
+            .get(
+              Uri.parse(
+                '${ApiConfigController().baseUrl.value}${ApiConfig.adminProducts}?page=$currentPage',
+              ),
+              headers: getAuthHeaders(),
+            )
+            .timeout(
+              const Duration(seconds: ApiBase.timeoutSeconds),
+              onTimeout: () => http.Response('Connection timeout', 408),
+            );
 
-      if (response.statusCode == 200) {
-        final decoded = json.decode(response.body);
-        if (decoded is Map && decoded.containsKey('data')) {
-          var data = decoded['data'];
-          if (data is Map && data.containsKey('data')) {
-            return data['data'] ?? [];
+        // Handle auth errors
+        handleAuthErrors(response);
+
+        if (response.statusCode == 200) {
+          final decoded = json.decode(response.body);
+          List<dynamic> pageItems = [];
+
+          if (decoded is Map) {
+            // استخراج معلومات الصفحات (Pagination)
+            if (decoded.containsKey('meta') && decoded['meta'] is Map) {
+              final meta = decoded['meta'];
+              if (meta.containsKey('last_page')) {
+                lastPage = meta['last_page'];
+              }
+            } else if (decoded.containsKey('last_page')) {
+              lastPage = decoded['last_page'];
+            }
+
+            // استخراج البيانات
+            if (decoded.containsKey('data')) {
+              var data = decoded['data'];
+              if (data is List) {
+                pageItems = data;
+              } else if (data is Map &&
+                  data.containsKey('data') &&
+                  data['data'] is List) {
+                pageItems = data['data'];
+
+                // حالة خاصة: أحياناً تكون معلومات الصفحات داخل الكائن data
+                if (data.containsKey('last_page')) {
+                  lastPage = data['last_page'];
+                } else if (data.containsKey('meta') && data['meta'] is Map) {
+                  final meta = data['meta'];
+                  if (meta.containsKey('last_page')) {
+                    lastPage = meta['last_page'];
+                  }
+                }
+              }
+            }
+          } else if (decoded is List) {
+            // في حال كانت الاستجابة قائمة مباشرة بدون صفحات
+            pageItems = decoded;
+            lastPage = 1;
           }
-          return data is List ? data : [];
+
+          allProducts.addAll(pageItems);
+
+          // التحقق إذا لم يكن هناك صفحات (لتجنب الحلقات اللانهائية في حال الخطأ)
+          if (decoded is! Map ||
+              (!decoded.containsKey('meta') && !decoded.containsKey('links'))) {
+            // إذا لم نجد مؤشرات للصفحات، نفترض أنها صفحة واحدة فقط
+            if (currentPage == 1 && lastPage == 1) {
+              // keep default
+            } else {
+              // إذا لم نجد meta ولكن قمنا بزيادة lastPage سابقاً، نستمر
+            }
+          }
+        } else {
+          throw Exception(
+              'فشل في جلب المنتجات (صفحة $currentPage): ${response.statusCode}');
         }
-        return decoded is List ? decoded : [];
-      } else {
-        throw Exception('فشل في جلب المنتجات: ${response.statusCode}');
-      }
+
+        currentPage++;
+      } while (currentPage <= lastPage);
+
+      return allProducts;
     } catch (e) {
       print('خطأ في جلب المنتجات: $e');
       rethrow;

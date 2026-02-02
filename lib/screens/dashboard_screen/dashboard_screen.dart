@@ -171,7 +171,6 @@ Widget buildMainIndicatorsSection(ResponsiveLayout res) {
         ),
         itemCount: 3,
         itemBuilder: (context, index) {
-          // إضافة انيميشن بسيط عند ظهور الكروت
           return AnimatedContainer(
             duration: Duration(milliseconds: 300 + (index * 100)),
             curve: Curves.easeOut,

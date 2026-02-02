@@ -7,12 +7,13 @@ import '../repositories/index.dart';
 import '../services/api_service.dart';
 
 class ProductsController extends GetxController {
+  
   late final ProductRepository _productRepository;
   late final CategoryRepository _categoryRepository;
   RxList<String> productFlavors = <String>[].obs;
   late final ApiService _apiService;
   RxBool isFeatured = false.obs;
-  // final RxList<String> imageUrls = <String>[].obs;
+
 
   // --- States ---
   final isLoading = true.obs;
@@ -267,14 +268,12 @@ class ProductsController extends GetxController {
   }
 
 
-/// الدالة الرئيسية لحفظ المنتج
   Future<void> saveProduct({
     required GlobalKey<FormState> formKey,
     required String categoryId,
     required List<String> productImages,
     ProductModel? existingProduct,
   }) async {
-    // 1. التحقق من صحة البيانات (Validation)
     if (!formKey.currentState!.validate()) return;
 
     if (productImages.isEmpty) {
@@ -290,7 +289,6 @@ class ProductsController extends GetxController {
     try {
       isSaving.value = true;
 
-      // 2. تجميع البيانات في الكائن
       final productData = ProductModel(
         id: existingProduct?.id ??
             'PROD-${DateTime.now().millisecondsSinceEpoch}',
@@ -312,20 +310,23 @@ class ProductsController extends GetxController {
         weight: productWeight.value,
       );
 
-      // 3. التنفيذ (إضافة أو تحديث)
       if (existingProduct == null) {
         await addProduct(productData);
       } else {
         await updateProduct(productData);
       }
 
-      Get.back(); // العودة بعد النجاح
+      Get.back(); 
       debugPrint("======== success ========");
       debugPrint(productData.toJson().toString());
       _showSuccess('تم بنجاح', 'تم حفظ بيانات المنتج بنجاح');
     } catch (e) {
+      debugPrint("======== error ========");
+      debugPrint(e.toString());
       _showError('خطأ', 'حدث خطأ أثناء حفظ المنتج: $e');
     } finally {
+      debugPrint("======== finally ========");
+      // debugPrint(productData.toJson().toString());
       isSaving.value = false;
     }
   }

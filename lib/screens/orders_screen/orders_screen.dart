@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
 import 'package:stronger_muscles_dashboard/screens/components/top_section.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/order_list_tile.dart';
@@ -11,6 +12,7 @@ import '../components/enhanced_error_widget.dart';
 import '../../controllers/orders_controller.dart';
 import '../components/index.dart';
 import '../../config/responsive.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'order_details_screen.dart';
 
 class OrdersScreen extends StatelessWidget {
@@ -33,10 +35,11 @@ class OrdersScreen extends StatelessWidget {
           TopSection(
             children: [
               CustomSearchBar(
-                hintText: 'ابحث عن الطلبات بالرقم أو رقم الطلب...',
+                hintText: 'ابحث عن الطلبات بالرقم أو اسم العميل...',
                 padding: responsive.defaultPadding,
                 onSearch: (value) => controller.onSearchChanged(value),
               ),
+
               Obx(
                 () => HorizontalChipsSelector(
                   items: controller.statusItems,
@@ -48,7 +51,9 @@ class OrdersScreen extends StatelessWidget {
               ),
             ],
           ),
-          // buildStatusTabs(controller),
+          const SizedBox(height: 8),
+                    if(responsive.isDesktop)
+          GlassContainer(child: _buildStatsSection(controller, responsive)),
           const SizedBox(height: 8),
           Expanded(
             child: Obx(() {
@@ -77,28 +82,106 @@ class OrdersScreen extends StatelessWidget {
 
               return MyRefreshIndicator(
                 onRefresh: () => controller.fetchOrders(),
-                child: ListView.builder(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: responsive.defaultPadding.left,
-                    vertical: 10,
+                child: AnimationLimiter(
+                  child: GridView.builder(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: responsive.defaultPadding.left,
+                      vertical: 10,
+                    ),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: responsive.getOrdersColumns(),
+                      crossAxisSpacing: responsive.itemSpacing,
+                      mainAxisSpacing: responsive.itemSpacing,
+                      mainAxisExtent: 180, // Fixed height for consistency
+                    ),
+                    itemCount: controller.filteredOrders.length,
+                    itemBuilder: (context, index) {
+                      final order = controller.filteredOrders[index];
+                      return AnimationConfiguration.staggeredGrid(
+                        position: index,
+                        duration: const Duration(milliseconds: 375),
+                        columnCount: responsive.getOrdersColumns(),
+                        child: ScaleAnimation(
+                          child: FadeInAnimation(
+                            child: OrderListTile(
+                              index: index,
+                              order: order,
+                              onTap: () {
+                                Get.to(() => OrderDetailsScreen(order: order));
+                              },
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                  itemCount: controller.filteredOrders.length,
-                  itemBuilder: (context, index) {
-                    final order = controller.filteredOrders[index];
-                    return OrderListTile(
-                      index: index,
-                      order: order,
-                      onTap: () {
-                        Get.to(() => OrderDetailsScreen(order: order));
-                      },
-                    );
-                  },
                 ),
               );
             }),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildStatsSection(OrdersController controller, ResponsiveLayout responsive) {
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Obx(() {
+        if (controller.isLoading.value && controller.totalOrders == 0) {
+          return const SizedBox.shrink();
+        }
+        return GridView.count(
+          shrinkWrap: true,
+
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount:4 , 
+          crossAxisSpacing: 10,
+          // mainAxisSpacing: 10,
+          childAspectRatio:  1.45,
+
+
+          children: [
+            PremiumIndicatorCard(
+              title: 'إجمالي الطلبات',
+              value: controller.totalOrders.toString(),
+              trend: '+12%',
+              trendUp: true,
+              accentColor: Colors.blue,
+              chartColor: Colors.blueAccent,
+              icon: Icons.shopping_basket_rounded,
+            ),
+            PremiumIndicatorCard(
+              title: 'قيد الانتظار',
+              value: controller.pendingOrders.toString(),
+              trend: '-2%',
+              trendUp: false,
+              accentColor: Colors.orange,
+              chartColor: Colors.orangeAccent,
+              icon: Icons.timer_rounded,
+            ),
+            PremiumIndicatorCard(
+              title: 'تم التوصيل',
+              value: controller.deliveredOrders.toString(),
+              trend: '+5%',
+              trendUp: true,
+              accentColor: Colors.green,
+              chartColor: Colors.greenAccent,
+              icon: Icons.check_circle_rounded,
+            ),
+            PremiumIndicatorCard(
+              title: 'الإيرادات',
+              value: controller.totalRevenue.toStringAsFixed(0),
+              subtitle: 'SAR',
+              trend: '+18%',
+              trendUp: true,
+              accentColor: Colors.purple,
+              chartColor: Colors.purpleAccent,
+              icon: Icons.payments_rounded,
+            ),
+          ],
+        );
+      }),
     );
   }
 }
