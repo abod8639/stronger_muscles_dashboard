@@ -19,8 +19,8 @@ class CategoryFormSheet extends StatefulWidget {
 }
 
 class _CategoryFormSheetState extends State<CategoryFormSheet> {
-  final controller = Get.find<CategoriesController>();
 
+  final controller = Get.find<CategoriesController>();
   final _formKey = GlobalKey<FormState>();
 
   bool _isIdFieldEnabled = false;
@@ -317,4 +317,6 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
 
     if (success) Get.back();
   }
+
+
 }

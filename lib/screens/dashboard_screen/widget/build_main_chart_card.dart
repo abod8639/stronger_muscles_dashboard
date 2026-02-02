@@ -60,6 +60,7 @@ Widget buildMainChartCard(ResponsiveLayout res) {
                 ),
               ],
             ),
+            
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
@@ -78,7 +79,9 @@ Widget buildMainChartCard(ResponsiveLayout res) {
             ),
           ],
         ),
+
         const SizedBox(height: 24),
+
         SizedBox(
           height: 400,
           child: EnhancedLineChartWidget(

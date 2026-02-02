@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/screens/categories_screen/CategoryFormPage.dart';
 import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
 import 'package:stronger_muscles_dashboard/screens/components/enhanced_error_widget.dart';
 import 'package:stronger_muscles_dashboard/screens/components/top_section.dart';
@@ -77,11 +78,13 @@ class CategoriesScreen extends StatelessWidget {
                           return CategoryListItem(
                             category: category,
                             index: index,
-                            onEdit: () => showCategoryForm(
-                              context,
-                              controller,
-                              category: category,
-                            ),
+                            onEdit: () => Get.to(() => CategoryFormPage(category: category)),
+
+                            // onEdit: () => showCategoryForm(
+                            //   context,
+                            //   controller,
+                            //   category: category,
+                            // ),
                             onDelete: () =>
                                 controller.deleteCategory(category.id),
                           );
@@ -104,11 +107,12 @@ class CategoriesScreen extends StatelessWidget {
                           final category = controller.filteredCategories[index];
                           return CategoryGridItem(
                             category: category,
-                            onEdit: () => showCategoryForm(
-                              context,
-                              controller,
-                              category: category,
-                            ),
+                            onEdit: () => Get.to(() => CategoryFormPage(category: category)),
+                            //  showCategoryForm(
+                            // context,
+                            // controller,
+                            // category: category,
+                            // ),
                             onDelete: () =>
                                 controller.deleteCategory(category.id),
                           );

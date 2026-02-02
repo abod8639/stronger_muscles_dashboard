@@ -9,6 +9,7 @@ import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_header_status.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_main_chart_card.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_main_indicators_section.dart';
+import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_no_data_state.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_period_selector.dart';
 import '../../config/responsive.dart';
 import '../../config/app_colors.dart';
@@ -49,6 +50,7 @@ class DashboardScreen extends GetView<DashboardController> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+
                   buildHeaderStatus(),
                   SizedBox(height: res.itemSpacing * 2),
 
@@ -61,6 +63,7 @@ class DashboardScreen extends GetView<DashboardController> {
                   if (controller.orders.isEmpty)
                     buildNoDataState(res)
                   else ...[
+
                     buildMainIndicatorsSection(res),
                     SizedBox(height: res.itemSpacing * 3),
 
@@ -79,8 +82,7 @@ class DashboardScreen extends GetView<DashboardController> {
     );
   }
 }
-
-List<FlSpot> generateChartSpots() {
+  List<FlSpot> generateChartSpots() {
   final controller = Get.find<DashboardController>();
 
   final random = List.generate(15, (i) {
