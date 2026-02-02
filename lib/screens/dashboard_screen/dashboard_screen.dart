@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_app_bar.dart';
-import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_bottom_section.dart';
+import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_categories_section.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_dashboard_title.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_error_state.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_header_status.dart';
@@ -11,6 +11,7 @@ import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_main_indicators_section.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_no_data_state.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_period_selector.dart';
+import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_recent_orders.dart';
 import '../../config/responsive.dart';
 import '../../config/app_colors.dart';
 import '../../controllers/dashboard_controller.dart';
@@ -65,12 +66,18 @@ class DashboardScreen extends GetView<DashboardController> {
                   else ...[
 
                     buildMainIndicatorsSection(res),
+
                     SizedBox(height: res.itemSpacing * 3),
 
                     buildChartsSection(res),
+
                     SizedBox(height: res.itemSpacing * 3),
 
-                    buildBottomSection(res),
+                    buildRecentOrders(res),
+
+                    SizedBox(height: res.itemSpacing * 2),
+
+                    buildCategoriesSection(res),
                   ],
                   SizedBox(height: res.itemSpacing * 3),
                 ],
