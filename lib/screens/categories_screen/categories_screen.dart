@@ -26,7 +26,7 @@ class CategoriesScreen extends StatelessWidget {
       backgroundColor: Colors.transparent,
       appBar: BaseAppBar(
         title: 'إدارة التصنيفات',
-        onPressed: () => _showCategoryForm(context, controller),
+        onPressed: () => showCategoryForm(context, controller),
         icon: Icons.add_circle_outline,
       ),
       body: Column(
@@ -77,7 +77,7 @@ class CategoriesScreen extends StatelessWidget {
                         return CategoryListItem(
                           category: category,
                           index: index,
-                          onEdit: () => _showCategoryForm(
+                          onEdit: () => showCategoryForm(
                             context,
                             controller,
                             category: category,
@@ -103,7 +103,7 @@ class CategoriesScreen extends StatelessWidget {
                         final category = controller.filteredCategories[index];
                         return CategoryGridItem(
                           category: category,
-                          onEdit: () => _showCategoryForm(
+                          onEdit: () => showCategoryForm(
                             context,
                             controller,
                             category: category,
@@ -122,7 +122,8 @@ class CategoriesScreen extends StatelessWidget {
     );
   }
 
-  void _showCategoryForm(
+}
+  void showCategoryForm(
     BuildContext context,
     CategoriesController controller, {
     CategoryModel? category,
@@ -135,4 +136,3 @@ class CategoriesScreen extends StatelessWidget {
           CategoryFormSheet( category: category),
     );
   }
-}

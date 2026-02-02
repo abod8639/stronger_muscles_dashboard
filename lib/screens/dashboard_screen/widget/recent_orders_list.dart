@@ -21,9 +21,9 @@ class RecentOrdersList extends StatelessWidget {
         ? 1
         : (res.screenWidth < 1200 ? 2 : 3);
 
-    final double childAspectRatio = isSmallScreen
-        ? 1.5
-        : (res.screenWidth < 1400 ? 1.6 : 1.8);
+    // final double childAspectRatio = isSmallScreen
+    //     ? 1.5
+    //     : (res.screenWidth < 1400 ? 1.6 : 1.8);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

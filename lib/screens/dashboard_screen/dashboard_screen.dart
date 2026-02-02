@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:stronger_muscles_dashboard/controllers/categories_controller.dart';
+import 'package:stronger_muscles_dashboard/screens/categories_screen/categories_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_dashboard_title.dart';
@@ -9,6 +11,7 @@ import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/error_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/no_data_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/components/horizontal_chips_selector.dart';
+import 'package:stronger_muscles_dashboard/screens/orders_screen/orders_screen.dart';
 import '../../config/responsive.dart';
 import '../../config/app_colors.dart';
 import '../../controllers/dashboard_controller.dart';
@@ -24,7 +27,6 @@ class DashboardScreen extends GetView<DashboardController> {
 
     return Scaffold(
       backgroundColor: AppColorsExtended.darkBg.withAlpha(100),
-      // backgroundColor: Colors.transparent,
       appBar: buildAppBar(),
       body: Obx(() {
         if (!controller.isConnected.value && controller.orders.isEmpty) {
@@ -38,10 +40,6 @@ class DashboardScreen extends GetView<DashboardController> {
         }
 
         return MyRefreshIndicator(
-          // backgroundColor: AppColorsExtended.cardBg,
-          // backgroundColor: Colors.transparent,
-          // color: AppColorsExtended.cyanAccent,
-          // color: Colors.transparent,
           onRefresh: () => controller.fetchDashboardData(),
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
@@ -53,29 +51,26 @@ class DashboardScreen extends GetView<DashboardController> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+
                   buildHeaderStatus(),
                   SizedBox(height: res.itemSpacing * 2),
 
-                  // عنوان رئيسي جذاب
                   buildDashboardTitle(res),
                   SizedBox(height: res.itemSpacing * 2),
 
-                  // فترة المراقبة
                   buildPeriodSelector(res),
                   SizedBox(height: res.itemSpacing * 3),
 
                   if (controller.orders.isEmpty)
                     buildNoDataState(res)
                   else ...[
-                    // البطاقات الرئيسية للمؤشرات
+
                     buildMainIndicatorsSection(res),
                     SizedBox(height: res.itemSpacing * 3),
 
-                    // الرسوم البيانية
                     buildChartsSection(res),
                     SizedBox(height: res.itemSpacing * 3),
 
-                    // الطلبات الأخيرة والفئات
                     buildBottomSection(res),
                   ],
                   SizedBox(height: res.itemSpacing * 3),
@@ -89,7 +84,7 @@ class DashboardScreen extends GetView<DashboardController> {
   }
 }
 
-Widget buildHeaderStatus() {
+  Widget buildHeaderStatus() {
   final controller = Get.find<DashboardController>();
   return ConnectionStatusBar(
     isConnected: controller.isConnected.value,
@@ -98,7 +93,7 @@ Widget buildHeaderStatus() {
   );
 }
 
-Widget buildPeriodSelector(ResponsiveLayout res) {
+  Widget buildPeriodSelector(ResponsiveLayout res) {
   final controller = Get.find<DashboardController>();
 
   return Obx(
@@ -114,7 +109,7 @@ Widget buildPeriodSelector(ResponsiveLayout res) {
   );
 }
 
-Widget buildSectionTitle(String title, ResponsiveLayout res) {
+  Widget buildSectionTitle(String title, ResponsiveLayout res) {
   return Padding(
     padding: EdgeInsets.only(bottom: res.itemSpacing),
     child: Row(
@@ -142,7 +137,7 @@ Widget buildSectionTitle(String title, ResponsiveLayout res) {
   );
 }
 
-Widget buildMainIndicatorsSection(ResponsiveLayout res) {
+  Widget buildMainIndicatorsSection(ResponsiveLayout res) {
   final bool isSmallScreen = res.isMobile;
 
   final int crossAxisCount = isSmallScreen
@@ -182,32 +177,8 @@ Widget buildMainIndicatorsSection(ResponsiveLayout res) {
   );
 }
 
-// Widget _buildLiveStatusBadge() {
-//   return Container(
-//     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-//     decoration: BoxDecoration(
-//       color: Colors.greenAccent.withOpacity(0.1),
-//       borderRadius: BorderRadius.circular(20),
-//       border: Border.all(color: Colors.greenAccent.withOpacity(0.2)),
-//     ),
-//     child: Row(
-//       children: [
-//         Container(
-//           width: 8, height: 8,
-//           decoration: const BoxDecoration(color: Colors.greenAccent, shape: BoxShape.circle),
-//         ),
-//         const SizedBox(width: 8),
-//         const Text(
-//           'تحديث مباشر',
-//           style: TextStyle(color: Colors.greenAccent, fontSize: 10, fontWeight: FontWeight.bold),
-//         ),
-//       ],
-//     ),
-//   );
-// }
-//
 
-Widget buildBottomSection(ResponsiveLayout res) {
+  Widget buildBottomSection(ResponsiveLayout res) {
   return Column(
     children: [
       buildRecentOrders(res),
@@ -217,26 +188,51 @@ Widget buildBottomSection(ResponsiveLayout res) {
   );
 }
 
-Widget buildRecentOrders(ResponsiveLayout res) {
+  Widget buildRecentOrders(ResponsiveLayout res ) {
   final controller = Get.find<DashboardController>();
+  // final categorController = Get.find<CategoriesController>();
 
-  return RecentOrdersList(
-    orders: controller.orders.take(5).toList(),
-    onSeeAll: () => Get.toNamed('/orders'),
+  return Builder(
+    builder: (context) {
+      return RecentOrdersList(
+        orders: controller.orders.take(res.isMobile ? 3 : 6).toList(),
+        onSeeAll: () => 
+        // showCategoryForm(
+        //  context,
+        //  categorController,
+        //  category: category,
+        //  ),
+        
+         Get.to(OrdersScreen()) ,
+      );
+    }
   );
 }
 
-Widget buildCategoriesSection(ResponsiveLayout res) {
-  final controller = Get.find<DashboardController>();
+  Widget buildCategoriesSection(ResponsiveLayout res) {
+  final dashboardController = Get.find<DashboardController>();
+  final categorController = Get.find<CategoriesController>();
 
-  if (controller.categories.isEmpty) return const SizedBox();
-  return CategoriesGrid(
-    categories: controller.categories,
-    onSeeAll: () => Get.toNamed('/categories'),
+
+  if (dashboardController.categories.isEmpty) return const SizedBox();
+  return Builder(
+    builder: (context) {
+      return CategoriesGrid(
+        categories: dashboardController.categories,
+        onSeeAll: () => 
+        // Get.to(CategoriesScreen())
+        showCategoryForm(
+        context,
+        categorController,
+        category: dashboardController.categories.first ,
+        ),
+        
+      );
+    }
   );
 }
 
-Widget buildErrorState() {
+  Widget buildErrorState() {
   final controller = Get.find<DashboardController>();
 
   return ErrorScreen(
@@ -247,7 +243,7 @@ Widget buildErrorState() {
   );
 }
 
-Widget buildNoDataState(ResponsiveLayout res) {
+  Widget buildNoDataState(ResponsiveLayout res) {
   return Padding(
     padding: EdgeInsets.symmetric(horizontal: res.defaultPadding.left),
     child: const NoDataScreen(
@@ -257,7 +253,7 @@ Widget buildNoDataState(ResponsiveLayout res) {
   );
 }
 
-List<FlSpot> generateChartSpots() {
+  List<FlSpot> generateChartSpots() {
   final controller = Get.find<DashboardController>();
 
   final random = List.generate(15, (i) {

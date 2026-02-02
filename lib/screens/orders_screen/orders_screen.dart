@@ -56,7 +56,7 @@ class OrdersScreen extends StatelessWidget {
           const SizedBox(height: 8),
 
           if (responsive.isDesktop)
-            GlassContainer(child: buildStatsSection(controller, responsive)),
+            GlassContainer(child: buildStatsSection()),
 
           const SizedBox(height: 8),
           Expanded(

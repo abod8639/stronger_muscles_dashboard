@@ -70,9 +70,7 @@ class DashboardController extends GetxController {
     _userRepository = UserRepository(_apiService);
   }
 
-  // --- Logic الدوال ---
 
-  /// التحقق من الاتصال وبدء جلب البيانات لأول مرة
   Future<void> _checkInitialConnection() async {
     try {
       isLoading.value = true;
@@ -96,7 +94,6 @@ class DashboardController extends GetxController {
     }
   }
 
-  /// جلب كافة بيانات لوحة التحكم
   Future<void> fetchDashboardData() async {
     try {
       isLoading.value = true;
@@ -125,7 +122,6 @@ class DashboardController extends GetxController {
     }
   }
 
-  /// دالة فرعية لجلب إحصائيات المستخدمين
   Future<dynamic> _fetchUsersStats() async {
     try {
       final usersStats = await _userRepository.getUsersStats();
@@ -143,7 +139,6 @@ class DashboardController extends GetxController {
     }
   }
 
-  /// حساب الإحصائيات بناءً على البيانات المحملة
   void _calculateStatistics() {
     // 1. إحصائيات الطلبات
     pendingOrders.value = orders
@@ -182,14 +177,13 @@ class DashboardController extends GetxController {
         .length;
   }
 
-  /// تغيير الفترة الزمنية يدوياً (إذا لزم الأمر)
   void updatePeriod(String periodId) {
     selectPeriod.value = periodId;
     // الـ Worker (ever) سيتكفل بالباقي
   }
 
-  /// إعادة المحاولة عند حدوث خطأ
   Future<void> retryConnection() async {
     await _checkInitialConnection();
   }
+
 }

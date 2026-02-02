@@ -1,14 +1,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/controllers/orders_controller.dart';
 import 'package:stronger_muscles_dashboard/screens/components/premium_indicator_card.dart';
 
-Widget buildStatsSection(
-    OrdersController controller,
-    ResponsiveLayout responsive,
-  ) {
+Widget buildStatsSection() {
+  final controller = Get.find<OrdersController>();
     return Padding(
       padding: const EdgeInsets.all(10),
       child: Obx(() {
