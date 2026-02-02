@@ -5,12 +5,12 @@ import 'package:stronger_muscles_dashboard/controllers/categories_controller.dar
 import 'package:stronger_muscles_dashboard/screens/categories_screen/categories_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_app_bar.dart';
+import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_bottom_section.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_dashboard_title.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_header_status.dart';
-import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_indicator_card.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_main_chart_card.dart';
+import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_main_indicators_section.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_period_selector.dart';
-import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_section_title.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/error_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/no_data_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/orders_screen.dart';
@@ -84,59 +84,6 @@ class DashboardScreen extends GetView<DashboardController> {
       }),
     );
   }
-}
-
-
-
-  Widget buildMainIndicatorsSection(ResponsiveLayout res) {
-  final bool isSmallScreen = res.isMobile;
-
-  final int crossAxisCount = isSmallScreen
-      ? 1
-      : (res.screenWidth < 1200 ? 2 : 3);
-
-  final double childAspectRatio = isSmallScreen
-      ? 1.5
-      : (res.screenWidth < 1400 ? 1.1 : 1.5);
-
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      buildSectionTitle('المؤشرات الرئيسية', res),
-
-      SizedBox(height: res.itemSpacing),
-
-      GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: crossAxisCount,
-          childAspectRatio: childAspectRatio,
-          crossAxisSpacing: res.itemSpacing * 1.5,
-          mainAxisSpacing: res.itemSpacing * 1.5,
-        ),
-        itemCount: 3,
-        itemBuilder: (context, index) {
-          return AnimatedContainer(
-            duration: Duration(milliseconds: 300 + (index * 100)),
-            curve: Curves.easeOut,
-            child: buildIndicatorCard(index),
-          );
-        },
-      ),
-    ],
-  );
-}
-
-
-  Widget buildBottomSection(ResponsiveLayout res) {
-  return Column(
-    children: [
-      buildRecentOrders(res),
-      SizedBox(height: res.itemSpacing * 2),
-      buildCategoriesSection(res),
-    ],
-  );
 }
 
   Widget buildRecentOrders(ResponsiveLayout res ) {
