@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
 import 'package:stronger_muscles_dashboard/screens/components/top_section.dart';
+import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_stats_section.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/order_list_tile.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_empty_state.dart';
 import 'package:stronger_muscles_dashboard/screens/components/base_app_bar.dart';
@@ -51,9 +52,12 @@ class OrdersScreen extends StatelessWidget {
               ),
             ],
           ),
+
           const SizedBox(height: 8),
-                    if(responsive.isDesktop)
-          GlassContainer(child: _buildStatsSection(controller, responsive)),
+
+          if (responsive.isDesktop)
+            GlassContainer(child: buildStatsSection(controller, responsive)),
+
           const SizedBox(height: 8),
           Expanded(
             child: Obx(() {
@@ -124,64 +128,5 @@ class OrdersScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatsSection(OrdersController controller, ResponsiveLayout responsive) {
-    return Padding(
-      padding: const EdgeInsets.all(10),
-      child: Obx(() {
-        if (controller.isLoading.value && controller.totalOrders == 0) {
-          return const SizedBox.shrink();
-        }
-        return GridView.count(
-          shrinkWrap: true,
 
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount:4 , 
-          crossAxisSpacing: 10,
-          // mainAxisSpacing: 10,
-          childAspectRatio:  1.45,
-
-
-          children: [
-            PremiumIndicatorCard(
-              title: 'إجمالي الطلبات',
-              value: controller.totalOrders.toString(),
-              trend: '+12%',
-              trendUp: true,
-              accentColor: Colors.blue,
-              chartColor: Colors.blueAccent,
-              icon: Icons.shopping_basket_rounded,
-            ),
-            PremiumIndicatorCard(
-              title: 'قيد الانتظار',
-              value: controller.pendingOrders.toString(),
-              trend: '-2%',
-              trendUp: false,
-              accentColor: Colors.orange,
-              chartColor: Colors.orangeAccent,
-              icon: Icons.timer_rounded,
-            ),
-            PremiumIndicatorCard(
-              title: 'تم التوصيل',
-              value: controller.deliveredOrders.toString(),
-              trend: '+5%',
-              trendUp: true,
-              accentColor: Colors.green,
-              chartColor: Colors.greenAccent,
-              icon: Icons.check_circle_rounded,
-            ),
-            PremiumIndicatorCard(
-              title: 'الإيرادات',
-              value: controller.totalRevenue.toStringAsFixed(0),
-              subtitle: 'SAR',
-              trend: '+18%',
-              trendUp: true,
-              accentColor: Colors.purple,
-              chartColor: Colors.purpleAccent,
-              icon: Icons.payments_rounded,
-            ),
-          ],
-        );
-      }),
-    );
-  }
 }
