@@ -13,7 +13,6 @@ import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_period_selector.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/error_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/no_data_screen.dart';
-import 'package:stronger_muscles_dashboard/screens/orders_screen/orders_screen.dart';
 import '../../config/responsive.dart';
 import '../../config/app_colors.dart';
 import '../../controllers/dashboard_controller.dart';
@@ -85,28 +84,6 @@ class DashboardScreen extends GetView<DashboardController> {
     );
   }
 }
-
-  Widget buildRecentOrders(ResponsiveLayout res ) {
-  final controller = Get.find<DashboardController>();
-  // final categorController = Get.find<CategoriesController>();
-
-  return Builder(
-    builder: (context) {
-      return RecentOrdersList(
-        orders: controller.orders.take(res.isMobile ? 3 : 6).toList(),
-        onSeeAll: () => 
-        // showCategoryForm(
-        //  context,
-        //  categorController,
-        //  category: category,
-        //  ),
-        
-         Get.to(OrdersScreen()) ,
-      );
-    }
-  );
-}
-
   Widget buildCategoriesSection(ResponsiveLayout res) {
   final dashboardController = Get.find<DashboardController>();
   final categorController = Get.find<CategoriesController>();
