@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:stronger_muscles_dashboard/config/responsive.dart';
+import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_section_title.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_address_section.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_detail_row.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_orderItem.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_section.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_summary_row.dart';
-import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/builds_section_title.dart';
 import 'package:stronger_muscles_dashboard/screens/components/base_app_bar.dart';
 import '../../models/order_model.dart';
 import '../../config/theme.dart';
@@ -18,6 +19,7 @@ class OrderDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final res = ResponsiveLayout(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final dateFormat = intl.DateFormat('yyyy-MM-dd HH:mm');
 
@@ -58,7 +60,7 @@ class OrderDetailsScreen extends StatelessWidget {
             const SizedBox(height: 16),
 
             // --- Customer Info ---
-            buildSectionTitle('معلومات العميل'),
+            buildSectionTitle('معلومات العميل', res),
             buildSection(
               child: Column(
                 children: [
@@ -99,7 +101,7 @@ class OrderDetailsScreen extends StatelessWidget {
             const SizedBox(height: 16),
 
             // --- Shipping Address ---
-            buildSectionTitle('عنوان الشحن'),
+            buildSectionTitle('عنوان الشحن', res),
             buildSection(
               child: buildAddressSection(order.shippingAddressSnapshot),
             ),
@@ -107,7 +109,7 @@ class OrderDetailsScreen extends StatelessWidget {
             const SizedBox(height: 16),
 
             // --- Order Items ---
-            buildSectionTitle('المنتجات'),
+            buildSectionTitle('المنتجات', res),
             buildSection(
               padding: EdgeInsets.zero,
               child: Column(
@@ -126,7 +128,7 @@ class OrderDetailsScreen extends StatelessWidget {
             const SizedBox(height: 16),
 
             // --- Order Summary ---
-            buildSectionTitle('ملخص الطلب'),
+            buildSectionTitle('ملخص الطلب', res),
             buildSection(
               child: Column(
                 children: [
@@ -159,7 +161,7 @@ class OrderDetailsScreen extends StatelessWidget {
 
             // --- Notes ---
             if (order.notes != null && order.notes!.isNotEmpty) ...[
-              buildSectionTitle('ملاحظات'),
+              buildSectionTitle('ملاحظات', res),
               buildSection(child: Text(order.notes!)),
               const SizedBox(height: 16),
             ],

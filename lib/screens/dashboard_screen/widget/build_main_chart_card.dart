@@ -6,6 +6,7 @@ import 'package:stronger_muscles_dashboard/config/app_colors.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/controllers/dashboard_controller.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/dashboard_screen.dart';
+import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_section_title.dart';
 
 Widget buildChartsSection(ResponsiveLayout res) {
   final isSmallScreen = res.isMobile;

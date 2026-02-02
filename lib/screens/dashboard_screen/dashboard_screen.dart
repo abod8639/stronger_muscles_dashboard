@@ -6,11 +6,13 @@ import 'package:stronger_muscles_dashboard/screens/categories_screen/categories_
 import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_dashboard_title.dart';
+import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_header_status.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_indicator_card.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_main_chart_card.dart';
+import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_period_selector.dart';
+import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_section_title.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/error_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/no_data_screen.dart';
-import 'package:stronger_muscles_dashboard/screens/components/horizontal_chips_selector.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/orders_screen.dart';
 import '../../config/responsive.dart';
 import '../../config/app_colors.dart';
@@ -84,58 +86,7 @@ class DashboardScreen extends GetView<DashboardController> {
   }
 }
 
-  Widget buildHeaderStatus() {
-  final controller = Get.find<DashboardController>();
-  return ConnectionStatusBar(
-    isConnected: controller.isConnected.value,
-    errorMessage: controller.errorMessage.value,
-    onRetry: () => controller.retryConnection(),
-  );
-}
 
-  Widget buildPeriodSelector(ResponsiveLayout res) {
-  final controller = Get.find<DashboardController>();
-
-  return Obx(
-    () => HorizontalChipsSelector(
-      items: controller.periodItems,
-      selectedId: controller.selectPeriod.value,
-      onSelect: (id) => controller.selectPeriod.value = id,
-      labelKey: 'name',
-      idKey: 'id',
-      showAllOption: false,
-      allLabel: 'الكل',
-    ),
-  );
-}
-
-  Widget buildSectionTitle(String title, ResponsiveLayout res) {
-  return Padding(
-    padding: EdgeInsets.only(bottom: res.itemSpacing),
-    child: Row(
-      children: [
-        Container(
-          width: 4,
-          height: 24,
-          decoration: BoxDecoration(
-            color: AppColorsExtended.cyanAccent,
-            borderRadius: BorderRadius.circular(2),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: res.getTitleFontSize(),
-            fontWeight: FontWeight.bold,
-            color: AppColorsExtended.textPrimary,
-            letterSpacing: 0.5,
-          ),
-        ),
-      ],
-    ),
-  );
-}
 
   Widget buildMainIndicatorsSection(ResponsiveLayout res) {
   final bool isSmallScreen = res.isMobile;
