@@ -5,12 +5,11 @@ import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicato
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_bottom_section.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_dashboard_title.dart';
+import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_error_state.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_header_status.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_main_chart_card.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_main_indicators_section.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_period_selector.dart';
-import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/error_screen.dart';
-import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/no_data_screen.dart';
 import '../../config/responsive.dart';
 import '../../config/app_colors.dart';
 import '../../controllers/dashboard_controller.dart';
@@ -82,28 +81,6 @@ class DashboardScreen extends GetView<DashboardController> {
     );
   }
 }
-
-  Widget buildErrorState() {
-  final controller = Get.find<DashboardController>();
-
-  return ErrorScreen(
-    title: 'فشل الاتصال',
-    message: controller.errorMessage.value,
-    onRetry: () => controller.retryConnection(),
-    icon: Icons.cloud_off_outlined,
-  );
-}
-
-  Widget buildNoDataState(ResponsiveLayout res) {
-  return Padding(
-    padding: EdgeInsets.symmetric(horizontal: res.defaultPadding.left),
-    child: const NoDataScreen(
-      title: 'لا توجد بيانات',
-      message: 'لم نتمكن من جلب أي بيانات حالياً.',
-    ),
-  );
-}
-
   List<FlSpot> generateChartSpots() {
   final controller = Get.find<DashboardController>();
 
