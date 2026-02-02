@@ -91,7 +91,7 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard>
                 children: [_buildIconHeader(), _buildTrendBadge()],
               ),
               const SizedBox(height: 20),
-      
+
               // Title & Subtitle
               Text(
                 widget.title.toUpperCase(),
@@ -110,9 +110,9 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard>
                     color: Colors.white.withOpacity(0.3),
                   ),
                 ),
-      
+
               const SizedBox(height: 12),
-      
+
               // Value with Gradient Mask
               ShaderMask(
                 shaderCallback: (bounds) => LinearGradient(
@@ -133,9 +133,9 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard>
                   ),
                 ),
               ),
-      
+
               const Spacer(),
-      
+
               // Mini Chart with Area Glow
               if (widget.chartSpots != null && widget.chartSpots!.isNotEmpty)
                 SizedBox(height: 35, child: LineChart(_buildChartData())),
@@ -155,11 +155,7 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard>
         shape: BoxShape.circle,
         border: Border.all(color: iconColor.withOpacity(0.2)),
       ),
-      child: Icon(
-        widget.icon ?? Icons.analytics,
-        color: iconColor,
-        size: 20,
-      ),
+      child: Icon(widget.icon ?? Icons.analytics, color: iconColor, size: 20),
     );
   }
 
@@ -225,4 +221,3 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard>
     );
   }
 }
-

@@ -7,13 +7,11 @@ import '../repositories/index.dart';
 import '../services/api_service.dart';
 
 class ProductsController extends GetxController {
-  
   late final ProductRepository _productRepository;
   late final CategoryRepository _categoryRepository;
   RxList<String> productFlavors = <String>[].obs;
   late final ApiService _apiService;
   RxBool isFeatured = false.obs;
-
 
   // --- States ---
   final isLoading = true.obs;
@@ -47,7 +45,6 @@ class ProductsController extends GetxController {
     'serving': TextEditingController(),
     'sessions': TextEditingController(),
   };
-
 
   @override
   void onInit() {
@@ -267,7 +264,6 @@ class ProductsController extends GetxController {
     );
   }
 
-
   Future<void> saveProduct({
     required GlobalKey<FormState> formKey,
     required String categoryId,
@@ -282,15 +278,16 @@ class ProductsController extends GetxController {
     }
 
     if (categoryId.isEmpty || categoryId == 'all') {
-       _showWarning('تنبيه', 'يرجى اختيار القسم');
-       return;
+      _showWarning('تنبيه', 'يرجى اختيار القسم');
+      return;
     }
 
     try {
       isSaving.value = true;
 
       final productData = ProductModel(
-        id: existingProduct?.id ??
+        id:
+            existingProduct?.id ??
             'PROD-${DateTime.now().millisecondsSinceEpoch}',
         name: textcontrollers['name']!.text.trim(),
         price: double.tryParse(textcontrollers['price']!.text) ?? 0.0,
@@ -316,7 +313,7 @@ class ProductsController extends GetxController {
         await updateProduct(productData);
       }
 
-      Get.back(); 
+      Get.back();
       debugPrint("======== success ========");
       debugPrint(productData.toJson().toString());
       _showSuccess('تم بنجاح', 'تم حفظ بيانات المنتج بنجاح');
@@ -332,15 +329,27 @@ class ProductsController extends GetxController {
   }
 
   // دوال مساعدة للرسائل (Helpers)
-  void _showWarning(String title, String msg) => Get.snackbar(title, msg, 
-      snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.orange, colorText: Colors.white);
+  void _showWarning(String title, String msg) => Get.snackbar(
+    title,
+    msg,
+    snackPosition: SnackPosition.BOTTOM,
+    backgroundColor: Colors.orange,
+    colorText: Colors.white,
+  );
 
-  void _showError(String title, String msg) => Get.snackbar(title, msg, 
-      snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red, colorText: Colors.white);
+  void _showError(String title, String msg) => Get.snackbar(
+    title,
+    msg,
+    snackPosition: SnackPosition.BOTTOM,
+    backgroundColor: Colors.red,
+    colorText: Colors.white,
+  );
 
-  void _showSuccess(String title, String msg) => Get.snackbar(title, msg, 
-      snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.green, colorText: Colors.white);
+  void _showSuccess(String title, String msg) => Get.snackbar(
+    title,
+    msg,
+    snackPosition: SnackPosition.BOTTOM,
+    backgroundColor: Colors.green,
+    colorText: Colors.white,
+  );
 }
-
-
-

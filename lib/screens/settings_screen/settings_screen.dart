@@ -6,8 +6,6 @@ import 'package:stronger_muscles_dashboard/controllers/auth_controller.dart';
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
-
-
   @override
   Widget build(BuildContext context) {
     // استدعاء الـ Controllers المتوفرة في الذاكرة

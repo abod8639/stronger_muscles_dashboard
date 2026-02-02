@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
@@ -20,4 +19,3 @@ Widget buildPeriodSelector(ResponsiveLayout res) {
     ),
   );
 }
-

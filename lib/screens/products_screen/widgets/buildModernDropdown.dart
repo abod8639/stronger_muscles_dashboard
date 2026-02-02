@@ -31,7 +31,6 @@ class CustomModernDropdown<T> extends StatelessWidget {
       padding: EdgeInsets.all(10),
       child: DropdownButtonFormField<T>(
         // focusColor: ,
-        
         initialValue: value,
         items: items,
         onChanged: onChanged,

@@ -7,7 +7,7 @@ import 'api/user_service.dart';
 
 class ApiService {
   static const int timeoutSeconds = ApiBase.timeoutSeconds;
-  
+
   final ApiBase _apiBase = ApiBase();
   final ProductService _productService = ProductService();
   final CategoryService _categoryService = CategoryService();
@@ -50,7 +50,10 @@ class ApiService {
   }
 
   // تحديث منتج موجود (Admin)
-  Future<Map<String, dynamic>> updateProduct(String id, Map<String, dynamic> data) {
+  Future<Map<String, dynamic>> updateProduct(
+    String id,
+    Map<String, dynamic> data,
+  ) {
     return _productService.updateProduct(id, data);
   }
 
@@ -70,7 +73,10 @@ class ApiService {
   }
 
   // تحديث تصنيف
-  Future<Map<String, dynamic>> updateCategory(String id, Map<String, dynamic> data) {
+  Future<Map<String, dynamic>> updateCategory(
+    String id,
+    Map<String, dynamic> data,
+  ) {
     return _categoryService.updateCategory(id, data);
   }
 

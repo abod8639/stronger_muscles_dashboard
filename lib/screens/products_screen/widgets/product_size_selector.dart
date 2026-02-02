@@ -39,15 +39,12 @@ class ProductSizeSelector extends StatelessWidget {
 
     return GlassContainer(
       child: Column(
-        
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Center(
             child: Text(
               "الأحجام / الأوزان المتوفرة لهذا المنتج",
-              style: TextStyle(
-                fontWeight: FontWeight.bold, 
-                fontSize: 14),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
           ),
           const SizedBox(height: 10),
@@ -94,7 +91,7 @@ class ProductSizeSelector extends StatelessWidget {
                     ),
                   );
                 }),
-      
+
                 // زر إضافة حجم مخصص (ActionChip)
                 ActionChip(
                   avatar: const Icon(

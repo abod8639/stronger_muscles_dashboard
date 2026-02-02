@@ -14,17 +14,17 @@ class MyRefreshIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
-      color: AppColors.primary, 
+      color: AppColors.primary,
       backgroundColor: AppColors.surfaceDark.withValues(alpha: 0.9),
-      
+
       edgeOffset: 20,
       displacement: 40,
       strokeWidth: 3,
-      
+
       notificationPredicate: (notification) {
         return notification.depth == 0;
       },
-      
+
       onRefresh: onRefresh,
       child: child,
     );

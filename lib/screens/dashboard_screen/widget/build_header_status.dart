@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/controllers/dashboard_controller.dart';
@@ -12,4 +11,3 @@ Widget buildHeaderStatus() {
     onRetry: () => controller.retryConnection(),
   );
 }
-

@@ -1,5 +1,4 @@
-
-  import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/no_data_screen.dart';
 
@@ -12,4 +11,3 @@ Widget buildNoDataState(ResponsiveLayout res) {
     ),
   );
 }
-

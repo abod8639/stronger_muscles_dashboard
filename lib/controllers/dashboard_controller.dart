@@ -70,7 +70,6 @@ class DashboardController extends GetxController {
     _userRepository = UserRepository(_apiService);
   }
 
-
   Future<void> _checkInitialConnection() async {
     try {
       isLoading.value = true;
@@ -185,5 +184,4 @@ class DashboardController extends GetxController {
   Future<void> retryConnection() async {
     await _checkInitialConnection();
   }
-
 }

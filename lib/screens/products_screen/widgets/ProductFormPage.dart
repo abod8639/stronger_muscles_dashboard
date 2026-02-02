@@ -32,7 +32,8 @@ class _ProductFormPageState extends State<ProductFormPage> {
 
   void _initializeFields() {
     controller.textcontrollers['name'] = TextEditingController(
-      text: widget.product?.name);
+      text: widget.product?.name,
+    );
     controller.textcontrollers['price'] = TextEditingController(
       text: widget.product?.price.toString(),
     );
@@ -46,7 +47,8 @@ class _ProductFormPageState extends State<ProductFormPage> {
       text: widget.product?.description,
     );
     controller.textcontrollers['brand'] = TextEditingController(
-      text: widget.product?.brand);
+      text: widget.product?.brand,
+    );
     controller.textcontrollers['serving'] = TextEditingController(
       text: widget.product?.servingSize,
     );
@@ -66,7 +68,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
     controller.productSizes.assignAll(widget.product?.size ?? []);
     controller.isFeatured.value = widget.product?.isActive ?? true;
     controller.isBackgroundWhite.value =
-    widget.product?.isBackgroundWhite ?? false;
+        widget.product?.isBackgroundWhite ?? false;
   }
 
   @override
@@ -258,24 +260,22 @@ class _ProductFormPageState extends State<ProductFormPage> {
                   'إجمالي الحصص',
                   Icons.reorder,
                   isNumber: true,
-                  
                 ),
               ),
             ],
           ),
           const Divider(height: 32),
-           AvailabilitySwitch(
-              title: "منتج مميز (Featured)",
-              isAvailable: controller.isFeatured,
-              onChanged: (val) => controller.isFeatured.value = val,
-            ),
-          
           AvailabilitySwitch(
-              title: "خلفية بيضاء (White Background)",
-              isAvailable: controller.isBackgroundWhite,
-              onChanged: (val) => controller.isBackgroundWhite.value = val,
-            ),
-          
+            title: "منتج مميز (Featured)",
+            isAvailable: controller.isFeatured,
+            onChanged: (val) => controller.isFeatured.value = val,
+          ),
+
+          AvailabilitySwitch(
+            title: "خلفية بيضاء (White Background)",
+            isAvailable: controller.isBackgroundWhite,
+            onChanged: (val) => controller.isBackgroundWhite.value = val,
+          ),
         ],
       ),
     );
@@ -323,8 +323,8 @@ class _ProductFormPageState extends State<ProductFormPage> {
               const SizedBox(width: 10),
               Text(
                 title,
-                style:  TextStyle(
-                  color: AppColors.primary.withAlpha(200) ,
+                style: TextStyle(
+                  color: AppColors.primary.withAlpha(200),
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
                 ),
@@ -384,6 +384,4 @@ class _ProductFormPageState extends State<ProductFormPage> {
       if (url != null) controller.imageUrls.add(url);
     }
   }
-
-
 }

@@ -25,7 +25,7 @@ class AuthService {
   Future<void> deleteToken() async {
     await _storage.remove(_tokenKey);
   }
- 
+
   Future<void> saveUser(UserModel user) async {
     await _storage.write(_userKey, user.toJson());
   }
@@ -41,7 +41,7 @@ class AuthService {
   Future<void> deleteUser() async {
     await _storage.remove(_userKey);
   }
- 
+
   bool isLoggedIn() {
     return getToken() != null;
   }
@@ -147,7 +147,7 @@ class AuthService {
     await deleteToken();
     await deleteUser();
   }
- 
+
   Map<String, String> getAuthHeaders() {
     final token = getToken();
     return {

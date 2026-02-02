@@ -25,11 +25,10 @@ class AvailabilitySwitch extends StatelessWidget {
         duration: const Duration(milliseconds: 300),
         decoration: BoxDecoration(
           // تغيير لون الخلفية حسب الحالة
-         
           borderRadius: BorderRadius.circular(15),
           border: Border.all(
             color: isAvailable.value
-                ? AppColors.primary .withAlpha(100)
+                ? AppColors.primary.withAlpha(100)
                 : theme.dividerColor,
             width: 1.5,
           ),
@@ -41,8 +40,8 @@ class AvailabilitySwitch extends StatelessWidget {
             if (onChanged != null) onChanged!(value);
           },
           // تحسين الألوان والمظهر
-          activeThumbColor: AppColors.success.withAlpha(150) ,
-          activeTrackColor: AppColors.success.withAlpha(50) ,
+          activeThumbColor: AppColors.success.withAlpha(150),
+          activeTrackColor: AppColors.success.withAlpha(50),
           inactiveThumbColor: Colors.grey[400],
           secondary: Icon(
             isAvailable.value ? Icons.check_circle : Icons.do_not_disturb_on,

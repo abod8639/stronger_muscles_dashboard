@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_indicator_card.dart';
@@ -44,4 +42,3 @@ Widget buildMainIndicatorsSection(ResponsiveLayout res) {
     ],
   );
 }
-

@@ -84,7 +84,8 @@ class ProductService extends ApiBase {
           }
         } else {
           throw Exception(
-              'فشل في جلب المنتجات (صفحة $currentPage): ${response.statusCode}');
+            'فشل في جلب المنتجات (صفحة $currentPage): ${response.statusCode}',
+          );
         }
 
         currentPage++;

@@ -63,76 +63,75 @@ class CategoriesScreen extends StatelessWidget {
               }
 
               return responsive.isMobile
-                  ?MyRefreshIndicator(
-        onRefresh: () => controller.fetchCategories(),
-        child:  ListView.builder(
-                      physics: const BouncingScrollPhysics(),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: padding.left,
-                        vertical: padding.top / 2,
-                      ),
-                      itemCount: controller.filteredCategories.length,
-                      itemBuilder: (context, index) {
-                        final category = controller.filteredCategories[index];
-                        return CategoryListItem(
-                          category: category,
-                          index: index,
-                          onEdit: () => showCategoryForm(
-                            context,
-                            controller,
+                  ? MyRefreshIndicator(
+                      onRefresh: () => controller.fetchCategories(),
+                      child: ListView.builder(
+                        physics: const BouncingScrollPhysics(),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: padding.left,
+                          vertical: padding.top / 2,
+                        ),
+                        itemCount: controller.filteredCategories.length,
+                        itemBuilder: (context, index) {
+                          final category = controller.filteredCategories[index];
+                          return CategoryListItem(
                             category: category,
-                          ),
-                          onDelete: () =>
-                              controller.deleteCategory(category.id),
-                        );
-                      },
-           )   )
-                  :MyRefreshIndicator(
-        onRefresh: () => controller.fetchCategories(),
-        child:  GridView.builder(
-                      physics: const BouncingScrollPhysics(),
-                      padding: padding,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: responsive.isTablet ? 2 : 3,
-                        crossAxisSpacing: responsive.itemSpacing,
-                        mainAxisSpacing: responsive.itemSpacing,
-                        childAspectRatio: 1.0,
+                            index: index,
+                            onEdit: () => showCategoryForm(
+                              context,
+                              controller,
+                              category: category,
+                            ),
+                            onDelete: () =>
+                                controller.deleteCategory(category.id),
+                          );
+                        },
                       ),
-                      itemCount: controller.filteredCategories.length,
-                      itemBuilder: (context, index) {
-                        final category = controller.filteredCategories[index];
-                        return CategoryGridItem(
-                          category: category,
-                          onEdit: () => showCategoryForm(
-                            context,
-                            controller,
+                    )
+                  : MyRefreshIndicator(
+                      onRefresh: () => controller.fetchCategories(),
+                      child: GridView.builder(
+                        physics: const BouncingScrollPhysics(),
+                        padding: padding,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: responsive.isTablet ? 2 : 3,
+                          crossAxisSpacing: responsive.itemSpacing,
+                          mainAxisSpacing: responsive.itemSpacing,
+                          childAspectRatio: 1.0,
+                        ),
+                        itemCount: controller.filteredCategories.length,
+                        itemBuilder: (context, index) {
+                          final category = controller.filteredCategories[index];
+                          return CategoryGridItem(
                             category: category,
-                          ),
-                          onDelete: () =>
-                              controller.deleteCategory(category.id),
-                        );
-                      },
-                    )  );
+                            onEdit: () => showCategoryForm(
+                              context,
+                              controller,
+                              category: category,
+                            ),
+                            onDelete: () =>
+                                controller.deleteCategory(category.id),
+                          );
+                        },
+                      ),
+                    );
             }),
-          
           ),
         ],
       ),
-      
     );
   }
-
 }
-  void showCategoryForm(
-    BuildContext context,
-    CategoriesController controller, {
-    CategoryModel? category,
-  }) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) =>
-          CategoryFormSheet( category: category),
-    );
-  }
+
+void showCategoryForm(
+  BuildContext context,
+  CategoriesController controller, {
+  CategoryModel? category,
+}) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (context) => CategoryFormSheet(category: category),
+  );
+}

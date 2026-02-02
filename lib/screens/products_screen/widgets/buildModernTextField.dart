@@ -18,11 +18,9 @@ Widget buildProductFormSheetModernTextField(
       return GlassContainer(
         padding: EdgeInsets.all(10),
         child: TextField(
-          
           controller: controller,
           cursorColor: AppColors.primary,
           style: TextStyle(
-
             color: isDark ? Colors.white : AppColors.textMuted,
             fontSize: responsive.getBodyFontSize(),
           ),
@@ -33,7 +31,7 @@ Widget buildProductFormSheetModernTextField(
             labelText: label,
             prefixIcon: Icon(
               icon,
-              color: AppColors.accent .withValues(alpha: 0.7),
+              color: AppColors.accent.withValues(alpha: 0.7),
               size: responsive.iconSize,
             ),
             filled: true,

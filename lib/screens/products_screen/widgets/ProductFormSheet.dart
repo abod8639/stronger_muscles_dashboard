@@ -28,7 +28,6 @@ class ProductFormSheetState extends State<ProductFormSheet> {
 
   // Controllers
 
-
   String? selectedCategoryId;
   List<String> imageUrls = [];
 
@@ -39,7 +38,9 @@ class ProductFormSheetState extends State<ProductFormSheet> {
   }
 
   void _initializeFields() {
-    controller.textcontrollers['name'] = TextEditingController(text: widget.product?.name);
+    controller.textcontrollers['name'] = TextEditingController(
+      text: widget.product?.name,
+    );
     controller.textcontrollers['price'] = TextEditingController(
       text: widget.product?.price.toString(),
     );
@@ -52,7 +53,9 @@ class ProductFormSheetState extends State<ProductFormSheet> {
     controller.textcontrollers['desc'] = TextEditingController(
       text: widget.product?.description,
     );
-    controller.textcontrollers['brand'] = TextEditingController(text: widget.product?.brand);
+    controller.textcontrollers['brand'] = TextEditingController(
+      text: widget.product?.brand,
+    );
     controller.textcontrollers['serving'] = TextEditingController(
       text: widget.product?.servingSize,
     );
@@ -123,7 +126,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                       _buildStockAndBrandSection(responsive),
                       const SizedBox(height: 16),
                       _buildNutritionalSection(responsive),
-      
+
                       const SizedBox(height: 24),
                       AvailabilitySwitch(
                         title: "Featured",
@@ -140,7 +143,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
                         title: "Background White",
                         isAvailable: controller.isBackgroundWhite,
                       ),
-      
+
                       const SizedBox(height: 16),
                       _buildSelectorsSection(),
                       const SizedBox(height: 16),
@@ -308,7 +311,6 @@ class ProductFormSheetState extends State<ProductFormSheet> {
         ),
         const SizedBox(height: 16),
         CustomModernDropdown<String>(
-          
           value: selectedCategoryId,
           items: controller.categories
               .map(
@@ -344,10 +346,10 @@ class ProductFormSheetState extends State<ProductFormSheet> {
             ),
             elevation: 5,
           ),
-          onPressed: ()=> controller.saveProduct(
+          onPressed: () => controller.saveProduct(
             existingProduct: widget.product,
             formKey: _formKey,
-            categoryId: selectedCategoryId! ,
+            categoryId: selectedCategoryId!,
             productImages: imageUrls,
           ),
           child: Obx(
@@ -383,6 +385,4 @@ class ProductFormSheetState extends State<ProductFormSheet> {
       );
     }
   }
-
-
 }

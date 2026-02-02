@@ -43,7 +43,7 @@ class _OrderListTileState extends State<OrderListTile>
                     color: AppColors.primary.withOpacity(0.1),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
-                  )
+                  ),
                 ]
               : [],
         ),
@@ -110,10 +110,9 @@ class _OrderListTileState extends State<OrderListTile>
   }
 
   Widget _buildOrderID() {
-    
-    String order(){
+    String order() {
       bool isMobile = MediaQuery.of(context).size.width < 600;
-      if(isMobile){
+      if (isMobile) {
         return widget.order.id.toString().padLeft(4, '0').substring(10);
       }
       return widget.order.id.toString().padLeft(4, '0');
@@ -167,7 +166,7 @@ class _OrderListTileState extends State<OrderListTile>
                     color: Colors.black45,
                     blurRadius: 8,
                     offset: Offset(2, 2),
-                  )
+                  ),
                 ],
               ),
               child: ClipRRect(
@@ -177,7 +176,11 @@ class _OrderListTileState extends State<OrderListTile>
                   fit: BoxFit.cover,
                   errorWidget: (_, __, ___) => Container(
                     color: Colors.white10,
-                    child: const Icon(Icons.inventory_2, size: 14, color: Colors.white24),
+                    child: const Icon(
+                      Icons.inventory_2,
+                      size: 14,
+                      color: Colors.white24,
+                    ),
                   ),
                 ),
               ),
@@ -211,7 +214,8 @@ class _OrderListTileState extends State<OrderListTile>
   String _formatDate(DateTime date) {
     final now = DateTime.now();
     final diff = now.difference(date);
-    if (diff.inDays == 0) return 'اليوم، ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
+    if (diff.inDays == 0)
+      return 'اليوم، ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
     if (diff.inDays == 1) return 'أمس';
     return '${date.day}/${date.month}/${date.year}';
   }

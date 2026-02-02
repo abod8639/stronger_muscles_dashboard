@@ -8,15 +8,11 @@ import '../repositories/index.dart';
 import '../screens/components/index.dart';
 
 class CategoriesController extends GetxController {
-
-
-
   late final TextEditingController idController;
   late final TextEditingController nameController;
   late final TextEditingController imageController;
   late final TextEditingController descriptionController;
   late final TextEditingController iconController;
-
 
   late final CategoryRepository _categoryRepository;
   final RxBool isLoading = true.obs;
@@ -24,7 +20,7 @@ class CategoriesController extends GetxController {
   final categories = <CategoryModel>[].obs;
   final filteredCategories = <CategoryModel>[].obs;
   final searchQuery = ''.obs;
-  final RxBool isActive = true.obs ;
+  final RxBool isActive = true.obs;
 
   @override
   void onInit() {
@@ -49,14 +45,13 @@ class CategoriesController extends GetxController {
 
   @override
   void onClose() {
-  idController.dispose();
-  nameController.dispose();
-  imageController.dispose();
-  descriptionController.dispose();
-  iconController.dispose();
-  super.onClose();
-}
-
+    idController.dispose();
+    nameController.dispose();
+    imageController.dispose();
+    descriptionController.dispose();
+    iconController.dispose();
+    super.onClose();
+  }
 
   Future<void> fetchCategories() async {
     try {
@@ -123,14 +118,17 @@ class CategoriesController extends GetxController {
   Future<bool> updateCategory(CategoryModel category) async {
     try {
       isLoading.value = true;
-      final updatedCategory = await _categoryRepository.updateCategory(category.id, {
-        'name': category.name,
-        'image_url': category.imageUrl,
-        'description': category.description,
-        'sort_order': 0,
-        'is_active': isActive.value,
-        // 'icon': category.icon,
-      });
+      final updatedCategory = await _categoryRepository.updateCategory(
+        category.id,
+        {
+          'name': category.name,
+          'image_url': category.imageUrl,
+          'description': category.description,
+          'sort_order': 0,
+          'is_active': isActive.value,
+          // 'icon': category.icon,
+        },
+      );
 
       final index = categories.indexWhere((c) => c.id == category.id);
       if (index != -1) {

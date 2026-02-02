@@ -38,9 +38,7 @@ class ProductFlavorSelector extends StatelessWidget {
           const Center(
             child: Text(
               "النكهات المتوفرة لهذا المنتج",
-              style: TextStyle(
-                fontWeight: FontWeight.bold, 
-                fontSize: 14),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
           ),
           const SizedBox(height: 10),
@@ -86,7 +84,7 @@ class ProductFlavorSelector extends StatelessWidget {
                     ),
                   );
                 }),
-      
+
                 // زر إضافة نكهة جديدة
                 ActionChip(
                   avatar: const Icon(

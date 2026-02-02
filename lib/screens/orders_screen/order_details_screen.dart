@@ -25,10 +25,7 @@ class OrderDetailsScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.backgroundDark,
-      appBar: BaseAppBar(
-        title: 'تفاصيل الطلب #${order.id}',
-        centerTitle: true,
-      ),
+      appBar: BaseAppBar(title: 'تفاصيل الطلب #${order.id}', centerTitle: true),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(

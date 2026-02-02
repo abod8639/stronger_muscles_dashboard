@@ -5,7 +5,7 @@ class ApiConfigController extends GetxController {
   // final String ip = "192.168.1.17";
   final String port = "8080";
   // final String ip = "[IP_ADDRESS]";
-  
+
   // static const String baseUrl = 'http://10.0.2.2:8080/api/v1';
   // RxString baseUrl = 'http://192.168.1.17:8080/api/v1'.obs;
 

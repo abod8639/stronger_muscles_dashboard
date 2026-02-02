@@ -55,8 +55,7 @@ class OrdersScreen extends StatelessWidget {
 
           const SizedBox(height: 8),
 
-          if (responsive.isDesktop)
-            GlassContainer(child: buildStatsSection()),
+          if (responsive.isDesktop) GlassContainer(child: buildStatsSection()),
 
           const SizedBox(height: 8),
           Expanded(
@@ -127,6 +126,4 @@ class OrdersScreen extends StatelessWidget {
       ),
     );
   }
-
-
 }

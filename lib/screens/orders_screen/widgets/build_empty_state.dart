@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/controllers/orders_controller.dart';
 
-
 Widget buildEmptyState(OrdersController controller) {
-  final bool isFiltering = controller.searchQuery.value.isNotEmpty ||
+  final bool isFiltering =
+      controller.searchQuery.value.isNotEmpty ||
       controller.selectedStatusId.value != 'all';
 
   return Center(
@@ -21,7 +21,9 @@ Widget buildEmptyState(OrdersController controller) {
               shape: BoxShape.circle,
             ),
             child: Icon(
-              isFiltering ? Icons.search_off_rounded : Icons.shopping_cart_outlined,
+              isFiltering
+                  ? Icons.search_off_rounded
+                  : Icons.shopping_cart_outlined,
               size: 80,
               color: AppColors.primary.withOpacity(0.2),
             ),
@@ -58,7 +60,10 @@ Widget buildEmptyState(OrdersController controller) {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary.withOpacity(0.1),
                 foregroundColor: AppColors.primary,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                   side: BorderSide(color: AppColors.primary.withOpacity(0.3)),

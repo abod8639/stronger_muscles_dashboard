@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/app_colors.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
@@ -30,4 +29,3 @@ Widget buildSectionTitle(String title, ResponsiveLayout res) {
     ),
   );
 }
-

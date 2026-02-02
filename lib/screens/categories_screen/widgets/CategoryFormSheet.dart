@@ -19,7 +19,6 @@ class CategoryFormSheet extends StatefulWidget {
 }
 
 class _CategoryFormSheetState extends State<CategoryFormSheet> {
-
   final controller = Get.find<CategoriesController>();
 
   final _formKey = GlobalKey<FormState>();
@@ -37,7 +36,6 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
       _isIdFieldEnabled = true;
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -113,9 +111,7 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
                       'كود التصنيف (Unique ID)',
                       Icons.fingerprint_rounded,
                       // الحقل يكون مفعلاً فقط إذا تحقق الشرطان
-                      enabled:
-                          _isIdFieldEnabled &&
-                          !controller.isLoading.value,
+                      enabled: _isIdFieldEnabled && !controller.isLoading.value,
                     ),
                   ),
                 ),
@@ -140,9 +136,10 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
               _buildImageSection(res),
               const SizedBox(height: 32),
 
-           AvailabilitySwitch(
-            isAvailable: controller.isActive,
-            title: 'التصنيف مفعل'),
+              AvailabilitySwitch(
+                isAvailable: controller.isActive,
+                title: 'التصنيف مفعل',
+              ),
 
               _buildSubmitButton(),
             ],
@@ -297,24 +294,24 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
     if (widget.category == null) {
       success = await controller.addCategory(
         CategoryModel(
-        id: controller.idController.text.trim(),
-        name: controller.nameController.text.trim(),
-        imageUrl: controller.imageController.text.trim(),
-        description: controller.descriptionController.text.trim(),
-        isActive: controller.isActive.value,
-        icon: controller.iconController.text.trim(),
-      )
+          id: controller.idController.text.trim(),
+          name: controller.nameController.text.trim(),
+          imageUrl: controller.imageController.text.trim(),
+          description: controller.descriptionController.text.trim(),
+          isActive: controller.isActive.value,
+          icon: controller.iconController.text.trim(),
+        ),
       );
     } else {
       success = await controller.updateCategory(
         CategoryModel(
-        id: controller.idController.text.trim(),
-        name: controller.nameController.text.trim(),
-        imageUrl: controller.imageController.text.trim(),
-        description: controller.descriptionController.text.trim(),
-        isActive: controller.isActive.value,
-        icon: controller.iconController.text.trim(),
-      )
+          id: controller.idController.text.trim(),
+          name: controller.nameController.text.trim(),
+          imageUrl: controller.imageController.text.trim(),
+          description: controller.descriptionController.text.trim(),
+          isActive: controller.isActive.value,
+          icon: controller.iconController.text.trim(),
+        ),
       );
     }
 

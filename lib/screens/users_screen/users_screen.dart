@@ -19,7 +19,8 @@ class UsersScreen extends StatelessWidget {
     final responsive = context.responsive;
 
     return Scaffold(
-      backgroundColor: Colors.transparent, // Let MainNavigationScreen handle background
+      backgroundColor:
+          Colors.transparent, // Let MainNavigationScreen handle background
       appBar: BaseAppBar(
         title: 'المستخدمون',
         onPressed: controller.fetchUsersStats,
@@ -42,7 +43,7 @@ class UsersScreen extends StatelessWidget {
                   padding: responsive.defaultPadding,
                   onSearch: (value) => controller.onSearchChanged(value),
                 ),
-                 // stats header
+                // stats header
                 buildStatsHeader(),
               ],
             ),

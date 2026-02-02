@@ -187,4 +187,3 @@ class DetailedStakingCard extends StatelessWidget {
     );
   }
 }
-
