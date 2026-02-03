@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/controllers/dashboard_controller.dart';
-import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/categories_grid.dart';
+import 'package:stronger_muscles_dashboard/models/category_model.dart';
+import 'package:stronger_muscles_dashboard/screens/components/base_data_view.dart';
+import 'package:stronger_muscles_dashboard/screens/components/category_card.dart';
 import 'package:stronger_muscles_dashboard/controllers/navigation_controller.dart';
 
 Widget buildCategoriesSection(ResponsiveLayout res) {
@@ -11,13 +13,17 @@ Widget buildCategoriesSection(ResponsiveLayout res) {
   if (dashboardController.categories.isEmpty) return const SizedBox();
   return Builder(
     builder: (context) {
-      return CategoriesGrid(
-        categories: dashboardController.categories,
-        title: 'التصنيفات',
-        onSeeAll: () {
-          navigationController.changeIndex(1);
-        },
-      );
+      return BaseDataView<CategoryModel>(
+  title: 'التصنيفات',
+  items: dashboardController.categories,
+  onSeeAll: () => navigationController.changeIndex(1),
+  itemBuilder: (context, category, index) => CategoryCard(
+    category: category,
+    index: index,
+    onTap: () {}
+    //  handleCategoryTap(category),
+  ),
+);
     },
   );
 }
