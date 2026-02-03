@@ -5,6 +5,7 @@ import 'package:stronger_muscles_dashboard/screens/components/glass_container.da
 import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
 import 'package:stronger_muscles_dashboard/screens/components/recent_orders_list.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_enhanced_header.dart';
+import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_loading_state.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_stats_section.dart';
 import 'package:stronger_muscles_dashboard/screens/components/base_app_bar.dart';
 import '../../controllers/orders_controller.dart';
@@ -93,41 +94,6 @@ class _OrdersScreenState extends State<OrdersScreen>
             }),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget buildLoadingState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppColors.primary.withOpacity(0.2),
-                  AppColors.primary.withOpacity(0.05),
-                ],
-              ),
-              shape: BoxShape.circle,
-            ),
-            child: const CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-              strokeWidth: 3,
-            ),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            'جاري تحميل الطلبات...',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.white.withOpacity(0.7),
-            ),
-          ),
-        ],
       ),
     );
   }
