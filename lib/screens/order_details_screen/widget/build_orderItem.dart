@@ -28,7 +28,7 @@ Widget buildOrderItem(OrderItemModel item, bool isDark) {
       'الكمية: ${item.quantity} × ${item.unitPrice.toStringAsFixed(2)} ر.س',
     ),
     trailing: Text(
-      '${item.subtotal.toStringAsFixed(2)} ر.س',
+      '${item.subtotal.toStringAsFixed(2)} LE',
       style: TextStyle(fontWeight: FontWeight.bold),
     ),
   );
