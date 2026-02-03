@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:stronger_muscles_dashboard/screens/components/enhanced_loading_widget.dart';
 import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_categories_section.dart';

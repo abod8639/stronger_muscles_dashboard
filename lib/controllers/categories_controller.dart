@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
+import 'package:stronger_muscles_dashboard/screens/components/confirm_dialog.dart';
 import '../models/index.dart';
 import '../services/api_service.dart';
 import '../repositories/index.dart';
-import '../screens/components/index.dart';
 
 class CategoriesController extends GetxController {
   late final TextEditingController idController;

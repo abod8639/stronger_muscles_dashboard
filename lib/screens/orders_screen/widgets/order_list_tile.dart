@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
@@ -58,7 +57,7 @@ class _OrderListTileState extends State<OrderListTile>
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
-        height: 180,
+        height: 200,
         width: double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(24),
@@ -352,7 +351,7 @@ class _OrderListTileState extends State<OrderListTile>
     return Container(
       padding:  EdgeInsets.symmetric(
         horizontal: 12, 
-        vertical: responsive.isDesktop ? 8 : 4
+        vertical: responsive.isDesktop ? 8 : 6
         ),
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -421,7 +420,7 @@ class _OrderListTileState extends State<OrderListTile>
     
     return SizedBox(
       width: 70,
-      height: 50,
+      height: 52,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -432,8 +431,8 @@ class _OrderListTileState extends State<OrderListTile>
               child: AnimatedContainer(
                 duration: Duration(milliseconds: 200 + (index * 50)),
                 curve: Curves.easeOut,
-                width: 42,
-                height: 42,
+                width: 52,
+                height: 52,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
