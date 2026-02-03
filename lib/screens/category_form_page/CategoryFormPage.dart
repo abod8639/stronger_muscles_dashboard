@@ -164,7 +164,7 @@ class _CategoryFormPageState extends State<CategoryFormPage> with TickerProvider
   Widget _buildGradientBackground(bool isDark) {
     return Positioned.fill(
       child: CustomPaint(
-        painter: _GradientBackgroundPainter(isDark: isDark),
+        painter: GradientBackgroundPainter(isDark: isDark),
       ),
     );
   }
@@ -926,10 +926,10 @@ class _CategoryFormPageState extends State<CategoryFormPage> with TickerProvider
   }
 }
 
-class _GradientBackgroundPainter extends CustomPainter {
+class GradientBackgroundPainter extends CustomPainter {
   final bool isDark;
 
-  _GradientBackgroundPainter({required this.isDark});
+  GradientBackgroundPainter({required this.isDark});
 
   @override
   void paint(Canvas canvas, Size size) {
