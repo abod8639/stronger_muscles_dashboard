@@ -74,7 +74,10 @@ Widget buildIndicatorCard(int index) {
   if (index >= indicators.length) return const SizedBox();
 
   final indicator = indicators[index];
-  final chartSpots = generateChartSpots();
+  final chartSpots = generateChartSpots(
+    50, 
+    controller.orders.length.toDouble() + 400
+    );
 
   return PremiumIndicatorCard(
     title: indicator.title,

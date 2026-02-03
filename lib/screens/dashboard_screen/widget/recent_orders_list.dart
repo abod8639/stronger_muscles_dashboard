@@ -14,7 +14,7 @@ class RecentOrdersList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final res = context.responsive;
+    final res = ResponsiveLayout(context);
     final bool isSmallScreen = res.isMobile;
 
     final int crossAxisCount = isSmallScreen
@@ -92,7 +92,7 @@ class RecentOrdersList extends StatelessWidget {
                   crossAxisCount: crossAxisCount,
                   crossAxisSpacing: res.itemSpacing,
                   mainAxisSpacing: res.itemSpacing,
-                  mainAxisExtent: 180,
+                  mainAxisExtent: 190,
                 ),
                 itemCount: orders.length,
                 itemBuilder: (context, index) {

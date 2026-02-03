@@ -53,12 +53,15 @@ class DashboardScreen extends GetView<DashboardController> {
                 children: [
 
                   buildHeaderStatus(),
+
                   SizedBox(height: res.itemSpacing * 2),
 
                   buildDashboardTitle(res),
+
                   SizedBox(height: res.itemSpacing * 2),
 
                   buildPeriodSelector(res),
+
                   SizedBox(height: res.itemSpacing * 3),
 
                   if (controller.orders.isEmpty)
@@ -89,15 +92,15 @@ class DashboardScreen extends GetView<DashboardController> {
     );
   }
 }
-  List<FlSpot> generateChartSpots() {
+  List<FlSpot> generateChartSpots(int count, double maxY,) {
   final controller = Get.find<DashboardController>();
 
-  final random = List.generate(15, (i) {
-    final baseValue = (controller.orders.length / 1) * (i + 1);
-    final variation = (baseValue * 0.1 * (i % 2 == 0 ? -1 : 1)).toInt();
+  final random = List.generate(count, (i) {
+    final baseValue = (controller.orders.length / 1) * (i + 2);
+    final variation = (baseValue * 0.2 * (i % 2 == 0 ? -1 : 2)).toInt();
     return FlSpot(
       i.toDouble(),
-      (baseValue + variation).clamp(1, double.infinity),
+      (baseValue + variation).clamp(1, maxY),
     );
   });
   return random;

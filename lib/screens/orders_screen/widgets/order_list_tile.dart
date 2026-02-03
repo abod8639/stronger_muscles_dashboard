@@ -1,5 +1,7 @@
+import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/screens/components/status_badge.dart';
 import '../../../config/theme.dart';
@@ -24,14 +26,37 @@ class OrderListTile extends StatefulWidget {
 class _OrderListTileState extends State<OrderListTile>
     with SingleTickerProviderStateMixin {
   bool _isHovered = false;
+  late AnimationController _scaleController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scaleController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+    );
+  }
+
+  @override
+  void dispose() {
+    _scaleController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final responsive = ResponsiveLayout(context) ;
     return MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
+      onEnter: (_) {
+        setState(() => _isHovered = true);
+        _scaleController.forward();
+      },
+      onExit: (_) {
+        setState(() => _isHovered = false);
+        _scaleController.reverse();
+      },
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
         height: 180,
         width: double.infinity,
@@ -40,68 +65,102 @@ class _OrderListTileState extends State<OrderListTile>
           boxShadow: _isHovered
               ? [
                   BoxShadow(
-                    color: AppColors.primary.withOpacity(0.1),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
+                    color: AppColors.primary.withOpacity(0.2),
+                    blurRadius: 25,
+                    offset: const Offset(0, 12),
+                    spreadRadius: 2,
                   ),
                 ]
-              : [],
+              : [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
         ),
         child: GlassContainer(
           padding: EdgeInsets.zero,
-          opacity: _isHovered ? 0.12 : 0.07,
-          blur: 15,
+          opacity: _isHovered ? 0.15 : 0.08,
+          blur: 20,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
             color: _isHovered
-                ? AppColors.primary.withOpacity(0.3)
-                : Colors.white.withOpacity(0.05),
-            width: 1.5,
+                ? AppColors.primary.withOpacity(0.4)
+                : Colors.white.withOpacity(0.08),
+            width: _isHovered ? 2 : 1.5,
           ),
+          gradient: _isHovered
+              ? LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppColors.primary.withOpacity(0.1),
+                    Colors.transparent,
+                  ],
+                )
+              : null,
           child: InkWell(
             onTap: widget.onTap,
             borderRadius: BorderRadius.circular(24),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildOrderID(),
-                      OrderStatusBadge(status: widget.order.status),
-                    ],
-                  ),
-                  const Spacer(),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${widget.order.totalAmount.toStringAsFixed(2)} SAR',
-                              style: const TextStyle(
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.w900,
-                                fontSize: 18,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            _buildInfoRow(
-                              icon: Icons.person_outline,
-                              text: 'العميل: ${widget.order.userId}',
-                            ),
+            splashColor: AppColors.primary.withOpacity(0.1),
+            highlightColor: AppColors.primary.withOpacity(0.05),
+            child: Stack(
+              children: [
+                // Animated gradient overlay
+                if (_isHovered)
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(24),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            AppColors.primary.withOpacity(0.03),
+                            Colors.transparent,
                           ],
                         ),
                       ),
-                      _buildOrderImage(),
+                    ),
+                  ),
+                
+                // Content
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Header Row
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(child: _buildOrderHeader()),
+                          const SizedBox(width: 12),
+                          OrderStatusBadge(status: widget.order.status),
+                        ],
+                      ),
+                      
+                      const SizedBox(height: 12),
+                      
+                      // Info Section
+                      _buildInfoSection(responsive),
+                      
+                      const Spacer(),
+                      
+                      // Bottom Row
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Expanded(child: _buildPriceSection(responsive )),
+                          const SizedBox(width: 1),
+                          _buildEnhancedOrderImages(),
+                        ],
+                      ),
                     ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -109,114 +168,400 @@ class _OrderListTileState extends State<OrderListTile>
     );
   }
 
-  Widget _buildOrderID() {
-    String order() {
-      bool isMobile = MediaQuery.of(context).size.width < 600;
-      if (isMobile) {
-        return widget.order.id.toString().padLeft(4, '0').substring(10);
-      }
-      return widget.order.id.toString().padLeft(4, '0');
-    }
-
+  Widget _buildOrderHeader() {
+    String orderId = _getFormattedOrderId();
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          order(),
-          style: const TextStyle(
-            fontWeight: FontWeight.w800,
-            fontSize: 14,
-            color: Colors.white,
-            letterSpacing: 1.0,
-          ),
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.primary.withOpacity(0.2),
+                    AppColors.primary.withOpacity(0.05),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: AppColors.primary.withOpacity(0.3),
+                  width: 1,
+                ),
+              ),
+              child: Text(
+                orderId,
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 13,
+                  color: AppColors.primary,
+                  letterSpacing: 0.8,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            _buildPaymentBadge(),
+          ],
         ),
-        Text(
-          _formatDate(widget.order.orderDate),
-          style: TextStyle(
-            color: Colors.white.withOpacity(0.4),
-            fontSize: 10,
-            fontWeight: FontWeight.w500,
+        const SizedBox(height: 6),
+        Row(
+          children: [
+            Icon(
+              Icons.access_time_rounded,
+              size: 11,
+              color: Colors.white.withOpacity(0.4),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              _formatDate(widget.order.orderDate),
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.5),
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPaymentBadge() {
+    final isPaid = widget.order.paymentStatus == PaymentStatus.paid;
+    final color = isPaid ? Colors.greenAccent : Colors.orangeAccent;
+    
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: color.withOpacity(0.3),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            isPaid ? Icons.check_circle_rounded : Icons.schedule_rounded,
+            size: 10,
+            color: color,
+          ),
+          const SizedBox(width: 3),
+          Text(
+            isPaid ? 'مدفوع' : 'معلق',
+            style: TextStyle(
+              fontSize: 9,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoSection(ResponsiveLayout responsive) {
+    final itemCount = widget.order.items?.length ?? 0;
+    
+    return Container(
+      padding:  EdgeInsets.symmetric(horizontal: 10,
+       vertical: responsive.isDesktop ? 8 : 4
+       ),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.03),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.05),
+        ),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _buildInfoItem(
+              icon: Icons.person_outline_rounded,
+              label: widget.order.userId.toString(),
+              sublabel: 'عميل',
+            ),
+          ),
+          Container(
+            width: 1,
+            height: 20,
+            color: Colors.white.withOpacity(0.1),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: _buildInfoItem(
+              icon: Icons.shopping_bag_outlined,
+              label: '$itemCount',
+              sublabel: itemCount == 1 ? 'منتج' : 'منتجات',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoItem({
+    required IconData icon,
+    required String label,
+    required String sublabel,
+  }) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          icon,
+          size: 14,
+          color: AppColors.primary.withOpacity(0.7),
+        ),
+        const SizedBox(width: 6),
+        Flexible(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+              Text(
+                sublabel,
+                style: TextStyle(
+                  fontSize: 9,
+                  color: Colors.white.withOpacity(0.4),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
           ),
         ),
       ],
     );
   }
 
-  Widget _buildOrderImage() {
+  Widget _buildPriceSection( ResponsiveLayout responsive) {
+    return Container(
+      padding:  EdgeInsets.symmetric(
+        horizontal: 12, 
+        vertical: responsive.isDesktop ? 8 : 4
+        ),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.primary.withOpacity(0.15),
+            AppColors.primary.withOpacity(0.05),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: AppColors.primary.withOpacity(0.3),
+          width: 1.5,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'الإجمالي',
+            style: TextStyle(
+              fontSize: 10,
+              color: Colors.white.withOpacity(0.5),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                widget.order.totalAmount.toStringAsFixed(2),
+                style: const TextStyle(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 20,
+                  height: 1,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 2),
+                child: Text(
+                  'ريال',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: AppColors.primary.withOpacity(0.7),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEnhancedOrderImages() {
     final items = widget.order.items ?? [];
     if (items.isEmpty) return const SizedBox.shrink();
 
+    final displayCount = items.length > 3 ? 3 : items.length;
+    
     return SizedBox(
-      width: 45,
-      height: 45,
+      width: 70,
+      height: 50,
       child: Stack(
         clipBehavior: Clip.none,
-        children: List.generate(items.length > 2 ? 2 : items.length, (index) {
-          return Positioned(
-            right: index * 12.0,
-            bottom: index * 4.0,
-            child: Container(
-              width: 35,
-              height: 35,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.white24, width: 1.5),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black45,
-                    blurRadius: 8,
-                    offset: Offset(2, 2),
+        children: [
+          // Image stack
+          ...List.generate(displayCount, (index) {
+            return Positioned(
+              right: index * 18.0,
+              child: AnimatedContainer(
+                duration: Duration(milliseconds: 200 + (index * 50)),
+                curve: Curves.easeOut,
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: _isHovered
+                        ? AppColors.primary.withOpacity(0.4)
+                        : Colors.white.withOpacity(0.2),
+                    width: 2,
                   ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: CachedNetworkImage(
-                  imageUrl: items[index].imageUrl ?? '',
-                  fit: BoxFit.cover,
-                  errorWidget: (_, __, ___) => Container(
-                    color: Colors.white10,
-                    child: const Icon(
-                      Icons.inventory_2,
-                      size: 14,
-                      color: Colors.white24,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(2, 3),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: CachedNetworkImage(
+                    imageUrl: items[index].imageUrl ?? '',
+                    fit: BoxFit.cover,
+                    placeholder: (_, __) => _buildImageShimmer(),
+                    errorWidget: (_, __, ___) => Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.white.withOpacity(0.1),
+                            Colors.white.withOpacity(0.05),
+                          ],
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.inventory_2_outlined,
+                        size: 18,
+                        color: Colors.white.withOpacity(0.3),
+                      ),
                     ),
                   ),
                 ),
               ),
+            );
+          }),
+          
+          // Count badge if more items
+          if (items.length > 3)
+            Positioned(
+              right: 54,
+              top: -4,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppColors.primary,
+                      AppColors.primary.withOpacity(0.8),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.white, width: 1.5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withOpacity(0.4),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Text(
+                  '+${items.length - 3}',
+                  style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
             ),
-          );
-        }),
+        ],
       ),
     );
   }
 
-  Widget _buildInfoRow({required IconData icon, required String text}) {
-    return Row(
-      children: [
-        Icon(icon, size: 12, color: Colors.white38),
-        const SizedBox(width: 6),
-        Expanded(
-          child: Text(
-            text,
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.5),
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-            ),
-            overflow: TextOverflow.ellipsis,
+  Widget _buildImageShimmer() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.white.withOpacity(0.1),
+            Colors.white.withOpacity(0.05),
+            Colors.white.withOpacity(0.1),
+          ],
+        ),
+      ),
+      child: const Center(
+        child: SizedBox(
+          width: 16,
+          height: 16,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.white24),
           ),
         ),
-      ],
+      ),
     );
+  }
+
+  String _getFormattedOrderId() {
+    bool isMobile = MediaQuery.of(context).size.width < 600;
+    final id = widget.order.id.toString();
+    
+    if (isMobile && id.length > 10) {
+      return '#${id.substring(id.length - 6)}';
+    }
+    return '#$id';
   }
 
   String _formatDate(DateTime date) {
     final now = DateTime.now();
     final diff = now.difference(date);
-    if (diff.inDays == 0)
-      return 'اليوم، ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
+    
+    if (diff.inDays == 0) {
+      return 'اليوم ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
+    }
     if (diff.inDays == 1) return 'أمس';
+    if (diff.inDays < 7) return 'منذ ${diff.inDays} أيام';
+    
     return '${date.day}/${date.month}/${date.year}';
   }
 }
