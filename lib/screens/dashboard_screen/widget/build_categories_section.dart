@@ -11,11 +11,22 @@ import 'package:stronger_muscles_dashboard/controllers/navigation_controller.dar
 Widget buildCategoriesSection(ResponsiveLayout res) {
   final dashboardController = Get.find<DashboardController>();
   final navigationController = Get.find<NavigationController>();
+
+  int getCrossAxisCount(ResponsiveLayout responsive) {
+    if (responsive.isDesktop) {
+      return 3;
+    } else if (responsive.isTablet) {
+      return 2;
+    }  else {
+      return 2;
+    }
+  }
   if (dashboardController.categories.isEmpty) return const SizedBox();
   return Builder(
     builder: (context) {
       return BaseDataView<CategoryModel>(
         title: 'التصنيفات',
+        crossAxisCount: getCrossAxisCount(res),
         items: dashboardController.categories,
         onSeeAll: () => navigationController.changeIndex(1),
         itemBuilder: (context, category, index) => CategoryCard(

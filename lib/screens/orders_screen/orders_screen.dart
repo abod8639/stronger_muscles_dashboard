@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/controllers/navigation_controller.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_recent_orders.dart';
@@ -41,6 +40,8 @@ class _OrdersScreenState extends State<OrdersScreen>
     super.dispose();
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(OrdersController());
@@ -75,6 +76,7 @@ class _OrdersScreenState extends State<OrdersScreen>
 
             // Orders List
             Obx(() {
+
               if (controller.isLoading.value &&
                   controller.filteredOrders.isEmpty) {
                 return buildLoadingState();
@@ -93,6 +95,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                 onRefresh: () => controller.fetchOrders(),
                 child: buildRecentOrders(responsive),
               );
+              
             }),
           ],
         ),

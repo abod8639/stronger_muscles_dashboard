@@ -8,11 +8,10 @@ class BaseDataView<T> extends StatelessWidget {
   final Widget Function(BuildContext context, T item, int index) itemBuilder;
   final VoidCallback? onSeeAll;
   
-  // إعدادات مرنة للـ Grid
   final int? crossAxisCount;
   final double? mainAxisExtent;
   final double? childAspectRatio;
-  final bool useListView; // لإجبار العرض كقائمة بدلاً من Grid
+  final bool useListView; 
 
   const BaseDataView({
     super.key,
