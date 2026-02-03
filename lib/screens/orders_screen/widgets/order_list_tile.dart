@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/screens/components/status_badge.dart';
+import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_info_section.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_order_header.dart';
 import '../../../config/theme.dart';
 import '../../../models/index.dart';
@@ -45,7 +46,6 @@ class _OrderListTileState extends State<OrderListTile>
 
   @override
   Widget build(BuildContext context) {
-    final responsive = ResponsiveLayout(context);
     return MouseRegion(
       onEnter: (_) {
         setState(() => _isHovered = true);
@@ -135,7 +135,7 @@ class _OrderListTileState extends State<OrderListTile>
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Expanded(child: OrderHeader(order: widget.order )),
+                          Expanded(child: OrderHeader(order: widget.order)),
                           const SizedBox(width: 12),
                           OrderStatusBadge(status: widget.order.status),
                         ],
@@ -144,7 +144,7 @@ class _OrderListTileState extends State<OrderListTile>
                       const SizedBox(height: 12),
 
                       // Info Section
-                      buildInfoSection(responsive,widget.order),
+                      buildInfoSection( widget.order),
 
                       const Spacer(),
 
@@ -152,9 +152,11 @@ class _OrderListTileState extends State<OrderListTile>
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Expanded(child: buildPriceSection(responsive)),
+                          Expanded(
+                            child: buildPriceSection( widget.order),
+                          ),
                           const SizedBox(width: 1),
-                          buildEnhancedOrderImages(),
+                          buildEnhancedOrderImages(widget.order,_isHovered),
                         ],
                       ),
                     ],
@@ -167,42 +169,6 @@ class _OrderListTileState extends State<OrderListTile>
       ),
     );
   }
-}
-
-Widget buildInfoSection(ResponsiveLayout responsive,OrderModel order) {
-  final itemCount = order.items?.length ?? 0;
-
-  return Container(
-    padding: EdgeInsets.symmetric(
-      horizontal: 10,
-      vertical: responsive.isDesktop ? 8 : 4,
-    ),
-    decoration: BoxDecoration(
-      color: Colors.white.withOpacity(0.03),
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: Colors.white.withOpacity(0.05)),
-    ),
-    child: Row(
-      children: [
-        Expanded(
-          child: buildInfoItem(
-            icon: Icons.person_outline_rounded,
-            label: widget.order.userId.toString(),
-            sublabel: 'عميل',
-          ),
-        ),
-        Container(width: 1, height: 20, color: Colors.white.withOpacity(0.1)),
-        const SizedBox(width: 12),
-        Expanded(
-          child: buildInfoItem(
-            icon: Icons.shopping_bag_outlined,
-            label: '$itemCount',
-            sublabel: itemCount == 1 ? 'منتج' : 'منتجات',
-          ),
-        ),
-      ],
-    ),
-  );
 }
 
 Widget buildInfoItem({
@@ -244,70 +210,78 @@ Widget buildInfoItem({
   );
 }
 
-Widget buildPriceSection(ResponsiveLayout responsive) {
-  return Container(
-    padding: EdgeInsets.symmetric(
-      horizontal: 12,
-      vertical: responsive.isDesktop ? 8 : 6,
-    ),
-    decoration: BoxDecoration(
-      gradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [
-          AppColors.primary.withOpacity(0.15),
-          AppColors.primary.withOpacity(0.05),
-        ],
-      ),
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: AppColors.primary.withOpacity(0.3), width: 1.5),
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          'الإجمالي',
-          style: TextStyle(
-            fontSize: 10,
-            color: Colors.white.withOpacity(0.5),
-            fontWeight: FontWeight.w600,
+Widget buildPriceSection( OrderModel order) {
+  return Builder(
+    builder: (context) {
+      final responsive = ResponsiveLayout(context);
+      return Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: responsive.isDesktop ? 8 : 6,
+        ),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.primary.withOpacity(0.15),
+              AppColors.primary.withOpacity(0.05),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: AppColors.primary.withOpacity(0.3),
+            width: 1.5,
           ),
         ),
-        const SizedBox(height: 2),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              widget.order.totalAmount.toStringAsFixed(2),
-              style: const TextStyle(
-                color: AppColors.primary,
-                fontWeight: FontWeight.w900,
-                fontSize: 20,
-                height: 1,
+              'الإجمالي',
+              style: TextStyle(
+                fontSize: 10,
+                color: Colors.white.withOpacity(0.5),
+                fontWeight: FontWeight.w600,
               ),
             ),
-            const SizedBox(width: 4),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 2),
-              child: Text(
-                'ريال',
-                style: TextStyle(
-                  fontSize: 11,
-                  color: AppColors.primary.withOpacity(0.7),
-                  fontWeight: FontWeight.bold,
+            const SizedBox(height: 2),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  order.totalAmount.toStringAsFixed(2),
+                  style: const TextStyle(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 20,
+                    height: 1,
+                  ),
                 ),
-              ),
+                const SizedBox(width: 4),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 2),
+                  child: Text(
+                    'ريال',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: AppColors.primary.withOpacity(0.7),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
-      ],
-    ),
+      );
+    },
   );
 }
 
-Widget buildEnhancedOrderImages() {
-  final items = widget.order.items ?? [];
+Widget buildEnhancedOrderImages(OrderModel order,bool isHovered) {
+  final items = order.items ?? [];
   if (items.isEmpty) return const SizedBox.shrink();
 
   final displayCount = items.length > 3 ? 3 : items.length;
@@ -330,7 +304,7 @@ Widget buildEnhancedOrderImages() {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: _isHovered
+                  color: isHovered
                       ? AppColors.primary.withOpacity(0.4)
                       : Colors.white.withOpacity(0.2),
                   width: 2,
@@ -434,8 +408,6 @@ Widget buildImageShimmer() {
     ),
   );
 }
-
-
 
 String formatDate(DateTime date) {
   final now = DateTime.now();

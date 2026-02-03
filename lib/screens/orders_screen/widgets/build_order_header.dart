@@ -45,7 +45,7 @@ import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/order_l
                   ),
                 ),
                 const SizedBox(width: 8),
-                buildPaymentBadge(),
+                buildPaymentBadge(order),
               ],
             ),
             const SizedBox(height: 6),
