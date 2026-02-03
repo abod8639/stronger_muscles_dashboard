@@ -83,7 +83,7 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard>
         ),
         child: Container(
           // height: 100,
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
