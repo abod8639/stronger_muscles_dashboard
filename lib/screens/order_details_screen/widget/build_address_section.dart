@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_addressInfo_row.dart';
+import 'package:stronger_muscles_dashboard/screens/order_details_screen/widget/build_addressInfo_row.dart';
 
 Widget buildAddressSection(Map<String, dynamic>? snapshot) {
   if (snapshot == null || snapshot.isEmpty) {

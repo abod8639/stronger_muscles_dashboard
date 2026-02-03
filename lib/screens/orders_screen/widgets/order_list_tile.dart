@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/screens/components/status_badge.dart';
+import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_order_header.dart';
 import '../../../config/theme.dart';
 import '../../../models/index.dart';
 
@@ -44,7 +45,7 @@ class _OrderListTileState extends State<OrderListTile>
 
   @override
   Widget build(BuildContext context) {
-    final responsive = ResponsiveLayout(context) ;
+    final responsive = ResponsiveLayout(context);
     return MouseRegion(
       onEnter: (_) {
         setState(() => _isHovered = true);
@@ -123,7 +124,7 @@ class _OrderListTileState extends State<OrderListTile>
                       ),
                     ),
                   ),
-                
+
                 // Content
                 Padding(
                   padding: const EdgeInsets.all(10),
@@ -134,26 +135,26 @@ class _OrderListTileState extends State<OrderListTile>
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Expanded(child: _buildOrderHeader()),
+                          Expanded(child: OrderHeader(order: widget.order )),
                           const SizedBox(width: 12),
                           OrderStatusBadge(status: widget.order.status),
                         ],
                       ),
-                      
+
                       const SizedBox(height: 12),
-                      
+
                       // Info Section
-                      _buildInfoSection(responsive),
-                      
+                      buildInfoSection(responsive),
+
                       const Spacer(),
-                      
+
                       // Bottom Row
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Expanded(child: _buildPriceSection(responsive )),
+                          Expanded(child: buildPriceSection(responsive)),
                           const SizedBox(width: 1),
-                          _buildEnhancedOrderImages(),
+                          buildEnhancedOrderImages(),
                         ],
                       ),
                     ],
@@ -166,401 +167,318 @@ class _OrderListTileState extends State<OrderListTile>
       ),
     );
   }
+}
 
-  Widget _buildOrderHeader() {
-    String orderId = _getFormattedOrderId();
-    
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+Widget buildPaymentBadge() {
+  final isPaid = widget.order.paymentStatus == PaymentStatus.paid;
+  final color = isPaid ? Colors.greenAccent : Colors.orangeAccent;
+
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+    decoration: BoxDecoration(
+      color: color.withOpacity(0.15),
+      borderRadius: BorderRadius.circular(6),
+      border: Border.all(color: color.withOpacity(0.3), width: 1),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    AppColors.primary.withOpacity(0.2),
-                    AppColors.primary.withOpacity(0.05),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: AppColors.primary.withOpacity(0.3),
-                  width: 1,
-                ),
-              ),
-              child: Text(
-                orderId,
-                style: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 13,
-                  color: AppColors.primary,
-                  letterSpacing: 0.8,
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            _buildPaymentBadge(),
-          ],
+        Icon(
+          isPaid ? Icons.check_circle_rounded : Icons.schedule_rounded,
+          size: 10,
+          color: color,
         ),
-        const SizedBox(height: 6),
-        Row(
+        const SizedBox(width: 3),
+        Text(
+          isPaid ? 'مدفوع' : 'معلق',
+          style: TextStyle(
+            fontSize: 9,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget buildInfoSection(ResponsiveLayout responsive) {
+  final itemCount = widget.order.items?.length ?? 0;
+
+  return Container(
+    padding: EdgeInsets.symmetric(
+      horizontal: 10,
+      vertical: responsive.isDesktop ? 8 : 4,
+    ),
+    decoration: BoxDecoration(
+      color: Colors.white.withOpacity(0.03),
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: Colors.white.withOpacity(0.05)),
+    ),
+    child: Row(
+      children: [
+        Expanded(
+          child: buildInfoItem(
+            icon: Icons.person_outline_rounded,
+            label: widget.order.userId.toString(),
+            sublabel: 'عميل',
+          ),
+        ),
+        Container(width: 1, height: 20, color: Colors.white.withOpacity(0.1)),
+        const SizedBox(width: 12),
+        Expanded(
+          child: buildInfoItem(
+            icon: Icons.shopping_bag_outlined,
+            label: '$itemCount',
+            sublabel: itemCount == 1 ? 'منتج' : 'منتجات',
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget buildInfoItem({
+  required IconData icon,
+  required String label,
+  required String sublabel,
+}) {
+  return Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Icon(icon, size: 14, color: AppColors.primary.withOpacity(0.7)),
+      const SizedBox(width: 6),
+      Flexible(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.access_time_rounded,
-              size: 11,
-              color: Colors.white.withOpacity(0.4),
-            ),
-            const SizedBox(width: 4),
             Text(
-              _formatDate(widget.order.orderDate),
+              label,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+            Text(
+              sublabel,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.5),
-                fontSize: 11,
+                fontSize: 9,
+                color: Colors.white.withOpacity(0.4),
                 fontWeight: FontWeight.w600,
               ),
             ),
           ],
         ),
-      ],
-    );
-  }
-
-  Widget _buildPaymentBadge() {
-    final isPaid = widget.order.paymentStatus == PaymentStatus.paid;
-    final color = isPaid ? Colors.greenAccent : Colors.orangeAccent;
-    
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(
-          color: color.withOpacity(0.3),
-          width: 1,
-        ),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            isPaid ? Icons.check_circle_rounded : Icons.schedule_rounded,
-            size: 10,
-            color: color,
-          ),
-          const SizedBox(width: 3),
-          Text(
-            isPaid ? 'مدفوع' : 'معلق',
-            style: TextStyle(
-              fontSize: 9,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
-          ),
+    ],
+  );
+}
+
+Widget buildPriceSection(ResponsiveLayout responsive) {
+  return Container(
+    padding: EdgeInsets.symmetric(
+      horizontal: 12,
+      vertical: responsive.isDesktop ? 8 : 6,
+    ),
+    decoration: BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          AppColors.primary.withOpacity(0.15),
+          AppColors.primary.withOpacity(0.05),
         ],
       ),
-    );
-  }
-
-  Widget _buildInfoSection(ResponsiveLayout responsive) {
-    final itemCount = widget.order.items?.length ?? 0;
-    
-    return Container(
-      padding:  EdgeInsets.symmetric(horizontal: 10,
-       vertical: responsive.isDesktop ? 8 : 4
-       ),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.03),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.05),
-        ),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: _buildInfoItem(
-              icon: Icons.person_outline_rounded,
-              label: widget.order.userId.toString(),
-              sublabel: 'عميل',
-            ),
-          ),
-          Container(
-            width: 1,
-            height: 20,
-            color: Colors.white.withOpacity(0.1),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: _buildInfoItem(
-              icon: Icons.shopping_bag_outlined,
-              label: '$itemCount',
-              sublabel: itemCount == 1 ? 'منتج' : 'منتجات',
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInfoItem({
-    required IconData icon,
-    required String label,
-    required String sublabel,
-  }) {
-    return Row(
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: AppColors.primary.withOpacity(0.3), width: 1.5),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          icon,
-          size: 14,
-          color: AppColors.primary.withOpacity(0.7),
-        ),
-        const SizedBox(width: 6),
-        Flexible(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-              Text(
-                sublabel,
-                style: TextStyle(
-                  fontSize: 9,
-                  color: Colors.white.withOpacity(0.4),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
+        Text(
+          'الإجمالي',
+          style: TextStyle(
+            fontSize: 10,
+            color: Colors.white.withOpacity(0.5),
+            fontWeight: FontWeight.w600,
           ),
+        ),
+        const SizedBox(height: 2),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              widget.order.totalAmount.toStringAsFixed(2),
+              style: const TextStyle(
+                color: AppColors.primary,
+                fontWeight: FontWeight.w900,
+                fontSize: 20,
+                height: 1,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 2),
+              child: Text(
+                'ريال',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: AppColors.primary.withOpacity(0.7),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
         ),
       ],
-    );
-  }
+    ),
+  );
+}
 
-  Widget _buildPriceSection( ResponsiveLayout responsive) {
-    return Container(
-      padding:  EdgeInsets.symmetric(
-        horizontal: 12, 
-        vertical: responsive.isDesktop ? 8 : 6
-        ),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.primary.withOpacity(0.15),
-            AppColors.primary.withOpacity(0.05),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppColors.primary.withOpacity(0.3),
-          width: 1.5,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'الإجمالي',
-            style: TextStyle(
-              fontSize: 10,
-              color: Colors.white.withOpacity(0.5),
-              fontWeight: FontWeight.w600,
+Widget buildEnhancedOrderImages() {
+  final items = widget.order.items ?? [];
+  if (items.isEmpty) return const SizedBox.shrink();
+
+  final displayCount = items.length > 3 ? 3 : items.length;
+
+  return SizedBox(
+    width: 70,
+    height: 52,
+    child: Stack(
+      clipBehavior: Clip.none,
+      children: [
+        // Image stack
+        ...List.generate(displayCount, (index) {
+          return Positioned(
+            right: index * 18.0,
+            child: AnimatedContainer(
+              duration: Duration(milliseconds: 200 + (index * 50)),
+              curve: Curves.easeOut,
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: _isHovered
+                      ? AppColors.primary.withOpacity(0.4)
+                      : Colors.white.withOpacity(0.2),
+                  width: 2,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: const Offset(2, 3),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: CachedNetworkImage(
+                  imageUrl: items[index].imageUrl ?? '',
+                  fit: BoxFit.cover,
+                  placeholder: (_, __) => buildImageShimmer(),
+                  errorWidget: (_, __, ___) => Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.white.withOpacity(0.1),
+                          Colors.white.withOpacity(0.05),
+                        ],
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.inventory_2_outlined,
+                      size: 18,
+                      color: Colors.white.withOpacity(0.3),
+                    ),
+                  ),
+                ),
+              ),
             ),
-          ),
-          const SizedBox(height: 2),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                widget.order.totalAmount.toStringAsFixed(2),
+          );
+        }),
+
+        // Count badge if more items
+        if (items.length > 3)
+          Positioned(
+            right: 54,
+            top: -4,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.primary,
+                    AppColors.primary.withOpacity(0.8),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.white, width: 1.5),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withOpacity(0.4),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Text(
+                '+${items.length - 3}',
                 style: const TextStyle(
-                  color: AppColors.primary,
+                  fontSize: 10,
                   fontWeight: FontWeight.w900,
-                  fontSize: 20,
-                  height: 1,
-                ),
-              ),
-              const SizedBox(width: 4),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 2),
-                child: Text(
-                  'ريال',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: AppColors.primary.withOpacity(0.7),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEnhancedOrderImages() {
-    final items = widget.order.items ?? [];
-    if (items.isEmpty) return const SizedBox.shrink();
-
-    final displayCount = items.length > 3 ? 3 : items.length;
-    
-    return SizedBox(
-      width: 70,
-      height: 52,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          // Image stack
-          ...List.generate(displayCount, (index) {
-            return Positioned(
-              right: index * 18.0,
-              child: AnimatedContainer(
-                duration: Duration(milliseconds: 200 + (index * 50)),
-                curve: Curves.easeOut,
-                width: 52,
-                height: 52,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: _isHovered
-                        ? AppColors.primary.withOpacity(0.4)
-                        : Colors.white.withOpacity(0.2),
-                    width: 2,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(2, 3),
-                    ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: CachedNetworkImage(
-                    imageUrl: items[index].imageUrl ?? '',
-                    fit: BoxFit.cover,
-                    placeholder: (_, __) => _buildImageShimmer(),
-                    errorWidget: (_, __, ___) => Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.white.withOpacity(0.1),
-                            Colors.white.withOpacity(0.05),
-                          ],
-                        ),
-                      ),
-                      child: Icon(
-                        Icons.inventory_2_outlined,
-                        size: 18,
-                        color: Colors.white.withOpacity(0.3),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            );
-          }),
-          
-          // Count badge if more items
-          if (items.length > 3)
-            Positioned(
-              right: 54,
-              top: -4,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      AppColors.primary,
-                      AppColors.primary.withOpacity(0.8),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.white, width: 1.5),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primary.withOpacity(0.4),
-                      blurRadius: 6,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Text(
-                  '+${items.length - 3}',
-                  style: const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
-                  ),
+                  color: Colors.white,
                 ),
               ),
             ),
+          ),
+      ],
+    ),
+  );
+}
+
+Widget buildImageShimmer() {
+  return Container(
+    decoration: BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          Colors.white.withOpacity(0.1),
+          Colors.white.withOpacity(0.05),
+          Colors.white.withOpacity(0.1),
         ],
       ),
-    );
-  }
-
-  Widget _buildImageShimmer() {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Colors.white.withOpacity(0.1),
-            Colors.white.withOpacity(0.05),
-            Colors.white.withOpacity(0.1),
-          ],
+    ),
+    child: const Center(
+      child: SizedBox(
+        width: 16,
+        height: 16,
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.white24),
         ),
       ),
-      child: const Center(
-        child: SizedBox(
-          width: 16,
-          height: 16,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.white24),
-          ),
-        ),
-      ),
-    );
-  }
+    ),
+  );
+}
 
-  String _getFormattedOrderId() {
-    bool isMobile = MediaQuery.of(context).size.width < 600;
-    final id = widget.order.id.toString();
-    
-    if (isMobile && id.length > 10) {
-      return '#${id.substring(id.length - 6)}';
-    }
-    return '#$id';
-  }
 
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final diff = now.difference(date);
-    
-    if (diff.inDays == 0) {
-      return 'اليوم ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
-    }
-    if (diff.inDays == 1) return 'أمس';
-    if (diff.inDays < 7) return 'منذ ${diff.inDays} أيام';
-    
-    return '${date.day}/${date.month}/${date.year}';
+
+String formatDate(DateTime date) {
+  final now = DateTime.now();
+  final diff = now.difference(date);
+
+  if (diff.inDays == 0) {
+    return 'اليوم ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
   }
+  if (diff.inDays == 1) return 'أمس';
+  if (diff.inDays < 7) return 'منذ ${diff.inDays} أيام';
+
+  return '${date.day}/${date.month}/${date.year}';
 }

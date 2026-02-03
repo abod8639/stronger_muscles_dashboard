@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_section_title.dart';
-import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_address_section.dart';
-import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_detail_row.dart';
-import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_orderItem.dart';
-import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_section.dart';
-import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_summary_row.dart';
+import 'package:stronger_muscles_dashboard/screens/order_details_screen/widget/build_address_section.dart';
+import 'package:stronger_muscles_dashboard/screens/order_details_screen/widget/build_detail_row.dart';
+import 'package:stronger_muscles_dashboard/screens/order_details_screen/widget/build_orderItem.dart';
+import 'package:stronger_muscles_dashboard/screens/order_details_screen/widget/build_section.dart';
+import 'package:stronger_muscles_dashboard/screens/order_details_screen/widget/build_summary_row.dart';
 import 'package:stronger_muscles_dashboard/screens/components/base_app_bar.dart';
-import '../../../models/order_model.dart';
-import '../../../config/theme.dart';
-import '../../components/status_badge.dart';
+import '../../models/order_model.dart';
+import '../../config/theme.dart';
+import '../components/status_badge.dart';
 
 class OrderDetailsScreen extends StatelessWidget {
   final OrderModel order;
