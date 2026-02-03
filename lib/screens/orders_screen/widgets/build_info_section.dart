@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/models/order_model.dart';
-import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/order_list_tile.dart';
+import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_info_item.dart';
 
 Widget buildInfoSection(OrderModel order) {
   final itemCount = order.items?.length ?? 0;
