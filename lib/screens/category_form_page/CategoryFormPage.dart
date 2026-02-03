@@ -7,6 +7,7 @@ import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/controllers/categories_controller.dart';
 import 'package:stronger_muscles_dashboard/models/category_model.dart';
+import 'package:stronger_muscles_dashboard/screens/category_form_page/widget/gradient_background_painter.dart';
 import 'package:stronger_muscles_dashboard/screens/components/confirm_dialog.dart';
 import 'package:stronger_muscles_dashboard/screens/components/buildModernTextField.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
@@ -25,47 +26,8 @@ class _CategoryFormPageState extends State<CategoryFormPage> with TickerProvider
   final controller = Get.find<CategoriesController>();
   final _formKey = GlobalKey<FormState>();
   bool _isIdFieldEnabled = false;
-  late AnimationController _fadeController;
-  late AnimationController _lockController;
-  late Animation<double> _fadeAnimation;
 
-  @override
-  void initState() {
-    super.initState();
-    
-    _fadeController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 800),
-    );
-    
-    _lockController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
-    
-    _fadeAnimation = CurvedAnimation(
-      parent: _fadeController,
-      curve: Curves.easeInOut,
-    );
-    
-    _fadeController.forward();
-    
-    if (widget.category != null) {
-      controller.prepareFormForEdit(widget.category!);
-      _isIdFieldEnabled = false;
-    } else {
-      controller.clearForm();
-      _isIdFieldEnabled = true;
-      _lockController.value = 1.0;
-    }
-  }
 
-  @override
-  void dispose() {
-    _fadeController.dispose();
-    _lockController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,82 +37,79 @@ class _CategoryFormPageState extends State<CategoryFormPage> with TickerProvider
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF0A0A0A) : const Color(0xFFF5F7FA),
       extendBodyBehindAppBar: true,
-      appBar: _buildAppBar(isDark),
-      floatingActionButton: _buildFloatingActionButton(isDark),
+      appBar: buildAppBar(isDark),
+      floatingActionButton: buildFloatingActionButton(isDark),
       body: Stack(
         children: [
           // Animated gradient background
-          _buildGradientBackground(isDark),
+          buildGradientBackground(isDark),
           
           // Form content
-          FadeTransition(
-            opacity: _fadeAnimation,
-            child: Form(
-              key: _formKey,
-              child: SingleChildScrollView(
-                padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).padding.top + kToolbarHeight + 20,
-                  left: 24,
-                  right: 24,
-                  bottom: 100,
-                ),
-                child: Center(
-                  child: Container(
-                    constraints: const BoxConstraints(maxWidth: 850),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildPageHeader(isDark),
-                        const SizedBox(height: 32),
-                        
-                        _buildAnimatedSection(
-                          delay: 100,
-                          child: _buildSectionTitle('المعلومات الأساسية', Icons.info_outline, isDark),
-                        ),
-                        const SizedBox(height: 20),
-                        
-                        _buildAnimatedSection(
-                          delay: 200,
-                          child: _buildGlassmorphicCard(isDark, [
-                            _buildIdField(isDark),
-                            const SizedBox(height: 20),
-                            buildCategoryFormSheetModernTextField(
-                              controller.nameController,
-                              'اسم التصنيف',
-                              Icons.label_important_outline_rounded,
-                            ),
-                            const SizedBox(height: 20),
-                            buildCategoryFormSheetModernTextField(
-                              controller.descriptionController,
-                              'وصف التصنيف (اختياري)',
-                              Icons.description_outlined,
-                              // maxLines: 3,
-                            ),
-                          ]),
-                        ),
-
-                        const SizedBox(height: 40),
-                        
-                        _buildAnimatedSection(
-                          delay: 300,
-                          child: _buildSectionTitle('الوسائط والحالة', Icons.image_outlined, isDark),
-                        ),
-                        const SizedBox(height: 20),
-
-                        _buildAnimatedSection(
-                          delay: 400,
-                          child: _buildGlassmorphicCard(isDark, [
-                            _buildEnhancedImageSection(isDark, res),
-                            const SizedBox(height: 24),
-                            _buildDivider(isDark),
-                            const SizedBox(height: 24),
-                            _buildStatusSection(isDark),
-                          ]),
-                        ),
-
-                        const SizedBox(height: 50),
-                      ],
-                    ),
+          Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top + kToolbarHeight + 20,
+                left: 24,
+                right: 24,
+                bottom: 100,
+              ),
+              child: Center(
+                child: Container(
+                  constraints: const BoxConstraints(maxWidth: 850),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildPageHeader(isDark),
+                      const SizedBox(height: 32),
+                      
+                      buildAnimatedSection(
+                        delay: 100,
+                        child: buildSectionTitle('المعلومات الأساسية', Icons.info_outline, isDark),
+                      ),
+                      const SizedBox(height: 20),
+                      
+                      buildAnimatedSection(
+                        delay: 200,
+                        child: buildGlassmorphicCard(isDark, [
+                          buildIdField(isDark),
+                          const SizedBox(height: 20),
+                          buildCategoryFormSheetModernTextField(
+                            controller.nameController,
+                            'اسم التصنيف',
+                            Icons.label_important_outline_rounded,
+                          ),
+                          const SizedBox(height: 20),
+                          buildCategoryFormSheetModernTextField(
+                            controller.descriptionController,
+                            'وصف التصنيف (اختياري)',
+                            Icons.description_outlined,
+                            // maxLines: 3,
+                          ),
+                        ]),
+                      ),
+          
+                      const SizedBox(height: 40),
+                      
+                      buildAnimatedSection(
+                        delay: 300,
+                        child: buildSectionTitle('الوسائط والحالة', Icons.image_outlined, isDark),
+                      ),
+                      const SizedBox(height: 20),
+          
+                      buildAnimatedSection(
+                        delay: 400,
+                        child: buildGlassmorphicCard(isDark, [
+                          buildEnhancedImageSection(isDark, res),
+                          const SizedBox(height: 24),
+                          buildDivider(isDark),
+                          const SizedBox(height: 24),
+                          buildStatusSection(isDark),
+                        ]),
+                      ),
+          
+                      const SizedBox(height: 50),
+                    ],
                   ),
                 ),
               ),
@@ -161,7 +120,7 @@ class _CategoryFormPageState extends State<CategoryFormPage> with TickerProvider
     );
   }
 
-  Widget _buildGradientBackground(bool isDark) {
+  Widget buildGradientBackground(bool isDark) {
     return Positioned.fill(
       child: CustomPaint(
         painter: GradientBackgroundPainter(isDark: isDark),
@@ -169,7 +128,7 @@ class _CategoryFormPageState extends State<CategoryFormPage> with TickerProvider
     );
   }
 
-  Widget _buildPageHeader(bool isDark) {
+  Widget buildPageHeader(bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -229,7 +188,7 @@ class _CategoryFormPageState extends State<CategoryFormPage> with TickerProvider
     );
   }
 
-  PreferredSizeWidget _buildAppBar(bool isDark) {
+  PreferredSizeWidget buildAppBar(bool isDark) {
     return AppBar(
       elevation: 0,
       backgroundColor: Colors.transparent,
@@ -273,7 +232,7 @@ class _CategoryFormPageState extends State<CategoryFormPage> with TickerProvider
     );
   }
 
-  Widget _buildAnimatedSection({required int delay, required Widget child}) {
+  Widget buildAnimatedSection({required int delay, required Widget child}) {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
       duration: Duration(milliseconds: 500 + delay),
@@ -291,7 +250,7 @@ class _CategoryFormPageState extends State<CategoryFormPage> with TickerProvider
     );
   }
 
-  Widget _buildSectionTitle(String title, IconData icon, bool isDark) {
+  Widget buildSectionTitle(String title, IconData icon, bool isDark) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Row(
@@ -338,7 +297,7 @@ class _CategoryFormPageState extends State<CategoryFormPage> with TickerProvider
     );
   }
 
-  Widget _buildGlassmorphicCard(bool isDark, List<Widget> children) {
+  Widget buildGlassmorphicCard(bool isDark, List<Widget> children) {
     return  GlassContainer(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -350,7 +309,7 @@ class _CategoryFormPageState extends State<CategoryFormPage> with TickerProvider
     );
   }
 
-  Widget _buildIdField(bool isDark) {
+  Widget buildIdField(bool isDark) {
     return Stack(
       children: [
         GestureDetector(
@@ -428,7 +387,7 @@ class _CategoryFormPageState extends State<CategoryFormPage> with TickerProvider
     );
   }
 
-  Widget _buildEnhancedImageSection(bool isDark, ResponsiveLayout res) {
+  Widget buildEnhancedImageSection(bool isDark, ResponsiveLayout res) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -457,16 +416,16 @@ class _CategoryFormPageState extends State<CategoryFormPage> with TickerProvider
           valueListenable: controller.imageController,
           builder: (context, value, child) {
             if (controller.imageController.text.isEmpty) {
-              return _buildEnhancedImagePlaceholder(isDark);
+              return buildEnhancedImagePlaceholder(isDark);
             }
-            return _buildEnhancedImagePreview(isDark);
+            return buildEnhancedImagePreview(isDark);
           },
         ),
       ],
     );
   }
 
-  Widget _buildEnhancedImagePlaceholder(bool isDark) {
+  Widget buildEnhancedImagePlaceholder(bool isDark) {
     return Container(
       height: 200,
       width: double.infinity,
@@ -528,7 +487,7 @@ class _CategoryFormPageState extends State<CategoryFormPage> with TickerProvider
     );
   }
 
-  Widget _buildEnhancedImagePreview(bool isDark) {
+  Widget buildEnhancedImagePreview(bool isDark) {
     return Stack(
       children: [
         ClipRRect(
@@ -551,8 +510,8 @@ class _CategoryFormPageState extends State<CategoryFormPage> with TickerProvider
                 CachedNetworkImage(
                   imageUrl: controller.imageController.text,
                   fit: BoxFit.cover,
-                  placeholder: (_, __) => _buildShimmerPlaceholder(),
-                  errorWidget: (_, __, ___) => _buildErrorWidget(isDark),
+                  placeholder: (_, __) => buildShimmerPlaceholder(),
+                  errorWidget: (_, __, ___) => buildErrorWidget(isDark),
                 ),
                 // Gradient overlay
                 Container(
@@ -577,13 +536,13 @@ class _CategoryFormPageState extends State<CategoryFormPage> with TickerProvider
           right: 12,
           child: Row(
             children: [
-              _buildImageActionButton(
+              buildImageActionButton(
                 icon: Icons.refresh_rounded,
                 color: Colors.blue,
                 onTap: () => setState(() {}),
               ),
               const SizedBox(width: 8),
-              _buildImageActionButton(
+              buildImageActionButton(
                 icon: Icons.delete_outline_rounded,
                 color: Colors.red,
                 onTap: () {
@@ -634,7 +593,7 @@ class _CategoryFormPageState extends State<CategoryFormPage> with TickerProvider
     );
   }
 
-  Widget _buildImageActionButton({
+  Widget buildImageActionButton({
     required IconData icon,
     required Color color,
     required VoidCallback onTap,
@@ -667,7 +626,7 @@ class _CategoryFormPageState extends State<CategoryFormPage> with TickerProvider
     );
   }
 
-  Widget _buildShimmerPlaceholder() {
+  Widget buildShimmerPlaceholder() {
     return Container(
       color: Colors.grey[300],
       child: const Center(
@@ -676,7 +635,7 @@ class _CategoryFormPageState extends State<CategoryFormPage> with TickerProvider
     );
   }
 
-  Widget _buildErrorWidget(bool isDark) {
+  Widget buildErrorWidget(bool isDark) {
     return Container(
       color: isDark ? Colors.grey[900] : Colors.grey[100],
       child: Column(
@@ -708,7 +667,7 @@ class _CategoryFormPageState extends State<CategoryFormPage> with TickerProvider
     );
   }
 
-  Widget _buildStatusSection(bool isDark) {
+  Widget buildStatusSection(bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -735,7 +694,7 @@ class _CategoryFormPageState extends State<CategoryFormPage> with TickerProvider
     );
   }
 
-  Widget _buildDivider(bool isDark) {
+  Widget buildDivider(bool isDark) {
     return Container(
       height: 1,
       decoration: BoxDecoration(
@@ -750,7 +709,7 @@ class _CategoryFormPageState extends State<CategoryFormPage> with TickerProvider
     );
   }
 
-  Widget _buildFloatingActionButton(bool isDark) {
+  Widget buildFloatingActionButton(bool isDark) {
     return Obx(() {
       final isLoading = controller.isLoading.value;
       return AnimatedScale(
@@ -805,7 +764,6 @@ class _CategoryFormPageState extends State<CategoryFormPage> with TickerProvider
           confirmText: 'نعم، فك القفل',
           onConfirm: () {
             setState(() => _isIdFieldEnabled = true);
-            _lockController.forward();
             HapticFeedback.mediumImpact();
             Get.back();
           },
@@ -813,11 +771,7 @@ class _CategoryFormPageState extends State<CategoryFormPage> with TickerProvider
       );
     } else {
       setState(() => _isIdFieldEnabled = !_isIdFieldEnabled);
-      if (_isIdFieldEnabled) {
-        _lockController.forward();
-      } else {
-        _lockController.reverse();
-      }
+
       HapticFeedback.lightImpact();
     }
   }
@@ -926,49 +880,4 @@ class _CategoryFormPageState extends State<CategoryFormPage> with TickerProvider
   }
 }
 
-class GradientBackgroundPainter extends CustomPainter {
-  final bool isDark;
 
-  GradientBackgroundPainter({required this.isDark});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..shader = RadialGradient(
-        center: Alignment.topRight,
-        radius: 1.5,
-        colors: isDark
-            ? [
-                AppColors.primary.withOpacity(0.15),
-                Colors.transparent,
-              ]
-            : [
-                AppColors.primary.withOpacity(0.08),
-                Colors.transparent,
-              ],
-      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
-
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint);
-
-    // Second gradient blob
-    final paint2 = Paint()
-      ..shader = RadialGradient(
-        center: Alignment.bottomLeft,
-        radius: 1.2,
-        colors: isDark
-            ? [
-                const Color(0xFF6366F1).withOpacity(0.1),
-                Colors.transparent,
-              ]
-            : [
-                const Color(0xFF6366F1).withOpacity(0.05),
-                Colors.transparent,
-              ],
-      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
-
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint2);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
