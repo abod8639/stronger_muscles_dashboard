@@ -171,15 +171,3 @@ class _OrderListTileState extends State<OrderListTile>
   }
 }
 
-String formatDate(DateTime date) {
-  final now = DateTime.now();
-  final diff = now.difference(date);
-
-  if (diff.inDays == 0) {
-    return 'اليوم ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
-  }
-  if (diff.inDays == 1) return 'أمس';
-  if (diff.inDays < 7) return 'منذ ${diff.inDays} أيام';
-
-  return '${date.day}/${date.month}/${date.year}';
-}
