@@ -16,7 +16,6 @@ import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build
 import '../../config/responsive.dart';
 import '../../config/app_colors.dart';
 import '../../controllers/dashboard_controller.dart';
-import '../components/index.dart';
 
 class DashboardScreen extends GetView<DashboardController> {
   const DashboardScreen({super.key});

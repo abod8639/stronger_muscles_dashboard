@@ -11,7 +11,6 @@ import 'package:stronger_muscles_dashboard/screens/components/horizontal_chips_s
 import 'package:stronger_muscles_dashboard/screens/components/custom_search_bar.dart';
 import '../../controllers/products_controller.dart';
 import '../../config/responsive.dart';
-import '../components/index.dart';
 
 class ProductsScreen extends StatelessWidget {
   const ProductsScreen({super.key});
