@@ -5,6 +5,7 @@ import 'package:stronger_muscles_dashboard/screens/components/glass_container.da
 import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
 import 'package:stronger_muscles_dashboard/screens/components/recent_orders_list.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_enhanced_header.dart';
+import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_error_state.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_loading_state.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_stats_section.dart';
 import 'package:stronger_muscles_dashboard/screens/components/base_app_bar.dart';
@@ -92,71 +93,6 @@ class _OrdersScreenState extends State<OrdersScreen>
                 child: RecentOrdersList(orders: controller.filteredOrders),
               );
             }),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildErrorState(OrdersController controller) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Colors.red.withOpacity(0.2),
-                    Colors.red.withOpacity(0.05),
-                  ],
-                ),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.error_outline_rounded,
-                size: 64,
-                color: Colors.redAccent,
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'حدث خطأ',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w900,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              controller.errorMessage.value,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.white.withOpacity(0.6),
-              ),
-            ),
-            const SizedBox(height: 32),
-            ElevatedButton.icon(
-              onPressed: () => controller.fetchOrders(),
-              icon: const Icon(Icons.refresh_rounded),
-              label: const Text('إعادة المحاولة'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 32,
-                  vertical: 16,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
           ],
         ),
       ),
