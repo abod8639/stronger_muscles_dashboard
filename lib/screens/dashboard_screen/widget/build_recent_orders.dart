@@ -24,7 +24,8 @@ Widget buildRecentOrders(ResponsiveLayout res) {
   itemBuilder: (context, order, index) => OrderListTile(
     order: order,
     index: index,
-    onTap: () => Get.to(() => OrderDetailsScreen(order: order)),
+    onTap: () => 
+    Get.to(() => OrderDetailsScreen(order: order)),
   ),
 );
     },

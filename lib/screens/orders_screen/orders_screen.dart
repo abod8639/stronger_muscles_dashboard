@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/controllers/navigation_controller.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
-import 'package:stronger_muscles_dashboard/screens/components/recent_orders_list.dart';
+import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_recent_orders.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_empty_state.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_enhanced_header.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_error_state.dart';
@@ -45,7 +45,6 @@ class _OrdersScreenState extends State<OrdersScreen>
   Widget build(BuildContext context) {
     final controller = Get.put(OrdersController());
     final responsive = context.responsive;
-    final navigationController = Get.put(NavigationController());
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -92,13 +91,7 @@ class _OrdersScreenState extends State<OrdersScreen>
 
               return MyRefreshIndicator(
                 onRefresh: () => controller.fetchOrders(),
-                child: RecentOrdersList(
-                  onSeeAll: () {
-                    // navigationController.changeIndex(2);
-                    print("${navigationController.selectedIndex.value}");
-                  },
-                  orders: controller.filteredOrders,
-                ),
+                child: buildRecentOrders(responsive),
               );
             }),
           ],
