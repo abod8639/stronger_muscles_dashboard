@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/screens/components/status_badge.dart';
@@ -170,32 +169,6 @@ class _OrderListTileState extends State<OrderListTile>
       ),
     );
   }
-}
-
-Widget buildImageShimmer() {
-  return Container(
-    decoration: BoxDecoration(
-      gradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [
-          Colors.white.withOpacity(0.1),
-          Colors.white.withOpacity(0.05),
-          Colors.white.withOpacity(0.1),
-        ],
-      ),
-    ),
-    child: const Center(
-      child: SizedBox(
-        width: 16,
-        height: 16,
-        child: CircularProgressIndicator(
-          strokeWidth: 2,
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.white24),
-        ),
-      ),
-    ),
-  );
 }
 
 String formatDate(DateTime date) {
