@@ -27,7 +27,6 @@ class OrdersScreen extends StatefulWidget {
 class _OrdersScreenState extends State<OrdersScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _headerController;
-  late Animation<double> _headerAnimation;
 
   @override
   void initState() {
@@ -36,10 +35,7 @@ class _OrdersScreenState extends State<OrdersScreen>
       vsync: this,
       duration: const Duration(milliseconds: 800),
     );
-    _headerAnimation = CurvedAnimation(
-      parent: _headerController,
-      curve: Curves.easeOutCubic,
-    );
+
     _headerController.forward();
   }
 
@@ -65,30 +61,18 @@ class _OrdersScreenState extends State<OrdersScreen>
         child: Column(
           children: [
             // Enhanced Header Section
-            FadeTransition(
-              opacity: _headerAnimation,
-              child: SlideTransition(
-                position: Tween<Offset>(
-                  begin: const Offset(0, -0.2),
-                  end: Offset.zero,
-                ).animate(_headerAnimation),
-                child: _buildEnhancedHeader(controller, responsive),
-              ),
-            ),
+            _buildEnhancedHeader(controller, responsive),
         
             const SizedBox(height: 16),
         
             // Stats Section (Desktop & Tablet)
             if (responsive.isDesktop || responsive.isTablet)
-              FadeTransition(
-                opacity: _headerAnimation,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: responsive.defaultPadding.left,
-                  ),
-                  child: GlassContainer(
-                    child: buildStatsSection(),
-                  ),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: responsive.defaultPadding.left,
+                ),
+                child: GlassContainer(
+                  child: buildStatsSection(),
                 ),
               ),
         

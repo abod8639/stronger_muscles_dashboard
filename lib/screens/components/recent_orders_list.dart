@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/order_details_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/order_list_tile.dart';
-import '../../../config/theme.dart';
-import '../../../config/responsive.dart';
-import '../../../models/index.dart';
+import '../../config/theme.dart';
+import '../../config/responsive.dart';
+import '../../models/index.dart';
 
 class RecentOrdersList extends StatelessWidget {
   final List<OrderModel> orders;
@@ -17,9 +17,7 @@ class RecentOrdersList extends StatelessWidget {
     final res = ResponsiveLayout(context);
     final bool isSmallScreen = res.isMobile;
 
-    final int crossAxisCount = isSmallScreen
-        ? 1
-        : (res.screenWidth < 1200 ? 2 : 3);
+    final int crossAxisCount = isSmallScreen ? 1 : 2;
 
     // final double childAspectRatio = isSmallScreen
     //     ? 1.5
