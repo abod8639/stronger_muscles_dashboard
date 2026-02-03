@@ -94,7 +94,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                 onRefresh: () => controller.fetchOrders(),
                 child: RecentOrdersList(
                   onSeeAll: () {
-                    navigationController.changeIndex(2);
+                    // navigationController.changeIndex(2);
                     print("${navigationController.selectedIndex.value}");
                   },
                   orders: controller.filteredOrders,

@@ -8,10 +8,12 @@ class CategoriesGrid extends StatelessWidget {
   final List<CategoryModel> categories;
   final VoidCallback? onSeeAll;
   final Function(CategoryModel)? onCategoryTap;
+  final String title;
 
   const CategoriesGrid({
     super.key,
     required this.categories,
+    required this.title,
     this.onSeeAll,
     this.onCategoryTap,
   });
@@ -41,8 +43,8 @@ class CategoriesGrid extends StatelessWidget {
                 ),
               ),
               if (onSeeAll != null)
-                GestureDetector(
-                  onTap: onSeeAll,
+                TextButton(
+                  onPressed: onSeeAll,
                   child: Text(
                     'عرض الكل',
                     style: TextStyle(
