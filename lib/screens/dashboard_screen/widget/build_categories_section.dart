@@ -15,13 +15,15 @@ Widget buildCategoriesSection(ResponsiveLayout res) {
     builder: (context) {
       return CategoriesGrid(
         categories: dashboardController.categories,
-        onSeeAll: () {}
-            // Get.to(CategoriesScreen())
-      //       showCategoryForm(
-      //         context,
-      //         categorController,
-      //         category: dashboardController.categories.first,
-      //       ),
+        onSeeAll: () {
+          debugPrint("=============onSeeAll==========");
+        },
+        // Get.to(CategoriesScreen())
+        //       showCategoryForm(
+        //         context,
+        //         categorController,
+        //         category: dashboardController.categories.first,
+        //       ),
       );
     },
   );

@@ -79,7 +79,6 @@ class CategoriesScreen extends StatelessWidget {
                             category: category,
                             index: index,
                             onEdit: () => Get.to(() => CategoryFormPage(category: category)),
-
                             // onEdit: () => showCategoryForm(
                             //   context,
                             //   controller,
@@ -103,16 +102,13 @@ class CategoriesScreen extends StatelessWidget {
                           childAspectRatio: 1.0,
                         ),
                         itemCount: controller.filteredCategories.length,
+
                         itemBuilder: (context, index) {
                           final category = controller.filteredCategories[index];
                           return CategoryGridItem(
                             category: category,
-                            onEdit: () => Get.to(() => CategoryFormPage(category: category)),
-                            //  showCategoryForm(
-                            // context,
-                            // controller,
-                            // category: category,
-                            // ),
+                            onEdit: () => 
+                            Get.to(() => CategoryFormPage(category: category)),
                             onDelete: () =>
                                 controller.deleteCategory(category.id),
                           );

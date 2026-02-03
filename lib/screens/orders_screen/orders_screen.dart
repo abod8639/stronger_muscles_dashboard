@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/controllers/navigation_controller.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
 import 'package:stronger_muscles_dashboard/screens/components/recent_orders_list.dart';
@@ -44,6 +45,7 @@ class _OrdersScreenState extends State<OrdersScreen>
   Widget build(BuildContext context) {
     final controller = Get.put(OrdersController());
     final responsive = context.responsive;
+    final navigationController = Get.put(NavigationController());
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -90,7 +92,13 @@ class _OrdersScreenState extends State<OrdersScreen>
 
               return MyRefreshIndicator(
                 onRefresh: () => controller.fetchOrders(),
-                child: RecentOrdersList(orders: controller.filteredOrders),
+                child: RecentOrdersList(
+                  onSeeAll: () {
+                    navigationController.changeIndex(2);
+                    print("${navigationController.selectedIndex.value}");
+                  },
+                  orders: controller.filteredOrders,
+                ),
               );
             }),
           ],

@@ -1,5 +1,5 @@
 
-  import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 
 Widget buildLoadingState() {

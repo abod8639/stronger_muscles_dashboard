@@ -44,14 +44,15 @@ class RecentOrdersList extends StatelessWidget {
                 ),
               ),
               if (onSeeAll != null)
-                GestureDetector(
-                  onTap: onSeeAll,
-                  child: Text(
-                    'عرض الكل',
-                    style: TextStyle(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w600,
-                      fontSize: res.getBodyFontSize() - 1,
+               
+                   TextButton(
+                    onPressed: onSeeAll,
+                    child: Text(
+                      'عرض الكل',
+                      style: TextStyle(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w600,
+                        fontSize: res.getBodyFontSize() - 1,
                     ),
                   ),
                 ),

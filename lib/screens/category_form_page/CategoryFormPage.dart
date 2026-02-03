@@ -60,26 +60,33 @@ class _CategoryFormPageState extends State<CategoryFormPage> with TickerProvider
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+
                       buildPageHeader(isDark),
+
                       const SizedBox(height: 32),
                       
                       buildAnimatedSection(
                         delay: 100,
                         child: buildSectionTitle('المعلومات الأساسية', Icons.info_outline, isDark),
                       ),
+
                       const SizedBox(height: 20),
                       
                       buildAnimatedSection(
                         delay: 200,
                         child: buildGlassmorphicCard(isDark, [
                           buildIdField(isDark),
+
                           const SizedBox(height: 20),
+
                           buildCategoryFormSheetModernTextField(
                             controller.nameController,
                             'اسم التصنيف',
                             Icons.label_important_outline_rounded,
                           ),
+
                           const SizedBox(height: 20),
+
                           buildCategoryFormSheetModernTextField(
                             controller.descriptionController,
                             'وصف التصنيف (اختياري)',
@@ -95,6 +102,7 @@ class _CategoryFormPageState extends State<CategoryFormPage> with TickerProvider
                         delay: 300,
                         child: buildSectionTitle('الوسائط والحالة', Icons.image_outlined, isDark),
                       ),
+
                       const SizedBox(height: 20),
           
                       buildAnimatedSection(
@@ -777,23 +785,24 @@ class _CategoryFormPageState extends State<CategoryFormPage> with TickerProvider
   }
 
   void _handleBack() {
-    if (controller.nameController.text.isNotEmpty ||
-        controller.descriptionController.text.isNotEmpty ||
-        controller.imageController.text.isNotEmpty) {
-      Get.dialog(
-        ConfirmDialog(
-          title: 'تأكيد الخروج',
-          message: 'هل أنت متأكد من الخروج؟ سيتم فقدان التغييرات غير المحفوظة.',
-          confirmText: 'نعم، الخروج',
-          onConfirm: () {
-            Get.back();
-            Get.back();
-          },
-        ),
-      );
-    } else {
+    // if (controller.nameController.text.isNotEmpty ||
+    //     controller.descriptionController.text.isNotEmpty ||
+    //     controller.imageController.text.isNotEmpty) {
+    //   Get.dialog(
+    //     ConfirmDialog(
+    //       title: 'تأكيد الخروج',
+    //       message: 'هل أنت متأكد من الخروج؟ سيتم فقدان التغييرات غير المحفوظة.',
+    //       confirmText: 'نعم، الخروج',
+    //       onConfirm: () {
+    //         Get.back();
+    //         Get.back();
+    //       },
+    //     ),
+    //   );
+    // } else {
+    //   Get.back();
+    // }
       Get.back();
-    }
   }
 
   void _handleDelete() {
