@@ -23,7 +23,6 @@ class RecentOrdersList extends StatelessWidget {
     final bool isTabletScreen = res.isTablet ;
     // final bool isDesktopScreen = res.isDesktop ;
 
-
     final int crossAxisCount = isSmallScreen ? 1 : 2;
 
     return Column(

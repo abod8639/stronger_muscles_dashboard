@@ -75,8 +75,7 @@ Widget buildIndicatorCard(int index) {
 
   final indicator = indicators[index];
   final chartSpots = generateChartSpots(
-    50, 
-    controller.orders.length.toDouble() + 400
+    50, controller.orders.length.toDouble() + 400
     );
 
   return PremiumIndicatorCard(
