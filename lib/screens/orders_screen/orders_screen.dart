@@ -10,7 +10,6 @@ import 'package:stronger_muscles_dashboard/screens/components/horizontal_chips_s
 import 'package:stronger_muscles_dashboard/screens/components/custom_search_bar.dart';
 import '../../controllers/orders_controller.dart';
 import '../../config/responsive.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class OrdersScreen extends StatefulWidget {
   const OrdersScreen({super.key});
@@ -92,9 +91,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                     
               return MyRefreshIndicator(
                 onRefresh: () => controller.fetchOrders(),
-                child: AnimationLimiter(
-                  child: RecentOrdersList(orders: controller.filteredOrders),
-                ),
+                child: RecentOrdersList(orders: controller.filteredOrders),
               );
             }),
           ],
@@ -407,4 +404,6 @@ class _OrdersScreenState extends State<OrdersScreen>
       ),
     );
   }
+
+
 }

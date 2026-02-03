@@ -8,9 +8,9 @@ import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_o
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_section.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_summary_row.dart';
 import 'package:stronger_muscles_dashboard/screens/components/base_app_bar.dart';
-import '../../models/order_model.dart';
-import '../../config/theme.dart';
-import '../components/status_badge.dart';
+import '../../../models/order_model.dart';
+import '../../../config/theme.dart';
+import '../../components/status_badge.dart';
 
 class OrderDetailsScreen extends StatelessWidget {
   final OrderModel order;

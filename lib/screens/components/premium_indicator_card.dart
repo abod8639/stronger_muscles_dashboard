@@ -111,7 +111,7 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard>
                   ),
                 ),
 
-              const SizedBox(height: 12),
+              const SizedBox(height: 2),
 
               // Value with Gradient Mask
               ShaderMask(
@@ -134,11 +134,6 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard>
                 ),
               ),
 
-              const Spacer(),
-
-              // Mini Chart with Area Glow
-              if (widget.chartSpots != null && widget.chartSpots!.isNotEmpty)
-                SizedBox(height: 35, child: LineChart(_buildChartData())),
             ],
           ),
         ),
@@ -191,33 +186,5 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard>
     );
   }
 
-  LineChartData _buildChartData() {
-    final Color chartColor = widget.chartColor ?? widget.accentColor;
-    return LineChartData(
-      gridData: const FlGridData(show: false),
-      titlesData: const FlTitlesData(show: false),
-      borderData: FlBorderData(show: false),
-      lineBarsData: [
-        LineChartBarData(
-          spots: widget.chartSpots ?? [],
-          isCurved: true,
-          color: chartColor,
-          barWidth: 3,
-          isStrokeCapRound: true,
-          dotData: const FlDotData(show: false),
-          belowBarData: BarAreaData(
-            show: true,
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                chartColor.withOpacity(0.3),
-                widget.accentColor.withOpacity(0.0),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+
 }

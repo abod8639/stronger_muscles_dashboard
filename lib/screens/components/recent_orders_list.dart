@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/screens/orders_screen/order_details_screen.dart';
+import 'package:stronger_muscles_dashboard/screens/orders_screen/order_details_screen/order_details_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/order_list_tile.dart';
 import '../../config/theme.dart';
 import '../../config/responsive.dart';
@@ -10,18 +10,21 @@ class RecentOrdersList extends StatelessWidget {
   final List<OrderModel> orders;
   final VoidCallback? onSeeAll;
 
-  const RecentOrdersList({super.key, required this.orders, this.onSeeAll});
+  const RecentOrdersList({
+    super.key, 
+    required this.orders, 
+    this.onSeeAll
+    });
 
   @override
   Widget build(BuildContext context) {
     final res = ResponsiveLayout(context);
     final bool isSmallScreen = res.isMobile;
+    final bool isTabletScreen = res.isTablet ;
+    // final bool isDesktopScreen = res.isDesktop ;
+
 
     final int crossAxisCount = isSmallScreen ? 1 : 2;
-
-    // final double childAspectRatio = isSmallScreen
-    //     ? 1.5
-    //     : (res.screenWidth < 1400 ? 1.6 : 1.8);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -57,7 +60,7 @@ class RecentOrdersList extends StatelessWidget {
           ),
         ),
 
-        isSmallScreen
+        isTabletScreen
             ? ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -65,16 +68,14 @@ class RecentOrdersList extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: EdgeInsets.fromLTRB(
-                      res.defaultPadding.left,
-                      0,
-                      res.defaultPadding.left,
-                      12,
+                      res.defaultPadding.left, 0,
+                      res.defaultPadding.left, 12,
                     ),
                     child: OrderListTile(
                       order: orders[index],
                       index: index,
-                      onTap: () => Get.to(
-                        () => OrderDetailsScreen(order: orders[index]),
+                      onTap: () => 
+                      Get.to(() => OrderDetailsScreen(order: orders[index]),
                       ),
                     ),
                   );
@@ -97,8 +98,8 @@ class RecentOrdersList extends StatelessWidget {
                   return OrderListTile(
                     order: orders[index],
                     index: index,
-                    onTap: () =>
-                        Get.to(() => OrderDetailsScreen(order: orders[index])),
+                    onTap: () => 
+                    Get.to(() => OrderDetailsScreen(order: orders[index])),
                   );
                 },
               ),
