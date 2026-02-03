@@ -144,7 +144,7 @@ class _OrderListTileState extends State<OrderListTile>
                       const SizedBox(height: 12),
 
                       // Info Section
-                      buildInfoSection(responsive),
+                      buildInfoSection(responsive,widget.order),
 
                       const Spacer(),
 
@@ -169,41 +169,8 @@ class _OrderListTileState extends State<OrderListTile>
   }
 }
 
-Widget buildPaymentBadge() {
-  final isPaid = widget.order.paymentStatus == PaymentStatus.paid;
-  final color = isPaid ? Colors.greenAccent : Colors.orangeAccent;
-
-  return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-    decoration: BoxDecoration(
-      color: color.withOpacity(0.15),
-      borderRadius: BorderRadius.circular(6),
-      border: Border.all(color: color.withOpacity(0.3), width: 1),
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          isPaid ? Icons.check_circle_rounded : Icons.schedule_rounded,
-          size: 10,
-          color: color,
-        ),
-        const SizedBox(width: 3),
-        Text(
-          isPaid ? 'مدفوع' : 'معلق',
-          style: TextStyle(
-            fontSize: 9,
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-Widget buildInfoSection(ResponsiveLayout responsive) {
-  final itemCount = widget.order.items?.length ?? 0;
+Widget buildInfoSection(ResponsiveLayout responsive,OrderModel order) {
+  final itemCount = order.items?.length ?? 0;
 
   return Container(
     padding: EdgeInsets.symmetric(
