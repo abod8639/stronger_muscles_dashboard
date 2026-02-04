@@ -12,19 +12,6 @@ Widget buildUserCard(DashboardUser user) {
       final isDark = Theme.of(context).brightness == Brightness.dark;
       return GlassContainer(
         margin: const EdgeInsets.only(bottom: 12),
-        // padding: EdgeInsets.all(8),
-        // margin: const EdgeInsets.only(bottom: 12),
-        // decoration: BoxDecoration(
-        //   color: isDark ? const Color(0xFF2C2C2C) : Colors.white,
-        //   borderRadius: BorderRadius.circular(16),
-        //   boxShadow: [
-        //     BoxShadow(
-        //       color: AppColors.primary.withValues(alpha: 0.05),
-        //       blurRadius: 10,
-        //       offset: const Offset(0, 4),
-        //     ),
-        //   ],
-        // ),
         child: ExpansionTile(
           tilePadding: const EdgeInsets.all(8),
           shape: Border.all(color: Colors.transparent),

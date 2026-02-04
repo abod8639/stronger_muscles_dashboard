@@ -221,54 +221,6 @@ class _CategoryFormPageState extends State<CategoryFormPage>
     );
   }
 
-  // PreferredSizeWidget buildAppBar(bool isDark) {
-  //   return AppBar(
-  //     elevation: 0,
-  //     backgroundColor: Colors.transparent,
-  //     systemOverlayStyle: isDark
-  //         ? SystemUiOverlayStyle.light
-  //         : SystemUiOverlayStyle.dark,
-  //     leading: Container(
-  //       margin: const EdgeInsets.all(8),
-  //       decoration: BoxDecoration(
-  //         color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
-  //         borderRadius: BorderRadius.circular(12),
-  //         border: Border.all(
-  //           color: (isDark ? Colors.white : Colors.black).withOpacity(0.1),
-  //         ),
-  //       ),
-  //       child: IconButton(
-  //         icon: Icon(
-  //           Icons.arrow_back_ios_new_rounded,
-  //           size: 18,
-  //           color: isDark ? Colors.white : Colors.black87,
-  //         ),
-  //         onPressed: () => _handleBack(),
-  //       ),
-  //     ),
-  //     actions: [
-  //       if (widget.category != null)
-  //         Container(
-  //           margin: const EdgeInsets.all(8),
-  //           decoration: BoxDecoration(
-  //             color: Colors.redAccent.withOpacity(0.1),
-  //             borderRadius: BorderRadius.circular(12),
-  //             border: Border.all(color: Colors.redAccent.withOpacity(0.3)),
-  //           ),
-  //           child: IconButton(
-  //             icon: const Icon(
-  //               Icons.delete_outline_rounded,
-  //               color: Colors.redAccent,
-  //               size: 20,
-  //             ),
-  //             onPressed: () => _handleDelete(),
-  //           ),
-  //         ),
-  //       const SizedBox(width: 8),
-  //     ],
-  //   );
-  // }
-
   Widget buildAnimatedSection({required int delay, required Widget child}) {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
@@ -575,117 +527,6 @@ class _CategoryFormPageState extends State<CategoryFormPage>
     );
   }
 
-  // Widget buildEnhancedImagePreview(bool isDark) {
-  //   return Stack(
-  //     children: [
-  //       ClipRRect(
-  //         borderRadius: BorderRadius.circular(20),
-  //         child: Container(
-  //           height: 240,
-  //           width: double.infinity,
-  //           decoration: BoxDecoration(
-  //             boxShadow: [
-  //               BoxShadow(
-  //                 color: AppColors.primary.withOpacity(0.2),
-  //                 blurRadius: 20,
-  //                 offset: const Offset(0, 10),
-  //               ),
-  //             ],
-  //           ),
-  //           child: Stack(
-  //             fit: StackFit.expand,
-  //             children: [
-  //               CachedNetworkImage(
-  //                 imageUrl: controller.imageController.text,
-  //                 fit: BoxFit.cover,
-  //                 placeholder: (_, __) => buildShimmerPlaceholder(),
-  //                 errorWidget: (_, __, ___) => buildErrorWidget(isDark),
-  //               ),
-  //               // Gradient overlay
-  //               Container(
-  //                 decoration: BoxDecoration(
-  //                   gradient: LinearGradient(
-  //                     begin: Alignment.topCenter,
-  //                     end: Alignment.bottomCenter,
-  //                     colors: [
-  //                       Colors.transparent,
-  //                       Colors.black.withOpacity(0.3),
-  //                     ],
-  //                   ),
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //       ),
-  //       // Action buttons
-  //       Positioned(
-  //         top: 12,
-  //         right: 12,
-  //         child: Row(
-  //           children: [
-  //             buildImageActionButton(
-  //               icon: Icons.refresh_rounded,
-  //               color: Colors.blue,
-  //               onTap: () => setState(() {}),
-  //             ),
-  //             const SizedBox(width: 8),
-  //             buildImageActionButton(
-  //               icon: Icons.delete_outline_rounded,
-  //               color: Colors.red,
-  //               onTap: () {
-  //                 controller.imageController.clear();
-  //                 setState(() {});
-  //               },
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //       // Image info badge
-  //       Positioned(
-  //         bottom: 12,
-  //         left: 12,
-  //         child: ClipRRect(
-  //           borderRadius: BorderRadius.circular(12),
-  //           child: BackdropFilter(
-  //             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-  //             child: Container(
-  //               padding: const EdgeInsets.symmetric(
-  //                 horizontal: 12,
-  //                 vertical: 8,
-  //               ),
-  //               decoration: BoxDecoration(
-  //                 color: Colors.black.withOpacity(0.4),
-  //                 borderRadius: BorderRadius.circular(12),
-  //                 border: Border.all(color: Colors.white.withOpacity(0.2)),
-  //               ),
-  //               child: Row(
-  //                 mainAxisSize: MainAxisSize.min,
-  //                 children: [
-  //                   Icon(
-  //                     Icons.check_circle_rounded,
-  //                     size: 16,
-  //                     color: Colors.greenAccent[400],
-  //                   ),
-  //                   const SizedBox(width: 6),
-  //                   const Text(
-  //                     'الصورة جاهزة',
-  //                     style: TextStyle(
-  //                       color: Colors.white,
-  //                       fontSize: 12,
-  //                       fontWeight: FontWeight.w600,
-  //                     ),
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //           ),
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
-
   Widget buildImageActionButton({
     required IconData icon,
     required Color color,
@@ -916,34 +757,6 @@ class _CategoryFormPageState extends State<CategoryFormPage>
       HapticFeedback.lightImpact();
     }
   }
-
-  // void _handleBack() {
-  //   // ConfirmDialog(
-  //   //   title: 'تأكيد الخروج',
-  //   //   message: 'هل أنت متأكد من الخروج؟ سيتم فقدان التغييرات غير المحفوظة.',
-  //   //   onConfirm: () {
-  //   //   },
-  //   // );
-  //       Get.back();
-  // }
-
-  // void _handleDelete() {
-  //   Get.dialog(
-  //     ConfirmDialog(
-  //       title: '⚠️ حذف التصنيف',
-  //       message:
-  //           'هل أنت متأكد من حذف هذا التصنيف؟\n\nتحذير: هذا الإجراء لا يمكن التراجع عنه وقد يؤثر على المنتجات المرتبطة.',
-  //       confirmText: 'نعم، احذف',
-  //       onConfirm: () async {
-  //         Get.back();
-  //         // final success = await controller.deleteCategory(widget.category!.id);
-  //         // if (success) {
-  //         //   Get.back();
-  //         // }
-  //       },
-  //     ),
-  //   );
-  // }
 
   void _submitForm() async {
     // Validate required fields

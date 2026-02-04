@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:stronger_muscles_dashboard/screens/components/enhanced_loading_widget.dart';
-import 'package:stronger_muscles_dashboard/screens/components/enhanced_status_chart.dart';
 import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_categories_section.dart';
@@ -109,49 +108,3 @@ class DashboardScreen extends GetView<DashboardController> {
   return random;
 }
 
-// List<StakingDetail> generateStakingDetails() {
-//   return [
-//     StakingDetail(
-      
-//       label: 'Total Staked',
-//       value: '10,000',
-//       // percentage: '100%',
-//       color: Colors.blue,
-//     ),
-//     StakingDetail(
-//       label: 'Available to Stake',
-//       value: '5,000',
-//       // percentage: '50%',
-//       color: Colors.green,
-//     ),
-//     StakingDetail(
-//       label: 'Rewards Earned',
-//       value: '1,000',
-//       // percentage: '10%',
-//       color: Colors.orange,
-//     ),
-//   ];
-// }
-
-List<StatusChartItem> genrateChartItems(){
-  return [
-    StatusChartItem(
-      label: 'Total Staked',
-      count: 10000,
-      total: 20000,
-      color: Colors.blue,
-    ),
-    StatusChartItem(
-      label: 'Available to Stake',
-      count: 5000,
-      total: 20000,
-      color: Colors.green,
-    ),
-    StatusChartItem(
-      label: 'Rewards Earned',
-      count: 1000,
-      total: 20000,
-      color: Colors.orange,
-    ),
-  ];
-}
