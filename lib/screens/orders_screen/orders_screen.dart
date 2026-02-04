@@ -19,99 +19,86 @@ class OrdersScreen extends StatefulWidget {
   State<OrdersScreen> createState() => _OrdersScreenState();
 }
 
-class _OrdersScreenState extends State<OrdersScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _headerController;
-
-  @override
-  void initState() {
-    super.initState();
-    _headerController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 800),
-    );
-
-    _headerController.forward();
-  }
-
-  @override
-  void dispose() {
-    _headerController.dispose();
-    super.dispose();
-  }
-
-
+class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderStateMixin {
+  final controller = Get.put(OrdersController());
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(OrdersController());
-    final responsive = context.responsive;
+    final res = context.responsive;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: BaseAppBar(
-        title: 'الطلبات',
+        title: 'إدارة الطلبات',
         onPressed: controller.fetchOrders,
         icon: Icons.refresh_rounded,
       ),
-      body: SingleChildScrollView(
+      body: MyRefreshIndicator(
+        onRefresh: controller.fetchOrders,
         child: Column(
           children: [
-            // Enhanced Header Section
-            buildEnhancedHeader(controller),
+            // 1. الجزء الثابت: الهيدر والإحصائيات
+            _buildFixedHeader(res),
 
-            const SizedBox(height: 16),
+            // 2. الجزء المتغير: القائمة وحالاتها
+            Expanded(
+              child: Obx(() {
+                if (controller.isLoading.value && controller.filteredOrders.isEmpty) {
+                  return buildLoadingState();
+                }
 
-            // Stats Section (Desktop & Tablet)
-            if (responsive.isDesktop || responsive.isTablet)
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: responsive.defaultPadding.left,
-                ),
-                child: GlassContainer(child: buildStatsSection()),
-              ),
+                if (controller.errorMessage.isNotEmpty && controller.filteredOrders.isEmpty) {
+                  return buildErrorState(controller);
+                }
 
-            if (responsive.isDesktop || responsive.isTablet)
-              const SizedBox(height: 16),
+                if (controller.filteredOrders.isEmpty) {
+                  return _buildEmptyState();
+                }
 
-            // Orders List
-            Obx(() {
-
-              if (controller.isLoading.value &&
-                  controller.filteredOrders.isEmpty) {
-                return buildLoadingState();
-              }
-
-              if (controller.errorMessage.isNotEmpty &&
-                  controller.filteredOrders.isEmpty) {
-                return buildErrorState(controller);
-              }
-
-              if (controller.filteredOrders.isEmpty) {
-                return GenericEmptyState(
-                  title: 'لا توجد طلبات',
-                  message: controller.searchQuery.value.isNotEmpty
-                      ? 'لم يتم العثور على نتائج للبحث'
-                      : 'لا توجد طلبات حالياً',
-                  icon: Icons.inbox_outlined,
-                  onAction: controller.searchQuery.value.isNotEmpty
-                      ? () => controller.onSearchChanged('')
-                      : null,
-                  actionLabel: controller.searchQuery.value.isNotEmpty
-                      ? 'مسح البحث'
-                      : null,
+                // استخدام ListView أو ScrollView واحد فقط لتجنب تعارض الـ Scrolling
+                return SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: EdgeInsets.only(bottom: res.defaultPadding.bottom),
+                  child: buildRecentOrders(res),
                 );
-              }
-
-              return MyRefreshIndicator(
-                onRefresh: () => controller.fetchOrders(),
-                child: buildRecentOrders(responsive),
-              );
-              
-            }),
+              }),
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildFixedHeader(ResponsiveLayout res) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        buildEnhancedHeader(controller),
+        if (res.isDesktop || res.isTablet) ...[
+          const SizedBox(height: 16),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: res.defaultPadding.left),
+            child: GlassContainer(
+              padding: const EdgeInsets.all(16),
+              child: buildStatsSection(),
+            ),
+          ),
+        ],
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildEmptyState() {
+    final isSearching = controller.searchQuery.value.isNotEmpty;
+    return GenericEmptyState(
+      title: isSearching ? 'لا توجد نتائج للبحث' : 'قائمة الطلبات فارغة',
+      message: isSearching 
+          ? 'تأكد من كتابة رقم الطلب أو اسم العميل بشكل صحيح' 
+          : 'ستظهر الطلبات الجديدة هنا فور وصولها',
+      icon: isSearching ? Icons.search_off_rounded : Icons.inbox_outlined,
+      onAction: isSearching ? () => controller.onSearchChanged('') : null,
+      actionLabel: isSearching ? 'مسح البحث' : null,
     );
   }
 }

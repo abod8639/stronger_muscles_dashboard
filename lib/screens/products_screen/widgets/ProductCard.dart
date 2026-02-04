@@ -6,7 +6,6 @@ import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/functions/cache_manager.dart';
 import 'package:stronger_muscles_dashboard/models/product_model.dart';
-import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/buildActionButtons.dart';
 
 class ProductCard extends StatelessWidget {
   final Function() onEdit;
@@ -39,8 +38,8 @@ class ProductCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: isHovered
-              ? AppColors.primary.withOpacity(0.4)
-              : Colors.white.withOpacity(0.08),
+              ? AppColors.primary.withValues(alpha: 0.4)
+              : Colors.white.withValues(alpha: 0.08),
           width: isHovered ? 1.5 : 1,
         ),
         child: Padding(
@@ -78,14 +77,14 @@ class ProductCard extends StatelessWidget {
               const SizedBox(width: 8),
 
               // 3. أزرار التحكم (بعرض ثابت لمنع الضغط)
-              SizedBox(
-                width: responsive.isMobile ? 35 : 80,
-                child: buildActionButtons(
-                  onEdit: onEdit,
-                  onDelete: onDelete,
-                  isHovered: isHovered,
-                ),
-              ),
+              // SizedBox(
+              //   width: responsive.isMobile ? 35 : 80,
+              //   child: buildActionButton(
+              //     onEdit: onEdit,
+              //     onDelete: onDelete,
+              //     isHovered: isHovered,
+              //   ),
+              // ),
             ],
           ),
         ),
@@ -109,8 +108,8 @@ class ProductCard extends StatelessWidget {
                 cacheManager: CustomCacheManager.instance,
                 imageUrl: product.imageUrls.first,
                 fit: BoxFit.cover,
-                placeholder: (_, __) => Container(color: Colors.white54),
-                errorWidget: (_, __, ___) =>
+                placeholder: (context, url) => Container(color: Colors.white54),
+                errorWidget: (context, url, error) =>
                     const Icon(Icons.image_not_supported),
               )
             : const Icon(
@@ -139,7 +138,7 @@ class ProductCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
@@ -167,7 +166,7 @@ class ProductCard extends StatelessWidget {
               (f) => Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(

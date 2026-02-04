@@ -113,7 +113,7 @@ class CategoriesScreen extends StatelessWidget {
                                 onPressed: () => controller.deleteCategory(category.id),
                               ),
                             ],
-                            onTap: () => Get.to(() => CategoryFormPage(category: category)),
+                            onTap: () => Get.to(() => CategoryFormPage(category: category )),
                             data: category,
                             index: index,
                           );

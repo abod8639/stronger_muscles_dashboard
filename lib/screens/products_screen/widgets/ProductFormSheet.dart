@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:stronger_muscles_dashboard/screens/components/buildModernTextField.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/screens/components/image_gallery_editor.dart';
 import 'package:stronger_muscles_dashboard/config/app_colors.dart';
@@ -11,8 +12,8 @@ import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/FlavorMultiSelect.dart';
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/availability_switch.dart';
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/buildModernDropdown.dart';
-import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/buildModernTextField.dart';
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_size_selector.dart';
+import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_form_mixin.dart';
 
 class ProductFormSheet extends StatefulWidget {
   final ProductModel? product;
@@ -22,11 +23,14 @@ class ProductFormSheet extends StatefulWidget {
   State<ProductFormSheet> createState() => ProductFormSheetState();
 }
 
-class ProductFormSheetState extends State<ProductFormSheet> {
+class ProductFormSheetState extends State<ProductFormSheet> with ProductFormMixin {
   final _formKey = GlobalKey<FormState>();
+  
+  @override
   final ProductsController controller = Get.find<ProductsController>();
-
-  // Controllers
+  
+  @override
+  ProductModel? get product => widget.product;
 
   String? selectedCategoryId;
   List<String> imageUrls = [];
@@ -34,64 +38,14 @@ class ProductFormSheetState extends State<ProductFormSheet> {
   @override
   void initState() {
     super.initState();
-    _initializeFields();
-  }
-
-  void _initializeFields() {
-    controller.textcontrollers['name'] = TextEditingController(
-      text: widget.product?.name,
-    );
-    controller.textcontrollers['price'] = TextEditingController(
-      text: widget.product?.price.toString(),
-    );
-    controller.textcontrollers['discount'] = TextEditingController(
-      text: widget.product?.discountPrice?.toString(),
-    );
-    controller.textcontrollers['stock'] = TextEditingController(
-      text: widget.product?.stockQuantity.toString(),
-    );
-    controller.textcontrollers['desc'] = TextEditingController(
-      text: widget.product?.description,
-    );
-    controller.textcontrollers['brand'] = TextEditingController(
-      text: widget.product?.brand,
-    );
-    controller.textcontrollers['serving'] = TextEditingController(
-      text: widget.product?.servingSize,
-    );
-    controller.textcontrollers['sessions'] = TextEditingController(
-      text: widget.product?.servingsPerContainer.toString(),
-    );
-
-    imageUrls = List<String>.from(widget.product?.imageUrls ?? []);
-    selectedCategoryId =
-        widget.product?.categoryId ??
-        (controller.categories.isNotEmpty
-            ? controller.categories.first.id
-            : null);
-
-    // تحديث قيم GetX
-    controller.productFlavors.assignAll(widget.product?.flavor ?? []);
-    controller.productSizes.assignAll(widget.product?.size ?? []);
-    controller.isFeatured.value = widget.product?.isActive ?? true;
-    controller.isBackgroundWhite.value =
-        widget.product?.isBackgroundWhite ?? false;
+    initializeProductFields();
+    imageUrls = getInitialImageUrls();
+    selectedCategoryId = getInitialCategoryId();
   }
 
   @override
   void dispose() {
-    for (var c in [
-      controller.textcontrollers['name']!,
-      controller.textcontrollers['price']!,
-      controller.textcontrollers['discount']!,
-      controller.textcontrollers['stock']!,
-      controller.textcontrollers['desc']!,
-      controller.textcontrollers['brand']!,
-      controller.textcontrollers['serving']!,
-      controller.textcontrollers['sessions']!,
-    ]) {
-      c.dispose();
-    }
+    disposeProductControllers();
     super.dispose();
   }
 
@@ -169,7 +123,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
       width: 50,
       height: 5,
       decoration: BoxDecoration(
-        color: Colors.grey.withOpacity(0.3),
+        color: Colors.grey.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(10),
       ),
     );

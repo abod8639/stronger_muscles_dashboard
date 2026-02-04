@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:stronger_muscles_dashboard/screens/components/buildModernTextField.dart';
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/FlavorMultiSelect.dart';
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/availability_switch.dart';
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/buildModernDropdown.dart';
-import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/buildModernTextField.dart';
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_size_selector.dart';
+import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_form_mixin.dart';
 import '../../components/image_gallery_editor.dart';
 import '../../../controllers/products_controller.dart';
 import '../../../models/product_model.dart';
@@ -19,61 +20,28 @@ class ProductFormPage extends StatefulWidget {
   State<ProductFormPage> createState() => _ProductFormPageState();
 }
 
-class _ProductFormPageState extends State<ProductFormPage> {
+class _ProductFormPageState extends State<ProductFormPage> with ProductFormMixin {
   final _formKey = GlobalKey<FormState>();
+  
+  @override
   final ProductsController controller = Get.find<ProductsController>();
+  
+  @override
+  ProductModel? get product => widget.product;
+  
   String? _selectedCategoryId;
 
   @override
   void initState() {
     super.initState();
-    _initializeFields();
-  }
-
-  void _initializeFields() {
-    controller.textcontrollers['name'] = TextEditingController(
-      text: widget.product?.name,
-    );
-    controller.textcontrollers['price'] = TextEditingController(
-      text: widget.product?.price.toString(),
-    );
-    controller.textcontrollers['discount'] = TextEditingController(
-      text: widget.product?.discountPrice?.toString(),
-    );
-    controller.textcontrollers['stock'] = TextEditingController(
-      text: widget.product?.stockQuantity.toString(),
-    );
-    controller.textcontrollers['desc'] = TextEditingController(
-      text: widget.product?.description,
-    );
-    controller.textcontrollers['brand'] = TextEditingController(
-      text: widget.product?.brand,
-    );
-    controller.textcontrollers['serving'] = TextEditingController(
-      text: widget.product?.servingSize,
-    );
-    controller.textcontrollers['sessions'] = TextEditingController(
-      text: widget.product?.servingsPerContainer.toString(),
-    );
-
-    controller.imageUrls.assignAll(widget.product?.imageUrls ?? []);
-    _selectedCategoryId =
-        widget.product?.categoryId ??
-        (controller.categories.isNotEmpty
-            ? controller.categories.first.id
-            : null);
-
-    // تحديث قيم GetX
-    controller.productFlavors.assignAll(widget.product?.flavor ?? []);
-    controller.productSizes.assignAll(widget.product?.size ?? []);
-    controller.isFeatured.value = widget.product?.isActive ?? true;
-    controller.isBackgroundWhite.value =
-        widget.product?.isBackgroundWhite ?? false;
+    initializeProductFields();
+    controller.imageUrls.assignAll(getInitialImageUrls());
+    _selectedCategoryId = getInitialCategoryId();
   }
 
   @override
   void dispose() {
-    controller.textcontrollers.forEach((_, c) => c.dispose());
+    disposeProductControllers();
     super.dispose();
   }
 
@@ -308,7 +276,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),

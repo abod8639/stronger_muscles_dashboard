@@ -30,6 +30,16 @@ class _CategoryFormPageState extends State<CategoryFormPage>
   bool _isIdFieldEnabled = false;
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.category != null) {
+      controller.prepareFormForEdit(widget.category!);
+    } else {
+      controller.clearForm();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final res = context.responsive;
@@ -41,7 +51,7 @@ class _CategoryFormPageState extends State<CategoryFormPage>
       extendBodyBehindAppBar: true,
       appBar: BaseAppBar(
         title: "",
-        
+
       ), // buildAppBar(isDark),
       floatingActionButton: buildFloatingActionButton(isDark),
       body: Stack(
@@ -371,7 +381,7 @@ class _CategoryFormPageState extends State<CategoryFormPage>
                 enabled: _isIdFieldEnabled && !controller.isLoading.value,
               ),
               Positioned(
-                left: 16,
+                right: 16,
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 300),
                   child: Icon(
@@ -907,33 +917,33 @@ class _CategoryFormPageState extends State<CategoryFormPage>
     }
   }
 
-  void _handleBack() {
-    // ConfirmDialog(
-    //   title: 'تأكيد الخروج',
-    //   message: 'هل أنت متأكد من الخروج؟ سيتم فقدان التغييرات غير المحفوظة.',
-    //   onConfirm: () {
-    //   },
-    // );
-        Get.back();
-  }
+  // void _handleBack() {
+  //   // ConfirmDialog(
+  //   //   title: 'تأكيد الخروج',
+  //   //   message: 'هل أنت متأكد من الخروج؟ سيتم فقدان التغييرات غير المحفوظة.',
+  //   //   onConfirm: () {
+  //   //   },
+  //   // );
+  //       Get.back();
+  // }
 
-  void _handleDelete() {
-    Get.dialog(
-      ConfirmDialog(
-        title: '⚠️ حذف التصنيف',
-        message:
-            'هل أنت متأكد من حذف هذا التصنيف؟\n\nتحذير: هذا الإجراء لا يمكن التراجع عنه وقد يؤثر على المنتجات المرتبطة.',
-        confirmText: 'نعم، احذف',
-        onConfirm: () async {
-          Get.back();
-          // final success = await controller.deleteCategory(widget.category!.id);
-          // if (success) {
-          //   Get.back();
-          // }
-        },
-      ),
-    );
-  }
+  // void _handleDelete() {
+  //   Get.dialog(
+  //     ConfirmDialog(
+  //       title: '⚠️ حذف التصنيف',
+  //       message:
+  //           'هل أنت متأكد من حذف هذا التصنيف؟\n\nتحذير: هذا الإجراء لا يمكن التراجع عنه وقد يؤثر على المنتجات المرتبطة.',
+  //       confirmText: 'نعم، احذف',
+  //       onConfirm: () async {
+  //         Get.back();
+  //         // final success = await controller.deleteCategory(widget.category!.id);
+  //         // if (success) {
+  //         //   Get.back();
+  //         // }
+  //       },
+  //     ),
+  //   );
+  // }
 
   void _submitForm() async {
     // Validate required fields

@@ -140,7 +140,7 @@ class _GenericListCardState<T> extends State<GenericListCard<T>>
                       children: widget.actions.map((action) {
                         return Padding(
                           padding: const EdgeInsets.only(left: 8),
-                          child: _buildActionButton(
+                          child: buildActionButton(
                             icon: action.icon,
                             color: action.color,
                             onPressed: action.onPressed,
@@ -165,9 +165,7 @@ class _GenericListCardState<T> extends State<GenericListCard<T>>
       decoration: BoxDecoration(
         color: isDark ? Colors.grey.shade900 : Colors.grey.shade100,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.1),
-        ),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
       ),
       child: widget.imageUrl != null && widget.imageUrl!.isNotEmpty
           ? ClipRRect(
@@ -183,14 +181,14 @@ class _GenericListCardState<T> extends State<GenericListCard<T>>
               ),
             )
           : widget.imageWidget ??
-              Icon(
-                widget.fallbackIcon ?? Icons.image_outlined,
-                color: AppColors.primary,
-              ),
+                Icon(
+                  widget.fallbackIcon ?? Icons.image_outlined,
+                  color: AppColors.primary,
+                ),
     );
   }
 
-  Widget _buildActionButton({
+  Widget buildActionButton({
     required IconData icon,
     required Color color,
     required VoidCallback onPressed,
