@@ -1,30 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
+import 'package:stronger_muscles_dashboard/screens/components/enhanced_error_widget.dart';
+import 'package:stronger_muscles_dashboard/screens/components/enhanced_loading_widget.dart';
 import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
-import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_recent_orders.dart';
-import 'package:stronger_muscles_dashboard/screens/components/generic_empty_state.dart';
-import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_enhanced_header.dart';
-import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_error_state.dart';
-import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_loading_state.dart';
-import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_stats_section.dart';
+import 'package:stronger_muscles_dashboard/screens/components/top_section.dart';
+import 'package:stronger_muscles_dashboard/screens/components/custom_search_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/components/base_app_bar.dart';
-import '../../controllers/orders_controller.dart';
-import '../../config/responsive.dart';
+import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
+import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_recent_orders.dart';
+import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_stats_section.dart';
+import 'package:stronger_muscles_dashboard/controllers/orders_controller.dart';
+import 'package:stronger_muscles_dashboard/config/responsive.dart';
 
-class OrdersScreen extends StatefulWidget {
+class OrdersScreen extends StatelessWidget {
   const OrdersScreen({super.key});
 
   @override
-  State<OrdersScreen> createState() => _OrdersScreenState();
-}
-
-class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderStateMixin {
-  final controller = Get.put(OrdersController());
-
-  @override
   Widget build(BuildContext context) {
-    final res = context.responsive;
+    final controller = Get.put(OrdersController());
+    final responsive = context.responsive;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -33,72 +27,80 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
         onPressed: controller.fetchOrders,
         icon: Icons.refresh_rounded,
       ),
-      body: MyRefreshIndicator(
-        onRefresh: controller.fetchOrders,
-        child: Column(
+      body: Obx(() {
+        // حالة التحميل الأولية
+        if (controller.isLoading.value && controller.filteredOrders.isEmpty) {
+          return const EnhancedLoadingWidget(
+            message: 'جاري تحميل الطلبات...',
+          );
+        }
+
+        return Column(
           children: [
-            // 1. الجزء الثابت: الهيدر والإحصائيات
-            _buildFixedHeader(res),
+            // قسم البحث والإحصائيات العلوي (نفس نمط UsersScreen)
+            TopSection(
+              children: [
+                CustomSearchBar(
+                  hintText: 'ابحث برقم الطلب، اسم العميل، أو الحالة...',
+                  padding: responsive.defaultPadding,
+                  onSearch: (value) => controller.onSearchChanged(value),
+                ),
+                
+                // عرض الإحصائيات (Stats) فقط في الشاشات الكبيرة لتجنب الازدحام
+                if (responsive.isDesktop || responsive.isTablet)
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: responsive.defaultPadding.left,
+                      vertical: 8,
+                    ),
+                    child: GlassContainer(
+                      padding: const EdgeInsets.all(16),
+                      child: buildStatsSection(),
+                    ),
+                  ),
+              ],
+            ),
 
-            // 2. الجزء المتغير: القائمة وحالاتها
+            // قائمة الطلبات أو حالات الخطأ/الفراغ
             Expanded(
-              child: Obx(() {
-                if (controller.isLoading.value && controller.filteredOrders.isEmpty) {
-                  return buildLoadingState();
-                }
-
-                if (controller.errorMessage.isNotEmpty && controller.filteredOrders.isEmpty) {
-                  return buildErrorState(controller);
-                }
-
-                if (controller.filteredOrders.isEmpty) {
-                  return _buildEmptyState();
-                }
-
-                // استخدام ListView أو ScrollView واحد فقط لتجنب تعارض الـ Scrolling
-                return SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: EdgeInsets.only(bottom: res.defaultPadding.bottom),
-                  child: buildRecentOrders(res),
-                );
-              }),
+              child: controller.filteredOrders.isEmpty
+                  ? _buildEmptyOrErrorState(controller)
+                  : MyRefreshIndicator(
+                      onRefresh: controller.fetchOrders,
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: EdgeInsets.only(bottom: responsive.defaultPadding.bottom),
+                        child: buildRecentOrders(responsive),
+                      ),
+                    ),
             ),
           ],
-        ),
-      ),
+        );
+      }),
     );
   }
 
-  Widget _buildFixedHeader(ResponsiveLayout res) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        buildEnhancedHeader(controller),
-        if (res.isDesktop || res.isTablet) ...[
-          const SizedBox(height: 16),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: res.defaultPadding.left),
-            child: GlassContainer(
-              padding: const EdgeInsets.all(16),
-              child: buildStatsSection(),
-            ),
-          ),
-        ],
-        const SizedBox(height: 16),
-      ],
-    );
-  }
-
-  Widget _buildEmptyState() {
+  // دالة مساعدة للتعامل مع حالات الخطأ أو البحث الفارغ
+  Widget _buildEmptyOrErrorState(OrdersController controller) {
     final isSearching = controller.searchQuery.value.isNotEmpty;
-    return GenericEmptyState(
-      title: isSearching ? 'لا توجد نتائج للبحث' : 'قائمة الطلبات فارغة',
-      message: isSearching 
-          ? 'تأكد من كتابة رقم الطلب أو اسم العميل بشكل صحيح' 
-          : 'ستظهر الطلبات الجديدة هنا فور وصولها',
-      icon: isSearching ? Icons.search_off_rounded : Icons.inbox_outlined,
-      onAction: isSearching ? () => controller.onSearchChanged('') : null,
-      actionLabel: isSearching ? 'مسح البحث' : null,
+    final hasError = controller.errorMessage.isNotEmpty;
+
+    return EnhancedErrorWidget(
+      title: hasError ? 'حدث خطأ ما' : (isSearching ? 'لا توجد نتائج' : 'لا توجد طلبات'),
+      message: hasError 
+          ? controller.errorMessage.value 
+          : (isSearching 
+              ? 'لم نجد أي طلب يطابق: "${controller.searchQuery.value}"' 
+              : 'قائمة الطلبات فارغة حالياً'),
+      icon: hasError ? Icons.error_outline : (isSearching ? Icons.search_off : Icons.inbox_outlined),
+      onRetry: () {
+        if (isSearching) {
+          controller.onSearchChanged('');
+        } else {
+          controller.fetchOrders();
+        }
+      },
+      // btnText: isSearching ? 'مسح البحث' : 'إعادة المحاولة',
     );
   }
 }
