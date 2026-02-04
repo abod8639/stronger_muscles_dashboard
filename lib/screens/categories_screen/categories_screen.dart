@@ -6,10 +6,11 @@ import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicato
 import 'package:stronger_muscles_dashboard/screens/components/enhanced_error_widget.dart';
 import 'package:stronger_muscles_dashboard/screens/components/top_section.dart';
 import 'package:stronger_muscles_dashboard/screens/categories_screen/widgets/CategoryFormSheet.dart';
-import 'package:stronger_muscles_dashboard/screens/categories_screen/widgets/CategoryGridItem.dart';
-import 'package:stronger_muscles_dashboard/screens/categories_screen/widgets/CategoryListItem.dart';
+import 'package:stronger_muscles_dashboard/screens/components/generic_grid_card.dart';
+import 'package:stronger_muscles_dashboard/screens/components/generic_list_card.dart';
 import 'package:stronger_muscles_dashboard/screens/components/base_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/components/custom_search_bar.dart';
+import 'package:stronger_muscles_dashboard/config/theme.dart';
 import '../../controllers/categories_controller.dart';
 import '../../models/index.dart';
 import '../../config/responsive.dart';
@@ -75,17 +76,46 @@ class CategoriesScreen extends StatelessWidget {
                         itemCount: controller.filteredCategories.length,
                         itemBuilder: (context, index) {
                           final category = controller.filteredCategories[index];
-                          return CategoryListItem(
-                            category: category,
+                          return GenericListCard<CategoryModel>(
+                            title: category.name,
+                            metadata: 'ID: ${category.id}',
+                            imageUrl: category.imageUrl,
+                            fallbackIcon: Icons.category_outlined,
+                            statusWidget: !category.isActive
+                                ? Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.error.withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: const Text(
+                                      'معطل',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: AppColors.error,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  )
+                                : null,
+                            actions: [
+                              ActionButtonConfig(
+                                icon: Icons.edit_outlined,
+                                color: Colors.blue,
+                                onPressed: () => Get.to(() => CategoryFormPage(category: category)),
+                              ),
+                              ActionButtonConfig(
+                                icon: Icons.delete_outline,
+                                color: AppColors.error,
+                                onPressed: () => controller.deleteCategory(category.id),
+                              ),
+                            ],
+                            onTap: () => Get.to(() => CategoryFormPage(category: category)),
+                            data: category,
                             index: index,
-                            onEdit: () => Get.to(() => CategoryFormPage(category: category)),
-                            // onEdit: () => showCategoryForm(
-                            //   context,
-                            //   controller,
-                            //   category: category,
-                            // ),
-                            onDelete: () =>
-                                controller.deleteCategory(category.id),
                           );
                         },
                       ),
@@ -105,12 +135,47 @@ class CategoriesScreen extends StatelessWidget {
 
                         itemBuilder: (context, index) {
                           final category = controller.filteredCategories[index];
-                          return CategoryGridItem(
-                            category: category,
-                            onEdit: () => 
-                            Get.to(() => CategoryFormPage(category: category)),
-                            onDelete: () =>
-                                controller.deleteCategory(category.id),
+                          return GenericGridCard<CategoryModel>(
+                            title: category.name,
+                            imageUrl: category.imageUrl,
+                            icon: Icons.category_rounded,
+                            statusWidget: !category.isActive
+                                ? Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.error.withValues(alpha: 0.9),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: const Text(
+                                      'معطل',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  )
+                                : null,
+                            actions: [
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.delete_outline,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
+                                onPressed: () => controller.deleteCategory(category.id),
+                                constraints: const BoxConstraints(
+                                  minWidth: 32,
+                                  minHeight: 32,
+                                ),
+                                padding: EdgeInsets.zero,
+                              ),
+                            ],
+                            onTap: () => Get.to(() => CategoryFormPage(category: category)),
+                            data: category,
                           );
                         },
                       ),

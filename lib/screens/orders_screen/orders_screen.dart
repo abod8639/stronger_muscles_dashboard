@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_recent_orders.dart';
-import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_empty_state.dart';
+import 'package:stronger_muscles_dashboard/screens/components/generic_empty_state.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_enhanced_header.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_error_state.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_loading_state.dart';
@@ -88,7 +88,19 @@ class _OrdersScreenState extends State<OrdersScreen>
               }
 
               if (controller.filteredOrders.isEmpty) {
-                return buildEmptyState(controller);
+                return GenericEmptyState(
+                  title: 'لا توجد طلبات',
+                  message: controller.searchQuery.value.isNotEmpty
+                      ? 'لم يتم العثور على نتائج للبحث'
+                      : 'لا توجد طلبات حالياً',
+                  icon: Icons.inbox_outlined,
+                  onAction: controller.searchQuery.value.isNotEmpty
+                      ? () => controller.onSearchChanged('')
+                      : null,
+                  actionLabel: controller.searchQuery.value.isNotEmpty
+                      ? 'مسح البحث'
+                      : null,
+                );
               }
 
               return MyRefreshIndicator(

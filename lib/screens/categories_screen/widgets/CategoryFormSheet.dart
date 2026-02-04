@@ -106,7 +106,7 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
                             ]
                           : [],
                     ),
-                    child: buildCategoryFormSheetModernTextField(
+                    child: buildModernTextField(
                       controller.idController,
                       'كود التصنيف (Unique ID)',
                       Icons.fingerprint_rounded,
@@ -119,14 +119,14 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
 
               const SizedBox(height: 16),
 
-              buildCategoryFormSheetModernTextField(
+              buildModernTextField(
                 controller.nameController,
                 'اسم التصنيف',
                 Icons.label_important_outline_rounded,
               ),
               const SizedBox(height: 16),
 
-              buildCategoryFormSheetModernTextField(
+              buildModernTextField(
                 controller.descriptionController,
                 'وصف التصنيف',
                 Icons.description_outlined,
@@ -187,7 +187,7 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
   Widget _buildImageSection(var res) {
     return Column(
       children: [
-        buildCategoryFormSheetModernTextField(
+        buildModernTextField(
           controller.imageController,
           'رابط الصورة (URL)',
           Icons.link_rounded,

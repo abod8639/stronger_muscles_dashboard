@@ -148,7 +148,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
       icon: Icons.monetization_on_outlined,
       child: Column(
         children: [
-          buildProductFormSheetModernTextField(
+          buildModernTextField(
             controller.textcontrollers['name']!,
             'اسم المنتج بالكامل',
             Icons.drive_file_rename_outline,
@@ -157,7 +157,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
           Row(
             children: [
               Expanded(
-                child: buildProductFormSheetModernTextField(
+                child: buildModernTextField(
                   controller.textcontrollers['price']!,
                   'السعر الأساسي',
                   Icons.payments_outlined,
@@ -166,7 +166,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: buildProductFormSheetModernTextField(
+                child: buildModernTextField(
                   controller.textcontrollers['discount']!,
                   'سعر الخصم',
                   Icons.sell_outlined,
@@ -226,7 +226,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
           Row(
             children: [
               Expanded(
-                child: buildProductFormSheetModernTextField(
+                child: buildModernTextField(
                   controller.textcontrollers['stock']!,
                   'الكمية المتاحة',
                   Icons.numbers,
@@ -235,7 +235,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: buildProductFormSheetModernTextField(
+                child: buildModernTextField(
                   controller.textcontrollers['brand']!,
                   'العلامة التجارية',
                   Icons.verified_outlined,
@@ -247,7 +247,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
           Row(
             children: [
               Expanded(
-                child: buildProductFormSheetModernTextField(
+                child: buildModernTextField(
                   controller.textcontrollers['serving']!,
                   'حجم الحصة',
                   Icons.fitness_center,
@@ -255,7 +255,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: buildProductFormSheetModernTextField(
+                child: buildModernTextField(
                   controller.textcontrollers['sessions']!,
                   'إجمالي الحصص',
                   Icons.reorder,
@@ -285,7 +285,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
     return _buildCardWrapper(
       title: 'الوصف التفصيلي',
       icon: Icons.description_outlined,
-      child: buildProductFormSheetModernTextField(
+      child: buildModernTextField(
         controller.textcontrollers['desc']!,
         'أدخل مواصفات المنتج وفوائده...',
         Icons.text_snippet_outlined,

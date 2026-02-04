@@ -214,7 +214,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
   }
 
   Widget _buildBasicInfoSection(ResponsiveLayout responsive) {
-    return buildProductFormSheetModernTextField(
+    return buildModernTextField(
       controller.textcontrollers['name']!,
       'اسم المنتج الكامل',
       Icons.shopping_bag_outlined,
@@ -225,7 +225,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
     return Row(
       children: [
         Expanded(
-          child: buildProductFormSheetModernTextField(
+          child: buildModernTextField(
             controller.textcontrollers['price']!,
             'السعر الأساسي',
             Icons.payments_outlined,
@@ -234,7 +234,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: buildProductFormSheetModernTextField(
+          child: buildModernTextField(
             controller.textcontrollers['discount']!,
             'سعر الخصم',
             Icons.sell_outlined,
@@ -249,7 +249,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
     return Row(
       children: [
         Expanded(
-          child: buildProductFormSheetModernTextField(
+          child: buildModernTextField(
             controller.textcontrollers['stock']!,
             'الكمية متوفرة',
             Icons.inventory_2_outlined,
@@ -258,7 +258,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: buildProductFormSheetModernTextField(
+          child: buildModernTextField(
             controller.textcontrollers['brand']!,
             'العلامة التجارية',
             Icons.verified_outlined,
@@ -272,7 +272,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
     return Row(
       children: [
         Expanded(
-          child: buildProductFormSheetModernTextField(
+          child: buildModernTextField(
             controller.textcontrollers['serving']!,
             'حجم الحصة (جرام)',
             Icons.scale_outlined,
@@ -280,7 +280,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: buildProductFormSheetModernTextField(
+          child: buildModernTextField(
             controller.textcontrollers['sessions']!,
             'عدد الحصص',
             Icons.format_list_numbered_rtl_outlined,
@@ -324,7 +324,7 @@ class ProductFormSheetState extends State<ProductFormSheet> {
   }
 
   Widget _buildDescriptionSection(ProductsController controller) {
-    return buildProductFormSheetModernTextField(
+    return buildModernTextField(
       controller.textcontrollers['desc']!,
       'وصف المنتج بالتفصيل...',
       Icons.description_outlined,

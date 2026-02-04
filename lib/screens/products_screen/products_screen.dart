@@ -5,7 +5,7 @@ import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicato
 import 'package:stronger_muscles_dashboard/screens/components/top_section.dart';
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/ProductFormPage.dart';
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/ProductListItem.dart';
-import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/build_empty_state.dart';
+import 'package:stronger_muscles_dashboard/screens/components/generic_empty_state.dart';
 import 'package:stronger_muscles_dashboard/screens/components/base_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/components/horizontal_chips_selector.dart';
 import 'package:stronger_muscles_dashboard/screens/components/custom_search_bar.dart';
@@ -64,7 +64,16 @@ class ProductsScreen extends StatelessWidget {
               }
 
               if (controller.filteredProducts.isEmpty) {
-                return buildEmptyState(controller);
+                return GenericEmptyState(
+                  title: 'لا توجد نتائج',
+                  message: controller.searchQuery.value.isEmpty &&
+                          controller.selectedCategoryId.value == 'all'
+                      ? 'قائمة المنتجات فارغة حالياً'
+                      : 'لم نجد أي منتج يطابق بحثك: "${controller.searchQuery.value}"',
+                  icon: Icons.search_off_rounded,
+                  onAction: () => controller.fetchData(),
+                  actionLabel: 'إعادة المحاولة',
+                );
               }
 
               return MyRefreshIndicator(

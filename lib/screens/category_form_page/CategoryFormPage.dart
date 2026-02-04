@@ -8,6 +8,7 @@ import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/controllers/categories_controller.dart';
 import 'package:stronger_muscles_dashboard/models/category_model.dart';
 import 'package:stronger_muscles_dashboard/screens/category_form_page/widget/gradient_background_painter.dart';
+import 'package:stronger_muscles_dashboard/screens/components/base_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/components/confirm_dialog.dart';
 import 'package:stronger_muscles_dashboard/screens/components/buildModernTextField.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
@@ -38,7 +39,10 @@ class _CategoryFormPageState extends State<CategoryFormPage>
           ? const Color(0xFF0A0A0A)
           : const Color(0xFFF5F7FA),
       extendBodyBehindAppBar: true,
-      appBar: buildAppBar(isDark),
+      appBar: BaseAppBar(
+        title: "",
+        
+      ), // buildAppBar(isDark),
       floatingActionButton: buildFloatingActionButton(isDark),
       body: Stack(
         children: [
@@ -83,7 +87,7 @@ class _CategoryFormPageState extends State<CategoryFormPage>
 
                           const SizedBox(height: 20),
 
-                          buildCategoryFormSheetModernTextField(
+                          buildModernTextField(
                             controller.nameController,
                             'اسم التصنيف',
                             Icons.label_important_outline_rounded,
@@ -91,7 +95,7 @@ class _CategoryFormPageState extends State<CategoryFormPage>
 
                           const SizedBox(height: 20),
 
-                          buildCategoryFormSheetModernTextField(
+                          buildModernTextField(
                             controller.descriptionController,
                             'وصف التصنيف (اختياري)',
                             Icons.description_outlined,
@@ -207,53 +211,53 @@ class _CategoryFormPageState extends State<CategoryFormPage>
     );
   }
 
-  PreferredSizeWidget buildAppBar(bool isDark) {
-    return AppBar(
-      elevation: 0,
-      backgroundColor: Colors.transparent,
-      systemOverlayStyle: isDark
-          ? SystemUiOverlayStyle.light
-          : SystemUiOverlayStyle.dark,
-      leading: Container(
-        margin: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: (isDark ? Colors.white : Colors.black).withOpacity(0.1),
-          ),
-        ),
-        child: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            size: 18,
-            color: isDark ? Colors.white : Colors.black87,
-          ),
-          onPressed: () => _handleBack(),
-        ),
-      ),
-      actions: [
-        if (widget.category != null)
-          Container(
-            margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.redAccent.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.redAccent.withOpacity(0.3)),
-            ),
-            child: IconButton(
-              icon: const Icon(
-                Icons.delete_outline_rounded,
-                color: Colors.redAccent,
-                size: 20,
-              ),
-              onPressed: () => _handleDelete(),
-            ),
-          ),
-        const SizedBox(width: 8),
-      ],
-    );
-  }
+  // PreferredSizeWidget buildAppBar(bool isDark) {
+  //   return AppBar(
+  //     elevation: 0,
+  //     backgroundColor: Colors.transparent,
+  //     systemOverlayStyle: isDark
+  //         ? SystemUiOverlayStyle.light
+  //         : SystemUiOverlayStyle.dark,
+  //     leading: Container(
+  //       margin: const EdgeInsets.all(8),
+  //       decoration: BoxDecoration(
+  //         color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+  //         borderRadius: BorderRadius.circular(12),
+  //         border: Border.all(
+  //           color: (isDark ? Colors.white : Colors.black).withOpacity(0.1),
+  //         ),
+  //       ),
+  //       child: IconButton(
+  //         icon: Icon(
+  //           Icons.arrow_back_ios_new_rounded,
+  //           size: 18,
+  //           color: isDark ? Colors.white : Colors.black87,
+  //         ),
+  //         onPressed: () => _handleBack(),
+  //       ),
+  //     ),
+  //     actions: [
+  //       if (widget.category != null)
+  //         Container(
+  //           margin: const EdgeInsets.all(8),
+  //           decoration: BoxDecoration(
+  //             color: Colors.redAccent.withOpacity(0.1),
+  //             borderRadius: BorderRadius.circular(12),
+  //             border: Border.all(color: Colors.redAccent.withOpacity(0.3)),
+  //           ),
+  //           child: IconButton(
+  //             icon: const Icon(
+  //               Icons.delete_outline_rounded,
+  //               color: Colors.redAccent,
+  //               size: 20,
+  //             ),
+  //             onPressed: () => _handleDelete(),
+  //           ),
+  //         ),
+  //       const SizedBox(width: 8),
+  //     ],
+  //   );
+  // }
 
   Widget buildAnimatedSection({required int delay, required Widget child}) {
     return TweenAnimationBuilder<double>(
@@ -360,7 +364,7 @@ class _CategoryFormPageState extends State<CategoryFormPage>
           child: Stack(
             alignment: Alignment.centerLeft,
             children: [
-              buildCategoryFormSheetModernTextField(
+              buildModernTextField(
                 controller.idController,
                 'ID: e.g. supplements_creatine',
                 Icons.terminal_rounded, // أيقونة تقنية أكثر
@@ -486,7 +490,7 @@ class _CategoryFormPageState extends State<CategoryFormPage>
           ],
         ),
         const SizedBox(height: 16),
-        buildCategoryFormSheetModernTextField(
+        buildModernTextField(
           controller.imageController,
           'رابط الصورة (URL)',
           Icons.link_rounded,

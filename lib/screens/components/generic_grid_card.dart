@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:stronger_muscles_dashboard/functions/cache_manager.dart';
+import 'package:stronger_muscles_dashboard/config/theme.dart';
 
 class GenericGridCard<T> extends StatefulWidget {
   final String title;
@@ -13,6 +14,7 @@ class GenericGridCard<T> extends StatefulWidget {
   final VoidCallback? onTap;
   final T? data;
   final Color? baseColor;
+  final IconData? icon;
 
   const GenericGridCard({
     super.key,
@@ -25,6 +27,7 @@ class GenericGridCard<T> extends StatefulWidget {
     this.onTap,
     this.data,
     this.baseColor,
+    this.icon,
   });
 
   @override
@@ -93,12 +96,13 @@ class _GenericGridCardState<T> extends State<GenericGridCard<T>> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
-                        Icons.dashboard_outlined, // Default icon
-                        color: Colors.white,
-                        size: responsive.largeIconSize - 4,
-                      ),
-                      const SizedBox(height: 8),
+                      if (widget.icon != null)
+                        Icon(
+                          widget.icon,
+                          color: Colors.white,
+                          size: responsive.largeIconSize - 4,
+                        ),
+                      if (widget.icon != null) const SizedBox(height: 8),
                       Text(
                         widget.title,
                         textAlign: TextAlign.center,
@@ -161,11 +165,22 @@ class _GenericGridCardState<T> extends State<GenericGridCard<T>> {
 
   Widget _buildPlaceholder(bool isDark) {
     return Container(
-      color: isDark ? Colors.grey[800] : Colors.grey[200],
-      child: Icon(
-        Icons.image_not_supported_outlined,
-        color: isDark ? Colors.grey[600] : Colors.grey[400],
-        size: 40,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            (widget.baseColor ?? AppColors.primary).withValues(alpha: 0.8),
+            AppColors.warning.withValues(alpha: 0.8),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Center(
+        child: Icon(
+          Icons.image_not_supported_outlined,
+          color: Colors.white.withValues(alpha: 0.5),
+          size: 40,
+        ),
       ),
     );
   }
