@@ -11,7 +11,6 @@ Widget buildStatsSection() {
     }
     return GridView.count(
       shrinkWrap: true,
-  
       physics: const NeverScrollableScrollPhysics(),
       crossAxisCount: 4,
       crossAxisSpacing: 10,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/screens/components/enhanced_error_widget.dart';
 import 'package:stronger_muscles_dashboard/screens/components/enhanced_loading_widget.dart';
+import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
 import 'package:stronger_muscles_dashboard/screens/components/top_section.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/controllers/users_controller.dart';
@@ -58,13 +59,16 @@ class UsersScreen extends StatelessWidget {
                       icon: Icons.people_outline,
                       onRetry: controller.fetchUsersStats,
                     )
-                  : ListView.builder(
-                      padding: responsive.defaultPadding,
-                      itemCount: controller.filteredUsers.length,
-                      itemBuilder: (context, index) {
-                        final user = controller.filteredUsers[index];
-                        return buildUserCard(user);
-                      },
+                  : MyRefreshIndicator(
+                      onRefresh: controller.fetchUsersStats,
+                      child: ListView.builder(
+                        padding: responsive.defaultPadding,
+                        itemCount: controller.filteredUsers.length,
+                        itemBuilder: (context, index) {
+                          final user = controller.filteredUsers[index];
+                          return buildUserCard(user);
+                        },
+                      ),
                     ),
             ),
           ],
