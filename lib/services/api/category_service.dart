@@ -5,7 +5,7 @@ import '../../config/api_config.dart';
 import 'api_base.dart';
 
 class CategoryService extends ApiBase {
-  // جلب جميع التصنيفات (Public)
+
   Future<List<dynamic>> fetchCategories() async {
     try {
       final response = await http
@@ -39,7 +39,6 @@ class CategoryService extends ApiBase {
     }
   }
 
-  // إضافة تصنيف جديد
   Future<Map<String, dynamic>> addCategory(Map<String, dynamic> data) async {
     try {
       final response = await http
@@ -87,7 +86,6 @@ class CategoryService extends ApiBase {
     }
   }
 
-  // تحديث تصنيف
   Future<Map<String, dynamic>> updateCategory(
     String id,
     Map<String, dynamic> data,
@@ -138,7 +136,6 @@ class CategoryService extends ApiBase {
     }
   }
 
-  // حذف تصنيف
   Future<bool> deleteCategory(String id) async {
     try {
       final response = await http
@@ -163,7 +160,6 @@ class CategoryService extends ApiBase {
     }
   }
 
-  // رفع صورة التصنيف (Admin)
   Future<String> uploadCategoryImage(String filePath) async {
     try {
       final file = File(filePath);

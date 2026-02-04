@@ -32,7 +32,6 @@ class ApiBase {
     }
   }
 
-  // التحقق من الاتصال
   Future<bool> checkConnection() async {
     try {
       final response = await http

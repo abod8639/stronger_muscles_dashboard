@@ -5,7 +5,7 @@ import '../../config/api_config.dart';
 import 'api_base.dart';
 
 class ProductService extends ApiBase {
-  // جلب المنتجات (Admin)
+
   Future<List<dynamic>> fetchProducts() async {
     try {
       List<dynamic> allProducts = [];
@@ -98,7 +98,6 @@ class ProductService extends ApiBase {
     }
   }
 
-  // إضافة منتج جديد (Admin)
   Future<Map<String, dynamic>> addProduct(Map<String, dynamic> data) async {
     try {
       final response = await http
@@ -146,7 +145,6 @@ class ProductService extends ApiBase {
     }
   }
 
-  // تحديث منتج موجود (Admin)
   Future<Map<String, dynamic>> updateProduct(
     String id,
     Map<String, dynamic> data,
@@ -197,7 +195,6 @@ class ProductService extends ApiBase {
     }
   }
 
-  // حذف منتج (Admin)
   Future<bool> deleteProduct(String id) async {
     try {
       final response = await http
@@ -222,7 +219,6 @@ class ProductService extends ApiBase {
     }
   }
 
-  // رفع صورة المنتج (Admin)
   Future<String> uploadProductImage(String filePath) async {
     try {
       final file = File(filePath);
@@ -310,4 +306,5 @@ class ProductService extends ApiBase {
       rethrow;
     }
   }
+
 }
