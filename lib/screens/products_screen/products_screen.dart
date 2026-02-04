@@ -66,7 +66,8 @@ class ProductsScreen extends StatelessWidget {
               if (controller.filteredProducts.isEmpty) {
                 return GenericEmptyState(
                   title: 'لا توجد نتائج',
-                  message: controller.searchQuery.value.isEmpty &&
+                  message:
+                      controller.searchQuery.value.isEmpty &&
                           controller.selectedCategoryId.value == 'all'
                       ? 'قائمة المنتجات فارغة حالياً'
                       : 'لم نجد أي منتج يطابق بحثك: "${controller.searchQuery.value}"',

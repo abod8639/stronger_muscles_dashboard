@@ -86,7 +86,10 @@ Widget buildMainChartCard(ResponsiveLayout res) {
           height: 400,
           child: EnhancedLineChartWidget(
             title: '',
-            spots: generateChartSpots(10, controller.orders.length.toDouble() + 100),
+            spots: generateChartSpots(
+              10,
+              controller.orders.length.toDouble() + 100,
+            ),
             lineColor: AppColorsExtended.cyanAccent,
             gradientColor: AppColorsExtended.cyanAccent,
             maxY: (controller.orders.length.toDouble() + 100),

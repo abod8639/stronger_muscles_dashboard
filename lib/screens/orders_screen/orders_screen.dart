@@ -30,9 +30,7 @@ class OrdersScreen extends StatelessWidget {
       body: Obx(() {
         // حالة التحميل الأولية
         if (controller.isLoading.value && controller.filteredOrders.isEmpty) {
-          return const EnhancedLoadingWidget(
-            message: 'جاري تحميل الطلبات...',
-          );
+          return const EnhancedLoadingWidget(message: 'جاري تحميل الطلبات...');
         }
 
         return Column(
@@ -45,7 +43,7 @@ class OrdersScreen extends StatelessWidget {
                   padding: responsive.defaultPadding,
                   onSearch: (value) => controller.onSearchChanged(value),
                 ),
-                
+
                 // عرض الإحصائيات (Stats) فقط في الشاشات الكبيرة لتجنب الازدحام
                 if (responsive.isDesktop || responsive.isTablet)
                   Padding(
@@ -69,7 +67,9 @@ class OrdersScreen extends StatelessWidget {
                       onRefresh: controller.fetchOrders,
                       child: SingleChildScrollView(
                         physics: const AlwaysScrollableScrollPhysics(),
-                        padding: EdgeInsets.only(bottom: responsive.defaultPadding.bottom),
+                        padding: EdgeInsets.only(
+                          bottom: responsive.defaultPadding.bottom,
+                        ),
                         child: buildRecentOrders(responsive),
                       ),
                     ),
@@ -86,13 +86,17 @@ class OrdersScreen extends StatelessWidget {
     final hasError = controller.errorMessage.isNotEmpty;
 
     return EnhancedErrorWidget(
-      title: hasError ? 'حدث خطأ ما' : (isSearching ? 'لا توجد نتائج' : 'لا توجد طلبات'),
-      message: hasError 
-          ? controller.errorMessage.value 
-          : (isSearching 
-              ? 'لم نجد أي طلب يطابق: "${controller.searchQuery.value}"' 
-              : 'قائمة الطلبات فارغة حالياً'),
-      icon: hasError ? Icons.error_outline : (isSearching ? Icons.search_off : Icons.inbox_outlined),
+      title: hasError
+          ? 'حدث خطأ ما'
+          : (isSearching ? 'لا توجد نتائج' : 'لا توجد طلبات'),
+      message: hasError
+          ? controller.errorMessage.value
+          : (isSearching
+                ? 'لم نجد أي طلب يطابق: "${controller.searchQuery.value}"'
+                : 'قائمة الطلبات فارغة حالياً'),
+      icon: hasError
+          ? Icons.error_outline
+          : (isSearching ? Icons.search_off : Icons.inbox_outlined),
       onRetry: () {
         if (isSearching) {
           controller.onSearchChanged('');

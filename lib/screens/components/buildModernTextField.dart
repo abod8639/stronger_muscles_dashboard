@@ -3,10 +3,7 @@ import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 
-enum TextFieldStyle {
-  solid,
-  glass,
-}
+enum TextFieldStyle { solid, glass }
 
 Widget buildModernTextField(
   TextEditingController controller,
@@ -21,7 +18,7 @@ Widget buildModernTextField(
     builder: (context) {
       final isDark = Theme.of(context).brightness == Brightness.dark;
       final responsive = context.responsive;
-      
+
       final textField = TextField(
         controller: controller,
         enabled: enabled,
@@ -36,9 +33,11 @@ Widget buildModernTextField(
           labelText: label,
           prefixIcon: Icon(
             icon,
-            color: (style == TextFieldStyle.glass 
-                ? AppColors.accent 
-                : AppColors.primary).withValues(alpha: 0.7),
+            color:
+                (style == TextFieldStyle.glass
+                        ? AppColors.accent
+                        : AppColors.primary)
+                    .withValues(alpha: 0.7),
             size: responsive.iconSize,
           ),
           filled: true,
@@ -99,4 +98,3 @@ Widget buildModernTextField(
     },
   );
 }
-

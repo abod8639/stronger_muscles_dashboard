@@ -7,11 +7,11 @@ class BaseDataView<T> extends StatelessWidget {
   final List<T> items;
   final Widget Function(BuildContext context, T item, int index) itemBuilder;
   final VoidCallback? onSeeAll;
-  
+
   final int? crossAxisCount;
   final double? mainAxisExtent;
   final double? childAspectRatio;
-  final bool useListView; 
+  final bool useListView;
 
   const BaseDataView({
     super.key,
@@ -29,9 +29,10 @@ class BaseDataView<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     final res = ResponsiveLayout(context);
     final spacing = res.itemSpacing;
-    
+
     // تحديد عدد الأعمدة تلقائياً إذا لم يتم تمرير قيمة
-    final int effectiveCrossAxisCount = crossAxisCount ?? (res.isMobile ? 1 : res.getGridColumns());
+    final int effectiveCrossAxisCount =
+        crossAxisCount ?? (res.isMobile ? 1 : res.getGridColumns());
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,9 +70,9 @@ class BaseDataView<T> extends StatelessWidget {
         ),
 
         // قسم المحتوى: إما قائمة أو شبكة
-        useListView 
-        ? _buildListView(res)
-        : _buildGridView(res, effectiveCrossAxisCount, spacing),
+        useListView
+            ? _buildListView(res)
+            : _buildGridView(res, effectiveCrossAxisCount, spacing),
       ],
     );
   }
@@ -105,7 +106,8 @@ class BaseDataView<T> extends StatelessWidget {
         childAspectRatio: childAspectRatio ?? res.getCardAspectRatio(),
       ),
       itemCount: items.length,
-      itemBuilder: (context, index) => itemBuilder(context, items[index], index),
+      itemBuilder: (context, index) =>
+          itemBuilder(context, items[index], index),
     );
   }
 }

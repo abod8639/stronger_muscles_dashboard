@@ -23,12 +23,13 @@ class ProductFormSheet extends StatefulWidget {
   State<ProductFormSheet> createState() => ProductFormSheetState();
 }
 
-class ProductFormSheetState extends State<ProductFormSheet> with ProductFormMixin {
+class ProductFormSheetState extends State<ProductFormSheet>
+    with ProductFormMixin {
   final _formKey = GlobalKey<FormState>();
-  
+
   @override
   final ProductsController controller = Get.find<ProductsController>();
-  
+
   @override
   ProductModel? get product => widget.product;
 

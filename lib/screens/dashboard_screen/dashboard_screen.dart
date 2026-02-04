@@ -51,7 +51,6 @@ class DashboardScreen extends GetView<DashboardController> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
                   buildHeaderStatus(),
 
                   SizedBox(height: res.itemSpacing * 2),
@@ -67,7 +66,6 @@ class DashboardScreen extends GetView<DashboardController> {
                   if (controller.orders.isEmpty)
                     buildNoDataState(res)
                   else ...[
-
                     buildMainIndicatorsSection(res),
 
                     SizedBox(height: res.itemSpacing * 3),
@@ -94,17 +92,14 @@ class DashboardScreen extends GetView<DashboardController> {
     );
   }
 }
-  List<FlSpot> generateChartSpots(int count, double maxY,) {
+
+List<FlSpot> generateChartSpots(int count, double maxY) {
   final controller = Get.find<DashboardController>();
 
   final random = List.generate(count, (i) {
     final baseValue = (controller.orders.length / 1) * (i + 2);
     final variation = (baseValue * 0.2 * (i % 2 == 0 ? -1 : 2)).toInt();
-    return FlSpot(
-      i.toDouble(),
-      (baseValue + variation).clamp(1, maxY),
-    );
+    return FlSpot(i.toDouble(), (baseValue + variation).clamp(1, maxY));
   });
   return random;
 }
-

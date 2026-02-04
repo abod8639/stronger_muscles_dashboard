@@ -40,11 +40,7 @@ class GenericEmptyState extends StatelessWidget {
                     : null,
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                icon,
-                size: 80,
-                color: Colors.white.withOpacity(0.3),
-              ),
+              child: Icon(icon, size: 80, color: Colors.white.withOpacity(0.3)),
             ),
             const SizedBox(height: 24),
             Text(

@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 
-enum ActionButtonStyle {
-  simple,
-  glass,
-}
+enum ActionButtonStyle { simple, glass }
 
 class GenericActionButton extends StatelessWidget {
   final IconData icon;
@@ -47,7 +44,7 @@ class GenericActionButton extends StatelessWidget {
 
   Widget _buildGlassButton(BuildContext context) {
     final responsive = context.responsive;
-    
+
     return AnimatedScale(
       scale: isHovered ? 1.1 : 1.0,
       duration: const Duration(milliseconds: 300),

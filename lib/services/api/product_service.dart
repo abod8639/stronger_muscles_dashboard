@@ -5,7 +5,6 @@ import '../../config/api_config.dart';
 import 'api_base.dart';
 
 class ProductService extends ApiBase {
-
   Future<List<dynamic>> fetchProducts() async {
     try {
       List<dynamic> allProducts = [];
@@ -306,5 +305,4 @@ class ProductService extends ApiBase {
       rethrow;
     }
   }
-
 }

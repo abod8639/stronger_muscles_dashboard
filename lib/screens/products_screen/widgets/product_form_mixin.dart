@@ -7,7 +7,7 @@ import 'package:stronger_muscles_dashboard/models/product_model.dart';
 mixin ProductFormMixin<T extends StatefulWidget> on State<T> {
   ProductsController get controller;
   ProductModel? get product;
-  
+
   /// Initialize all text controllers and form state
   void initializeProductFields() {
     // Initialize text controllers

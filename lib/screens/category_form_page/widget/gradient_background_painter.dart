@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 
@@ -14,14 +13,8 @@ class GradientBackgroundPainter extends CustomPainter {
         center: Alignment.topRight,
         radius: 1.5,
         colors: isDark
-            ? [
-                AppColors.primary.withOpacity(0.15),
-                Colors.transparent,
-              ]
-            : [
-                AppColors.primary.withOpacity(0.08),
-                Colors.transparent,
-              ],
+            ? [AppColors.primary.withOpacity(0.15), Colors.transparent]
+            : [AppColors.primary.withOpacity(0.08), Colors.transparent],
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
 
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint);
@@ -32,14 +25,8 @@ class GradientBackgroundPainter extends CustomPainter {
         center: Alignment.bottomLeft,
         radius: 1.2,
         colors: isDark
-            ? [
-                const Color(0xFF6366F1).withOpacity(0.1),
-                Colors.transparent,
-              ]
-            : [
-                const Color(0xFF6366F1).withOpacity(0.05),
-                Colors.transparent,
-              ],
+            ? [const Color(0xFF6366F1).withOpacity(0.1), Colors.transparent]
+            : [const Color(0xFF6366F1).withOpacity(0.05), Colors.transparent],
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
 
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint2);

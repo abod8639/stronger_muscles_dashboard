@@ -49,10 +49,7 @@ class _CategoryFormPageState extends State<CategoryFormPage>
           ? const Color(0xFF0A0A0A)
           : const Color(0xFFF5F7FA),
       extendBodyBehindAppBar: true,
-      appBar: BaseAppBar(
-        title: "",
-
-      ), // buildAppBar(isDark),
+      appBar: BaseAppBar(title: ""), // buildAppBar(isDark),
       floatingActionButton: buildFloatingActionButton(isDark),
       body: Stack(
         children: [
@@ -149,7 +146,6 @@ class _CategoryFormPageState extends State<CategoryFormPage>
       ),
     );
   }
-
 
   Widget buildGradientBackground(bool isDark) {
     return Positioned.fill(
@@ -291,144 +287,160 @@ class _CategoryFormPageState extends State<CategoryFormPage>
       ),
     );
   }
-// --- داخل _CategoryFormPageState ---
+  // --- داخل _CategoryFormPageState ---
 
   Widget buildIdField(bool isDark) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Padding(
-        padding: const EdgeInsets.only(right: 8, bottom: 8),
-        child: Text(
-          "معرف النظام الفريد",
-          style: TextStyle(
-            fontSize: 12,
-            color: _isIdFieldEnabled ? AppColors.warning : Colors.grey,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-      GestureDetector(
-        onDoubleTap: () => _toggleIdLock(),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.elasticOut, // حركة مطاطية عند فتح القفل
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            color: _isIdFieldEnabled 
-                ? AppColors.warning.withOpacity(0.05) 
-                : (isDark ? Colors.white10 : Colors.grey[100]),
-            border: Border.all(
-              color: _isIdFieldEnabled ? AppColors.warning : Colors.transparent,
-              width: 1.5,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(right: 8, bottom: 8),
+          child: Text(
+            "معرف النظام الفريد",
+            style: TextStyle(
+              fontSize: 12,
+              color: _isIdFieldEnabled ? AppColors.warning : Colors.grey,
+              fontWeight: FontWeight.bold,
             ),
           ),
-          child: Stack(
-            alignment: Alignment.centerLeft,
-            children: [
-              buildModernTextField(
-                controller.idController,
-                'ID: e.g. supplements_creatine',
-                Icons.terminal_rounded, // أيقونة تقنية أكثر
-                enabled: _isIdFieldEnabled && !controller.isLoading.value,
-              ),
-              Positioned(
-                right: 16,
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  child: Icon(
-                    _isIdFieldEnabled ? Icons.lock_open_rounded : Icons.lock_outline_rounded,
-                    key: ValueKey(_isIdFieldEnabled),
-                    size: 20,
-                    color: _isIdFieldEnabled ? AppColors.warning : Colors.grey,
-                  ),
-                ),
-              ),
-            ],
-          ),
         ),
-      ),
-    ],
-  );
-}
-
-// --- تحسين معاينة الصورة ---
-  Widget buildEnhancedImagePreview(bool isDark) {
-  return Center(
-    child: Container(
-      constraints: const BoxConstraints(maxWidth: 500), // عدم تمدد الصورة بشكل مفرط في الويب
-      child: Stack(
-        alignment: Alignment.topRight,
-        children: [
-          AnimatedContainer(
+        GestureDetector(
+          onDoubleTap: () => _toggleIdLock(),
+          child: AnimatedContainer(
             duration: const Duration(milliseconds: 500),
+            curve: Curves.elasticOut, // حركة مطاطية عند فتح القفل
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(28),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primary.withOpacity(0.2),
-                  blurRadius: 30,
-                  spreadRadius: -10,
-                  offset: const Offset(0, 15),
+              borderRadius: BorderRadius.circular(20),
+              color: _isIdFieldEnabled
+                  ? AppColors.warning.withOpacity(0.05)
+                  : (isDark ? Colors.white10 : Colors.grey[100]),
+              border: Border.all(
+                color: _isIdFieldEnabled
+                    ? AppColors.warning
+                    : Colors.transparent,
+                width: 1.5,
+              ),
+            ),
+            child: Stack(
+              alignment: Alignment.centerLeft,
+              children: [
+                buildModernTextField(
+                  controller.idController,
+                  'ID: e.g. supplements_creatine',
+                  Icons.terminal_rounded, // أيقونة تقنية أكثر
+                  enabled: _isIdFieldEnabled && !controller.isLoading.value,
+                ),
+                Positioned(
+                  right: 16,
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: Icon(
+                      _isIdFieldEnabled
+                          ? Icons.lock_open_rounded
+                          : Icons.lock_outline_rounded,
+                      key: ValueKey(_isIdFieldEnabled),
+                      size: 20,
+                      color: _isIdFieldEnabled
+                          ? AppColors.warning
+                          : Colors.grey,
+                    ),
+                  ),
                 ),
               ],
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(28),
-              child: AspectRatio(
-                aspectRatio: 16 / 9,
-                child: CachedNetworkImage(
-                  imageUrl: controller.imageController.text,
-                  fit: BoxFit.cover,
-                  placeholder: (_, __) => _buildImageShimmer(isDark),
-                  errorWidget: (_, __, ___) => buildErrorWidget(isDark),
-                ),
-              ),
-            ),
           ),
-          // أزرار التحكم الطافية
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(15),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(
-                  color: Colors.white10,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _buildMiniIconButton(Icons.refresh_rounded, Colors.blue, () => setState(() {})),
-                      const SizedBox(width: 4),
-                      _buildMiniIconButton(Icons.delete_sweep_rounded, Colors.redAccent, () {
-                        controller.imageController.clear();
-                        setState(() {});
-                      }),
-                    ],
+        ),
+      ],
+    );
+  }
+
+  // --- تحسين معاينة الصورة ---
+  Widget buildEnhancedImagePreview(bool isDark) {
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(
+          maxWidth: 500,
+        ), // عدم تمدد الصورة بشكل مفرط في الويب
+        child: Stack(
+          alignment: Alignment.topRight,
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 500),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(28),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withOpacity(0.2),
+                    blurRadius: 30,
+                    spreadRadius: -10,
+                    offset: const Offset(0, 15),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(28),
+                child: AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: CachedNetworkImage(
+                    imageUrl: controller.imageController.text,
+                    fit: BoxFit.cover,
+                    placeholder: (_, __) => _buildImageShimmer(isDark),
+                    errorWidget: (_, __, ___) => buildErrorWidget(isDark),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+            // أزرار التحكم الطافية
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(15),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: Container(
+                    color: Colors.white10,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildMiniIconButton(
+                          Icons.refresh_rounded,
+                          Colors.blue,
+                          () => setState(() {}),
+                        ),
+                        const SizedBox(width: 4),
+                        _buildMiniIconButton(
+                          Icons.delete_sweep_rounded,
+                          Colors.redAccent,
+                          () {
+                            controller.imageController.clear();
+                            setState(() {});
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildMiniIconButton(IconData icon, Color color, VoidCallback onTap) {
-  return Material(
-    color: Colors.transparent,
-    child: InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Icon(icon, size: 18, color: color),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Icon(icon, size: 18, color: color),
+        ),
       ),
-    ),
-  );
-}
- 
+    );
+  }
+
   Widget buildEnhancedImageSection(bool isDark, ResponsiveLayout res) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -638,104 +650,122 @@ class _CategoryFormPageState extends State<CategoryFormPage>
       ),
     );
   }
-  
-  Widget _buildImageShimmer(bool isDark) {
-  // الألوان المختارة لتعطي إيحاء "المعدن السائل" أو النبض التقني
-  final baseColor = isDark ? Colors.white.withOpacity(0.05) : Colors.grey[300]!;
-  final highlightColor = isDark ? Colors.white.withOpacity(0.12) : Colors.grey[100]!;
 
-  return Container(
-    width: double.infinity,
-    height: double.infinity,
-    decoration: BoxDecoration(
-      color: baseColor,
-      borderRadius: BorderRadius.circular(28),
-    ),
-    child: LayoutBuilder(
-      builder: (context, constraints) {
-        return Stack(
-          children: [
-            // استخدام TweenAnimationBuilder لعمل حركة لمعان مخصصة بدون حزم خارجية
-            TweenAnimationBuilder<double>(
-              tween: Tween(begin: -1.0, end: 2.0),
-              duration: const Duration(milliseconds: 1500),
-              curve: Curves.easeInOutSine,
-              onEnd: () {}, // سنستخدم شيمر خارجي أو نكرر الحركة
-              builder: (context, value, child) {
-                return Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment(value - 0.5, -0.3),
-                      end: Alignment(value, 0.3),
-                      colors: [
-                        Colors.transparent,
-                        highlightColor,
-                        Colors.transparent,
-                      ],
-                      stops: const [0.0, 0.5, 1.0],
-                    ),
-                  ),
-                );
-              },
-            ),
-            
-            // إضافة أيقونة في المنتصف تعطي إيحاء "جاري التحميل" بشكل هادئ
-            Center(
-              child: Opacity(
-                opacity: 0.5,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.cloud_download_outlined,
-                      size: 40,
-                      color: isDark ? Colors.white24 : Colors.black26,
-                    ),
-                    const SizedBox(height: 12),
-                    // شريط صغير تحت الأيقونة
-                    Container(
-                      width: 60,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: isDark ? Colors.white10 : Colors.black12,
-                        borderRadius: BorderRadius.circular(10),
+  Widget _buildImageShimmer(bool isDark) {
+    // الألوان المختارة لتعطي إيحاء "المعدن السائل" أو النبض التقني
+    final baseColor = isDark
+        ? Colors.white.withOpacity(0.05)
+        : Colors.grey[300]!;
+    final highlightColor = isDark
+        ? Colors.white.withOpacity(0.12)
+        : Colors.grey[100]!;
+
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      decoration: BoxDecoration(
+        color: baseColor,
+        borderRadius: BorderRadius.circular(28),
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return Stack(
+            children: [
+              // استخدام TweenAnimationBuilder لعمل حركة لمعان مخصصة بدون حزم خارجية
+              TweenAnimationBuilder<double>(
+                tween: Tween(begin: -1.0, end: 2.0),
+                duration: const Duration(milliseconds: 1500),
+                curve: Curves.easeInOutSine,
+                onEnd: () {}, // سنستخدم شيمر خارجي أو نكرر الحركة
+                builder: (context, value, child) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment(value - 0.5, -0.3),
+                        end: Alignment(value, 0.3),
+                        colors: [
+                          Colors.transparent,
+                          highlightColor,
+                          Colors.transparent,
+                        ],
+                        stops: const [0.0, 0.5, 1.0],
                       ),
                     ),
-                  ],
+                  );
+                },
+              ),
+
+              // إضافة أيقونة في المنتصف تعطي إيحاء "جاري التحميل" بشكل هادئ
+              Center(
+                child: Opacity(
+                  opacity: 0.5,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.cloud_download_outlined,
+                        size: 40,
+                        color: isDark ? Colors.white24 : Colors.black26,
+                      ),
+                      const SizedBox(height: 12),
+                      // شريط صغير تحت الأيقونة
+                      Container(
+                        width: 60,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: isDark ? Colors.white10 : Colors.black12,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
-        );
-      },
-    ),
-  );
-}
-
-  Widget buildFloatingActionButton(bool isDark) {
-  return Obx(() {
-    final isLoading = controller.isLoading.value;
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.fastOutSlowIn,
-      width: isLoading ? 70 : 180, // يتحول لدائرة عند التحميل
-      height: 60,
-      child: FloatingActionButton.extended(
-        onPressed: isLoading ? null : _submitForm,
-        backgroundColor: isLoading ? Colors.grey[800] : AppColors.primary,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        label: isLoading 
-            ? const SizedBox(
-                width: 24, height: 24, 
-                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)
-              )
-            : const Text("حفظ البيانات", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-        icon: isLoading ? null : const Icon(Icons.send_rounded, color: Colors.white),
+            ],
+          );
+        },
       ),
     );
-  });
-}
- 
+  }
+
+  Widget buildFloatingActionButton(bool isDark) {
+    return Obx(() {
+      final isLoading = controller.isLoading.value;
+      return AnimatedContainer(
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.fastOutSlowIn,
+        width: isLoading ? 70 : 180, // يتحول لدائرة عند التحميل
+        height: 60,
+        child: FloatingActionButton.extended(
+          onPressed: isLoading ? null : _submitForm,
+          backgroundColor: isLoading ? Colors.grey[800] : AppColors.primary,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          label: isLoading
+              ? const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+              : const Text(
+                  "حفظ البيانات",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+          icon: isLoading
+              ? null
+              : const Icon(Icons.send_rounded, color: Colors.white),
+        ),
+      );
+    });
+  }
+
   void _toggleIdLock() {
     if (!_isIdFieldEnabled && widget.category != null) {
       Get.dialog(

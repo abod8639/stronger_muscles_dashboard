@@ -88,7 +88,9 @@ class CategoriesScreen extends StatelessWidget {
                                       vertical: 2,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: AppColors.error.withValues(alpha: 0.1),
+                                      color: AppColors.error.withValues(
+                                        alpha: 0.1,
+                                      ),
                                       borderRadius: BorderRadius.circular(4),
                                     ),
                                     child: const Text(
@@ -105,15 +107,20 @@ class CategoriesScreen extends StatelessWidget {
                               ActionButtonConfig(
                                 icon: Icons.edit_outlined,
                                 color: Colors.blue,
-                                onPressed: () => Get.to(() => CategoryFormPage(category: category)),
+                                onPressed: () => Get.to(
+                                  () => CategoryFormPage(category: category),
+                                ),
                               ),
                               ActionButtonConfig(
                                 icon: Icons.delete_outline,
                                 color: AppColors.error,
-                                onPressed: () => controller.deleteCategory(category.id),
+                                onPressed: () =>
+                                    controller.deleteCategory(category.id),
                               ),
                             ],
-                            onTap: () => Get.to(() => CategoryFormPage(category: category )),
+                            onTap: () => Get.to(
+                              () => CategoryFormPage(category: category),
+                            ),
                             data: category,
                             index: index,
                           );
@@ -146,7 +153,9 @@ class CategoriesScreen extends StatelessWidget {
                                       vertical: 2,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: AppColors.error.withValues(alpha: 0.9),
+                                      color: AppColors.error.withValues(
+                                        alpha: 0.9,
+                                      ),
                                       borderRadius: BorderRadius.circular(4),
                                     ),
                                     child: const Text(
@@ -166,7 +175,8 @@ class CategoriesScreen extends StatelessWidget {
                                   color: Colors.white,
                                   size: 18,
                                 ),
-                                onPressed: () => controller.deleteCategory(category.id),
+                                onPressed: () =>
+                                    controller.deleteCategory(category.id),
                                 constraints: const BoxConstraints(
                                   minWidth: 32,
                                   minHeight: 32,
@@ -174,7 +184,9 @@ class CategoriesScreen extends StatelessWidget {
                                 padding: EdgeInsets.zero,
                               ),
                             ],
-                            onTap: () => Get.to(() => CategoryFormPage(category: category)),
+                            onTap: () => Get.to(
+                              () => CategoryFormPage(category: category),
+                            ),
                             data: category,
                           );
                         },

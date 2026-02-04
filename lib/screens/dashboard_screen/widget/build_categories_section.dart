@@ -17,10 +17,11 @@ Widget buildCategoriesSection(ResponsiveLayout res) {
       return 3;
     } else if (responsive.isTablet) {
       return 2;
-    }  else {
+    } else {
       return 2;
     }
   }
+
   if (dashboardController.categories.isEmpty) return const SizedBox();
   return Builder(
     builder: (context) {
@@ -32,8 +33,7 @@ Widget buildCategoriesSection(ResponsiveLayout res) {
         itemBuilder: (context, category, index) => CategoryCard(
           category: category,
           index: index,
-          onTap: () =>
-          Get.to(() => CategoryFormPage( category: category ))
+          onTap: () => Get.to(() => CategoryFormPage(category: category)),
           //  handleCategoryTap(category),
         ),
       );

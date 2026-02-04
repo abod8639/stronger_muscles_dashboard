@@ -5,7 +5,6 @@ import '../../config/api_config.dart';
 import 'api_base.dart';
 
 class CategoryService extends ApiBase {
-
   Future<List<dynamic>> fetchCategories() async {
     try {
       final response = await http

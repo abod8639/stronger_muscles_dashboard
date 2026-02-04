@@ -8,8 +8,7 @@ import 'package:stronger_muscles_dashboard/screens/components/base_data_view.dar
 import 'package:stronger_muscles_dashboard/screens/order_details_screen/order_details_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/order_list_tile.dart';
 
-Widget buildRecentOrders(ResponsiveLayout res ) {
-
+Widget buildRecentOrders(ResponsiveLayout res) {
   final dashboardController = Get.find<DashboardController>();
   final navigationController = Get.find<NavigationController>();
 
@@ -20,22 +19,22 @@ Widget buildRecentOrders(ResponsiveLayout res ) {
       return 1;
     }
   }
+
   return Builder(
     builder: (context) {
       return BaseDataView<OrderModel>(
-  title: 'الطلبات الأخيرة',
-  crossAxisCount:getCrossAxisCount(res),
-  items: dashboardController.orders,
-  onSeeAll: () => navigationController.changeIndex(3),
-  useListView: res.isTablet, 
-  mainAxisExtent: 190,
-  itemBuilder: (context, order, index) => OrderListTile(
-    order: order,
-    index: index,
-    onTap: () => 
-    Get.to(() => OrderDetailsScreen(order: order)),
-  ),
-);
+        title: 'الطلبات الأخيرة',
+        crossAxisCount: getCrossAxisCount(res),
+        items: dashboardController.orders,
+        onSeeAll: () => navigationController.changeIndex(3),
+        useListView: res.isTablet,
+        mainAxisExtent: 190,
+        itemBuilder: (context, order, index) => OrderListTile(
+          order: order,
+          index: index,
+          onTap: () => Get.to(() => OrderDetailsScreen(order: order)),
+        ),
+      );
     },
   );
 }

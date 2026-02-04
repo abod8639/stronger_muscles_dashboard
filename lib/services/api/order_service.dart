@@ -4,7 +4,6 @@ import '../../config/api_config.dart';
 import 'api_base.dart';
 
 class OrderService extends ApiBase {
-
   Future<List<dynamic>> fetchOrders() async {
     try {
       final response = await http
@@ -71,5 +70,4 @@ class OrderService extends ApiBase {
       rethrow;
     }
   }
-
 }

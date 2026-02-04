@@ -1,10 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/models/order_model.dart';
 
-Widget buildPriceSection( OrderModel order) {
+Widget buildPriceSection(OrderModel order) {
   return Builder(
     builder: (context) {
       final responsive = ResponsiveLayout(context);

@@ -144,7 +144,7 @@ class _OrderListTileState extends State<OrderListTile>
                       const SizedBox(height: 12),
 
                       // Info Section
-                      buildInfoSection( widget.order),
+                      buildInfoSection(widget.order),
 
                       const Spacer(),
 
@@ -152,11 +152,9 @@ class _OrderListTileState extends State<OrderListTile>
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Expanded(
-                            child: buildPriceSection( widget.order),
-                          ),
+                          Expanded(child: buildPriceSection(widget.order)),
                           const SizedBox(width: 1),
-                          buildEnhancedOrderImages(widget.order,_isHovered),
+                          buildEnhancedOrderImages(widget.order, _isHovered),
                         ],
                       ),
                     ],
@@ -170,4 +168,3 @@ class _OrderListTileState extends State<OrderListTile>
     );
   }
 }
-

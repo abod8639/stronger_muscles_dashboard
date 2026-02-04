@@ -222,5 +222,4 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard>
       ],
     );
   }
-
 }

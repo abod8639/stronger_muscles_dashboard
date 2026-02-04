@@ -20,15 +20,16 @@ class ProductFormPage extends StatefulWidget {
   State<ProductFormPage> createState() => _ProductFormPageState();
 }
 
-class _ProductFormPageState extends State<ProductFormPage> with ProductFormMixin {
+class _ProductFormPageState extends State<ProductFormPage>
+    with ProductFormMixin {
   final _formKey = GlobalKey<FormState>();
-  
+
   @override
   final ProductsController controller = Get.find<ProductsController>();
-  
+
   @override
   ProductModel? get product => widget.product;
-  
+
   String? _selectedCategoryId;
 
   @override

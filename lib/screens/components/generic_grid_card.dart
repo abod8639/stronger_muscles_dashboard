@@ -65,7 +65,8 @@ class _GenericGridCardState<T> extends State<GenericGridCard<T>> {
                           imageUrl: widget.imageUrl!,
                           fit: BoxFit.cover,
                           cacheManager: CustomCacheManager.instance,
-                          errorWidget: (_, __, ___) => _buildPlaceholder(isDark),
+                          errorWidget: (_, __, ___) =>
+                              _buildPlaceholder(isDark),
                           placeholder: (_, __) => _buildPlaceholder(isDark),
                         )
                       : widget.imageWidget ?? _buildPlaceholder(isDark),
@@ -115,14 +116,14 @@ class _GenericGridCardState<T> extends State<GenericGridCard<T>> {
                         ),
                       ),
                       if (widget.subtitle != null) ...[
-                         const SizedBox(height: 2),
-                         Text(
-                            widget.subtitle!,
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 10,
-                            ),
-                         ),
+                        const SizedBox(height: 2),
+                        Text(
+                          widget.subtitle!,
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 10,
+                          ),
+                        ),
                       ],
                       if (widget.statusWidget != null) ...[
                         const SizedBox(height: 4),
@@ -133,7 +134,8 @@ class _GenericGridCardState<T> extends State<GenericGridCard<T>> {
                 ),
 
                 // Actions (Delete/Edit) - Show on Hover or Mobile
-                if ((_isHovered || responsive.isMobile) && widget.actions != null)
+                if ((_isHovered || responsive.isMobile) &&
+                    widget.actions != null)
                   Positioned(
                     top: 8,
                     right: 8,
