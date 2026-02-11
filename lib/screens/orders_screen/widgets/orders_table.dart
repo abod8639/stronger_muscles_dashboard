@@ -30,7 +30,10 @@ class OrdersTable extends StatelessWidget {
     );
   }
 
-  Widget _buildTableHeader(OrdersController controller, ResponsiveLayout responsive) {
+  Widget _buildTableHeader(
+    OrdersController controller,
+    ResponsiveLayout responsive,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
       decoration: BoxDecoration(
@@ -44,41 +47,70 @@ class OrdersTable extends StatelessWidget {
           Expanded(
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              child: Obx(() => Row(
-                children: [
-                  _buildTab(controller, 'all', 'All'),
-                  _buildTab(controller, 'pending', 'Pending'),
-                  _buildTab(controller, 'processing', 'Processing'),
-                  _buildTab(controller, 'shipped', 'Shipped'),
-                  _buildTab(controller, 'delivered', 'Delivered'),
-                  _buildTab(controller, 'cancelled', 'Cancelled'),
-                ],
-              )),
+              child: Obx(
+                () => Row(
+                  children: [
+                    _buildTab(controller, 'all', 'All'),
+                    _buildTab(controller, 'pending', 'Pending'),
+                    _buildTab(controller, 'processing', 'Processing'),
+                    _buildTab(controller, 'shipped', 'Shipped'),
+                    _buildTab(controller, 'delivered', 'Delivered'),
+                    _buildTab(controller, 'cancelled', 'Cancelled'),
+                  ],
+                ),
+              ),
             ),
           ),
-          
+
           const SizedBox(width: 16),
-          
+
           // Search Input
           Container(
-            width: 250,
-            height: 40,
+            width: 280, 
+            height: 45, 
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.white.withOpacity(0.1)),
+              color: Colors.white.withOpacity(0.05), 
+              borderRadius: BorderRadius.circular(15), 
+              border: Border.all(
+                color: Colors.white.withOpacity(0.1),
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: TextField(
+              
               onChanged: (v) => controller.onSearchChanged(v),
-              style: const TextStyle(fontSize: 13, color: Colors.white),
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.white,
+                fontWeight: FontWeight.w400,
+              ),
+              cursorColor: Colors.blueAccent,
               decoration: InputDecoration(
-                hintText: 'Search order ID, customer...',
-                hintStyle: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 13),
-                prefixIcon: Icon(Icons.search, size: 18, color: Colors.white.withOpacity(0.3)),
+                focusColor: AppColors.primaryDark,
+                // hoverColor: AppColors.primaryDark,
+                suffixIconColor: AppColors.primaryDark,
+                hintText: 'Search order ID, name, email, phone...',
+                hintStyle: TextStyle(
+                  color: Colors.white.withOpacity(0.4),
+                  fontSize: 13,
+                ),
+                prefixIcon: Icon(
+                  Icons.search_rounded,
+                  size: 20,
+                  color: Colors.white.withOpacity(0.5),
+                ),
                 border: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 15,
+                  vertical: 12,
+                ),
               ),
             ),
           ),
@@ -110,10 +142,13 @@ class OrdersTable extends StatelessWidget {
     );
   }
 
-  Widget _buildTableContent(OrdersController controller, ResponsiveLayout responsive) {
+  Widget _buildTableContent(
+    OrdersController controller,
+    ResponsiveLayout responsive,
+  ) {
     return Obx(() {
       final orders = controller.paginatedOrders;
-      
+
       Widget content = Column(
         children: [
           // Column Headers
@@ -127,16 +162,23 @@ class OrdersTable extends StatelessWidget {
                 _buildColumnHeader('DATE', flex: 2),
                 _buildColumnHeader('TOTAL AMOUNT', flex: 2),
                 _buildColumnHeader('STATUS', flex: 2),
-                _buildColumnHeader('ACTION', flex: 1, textAlign: TextAlign.center),
+                _buildColumnHeader(
+                  'ACTION',
+                  flex: 1,
+                  textAlign: TextAlign.center,
+                ),
               ],
             ),
           ),
-          
+
           // Rows
           ...List.generate(orders.length, (index) {
-            return _buildOrderRow(orders[index], isLast: index == orders.length - 1);
+            return _buildOrderRow(
+              orders[index],
+              isLast: index == orders.length - 1,
+            );
           }),
-          
+
           if (orders.isEmpty)
             Padding(
               padding: const EdgeInsets.all(40.0),
@@ -157,12 +199,16 @@ class OrdersTable extends StatelessWidget {
           ),
         );
       }
-      
+
       return content;
     });
   }
 
-  Widget _buildColumnHeader(String label, {int flex = 1, TextAlign textAlign = TextAlign.start}) {
+  Widget _buildColumnHeader(
+    String label, {
+    int flex = 1,
+    TextAlign textAlign = TextAlign.start,
+  }) {
     return Expanded(
       flex: flex,
       child: Text(
@@ -180,16 +226,17 @@ class OrdersTable extends StatelessWidget {
 
   Widget _buildOrderRow(OrderModel order, {bool isLast = false}) {
     final dateFormat = DateFormat('MMM dd, yyyy');
-    
+
     return GestureDetector(
-      onTap: () => 
-      Get.to(() =>  OrderDetailsScreen(order: order ) ) ,
+      onTap: () => Get.to(() => OrderDetailsScreen(order: order)),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
         decoration: BoxDecoration(
-          border: isLast ? null : Border(
-            bottom: BorderSide(color: Colors.white.withOpacity(0.03)),
-          ),
+          border: isLast
+              ? null
+              : Border(
+                  bottom: BorderSide(color: Colors.white.withOpacity(0.03)),
+                ),
         ),
         child: Row(
           children: [
@@ -205,7 +252,7 @@ class OrdersTable extends StatelessWidget {
                 ),
               ),
             ),
-            
+
             // CUSTOMER
             Expanded(
               flex: 3,
@@ -214,15 +261,24 @@ class OrdersTable extends StatelessWidget {
                   CircleAvatar(
                     radius: 14,
                     backgroundColor: AppColors.primary.withOpacity(0.2),
-                    child: order.userPhoto != null 
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(14),
-                          child: Image.network(order.userPhoto!, fit: BoxFit.cover),
-                        )
-                      : Text(
-                          order.userName.isNotEmpty ? order.userName[0].toUpperCase() : 'U',
-                          style: const TextStyle(fontSize: 10, color: AppColors.primary, fontWeight: FontWeight.bold),
-                        ),
+                    child: order.userPhoto != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(14),
+                            child: Image.network(
+                              order.userPhoto!,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                        : Text(
+                            order.userName.isNotEmpty
+                                ? order.userName[0].toUpperCase()
+                                : 'U',
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
@@ -231,11 +287,18 @@ class OrdersTable extends StatelessWidget {
                       children: [
                         Text(
                           order.userName,
-                          style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                         Text(
                           order.userEmail,
-                          style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 11),
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.3),
+                            fontSize: 11,
+                          ),
                         ),
                       ],
                     ),
@@ -243,25 +306,32 @@ class OrdersTable extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             // DATE
             Expanded(
               flex: 2,
               child: Text(
                 dateFormat.format(order.orderDate),
-                style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 13),
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.7),
+                  fontSize: 13,
+                ),
               ),
             ),
-            
+
             // TOTAL AMOUNT
             Expanded(
               flex: 2,
               child: Text(
                 '${order.totalAmount.toStringAsFixed(2)} SAR',
-                style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-            
+
             // STATUS
             Expanded(
               flex: 2,
@@ -270,12 +340,16 @@ class OrdersTable extends StatelessWidget {
                 child: OrderStatusBadge(status: order.status),
               ),
             ),
-            
+
             // ACTION
             Expanded(
               flex: 1,
               child: IconButton(
-                icon: Icon(Icons.more_vert, size: 18, color: Colors.white.withOpacity(0.4)),
+                icon: Icon(
+                  Icons.more_vert,
+                  size: 18,
+                  color: Colors.white.withOpacity(0.4),
+                ),
                 onPressed: () {
                   Get.to(() => OrderDetailsScreen(order: order));
                 },
@@ -287,7 +361,10 @@ class OrdersTable extends StatelessWidget {
     );
   }
 
-  Widget _buildTableFooter(OrdersController controller, ResponsiveLayout responsive) {
+  Widget _buildTableFooter(
+    OrdersController controller,
+    ResponsiveLayout responsive,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
       decoration: BoxDecoration(
@@ -298,39 +375,52 @@ class OrdersTable extends StatelessWidget {
         ),
       ),
       child: Obx(() {
-        final start = (controller.currentPage.value - 1) * controller.itemsPerPage.value + 1;
-        final end = (start + controller.paginatedOrders.length - 1).clamp(0, controller.filteredOrders.length);
-        
+        final start =
+            (controller.currentPage.value - 1) * controller.itemsPerPage.value +
+            1;
+        final end = (start + controller.paginatedOrders.length - 1).clamp(
+          0,
+          controller.filteredOrders.length,
+        );
+
         return Row(
           children: [
             Text(
               'Showing $start-$end of ${controller.filteredOrders.length} orders',
-              style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 12),
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.3),
+                fontSize: 12,
+              ),
             ),
             const Spacer(),
-            
+
             // Pagination buttons
             _buildPaginationButton(
               icon: Icons.chevron_left,
-              onPressed: controller.currentPage.value > 1 ? controller.previousPage : null,
+              onPressed: controller.currentPage.value > 1
+                  ? controller.previousPage
+                  : null,
             ),
-            
+
             const SizedBox(width: 8),
-            
+
             ...List.generate(controller.totalPages, (index) {
               final pageNum = index + 1;
               final isSelected = controller.currentPage.value == pageNum;
-              
+
               // Only show a limited number of page buttons
               if (controller.totalPages > 5) {
-                if (pageNum != 1 && 
-                    pageNum != controller.totalPages && 
-                    (pageNum < controller.currentPage.value - 1 || 
-                     pageNum > controller.currentPage.value + 1)) {
+                if (pageNum != 1 &&
+                    pageNum != controller.totalPages &&
+                    (pageNum < controller.currentPage.value - 1 ||
+                        pageNum > controller.currentPage.value + 1)) {
                   if (pageNum == 2 || pageNum == controller.totalPages - 1) {
                     return const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 4),
-                      child: Text('...', style: TextStyle(color: Colors.white24)),
+                      child: Text(
+                        '...',
+                        style: TextStyle(color: Colors.white24),
+                      ),
                     );
                   }
                   return const SizedBox.shrink();
@@ -341,7 +431,10 @@ class OrdersTable extends StatelessWidget {
                 onTap: () => controller.goToPage(pageNum),
                 child: Container(
                   margin: const EdgeInsets.symmetric(horizontal: 4),
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: isSelected ? AppColors.primary : Colors.transparent,
                     borderRadius: BorderRadius.circular(6),
@@ -349,20 +442,26 @@ class OrdersTable extends StatelessWidget {
                   child: Text(
                     '$pageNum',
                     style: TextStyle(
-                      color: isSelected ? Colors.white : Colors.white.withOpacity(0.5),
+                      color: isSelected
+                          ? Colors.white
+                          : Colors.white.withOpacity(0.5),
                       fontSize: 12,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                     ),
                   ),
                 ),
               );
             }),
-            
+
             const SizedBox(width: 8),
-            
+
             _buildPaginationButton(
               icon: Icons.chevron_right,
-              onPressed: controller.currentPage.value < controller.totalPages ? controller.nextPage : null,
+              onPressed: controller.currentPage.value < controller.totalPages
+                  ? controller.nextPage
+                  : null,
             ),
           ],
         );
@@ -370,12 +469,20 @@ class OrdersTable extends StatelessWidget {
     );
   }
 
-  Widget _buildPaginationButton({required IconData icon, VoidCallback? onPressed}) {
+  Widget _buildPaginationButton({
+    required IconData icon,
+    VoidCallback? onPressed,
+  }) {
     return IconButton(
       onPressed: onPressed,
-      icon: Icon(icon, size: 20, color: onPressed != null ? Colors.white.withOpacity(0.8) : Colors.white10),
+      icon: Icon(
+        icon,
+        size: 20,
+        color: onPressed != null
+            ? Colors.white.withOpacity(0.8)
+            : Colors.white10,
+      ),
       visualDensity: VisualDensity.compact,
     );
   }
 }
-
