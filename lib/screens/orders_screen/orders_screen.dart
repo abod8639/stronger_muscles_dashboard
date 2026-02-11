@@ -41,10 +41,12 @@ class OrdersScreen extends StatelessWidget {
           return const EnhancedLoadingWidget(message: 'جاري تحميل الطلبات...');
         }
 
-        return SingleChildScrollView(
+        return 
+        SingleChildScrollView(
+          physics:  responsive.isDesktop ? const NeverScrollableScrollPhysics() : const AlwaysScrollableScrollPhysics(),
           padding: EdgeInsets.symmetric(
             horizontal: responsive.defaultPadding.left,
-            vertical: responsive.defaultPadding.top,
+            // vertical: responsive.defaultPadding.top,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,7 +58,7 @@ class OrdersScreen extends StatelessWidget {
                   child: buildStatsSection(),
                 ),
 
-              const SizedBox(height: 32),
+              const SizedBox(height: 10),
 
               // The Main Table
               const OrdersTable(),

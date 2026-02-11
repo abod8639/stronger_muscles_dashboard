@@ -16,7 +16,8 @@ class OrdersController extends GetxController {
 
   // Pagination
   final RxInt currentPage = 1.obs;
-  final RxInt itemsPerPage = 8.obs;
+  final RxInt itemsPerPage = 6.obs;
+  final RxBool selectedStatus = false.obs;
 
   List<OrderModel> get paginatedOrders {
     final start = (currentPage.value - 1) * itemsPerPage.value;
@@ -100,6 +101,11 @@ class OrdersController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  void changeStatus(String status) {
+    selectedStatusId.value = status;
+    currentPage.value = 1;
   }
 
   void _applyFilters() {
