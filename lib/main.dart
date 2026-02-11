@@ -71,7 +71,7 @@ class MainNavigationScreen extends StatelessWidget {
                     shape: BoxShape.circle,
                     gradient: RadialGradient(
                       colors: [
-                        AppColors.primary.withOpacity(0.15),
+                        AppColors.primary.withValues(alpha: 0.15),
                         Colors.transparent,
                       ],
                     ),
@@ -88,7 +88,7 @@ class MainNavigationScreen extends StatelessWidget {
                     shape: BoxShape.circle,
                     gradient: RadialGradient(
                       colors: [
-                        AppColors.accent.withOpacity(0.1),
+                        AppColors.accent.withValues(alpha: 0.1),
                         Colors.transparent,
                       ],
                     ),

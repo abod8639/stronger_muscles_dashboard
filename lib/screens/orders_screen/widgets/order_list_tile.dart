@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/screens/components/status_badge.dart';
@@ -62,68 +63,33 @@ class _OrderListTileState extends State<OrderListTile>
         width: double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(24),
-          boxShadow: _isHovered
-              ? [
-                  BoxShadow(
-                    color: AppColors.primary.withOpacity(0.2),
-                    blurRadius: 25,
-                    offset: const Offset(0, 12),
-                    spreadRadius: 2,
-                  ),
-                ]
-              : [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
+          boxShadow: [
+            BoxShadow(
+              color: _isHovered 
+                  ? AppColors.primary.withOpacity(0.15) 
+                  : Colors.black.withOpacity(0.04),
+              blurRadius: _isHovered ? 20 : 8,
+              offset: Offset(0, _isHovered ? 8 : 2),
+            ),
+          ],
         ),
         child: GlassContainer(
           padding: EdgeInsets.zero,
-          opacity: _isHovered ? 0.15 : 0.08,
-          blur: 20,
+          opacity: _isHovered ? 0.12 : 0.08,
+          // Blur is disabled by default in GlassContainer now
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
             color: _isHovered
-                ? AppColors.primary.withOpacity(0.4)
+                ? AppColors.primary.withOpacity(0.3)
                 : Colors.white.withOpacity(0.08),
-            width: _isHovered ? 2 : 1.5,
+            width: _isHovered ? 1.5 : 1,
           ),
-          gradient: _isHovered
-              ? LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    AppColors.primary.withOpacity(0.1),
-                    Colors.transparent,
-                  ],
-                )
-              : null,
           child: InkWell(
             onTap: widget.onTap,
             borderRadius: BorderRadius.circular(24),
-            splashColor: AppColors.primary.withOpacity(0.1),
-            highlightColor: AppColors.primary.withOpacity(0.05),
             child: Stack(
               children: [
-                // Animated gradient overlay
-                if (_isHovered)
-                  Positioned.fill(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(24),
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            AppColors.primary.withOpacity(0.03),
-                            Colors.transparent,
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                // Simplified content (removed redundant Stack gradient)
 
                 // Content
                 Padding(

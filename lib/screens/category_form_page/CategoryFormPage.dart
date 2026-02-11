@@ -393,32 +393,30 @@ class _CategoryFormPageState extends State<CategoryFormPage>
             // أزرار التحكم الطافية
             Padding(
               padding: const EdgeInsets.all(12.0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(15),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                  child: Container(
-                    color: Colors.white10,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _buildMiniIconButton(
-                          Icons.refresh_rounded,
-                          Colors.blue,
-                          () => setState(() {}),
-                        ),
-                        const SizedBox(width: 4),
-                        _buildMiniIconButton(
-                          Icons.delete_sweep_rounded,
-                          Colors.redAccent,
-                          () {
-                            controller.imageController.clear();
-                            setState(() {});
-                          },
-                        ),
-                      ],
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(color: Colors.white.withOpacity(0.1)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildMiniIconButton(
+                      Icons.refresh_rounded,
+                      Colors.blue,
+                      () => setState(() {}),
                     ),
-                  ),
+                    const SizedBox(width: 4),
+                    _buildMiniIconButton(
+                      Icons.delete_sweep_rounded,
+                      Colors.redAccent,
+                      () {
+                        controller.imageController.clear();
+                        setState(() {});
+                      },
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -544,26 +542,20 @@ class _CategoryFormPageState extends State<CategoryFormPage>
     required Color color,
     required VoidCallback onTap,
   }) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.3),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.white.withOpacity(0.2)),
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: onTap,
-              borderRadius: BorderRadius.circular(12),
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Icon(icon, size: 20, color: color),
-              ),
-            ),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white.withOpacity(0.2)),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Icon(icon, size: 20, color: color),
           ),
         ),
       ),

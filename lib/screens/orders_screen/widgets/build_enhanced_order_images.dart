@@ -33,13 +33,13 @@ Widget buildEnhancedOrderImages(OrderModel order, bool isHovered) {
                       : Colors.white.withOpacity(0.2),
                   width: 2,
                 ),
-                boxShadow: [
+                boxShadow: isHovered ? [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: const Offset(2, 3),
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 6,
+                    offset: const Offset(1, 2),
                   ),
-                ],
+                ] : [],
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),

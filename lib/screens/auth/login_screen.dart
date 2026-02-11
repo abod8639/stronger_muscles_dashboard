@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/screens/auth/signup_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/auth/widgets/build_primary_button.dart';
 import 'package:stronger_muscles_dashboard/screens/auth/widgets/build_text_field.dart';
+import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 import '../../config/theme.dart';
 import '../../controllers/auth_controller.dart';
 
@@ -75,44 +76,29 @@ class LoginScreen extends StatelessWidget {
           ),
         );
       },
-      child: ClipRRect(
+      child: GlassContainer(
         borderRadius: BorderRadius.circular(30),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-          child: Container(
-            padding: const EdgeInsets.all(32),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.08),
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.2),
-                width: 1.5,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.25),
-                  blurRadius: 25,
-                  offset: const Offset(0, 15),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildLogo(),
-                const SizedBox(height: 24),
-                _buildHeaderText(),
-                const SizedBox(height: 40),
-                _buildFormFields(controller),
-                const SizedBox(height: 16),
-                _buildRememberForgot(controller),
-                const SizedBox(height: 32),
-                _buildLoginAction(controller),
-                const SizedBox(height: 24),
-                _buildFooter(),
-              ],
-            ),
-          ),
+        padding: const EdgeInsets.all(32),
+        opacity: 0.08,
+        border: Border.all(
+          color: Colors.white.withOpacity(0.2),
+          width: 1.5,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildLogo(),
+            const SizedBox(height: 24),
+            _buildHeaderText(),
+            const SizedBox(height: 40),
+            _buildFormFields(controller),
+            const SizedBox(height: 16),
+            _buildRememberForgot(controller),
+            const SizedBox(height: 32),
+            _buildLoginAction(controller),
+            const SizedBox(height: 24),
+            _buildFooter(),
+          ],
         ),
       ),
     );
