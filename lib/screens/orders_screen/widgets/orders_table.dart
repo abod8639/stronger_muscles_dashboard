@@ -381,128 +381,138 @@ class OrdersTable extends StatelessWidget {
     );
   }
 
-  Widget _buildTableFooter(
+Widget _buildTableFooter(
     OrdersController controller,
     ResponsiveLayout responsive,
   ) {
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.1),
+        color: Colors.white.withOpacity(0.02),
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(20),
           bottomRight: Radius.circular(20),
         ),
+        border: Border(
+          top: BorderSide(color: Colors.white.withOpacity(0.05)),
+        ),
       ),
       child: Obx(() {
-        final start =
-            (controller.currentPage.value - 1) * controller.itemsPerPage.value +
-            1;
-        final end = (start + controller.paginatedOrders.length - 1).clamp(
-          0,
-          controller.filteredOrders.length,
+        final start = (controller.currentPage.value - 1) * controller.itemsPerPage.value + 1;
+        final end = (start + controller.paginatedOrders.length - 1).clamp(0, controller.filteredOrders.length);
+
+        // النص الإحصائي
+        Widget statsText = Text(
+          'Showing $start to $end of ${controller.filteredOrders.length} entries',
+          style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12),
         );
 
-        return Row(
+        // أزرار التنقل
+        Widget paginationControls = Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              'Showing $start-$end of ${controller.filteredOrders.length} orders',
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.3),
-                fontSize: 12,
-              ),
+            _buildNavButton(
+              icon: Icons.chevron_left_rounded,
+              onPressed: controller.currentPage.value > 1 ? controller.previousPage : null,
             ),
-            const Spacer(),
-
-            // Pagination buttons
-            _buildPaginationButton(
-              icon: Icons.chevron_left,
-              onPressed: controller.currentPage.value > 1
-                  ? controller.previousPage
-                  : null,
-            ),
-
-            const SizedBox(width: 8),
-
-            ...List.generate(controller.totalPages, (index) {
-              final pageNum = index + 1;
-              final isSelected = controller.currentPage.value == pageNum;
-
-              // Only show a limited number of page buttons
-              if (controller.totalPages > 5) {
-                if (pageNum != 1 &&
-                    pageNum != controller.totalPages &&
-                    (pageNum < controller.currentPage.value - 1 ||
-                        pageNum > controller.currentPage.value + 1)) {
-                  if (pageNum == 2 || pageNum == controller.totalPages - 1) {
-                    return const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 4),
-                      child: Text(
-                        '...',
-                        style: TextStyle(color: Colors.white24),
-                      ),
-                    );
-                  }
-                  return const SizedBox.shrink();
-                }
-              }
-
-              return GestureDetector(
-                onTap: () => controller.goToPage(pageNum),
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isSelected ? AppColors.primary : Colors.transparent,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    '$pageNum',
-                    style: TextStyle(
-                      color: isSelected
-                          ? Colors.white
-                          : Colors.white.withOpacity(0.5),
-                      fontSize: 12,
-                      fontWeight: isSelected
-                          ? FontWeight.bold
-                          : FontWeight.normal,
-                    ),
-                  ),
-                ),
-              );
-            }),
-
-            const SizedBox(width: 8),
-
-            _buildPaginationButton(
-              icon: Icons.chevron_right,
-              onPressed: controller.currentPage.value < controller.totalPages
-                  ? controller.nextPage
-                  : null,
+            const SizedBox(width: 12),
+            ..._buildPageNumbers(controller),
+            const SizedBox(width: 12),
+            _buildNavButton(
+              icon: Icons.chevron_right_rounded,
+              onPressed: controller.currentPage.value < controller.totalPages ? controller.nextPage : null,
             ),
           ],
         );
+
+        // التبديل بين التصميم الأفقي والعمودي
+        return responsive.isMobile
+            ? Column(
+                children: [
+                  statsText,
+                  const SizedBox(height: 16),
+                  paginationControls,
+                ],
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [statsText, paginationControls],
+              );
       }),
     );
   }
 
-  Widget _buildPaginationButton({
-    required IconData icon,
-    VoidCallback? onPressed,
-  }) {
-    return IconButton(
-      onPressed: onPressed,
-      icon: Icon(
-        icon,
-        size: 20,
-        color: onPressed != null
-            ? Colors.white.withOpacity(0.8)
-            : Colors.white10,
+  // إنشاء أرقام الصفحات بشكل ذكي
+  List<Widget> _buildPageNumbers(OrdersController controller) {
+    List<Widget> pages = [];
+    for (int i = 1; i <= controller.totalPages; i++) {
+      if (controller.totalPages > 5) {
+        if (i != 1 && i != controller.totalPages && (i < controller.currentPage.value - 1 || i > controller.currentPage.value + 1)) {
+          if (i == 2 || i == controller.totalPages - 1) {
+            pages.add(Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: Text('...', style: TextStyle(color: Colors.white.withOpacity(0.2))),
+            ));
+          }
+          continue;
+        }
+      }
+      pages.add(_buildPageButton(i, controller));
+    }
+    return pages;
+  }
+
+  // زر رقم الصفحة
+  Widget _buildPageButton(int pageNum, OrdersController controller) {
+    final isSelected = controller.currentPage.value == pageNum;
+    return GestureDetector(
+      onTap: () => controller.goToPage(pageNum),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        margin: const EdgeInsets.symmetric(horizontal: 3),
+        width: 32,
+        height: 32,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primary : Colors.white.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: isSelected ? AppColors.primary : Colors.white.withOpacity(0.1),
+          ),
+        ),
+        child: Text(
+          '$pageNum',
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.white.withOpacity(0.6),
+            fontSize: 12,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+          ),
+        ),
       ),
-      visualDensity: VisualDensity.compact,
     );
   }
+
+  // أزرار السابق والتالي المحسنة
+  Widget _buildNavButton({required IconData icon, VoidCallback? onPressed}) {
+    bool isDisabled = onPressed == null;
+    return InkWell(
+      onTap: onPressed,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.all(6),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(isDisabled ? 0.02 : 0.05),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.white.withOpacity(isDisabled ? 0.02 : 0.1)),
+        ),
+        child: Icon(
+          icon,
+          size: 20,
+          color: isDisabled ? Colors.white10 : Colors.white.withOpacity(0.7),
+        ),
+      ),
+    );
+  }
+
 }
