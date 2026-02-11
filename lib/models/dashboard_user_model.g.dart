@@ -78,20 +78,20 @@ class DashboardUserAdapter extends TypeAdapter<DashboardUser> {
 // **************************************************************************
 
 _$DashboardResponseImpl _$$DashboardResponseImplFromJson(
-  Map<String, dynamic> json,
-) => _$DashboardResponseImpl(
-  totalUsers: (json['totalUsers'] as num).toInt(),
-  users: (json['users'] as List<dynamic>)
-      .map((e) => DashboardUser.fromJson(e as Map<String, dynamic>))
-      .toList(),
-);
+        Map<String, dynamic> json) =>
+    _$DashboardResponseImpl(
+      totalUsers: (json['totalUsers'] as num).toInt(),
+      users: (json['users'] as List<dynamic>)
+          .map((e) => DashboardUser.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
 
 Map<String, dynamic> _$$DashboardResponseImplToJson(
-  _$DashboardResponseImpl instance,
-) => <String, dynamic>{
-  'totalUsers': instance.totalUsers,
-  'users': instance.users,
-};
+        _$DashboardResponseImpl instance) =>
+    <String, dynamic>{
+      'totalUsers': instance.totalUsers,
+      'users': instance.users,
+    };
 
 _$DashboardUserImpl _$$DashboardUserImplFromJson(Map<String, dynamic> json) =>
     _$DashboardUserImpl(
@@ -109,8 +109,7 @@ _$DashboardUserImpl _$$DashboardUserImplFromJson(Map<String, dynamic> json) =>
       lastLogin: json['lastLogin'] == null
           ? null
           : DateTime.parse(json['lastLogin'] as String),
-      addresses:
-          (json['addresses'] as List<dynamic>?)
+      addresses: (json['addresses'] as List<dynamic>?)
               ?.map((e) => UserAddress.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],

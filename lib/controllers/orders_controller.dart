@@ -14,6 +14,19 @@ class OrdersController extends GetxController {
   final RxString errorMessage = ''.obs;
   final RxString searchQuery = ''.obs;
 
+  // Pagination
+  final RxInt currentPage = 1.obs;
+  final RxInt itemsPerPage = 8.obs;
+
+  List<OrderModel> get paginatedOrders {
+    final start = (currentPage.value - 1) * itemsPerPage.value;
+    if (start >= filteredOrders.length) return [];
+    final end = (start + itemsPerPage.value).clamp(0, filteredOrders.length);
+    return filteredOrders.sublist(start, end);
+  }
+
+  int get totalPages => (filteredOrders.length / itemsPerPage.value).ceil();
+
   // Statistics Getters
   int get totalOrders => _allOrders.length;
   double get totalRevenue =>
@@ -38,8 +51,31 @@ class OrdersController extends GetxController {
 
   void onSearchChanged(String query) {
     searchQuery.value = query;
-
+    currentPage.value = 1; // Reset to first page on search
     _applyFilters();
+  }
+
+  void onStatusChanged(String statusId) {
+    selectedStatusId.value = statusId;
+    currentPage.value = 1; // Reset to first page on filter
+  }
+
+  void nextPage() {
+    if (currentPage.value < totalPages) {
+      currentPage.value++;
+    }
+  }
+
+  void previousPage() {
+    if (currentPage.value > 1) {
+      currentPage.value--;
+    }
+  }
+
+  void goToPage(int page) {
+    if (page >= 1 && page <= totalPages) {
+      currentPage.value = page;
+    }
   }
 
   /// تحويل الـ Enum إلى قائمة متوافقة مع الـ HorizontalChipsSelector

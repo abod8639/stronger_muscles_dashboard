@@ -90,7 +90,7 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard>
               // Header: Icon + Title
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [_buildIconHeader(), _buildTrendBadge()],
+                children: [_buildIconHeader()],
               ),
               const SizedBox(height: 20),
 
@@ -115,25 +115,35 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard>
 
               const SizedBox(height: 2),
 
-              // Value with Gradient Mask
-              ShaderMask(
-                shaderCallback: (bounds) => LinearGradient(
-                  colors: [
-                    Colors.white,
-                    (widget.chartColor ?? widget.accentColor).withOpacity(0.7),
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ).createShader(bounds),
-                child: Text(
-                  widget.value,
-                  style: const TextStyle(
-                    fontSize: 35,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
-                    letterSpacing: -1,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  // Value with Gradient Mask
+                  ShaderMask(
+                    shaderCallback: (bounds) => LinearGradient(
+                      colors: [
+                        Colors.white,
+                        (widget.chartColor ?? widget.accentColor).withOpacity(0.7),
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ).createShader(bounds),
+                    child: Text(
+                      widget.value,
+                      style: const TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
                   ),
-                ),
+                  const SizedBox(width: 12),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 6),
+                    child: _buildTrendBadge(),
+                  ),
+                ],
               ),
 
               const Spacer(),

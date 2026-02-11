@@ -15,7 +15,8 @@ Widget buildStatsSection() {
       crossAxisCount: 4,
       crossAxisSpacing: 10,
       // mainAxisSpacing: 10,
-      childAspectRatio: 1.5,
+      childAspectRatio: 1.9,
+      
 
       children: [
         PremiumIndicatorCard(

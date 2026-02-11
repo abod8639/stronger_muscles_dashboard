@@ -158,8 +158,7 @@ _$ProductModelImpl _$$ProductModelImplFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String,
       price: (json['price'] as num).toDouble(),
       discountPrice: (json['discount_price'] as num?)?.toDouble(),
-      imageUrls:
-          (json['image_urls'] as List<dynamic>?)
+      imageUrls: (json['image_urls'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           const [],
@@ -176,13 +175,12 @@ _$ProductModelImpl _$$ProductModelImplFromJson(Map<String, dynamic> json) =>
       sku: json['sku'] as String?,
       tags:
           (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
-          const [],
+              const [],
       weight: (json['weight'] as num?)?.toDouble(),
       size:
           (json['size'] as List<dynamic>?)?.map((e) => e as String).toList() ??
-          const [],
-      flavor:
-          (json['flavors'] as List<dynamic>?)
+              const [],
+      flavor: (json['flavors'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           const [],
@@ -194,8 +192,7 @@ _$ProductModelImpl _$$ProductModelImplFromJson(Map<String, dynamic> json) =>
       viewsCount: (json['views_count'] as num?)?.toInt() ?? 0,
       shippingWeight: (json['shipping_weight'] as num?)?.toDouble(),
       dimensions: json['dimensions'] as Map<String, dynamic>?,
-      ingredients:
-          (json['ingredients'] as List<dynamic>?)
+      ingredients: (json['ingredients'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           const [],

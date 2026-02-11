@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive/hive.dart';
+import 'user_model.dart';
 
 part 'order_model.freezed.dart';
 part 'order_model.g.dart';
@@ -53,7 +54,12 @@ class OrderModel with _$OrderModel {
     @HiveField(13) String? phoneNumber,
     @HiveField(14) Map<String, dynamic>? shippingAddressSnapshot,
     @HiveField(15) List<OrderItemModel>? items,
+    @HiveField(16) UserModel? user,
   }) = _OrderModel;
+
+  String get userName => user?.name ?? 'User $userId';
+  String get userEmail => user?.email ?? 'No email';
+  String? get userPhoto => user?.photoUrl;
 
   String? get firstItemImageUrl {
     if (items != null && items!.isNotEmpty) {
@@ -129,6 +135,7 @@ Map<String, dynamic> _mapOrderJson(Map<String, dynamic> json) {
     'phoneNumber': json['phoneNumber'] ?? json['phone_number'],
     'shippingAddressSnapshot':
         json['shippingAddressSnapshot'] ?? json['shipping_address_snapshot'],
+    'user': json['user'],
   };
 }
 

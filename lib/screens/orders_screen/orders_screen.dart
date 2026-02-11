@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/screens/components/enhanced_error_widget.dart';
 import 'package:stronger_muscles_dashboard/screens/components/enhanced_loading_widget.dart';
-import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
-import 'package:stronger_muscles_dashboard/screens/components/top_section.dart';
-import 'package:stronger_muscles_dashboard/screens/components/custom_search_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/components/base_app_bar.dart';
-import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
-import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_recent_orders.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_stats_section.dart';
+import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/orders_table.dart';
 import 'package:stronger_muscles_dashboard/controllers/orders_controller.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
+import 'package:stronger_muscles_dashboard/config/theme.dart';
 
 class OrdersScreen extends StatelessWidget {
   const OrdersScreen({super.key});
@@ -23,6 +19,18 @@ class OrdersScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: BaseAppBar(
+        extraActions: [
+          
+          _buildHeaderButton(
+            icon: Icons.download_rounded,
+            label: 'Export CSV',
+            onTap: () {
+              // TODO: implement export CSV
+            },
+            isOutline: true,
+          ),
+
+        ],
         title: 'إدارة الطلبات',
         onPressed: controller.fetchOrders,
         icon: Icons.refresh_rounded,
@@ -33,78 +41,81 @@ class OrdersScreen extends StatelessWidget {
           return const EnhancedLoadingWidget(message: 'جاري تحميل الطلبات...');
         }
 
-        return Column(
-          children: [
-            // قسم البحث والإحصائيات العلوي (نفس نمط UsersScreen)
-            TopSection(
-              children: [
-                CustomSearchBar(
-                  hintText: 'ابحث برقم الطلب، اسم العميل، أو الحالة...',
-                  padding: responsive.defaultPadding,
-                  onSearch: (value) => controller.onSearchChanged(value),
+        return SingleChildScrollView(
+          padding: EdgeInsets.symmetric(
+            horizontal: responsive.defaultPadding.left,
+            vertical: responsive.defaultPadding.top,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Stats Row
+              if (responsive.isDesktop)
+                SizedBox(
+                  height: 160,
+                  child: buildStatsSection(),
                 ),
 
-                // عرض الإحصائيات (Stats) فقط في الشاشات الكبيرة لتجنب الازدحام
-                if (responsive.isDesktop || responsive.isTablet)
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: responsive.defaultPadding.left,
-                      vertical: 8,
-                    ),
-                    child: GlassContainer(
-                      padding: const EdgeInsets.all(16),
-                      child: buildStatsSection(),
-                    ),
-                  ),
-              ],
-            ),
+              const SizedBox(height: 32),
 
-            // قائمة الطلبات أو حالات الخطأ/الفراغ
-            Expanded(
-              child: controller.filteredOrders.isEmpty
-                  ? _buildEmptyOrErrorState(controller)
-                  : MyRefreshIndicator(
-                      onRefresh: controller.fetchOrders,
-                      child: SingleChildScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: EdgeInsets.only(
-                          bottom: responsive.defaultPadding.bottom,
-                        ),
-                        child: buildRecentOrders(responsive),
-                      ),
-                    ),
-            ),
-          ],
+              // The Main Table
+              const OrdersTable(),
+
+              const SizedBox(height: 10),
+            ],
+          ),
         );
       }),
     );
   }
 
-  // دالة مساعدة للتعامل مع حالات الخطأ أو البحث الفارغ
-  Widget _buildEmptyOrErrorState(OrdersController controller) {
-    final isSearching = controller.searchQuery.value.isNotEmpty;
-    final hasError = controller.errorMessage.isNotEmpty;
-
-    return EnhancedErrorWidget(
-      title: hasError
-          ? 'حدث خطأ ما'
-          : (isSearching ? 'لا توجد نتائج' : 'لا توجد طلبات'),
-      message: hasError
-          ? controller.errorMessage.value
-          : (isSearching
-                ? 'لم نجد أي طلب يطابق: "${controller.searchQuery.value}"'
-                : 'قائمة الطلبات فارغة حالياً'),
-      icon: hasError
-          ? Icons.error_outline
-          : (isSearching ? Icons.search_off : Icons.inbox_outlined),
-      onRetry: () {
-        if (isSearching) {
-          controller.onSearchChanged('');
-        } else {
-          controller.fetchOrders();
-        }
-      },
-      // btnText: isSearching ? 'مسح البحث' : 'إعادة المحاولة',
+  Widget _buildHeaderButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+    bool isOutline = false,
+  }) {
+    return Container(
+      height: 40,
+      decoration: BoxDecoration(
+        color: isOutline ? Colors.transparent : AppColors.primary,
+        borderRadius: BorderRadius.circular(10),
+        border: isOutline ? Border.all(color: Colors.white.withOpacity(0.1)) : null,
+        boxShadow: isOutline ? null : [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.3),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(10),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                Icon(icon, size: 18, color: Colors.white),
+                const SizedBox(width: 8),
+                Text(
+                  label,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
+
+
+
 }

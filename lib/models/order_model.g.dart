@@ -33,13 +33,14 @@ class OrderModelAdapter extends TypeAdapter<OrderModel> {
       phoneNumber: fields[13] as String?,
       shippingAddressSnapshot: (fields[14] as Map?)?.cast<String, dynamic>(),
       items: (fields[15] as List?)?.cast<OrderItemModel>(),
+      user: fields[16] as UserModel?,
     );
   }
 
   @override
   void write(BinaryWriter writer, OrderModel obj) {
     writer
-      ..writeByte(16)
+      ..writeByte(17)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -71,7 +72,9 @@ class OrderModelAdapter extends TypeAdapter<OrderModel> {
       ..writeByte(14)
       ..write(obj.shippingAddressSnapshot)
       ..writeByte(15)
-      ..write(obj.items);
+      ..write(obj.items)
+      ..writeByte(16)
+      ..write(obj.user);
   }
 
   @override
@@ -252,12 +255,11 @@ _$OrderModelImpl _$$OrderModelImplFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       userId: json['userId'] as String,
       orderDate: DateTime.parse(json['orderDate'] as String),
-      status:
-          $enumDecodeNullable(_$OrderStatusEnumMap, json['status']) ??
+      status: $enumDecodeNullable(_$OrderStatusEnumMap, json['status']) ??
           OrderStatus.pending,
       paymentStatus:
           $enumDecodeNullable(_$PaymentStatusEnumMap, json['paymentStatus']) ??
-          PaymentStatus.pending,
+              PaymentStatus.pending,
       paymentMethod: json['paymentMethod'] as String? ?? 'card',
       addressId: json['addressId'] as String,
       subtotal: (json['subtotal'] as num).toDouble(),
@@ -272,6 +274,9 @@ _$OrderModelImpl _$$OrderModelImplFromJson(Map<String, dynamic> json) =>
       items: (json['items'] as List<dynamic>?)
           ?.map((e) => OrderItemModel.fromJson(e as Map<String, dynamic>))
           .toList(),
+      user: json['user'] == null
+          ? null
+          : UserModel.fromJson(json['user'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$OrderModelImplToJson(_$OrderModelImpl instance) =>
@@ -292,6 +297,7 @@ Map<String, dynamic> _$$OrderModelImplToJson(_$OrderModelImpl instance) =>
       'phoneNumber': instance.phoneNumber,
       'shippingAddressSnapshot': instance.shippingAddressSnapshot,
       'items': instance.items,
+      'user': instance.user,
     };
 
 const _$OrderStatusEnumMap = {
@@ -322,14 +328,14 @@ _$OrderItemModelImpl _$$OrderItemModelImplFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$$OrderItemModelImplToJson(
-  _$OrderItemModelImpl instance,
-) => <String, dynamic>{
-  'id': instance.id,
-  'orderId': instance.orderId,
-  'productId': instance.productId,
-  'productName': instance.productName,
-  'unitPrice': instance.unitPrice,
-  'quantity': instance.quantity,
-  'subtotal': instance.subtotal,
-  'imageUrl': instance.imageUrl,
-};
+        _$OrderItemModelImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'orderId': instance.orderId,
+      'productId': instance.productId,
+      'productName': instance.productName,
+      'unitPrice': instance.unitPrice,
+      'quantity': instance.quantity,
+      'subtotal': instance.subtotal,
+      'imageUrl': instance.imageUrl,
+    };

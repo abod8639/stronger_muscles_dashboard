@@ -12,8 +12,7 @@ part of 'user_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 UserModel _$UserModelFromJson(Map<String, dynamic> json) {
   return _UserModel.fromJson(json);
@@ -49,16 +48,15 @@ abstract class $UserModelCopyWith<$Res> {
   factory $UserModelCopyWith(UserModel value, $Res Function(UserModel) then) =
       _$UserModelCopyWithImpl<$Res, UserModel>;
   @useResult
-  $Res call({
-    @HiveField(0) int id,
-    @HiveField(1) String name,
-    @HiveField(2) String email,
-    @HiveField(3) String? photoUrl,
-    @HiveField(4) String? phoneNumber,
-    @HiveField(5) String preferredLanguage,
-    @HiveField(6) bool notificationsEnabled,
-    @HiveField(7) String? role,
-  });
+  $Res call(
+      {@HiveField(0) int id,
+      @HiveField(1) String name,
+      @HiveField(2) String email,
+      @HiveField(3) String? photoUrl,
+      @HiveField(4) String? phoneNumber,
+      @HiveField(5) String preferredLanguage,
+      @HiveField(6) bool notificationsEnabled,
+      @HiveField(7) String? role});
 }
 
 /// @nodoc
@@ -83,43 +81,40 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
     Object? notificationsEnabled = null,
     Object? role = freezed,
   }) {
-    return _then(
-      _value.copyWith(
-            id: null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as int,
-            name: null == name
-                ? _value.name
-                : name // ignore: cast_nullable_to_non_nullable
-                      as String,
-            email: null == email
-                ? _value.email
-                : email // ignore: cast_nullable_to_non_nullable
-                      as String,
-            photoUrl: freezed == photoUrl
-                ? _value.photoUrl
-                : photoUrl // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            phoneNumber: freezed == phoneNumber
-                ? _value.phoneNumber
-                : phoneNumber // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            preferredLanguage: null == preferredLanguage
-                ? _value.preferredLanguage
-                : preferredLanguage // ignore: cast_nullable_to_non_nullable
-                      as String,
-            notificationsEnabled: null == notificationsEnabled
-                ? _value.notificationsEnabled
-                : notificationsEnabled // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            role: freezed == role
-                ? _value.role
-                : role // ignore: cast_nullable_to_non_nullable
-                      as String?,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as int,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      email: null == email
+          ? _value.email
+          : email // ignore: cast_nullable_to_non_nullable
+              as String,
+      photoUrl: freezed == photoUrl
+          ? _value.photoUrl
+          : photoUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      phoneNumber: freezed == phoneNumber
+          ? _value.phoneNumber
+          : phoneNumber // ignore: cast_nullable_to_non_nullable
+              as String?,
+      preferredLanguage: null == preferredLanguage
+          ? _value.preferredLanguage
+          : preferredLanguage // ignore: cast_nullable_to_non_nullable
+              as String,
+      notificationsEnabled: null == notificationsEnabled
+          ? _value.notificationsEnabled
+          : notificationsEnabled // ignore: cast_nullable_to_non_nullable
+              as bool,
+      role: freezed == role
+          ? _value.role
+          : role // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ) as $Val);
   }
 }
 
@@ -127,21 +122,19 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
 abstract class _$$UserModelImplCopyWith<$Res>
     implements $UserModelCopyWith<$Res> {
   factory _$$UserModelImplCopyWith(
-    _$UserModelImpl value,
-    $Res Function(_$UserModelImpl) then,
-  ) = __$$UserModelImplCopyWithImpl<$Res>;
+          _$UserModelImpl value, $Res Function(_$UserModelImpl) then) =
+      __$$UserModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    @HiveField(0) int id,
-    @HiveField(1) String name,
-    @HiveField(2) String email,
-    @HiveField(3) String? photoUrl,
-    @HiveField(4) String? phoneNumber,
-    @HiveField(5) String preferredLanguage,
-    @HiveField(6) bool notificationsEnabled,
-    @HiveField(7) String? role,
-  });
+  $Res call(
+      {@HiveField(0) int id,
+      @HiveField(1) String name,
+      @HiveField(2) String email,
+      @HiveField(3) String? photoUrl,
+      @HiveField(4) String? phoneNumber,
+      @HiveField(5) String preferredLanguage,
+      @HiveField(6) bool notificationsEnabled,
+      @HiveField(7) String? role});
 }
 
 /// @nodoc
@@ -149,9 +142,8 @@ class __$$UserModelImplCopyWithImpl<$Res>
     extends _$UserModelCopyWithImpl<$Res, _$UserModelImpl>
     implements _$$UserModelImplCopyWith<$Res> {
   __$$UserModelImplCopyWithImpl(
-    _$UserModelImpl _value,
-    $Res Function(_$UserModelImpl) _then,
-  ) : super(_value, _then);
+      _$UserModelImpl _value, $Res Function(_$UserModelImpl) _then)
+      : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -165,58 +157,55 @@ class __$$UserModelImplCopyWithImpl<$Res>
     Object? notificationsEnabled = null,
     Object? role = freezed,
   }) {
-    return _then(
-      _$UserModelImpl(
-        id: null == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as int,
-        name: null == name
-            ? _value.name
-            : name // ignore: cast_nullable_to_non_nullable
-                  as String,
-        email: null == email
-            ? _value.email
-            : email // ignore: cast_nullable_to_non_nullable
-                  as String,
-        photoUrl: freezed == photoUrl
-            ? _value.photoUrl
-            : photoUrl // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        phoneNumber: freezed == phoneNumber
-            ? _value.phoneNumber
-            : phoneNumber // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        preferredLanguage: null == preferredLanguage
-            ? _value.preferredLanguage
-            : preferredLanguage // ignore: cast_nullable_to_non_nullable
-                  as String,
-        notificationsEnabled: null == notificationsEnabled
-            ? _value.notificationsEnabled
-            : notificationsEnabled // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        role: freezed == role
-            ? _value.role
-            : role // ignore: cast_nullable_to_non_nullable
-                  as String?,
-      ),
-    );
+    return _then(_$UserModelImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as int,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      email: null == email
+          ? _value.email
+          : email // ignore: cast_nullable_to_non_nullable
+              as String,
+      photoUrl: freezed == photoUrl
+          ? _value.photoUrl
+          : photoUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
+      phoneNumber: freezed == phoneNumber
+          ? _value.phoneNumber
+          : phoneNumber // ignore: cast_nullable_to_non_nullable
+              as String?,
+      preferredLanguage: null == preferredLanguage
+          ? _value.preferredLanguage
+          : preferredLanguage // ignore: cast_nullable_to_non_nullable
+              as String,
+      notificationsEnabled: null == notificationsEnabled
+          ? _value.notificationsEnabled
+          : notificationsEnabled // ignore: cast_nullable_to_non_nullable
+              as bool,
+      role: freezed == role
+          ? _value.role
+          : role // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$UserModelImpl implements _UserModel {
-  const _$UserModelImpl({
-    @HiveField(0) required this.id,
-    @HiveField(1) required this.name,
-    @HiveField(2) required this.email,
-    @HiveField(3) this.photoUrl,
-    @HiveField(4) this.phoneNumber,
-    @HiveField(5) this.preferredLanguage = 'ar',
-    @HiveField(6) this.notificationsEnabled = true,
-    @HiveField(7) this.role = 'user',
-  });
+  const _$UserModelImpl(
+      {@HiveField(0) required this.id,
+      @HiveField(1) required this.name,
+      @HiveField(2) required this.email,
+      @HiveField(3) this.photoUrl,
+      @HiveField(4) this.phoneNumber,
+      @HiveField(5) this.preferredLanguage = 'ar',
+      @HiveField(6) this.notificationsEnabled = true,
+      @HiveField(7) this.role = 'user'});
 
   factory _$UserModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserModelImplFromJson(json);
@@ -275,17 +264,8 @@ class _$UserModelImpl implements _UserModel {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    id,
-    name,
-    email,
-    photoUrl,
-    phoneNumber,
-    preferredLanguage,
-    notificationsEnabled,
-    role,
-  );
+  int get hashCode => Object.hash(runtimeType, id, name, email, photoUrl,
+      phoneNumber, preferredLanguage, notificationsEnabled, role);
 
   @JsonKey(ignore: true)
   @override
@@ -295,21 +275,22 @@ class _$UserModelImpl implements _UserModel {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$UserModelImplToJson(this);
+    return _$$UserModelImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _UserModel implements UserModel {
-  const factory _UserModel({
-    @HiveField(0) required final int id,
-    @HiveField(1) required final String name,
-    @HiveField(2) required final String email,
-    @HiveField(3) final String? photoUrl,
-    @HiveField(4) final String? phoneNumber,
-    @HiveField(5) final String preferredLanguage,
-    @HiveField(6) final bool notificationsEnabled,
-    @HiveField(7) final String? role,
-  }) = _$UserModelImpl;
+  const factory _UserModel(
+      {@HiveField(0) required final int id,
+      @HiveField(1) required final String name,
+      @HiveField(2) required final String email,
+      @HiveField(3) final String? photoUrl,
+      @HiveField(4) final String? phoneNumber,
+      @HiveField(5) final String preferredLanguage,
+      @HiveField(6) final bool notificationsEnabled,
+      @HiveField(7) final String? role}) = _$UserModelImpl;
 
   factory _UserModel.fromJson(Map<String, dynamic> json) =
       _$UserModelImpl.fromJson;
