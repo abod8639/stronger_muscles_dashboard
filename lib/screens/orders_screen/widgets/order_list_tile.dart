@@ -66,8 +66,8 @@ class _OrderListTileState extends State<OrderListTile>
           boxShadow: [
             BoxShadow(
               color: _isHovered 
-                  ? AppColors.primary.withOpacity(0.15) 
-                  : Colors.black.withOpacity(0.04),
+                  ? AppColors.primary.withValues(alpha: 0.15) 
+                  : Colors.black.withValues(alpha: 0.04),
               blurRadius: _isHovered ? 20 : 8,
               offset: Offset(0, _isHovered ? 8 : 2),
             ),
@@ -89,7 +89,6 @@ class _OrderListTileState extends State<OrderListTile>
             borderRadius: BorderRadius.circular(24),
             child: Stack(
               children: [
-                // Simplified content (removed redundant Stack gradient)
 
                 // Content
                 Padding(

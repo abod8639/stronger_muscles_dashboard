@@ -107,13 +107,15 @@ class OrderItemModelAdapter extends TypeAdapter<OrderItemModel> {
       quantity: fields[5] as int,
       subtotal: fields[6] as double,
       imageUrl: fields[7] as String?,
+      selectedFlavor: fields[8] as String?,
+      selectedSize: fields[9] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, OrderItemModel obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -129,7 +131,11 @@ class OrderItemModelAdapter extends TypeAdapter<OrderItemModel> {
       ..writeByte(6)
       ..write(obj.subtotal)
       ..writeByte(7)
-      ..write(obj.imageUrl);
+      ..write(obj.imageUrl)
+      ..writeByte(8)
+      ..write(obj.selectedFlavor)
+      ..writeByte(9)
+      ..write(obj.selectedSize);
   }
 
   @override
@@ -324,6 +330,8 @@ _$OrderItemModelImpl _$$OrderItemModelImplFromJson(Map<String, dynamic> json) =>
       quantity: (json['quantity'] as num).toInt(),
       subtotal: (json['subtotal'] as num).toDouble(),
       imageUrl: json['imageUrl'] as String?,
+      selectedFlavor: json['selectedFlavor'] as String?,
+      selectedSize: json['selectedSize'] as String?,
     );
 
 Map<String, dynamic> _$$OrderItemModelImplToJson(
@@ -337,4 +345,6 @@ Map<String, dynamic> _$$OrderItemModelImplToJson(
       'quantity': instance.quantity,
       'subtotal': instance.subtotal,
       'imageUrl': instance.imageUrl,
+      'selectedFlavor': instance.selectedFlavor,
+      'selectedSize': instance.selectedSize,
     };

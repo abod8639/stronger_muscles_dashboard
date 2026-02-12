@@ -609,6 +609,10 @@ mixin _$OrderItemModel {
   double get subtotal => throw _privateConstructorUsedError;
   @HiveField(7)
   String? get imageUrl => throw _privateConstructorUsedError;
+  @HiveField(8)
+  String? get selectedFlavor => throw _privateConstructorUsedError;
+  @HiveField(9)
+  String? get selectedSize => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -630,7 +634,9 @@ abstract class $OrderItemModelCopyWith<$Res> {
       @HiveField(4) double unitPrice,
       @HiveField(5) int quantity,
       @HiveField(6) double subtotal,
-      @HiveField(7) String? imageUrl});
+      @HiveField(7) String? imageUrl,
+      @HiveField(8) String? selectedFlavor,
+      @HiveField(9) String? selectedSize});
 }
 
 /// @nodoc
@@ -654,6 +660,8 @@ class _$OrderItemModelCopyWithImpl<$Res, $Val extends OrderItemModel>
     Object? quantity = null,
     Object? subtotal = null,
     Object? imageUrl = freezed,
+    Object? selectedFlavor = freezed,
+    Object? selectedSize = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -688,6 +696,14 @@ class _$OrderItemModelCopyWithImpl<$Res, $Val extends OrderItemModel>
           ? _value.imageUrl
           : imageUrl // ignore: cast_nullable_to_non_nullable
               as String?,
+      selectedFlavor: freezed == selectedFlavor
+          ? _value.selectedFlavor
+          : selectedFlavor // ignore: cast_nullable_to_non_nullable
+              as String?,
+      selectedSize: freezed == selectedSize
+          ? _value.selectedSize
+          : selectedSize // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -708,7 +724,9 @@ abstract class _$$OrderItemModelImplCopyWith<$Res>
       @HiveField(4) double unitPrice,
       @HiveField(5) int quantity,
       @HiveField(6) double subtotal,
-      @HiveField(7) String? imageUrl});
+      @HiveField(7) String? imageUrl,
+      @HiveField(8) String? selectedFlavor,
+      @HiveField(9) String? selectedSize});
 }
 
 /// @nodoc
@@ -730,6 +748,8 @@ class __$$OrderItemModelImplCopyWithImpl<$Res>
     Object? quantity = null,
     Object? subtotal = null,
     Object? imageUrl = freezed,
+    Object? selectedFlavor = freezed,
+    Object? selectedSize = freezed,
   }) {
     return _then(_$OrderItemModelImpl(
       id: null == id
@@ -764,6 +784,14 @@ class __$$OrderItemModelImplCopyWithImpl<$Res>
           ? _value.imageUrl
           : imageUrl // ignore: cast_nullable_to_non_nullable
               as String?,
+      selectedFlavor: freezed == selectedFlavor
+          ? _value.selectedFlavor
+          : selectedFlavor // ignore: cast_nullable_to_non_nullable
+              as String?,
+      selectedSize: freezed == selectedSize
+          ? _value.selectedSize
+          : selectedSize // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -779,7 +807,9 @@ class _$OrderItemModelImpl extends _OrderItemModel {
       @HiveField(4) required this.unitPrice,
       @HiveField(5) required this.quantity,
       @HiveField(6) required this.subtotal,
-      @HiveField(7) this.imageUrl})
+      @HiveField(7) this.imageUrl,
+      @HiveField(8) this.selectedFlavor,
+      @HiveField(9) this.selectedSize})
       : super._();
 
   factory _$OrderItemModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -809,10 +839,16 @@ class _$OrderItemModelImpl extends _OrderItemModel {
   @override
   @HiveField(7)
   final String? imageUrl;
+  @override
+  @HiveField(8)
+  final String? selectedFlavor;
+  @override
+  @HiveField(9)
+  final String? selectedSize;
 
   @override
   String toString() {
-    return 'OrderItemModel(id: $id, orderId: $orderId, productId: $productId, productName: $productName, unitPrice: $unitPrice, quantity: $quantity, subtotal: $subtotal, imageUrl: $imageUrl)';
+    return 'OrderItemModel(id: $id, orderId: $orderId, productId: $productId, productName: $productName, unitPrice: $unitPrice, quantity: $quantity, subtotal: $subtotal, imageUrl: $imageUrl, selectedFlavor: $selectedFlavor, selectedSize: $selectedSize)';
   }
 
   @override
@@ -833,13 +869,27 @@ class _$OrderItemModelImpl extends _OrderItemModel {
             (identical(other.subtotal, subtotal) ||
                 other.subtotal == subtotal) &&
             (identical(other.imageUrl, imageUrl) ||
-                other.imageUrl == imageUrl));
+                other.imageUrl == imageUrl) &&
+            (identical(other.selectedFlavor, selectedFlavor) ||
+                other.selectedFlavor == selectedFlavor) &&
+            (identical(other.selectedSize, selectedSize) ||
+                other.selectedSize == selectedSize));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, orderId, productId,
-      productName, unitPrice, quantity, subtotal, imageUrl);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      orderId,
+      productId,
+      productName,
+      unitPrice,
+      quantity,
+      subtotal,
+      imageUrl,
+      selectedFlavor,
+      selectedSize);
 
   @JsonKey(ignore: true)
   @override
@@ -865,7 +915,9 @@ abstract class _OrderItemModel extends OrderItemModel {
       @HiveField(4) required final double unitPrice,
       @HiveField(5) required final int quantity,
       @HiveField(6) required final double subtotal,
-      @HiveField(7) final String? imageUrl}) = _$OrderItemModelImpl;
+      @HiveField(7) final String? imageUrl,
+      @HiveField(8) final String? selectedFlavor,
+      @HiveField(9) final String? selectedSize}) = _$OrderItemModelImpl;
   const _OrderItemModel._() : super._();
 
   factory _OrderItemModel.fromJson(Map<String, dynamic> json) =
@@ -895,6 +947,12 @@ abstract class _OrderItemModel extends OrderItemModel {
   @override
   @HiveField(7)
   String? get imageUrl;
+  @override
+  @HiveField(8)
+  String? get selectedFlavor;
+  @override
+  @HiveField(9)
+  String? get selectedSize;
   @override
   @JsonKey(ignore: true)
   _$$OrderItemModelImplCopyWith<_$OrderItemModelImpl> get copyWith =>

@@ -103,6 +103,8 @@ class OrderItemModel with _$OrderItemModel {
     @HiveField(5) required int quantity,
     @HiveField(6) required double subtotal,
     @HiveField(7) String? imageUrl,
+    @HiveField(8) String? selectedFlavor,
+    @HiveField(9) String? selectedSize,
   }) = _OrderItemModel;
 
   factory OrderItemModel.fromJson(Map<String, dynamic> json) =>
@@ -150,5 +152,7 @@ Map<String, dynamic> _mapItemJson(Map<String, dynamic> json) {
     'quantity': (json['quantity'] ?? 1).toInt(),
     'subtotal': (json['subtotal'] ?? 0.0).toDouble(),
     'imageUrl': json['image_url'] ?? json['imageUrl'],
+    'selectedFlavor': json['selectedFlavor'] ?? json['flavor'],
+    'selectedSize': json['selectedSize'] ?? json['size'],
   };
 }
