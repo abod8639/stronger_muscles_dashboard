@@ -75,7 +75,7 @@ class OrderDetailsScreen extends StatelessWidget {
                   buildDetailRow(
                     Icons.phone,
                     'رقم الهاتف',
-                    order.user?.phoneNumber ?? order.phoneNumber?? "0000",
+                    order.shippingAddress?.phone ?? "",
                   ),
                   // ],
                   const Divider(),
