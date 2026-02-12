@@ -49,8 +49,7 @@ mixin _$OrderModel {
   @HiveField(13)
   String? get phoneNumber => throw _privateConstructorUsedError;
   @HiveField(14)
-  Map<String, dynamic>? get shippingAddressSnapshot =>
-      throw _privateConstructorUsedError;
+  String? get shippingAddress => throw _privateConstructorUsedError;
   @HiveField(15)
   List<OrderItemModel>? get items => throw _privateConstructorUsedError;
   @HiveField(16)
@@ -83,7 +82,7 @@ abstract class $OrderModelCopyWith<$Res> {
       @HiveField(11) String? trackingNumber,
       @HiveField(12) String? notes,
       @HiveField(13) String? phoneNumber,
-      @HiveField(14) Map<String, dynamic>? shippingAddressSnapshot,
+      @HiveField(14) String? shippingAddress,
       @HiveField(15) List<OrderItemModel>? items,
       @HiveField(16) UserModel? user});
 
@@ -117,7 +116,7 @@ class _$OrderModelCopyWithImpl<$Res, $Val extends OrderModel>
     Object? trackingNumber = freezed,
     Object? notes = freezed,
     Object? phoneNumber = freezed,
-    Object? shippingAddressSnapshot = freezed,
+    Object? shippingAddress = freezed,
     Object? items = freezed,
     Object? user = freezed,
   }) {
@@ -178,10 +177,10 @@ class _$OrderModelCopyWithImpl<$Res, $Val extends OrderModel>
           ? _value.phoneNumber
           : phoneNumber // ignore: cast_nullable_to_non_nullable
               as String?,
-      shippingAddressSnapshot: freezed == shippingAddressSnapshot
-          ? _value.shippingAddressSnapshot
-          : shippingAddressSnapshot // ignore: cast_nullable_to_non_nullable
-              as Map<String, dynamic>?,
+      shippingAddress: freezed == shippingAddress
+          ? _value.shippingAddress
+          : shippingAddress // ignore: cast_nullable_to_non_nullable
+              as String?,
       items: freezed == items
           ? _value.items
           : items // ignore: cast_nullable_to_non_nullable
@@ -229,7 +228,7 @@ abstract class _$$OrderModelImplCopyWith<$Res>
       @HiveField(11) String? trackingNumber,
       @HiveField(12) String? notes,
       @HiveField(13) String? phoneNumber,
-      @HiveField(14) Map<String, dynamic>? shippingAddressSnapshot,
+      @HiveField(14) String? shippingAddress,
       @HiveField(15) List<OrderItemModel>? items,
       @HiveField(16) UserModel? user});
 
@@ -262,7 +261,7 @@ class __$$OrderModelImplCopyWithImpl<$Res>
     Object? trackingNumber = freezed,
     Object? notes = freezed,
     Object? phoneNumber = freezed,
-    Object? shippingAddressSnapshot = freezed,
+    Object? shippingAddress = freezed,
     Object? items = freezed,
     Object? user = freezed,
   }) {
@@ -323,10 +322,10 @@ class __$$OrderModelImplCopyWithImpl<$Res>
           ? _value.phoneNumber
           : phoneNumber // ignore: cast_nullable_to_non_nullable
               as String?,
-      shippingAddressSnapshot: freezed == shippingAddressSnapshot
-          ? _value._shippingAddressSnapshot
-          : shippingAddressSnapshot // ignore: cast_nullable_to_non_nullable
-              as Map<String, dynamic>?,
+      shippingAddress: freezed == shippingAddress
+          ? _value.shippingAddress
+          : shippingAddress // ignore: cast_nullable_to_non_nullable
+              as String?,
       items: freezed == items
           ? _value._items
           : items // ignore: cast_nullable_to_non_nullable
@@ -357,11 +356,10 @@ class _$OrderModelImpl extends _OrderModel {
       @HiveField(11) this.trackingNumber,
       @HiveField(12) this.notes,
       @HiveField(13) this.phoneNumber,
-      @HiveField(14) final Map<String, dynamic>? shippingAddressSnapshot,
+      @HiveField(14) this.shippingAddress,
       @HiveField(15) final List<OrderItemModel>? items,
       @HiveField(16) this.user})
-      : _shippingAddressSnapshot = shippingAddressSnapshot,
-        _items = items,
+      : _items = items,
         super._();
 
   factory _$OrderModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -414,18 +412,9 @@ class _$OrderModelImpl extends _OrderModel {
   @override
   @HiveField(13)
   final String? phoneNumber;
-  final Map<String, dynamic>? _shippingAddressSnapshot;
   @override
   @HiveField(14)
-  Map<String, dynamic>? get shippingAddressSnapshot {
-    final value = _shippingAddressSnapshot;
-    if (value == null) return null;
-    if (_shippingAddressSnapshot is EqualUnmodifiableMapView)
-      return _shippingAddressSnapshot;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableMapView(value);
-  }
-
+  final String? shippingAddress;
   final List<OrderItemModel>? _items;
   @override
   @HiveField(15)
@@ -443,7 +432,7 @@ class _$OrderModelImpl extends _OrderModel {
 
   @override
   String toString() {
-    return 'OrderModel(id: $id, userId: $userId, orderDate: $orderDate, status: $status, paymentStatus: $paymentStatus, paymentMethod: $paymentMethod, addressId: $addressId, subtotal: $subtotal, shippingCost: $shippingCost, discount: $discount, totalAmount: $totalAmount, trackingNumber: $trackingNumber, notes: $notes, phoneNumber: $phoneNumber, shippingAddressSnapshot: $shippingAddressSnapshot, items: $items, user: $user)';
+    return 'OrderModel(id: $id, userId: $userId, orderDate: $orderDate, status: $status, paymentStatus: $paymentStatus, paymentMethod: $paymentMethod, addressId: $addressId, subtotal: $subtotal, shippingCost: $shippingCost, discount: $discount, totalAmount: $totalAmount, trackingNumber: $trackingNumber, notes: $notes, phoneNumber: $phoneNumber, shippingAddress: $shippingAddress, items: $items, user: $user)';
   }
 
   @override
@@ -475,8 +464,8 @@ class _$OrderModelImpl extends _OrderModel {
             (identical(other.notes, notes) || other.notes == notes) &&
             (identical(other.phoneNumber, phoneNumber) ||
                 other.phoneNumber == phoneNumber) &&
-            const DeepCollectionEquality().equals(
-                other._shippingAddressSnapshot, _shippingAddressSnapshot) &&
+            (identical(other.shippingAddress, shippingAddress) ||
+                other.shippingAddress == shippingAddress) &&
             const DeepCollectionEquality().equals(other._items, _items) &&
             (identical(other.user, user) || other.user == user));
   }
@@ -499,7 +488,7 @@ class _$OrderModelImpl extends _OrderModel {
       trackingNumber,
       notes,
       phoneNumber,
-      const DeepCollectionEquality().hash(_shippingAddressSnapshot),
+      shippingAddress,
       const DeepCollectionEquality().hash(_items),
       user);
 
@@ -533,7 +522,7 @@ abstract class _OrderModel extends OrderModel {
       @HiveField(11) final String? trackingNumber,
       @HiveField(12) final String? notes,
       @HiveField(13) final String? phoneNumber,
-      @HiveField(14) final Map<String, dynamic>? shippingAddressSnapshot,
+      @HiveField(14) final String? shippingAddress,
       @HiveField(15) final List<OrderItemModel>? items,
       @HiveField(16) final UserModel? user}) = _$OrderModelImpl;
   const _OrderModel._() : super._();
@@ -585,7 +574,7 @@ abstract class _OrderModel extends OrderModel {
   String? get phoneNumber;
   @override
   @HiveField(14)
-  Map<String, dynamic>? get shippingAddressSnapshot;
+  String? get shippingAddress;
   @override
   @HiveField(15)
   List<OrderItemModel>? get items;

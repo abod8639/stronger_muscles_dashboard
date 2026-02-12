@@ -52,7 +52,7 @@ class OrderModel with _$OrderModel {
     @HiveField(11) String? trackingNumber,
     @HiveField(12) String? notes,
     @HiveField(13) String? phoneNumber,
-    @HiveField(14) Map<String, dynamic>? shippingAddressSnapshot,
+    @HiveField(14) String? shippingAddress,
     @HiveField(15) List<OrderItemModel>? items,
     @HiveField(16) UserModel? user,
   }) = _OrderModel;
@@ -68,20 +68,22 @@ class OrderModel with _$OrderModel {
     return null;
   }
 
-  String get formattedAddress {
-    if (shippingAddressSnapshot == null) return 'العنوان غير متوفر';
-    final addr =
-        shippingAddressSnapshot!['address'] ?? shippingAddressSnapshot!;
-    if (addr is String) return addr;
-    final city = addr['city'] ?? addr['City'] ?? '';
-    final street = addr['street'] ?? addr['Street'] ?? '';
-    return [
-          city,
-          street,
-        ].where((s) => s.toString().isNotEmpty).join(', ').isEmpty
-        ? 'العنوان غير محدد'
-        : [city, street].where((s) => s.toString().isNotEmpty).join(', ');
-  }
+  // String get formattedAddress {
+  //   if (shippingAddress == null) return 'العنوان غير متوفر';
+  //   if (shippingAddress is String) return shippingAddress as String;
+    
+  //   if (shippingAddress is Map) {
+  //     final addr = shippingAddress['address'] ?? shippingAddress;
+  //     if (addr is String) return addr;
+      
+  //     final city = addr['city'] ?? addr['City'] ?? '';
+  //     final street = addr['street'] ?? addr['Street'] ?? '';
+  //     final formatted = [city, street].where((s) => s.toString().isNotEmpty).join(', ');
+  //     return formatted.isEmpty ? 'العنوان غير محدد' : formatted;
+  //   }
+    
+  //   return shippingAddress.toString();
+  // }
 
   factory OrderModel.fromJson(Map<String, dynamic> json) =>
       _$OrderModelFromJson(_mapOrderJson(json));
@@ -121,20 +123,18 @@ Map<String, dynamic> _mapOrderJson(Map<String, dynamic> json) {
     ...json,
     'id': (json['id'] ?? '').toString(),
     'userId': extractUserId(),
-    'orderDate':
-        json['orderDate'] ??
-        json['order_date'] ??
-        DateTime.now().toIso8601String(),
-    'addressId': (json['addressId'] ?? json['address_id'] ?? '').toString(),
-    'shippingCost': json['shippingCost'] ?? json['shipping_cost'] ?? 0.0,
-    'totalAmount': json['totalAmount'] ?? json['total_amount'] ?? 0.0,
-    'items': json['items'] ?? json['order_items'],
-    'paymentStatus': json['paymentStatus'] ?? json['payment_status'],
-    'paymentMethod': json['paymentMethod'] ?? json['payment_method'] ?? 'card',
-    'trackingNumber': json['trackingNumber'] ?? json['tracking_number'],
-    'phoneNumber': json['phoneNumber'] ?? json['phone_number'],
-    'shippingAddressSnapshot':
-        json['shippingAddressSnapshot'] ?? json['shipping_address_snapshot'],
+    'orderDate': json['order_date'] ?? json['orderDate'] ?? DateTime.now().toIso8601String(),
+    'addressId': (json['address_id'] ?? json['addressId'] ?? '').toString(),
+    'shippingCost': (json['shippingCost'] ?? json['shipping_cost'] ?? 0.0).toDouble(),
+    'totalAmount': (json['total_amount'] ?? json['totalAmount'] ?? 0.0).toDouble(),
+    'subtotal': (json['subtotal'] ?? 0.0).toDouble(),
+    'discount': (json['discount'] ?? json['discount_amount'] ?? 0.0).toDouble(),
+    'items': json['order_items'] ?? json['items'],
+    'paymentStatus': json['payment_status'] ?? json['paymentStatus'],
+    'paymentMethod': json['payment_method'] ?? json['paymentMethod'] ?? 'card',
+    'trackingNumber': json['tracking_number'] ?? json['trackingNumber'],
+    'phoneNumber': json['phone_number'] ?? json['phoneNumber'],
+    'shippingAddress': json['shipping_address'] ?? json['shippingAddress'],
     'user': json['user'],
   };
 }
@@ -142,10 +142,13 @@ Map<String, dynamic> _mapOrderJson(Map<String, dynamic> json) {
 Map<String, dynamic> _mapItemJson(Map<String, dynamic> json) {
   return {
     ...json,
-    'orderId': json['orderId'] ?? json['order_id'],
-    'productId': json['productId'] ?? json['product_id'],
-    'productName': json['productName'] ?? json['product_name'],
-    'unitPrice': json['unitPrice'] ?? json['unit_price'],
-    'imageUrl': json['imageUrl'] ?? json['image_url'],
+    'id': (json['id'] ?? '').toString(),
+    'orderId': json['order_id'] ?? json['orderId'],
+    'productId': json['product_id'] ?? json['productId'],
+    'productName': json['product_name'] ?? json['productName'],
+    'unitPrice': (json['unit_price'] ?? json['unitPrice'] ?? 0.0).toDouble(),
+    'quantity': (json['quantity'] ?? 1).toInt(),
+    'subtotal': (json['subtotal'] ?? 0.0).toDouble(),
+    'imageUrl': json['image_url'] ?? json['imageUrl'],
   };
 }

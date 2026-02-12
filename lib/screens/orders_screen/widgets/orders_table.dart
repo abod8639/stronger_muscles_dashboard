@@ -7,6 +7,7 @@ import 'package:stronger_muscles_dashboard/screens/components/glass_container.da
 import 'package:stronger_muscles_dashboard/screens/components/status_badge.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
+import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_recent_orders.dart';
 import 'package:stronger_muscles_dashboard/screens/order_details_screen/order_details_screen.dart';
 
 class OrdersTable extends StatelessWidget {
@@ -23,7 +24,12 @@ class OrdersTable extends StatelessWidget {
       child: Column(
         children: [
           _buildTableHeader(controller, responsive),
-          _buildTableContent(controller, responsive),
+
+          responsive.isDesktop ?
+            _buildTableContent(controller, responsive)
+          :
+            buildRecentOrders(responsive),
+
           _buildTableFooter(controller, responsive),
         ],
       ),

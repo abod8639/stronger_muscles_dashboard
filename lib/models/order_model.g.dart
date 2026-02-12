@@ -31,7 +31,7 @@ class OrderModelAdapter extends TypeAdapter<OrderModel> {
       trackingNumber: fields[11] as String?,
       notes: fields[12] as String?,
       phoneNumber: fields[13] as String?,
-      shippingAddressSnapshot: (fields[14] as Map?)?.cast<String, dynamic>(),
+      shippingAddress: fields[14] as String?,
       items: (fields[15] as List?)?.cast<OrderItemModel>(),
       user: fields[16] as UserModel?,
     );
@@ -70,7 +70,7 @@ class OrderModelAdapter extends TypeAdapter<OrderModel> {
       ..writeByte(13)
       ..write(obj.phoneNumber)
       ..writeByte(14)
-      ..write(obj.shippingAddressSnapshot)
+      ..write(obj.shippingAddress)
       ..writeByte(15)
       ..write(obj.items)
       ..writeByte(16)
@@ -269,8 +269,7 @@ _$OrderModelImpl _$$OrderModelImplFromJson(Map<String, dynamic> json) =>
       trackingNumber: json['trackingNumber'] as String?,
       notes: json['notes'] as String?,
       phoneNumber: json['phoneNumber'] as String?,
-      shippingAddressSnapshot:
-          json['shippingAddressSnapshot'] as Map<String, dynamic>?,
+      shippingAddress: json['shippingAddress'] as String?,
       items: (json['items'] as List<dynamic>?)
           ?.map((e) => OrderItemModel.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -295,7 +294,7 @@ Map<String, dynamic> _$$OrderModelImplToJson(_$OrderModelImpl instance) =>
       'trackingNumber': instance.trackingNumber,
       'notes': instance.notes,
       'phoneNumber': instance.phoneNumber,
-      'shippingAddressSnapshot': instance.shippingAddressSnapshot,
+      'shippingAddress': instance.shippingAddress,
       'items': instance.items,
       'user': instance.user,
     };

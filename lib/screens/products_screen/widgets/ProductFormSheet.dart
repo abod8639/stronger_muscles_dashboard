@@ -57,7 +57,7 @@ class ProductFormSheetState extends State<ProductFormSheet>
 
     return Container(
       width: double.infinity,
-      color: AppColorsExtended.darkBg.withAlpha(200),
+      color: AppColorsExtended.darkBg,
       child: GlassContainer(
         height: MediaQuery.of(context).size.height * 0.9,
         child: Column(

@@ -76,16 +76,16 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
 //       role: json['role'] as String?,
 //     );
 
-Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-      'email': instance.email,
-      'photoUrl': instance.photoUrl,
-      'phoneNumber': instance.phoneNumber,
-      'preferredLanguage': instance.preferredLanguage,
-      'notificationsEnabled': instance.notificationsEnabled,
-      'role': instance.role,
-    };
+// Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
+//       'id': instance.id,
+//       'name': instance.name,
+//       'email': instance.email,
+//       'photoUrl': instance.photoUrl,
+//       'phoneNumber': instance.phoneNumber,
+//       'preferredLanguage': instance.preferredLanguage,
+//       'notificationsEnabled': instance.notificationsEnabled,
+//       'role': instance.role,
+//     };
 
 _$UserModelImpl _$$UserModelImplFromJson(Map<String, dynamic> json) =>
     _$UserModelImpl(

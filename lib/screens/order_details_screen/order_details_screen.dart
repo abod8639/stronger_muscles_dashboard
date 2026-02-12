@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_section_title.dart';
-import 'package:stronger_muscles_dashboard/screens/order_details_screen/widget/build_address_section.dart';
 import 'package:stronger_muscles_dashboard/screens/order_details_screen/widget/build_detail_row.dart';
 import 'package:stronger_muscles_dashboard/screens/order_details_screen/widget/build_orderItem.dart';
 import 'package:stronger_muscles_dashboard/screens/order_details_screen/widget/build_section.dart';
@@ -64,12 +63,12 @@ class OrderDetailsScreen extends StatelessWidget {
                   buildDetailRow(
                     Icons.person,
                     'اسم العميل',
-                    order.phoneNumber ?? 'غير متوفر (ID: ${order.userId})',
+                    order.userName,
                   ),
-                  // if(user?.email != null) ...[
-                  //     const Divider(),
-                  //     buildDetailRow(Icons.email, 'البريد الإلكتروني', order!.),
-                  // ],
+                  if(order.userEmail != "") ...[
+                      const Divider(),
+                      buildDetailRow(Icons.email, 'البريد الإلكتروني', order.userEmail),
+                  ],
                   // if(order.phoneNumber != null && order.phoneNumber!.isNotEmpty) ...[
                   const Divider(),
                   buildDetailRow(
@@ -100,8 +99,15 @@ class OrderDetailsScreen extends StatelessWidget {
             // --- Shipping Address ---
             buildSectionTitle('عنوان الشحن', res),
             buildSection(
-              child: buildAddressSection(order.shippingAddressSnapshot),
+              child: Column(
+                children: [
+                  buildDetailRow(Icons.location_on, 'العنوان الكامل', order.shippingAddress ?? ""),
+                ],
+              ),
             ),
+            // buildSection(
+            //   child: buildAddressSection(order.shippingAddress),
+            // ),
 
             const SizedBox(height: 16),
 
