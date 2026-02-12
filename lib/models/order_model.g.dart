@@ -31,7 +31,7 @@ class OrderModelAdapter extends TypeAdapter<OrderModel> {
       trackingNumber: fields[11] as String?,
       notes: fields[12] as String?,
       phoneNumber: fields[13] as String?,
-      shippingAddress: fields[14] as String?,
+      shippingAddress: fields[14] as AddressModel?,
       items: (fields[15] as List?)?.cast<OrderItemModel>(),
       user: fields[16] as UserModel?,
     );
@@ -109,13 +109,14 @@ class OrderItemModelAdapter extends TypeAdapter<OrderItemModel> {
       imageUrl: fields[7] as String?,
       selectedFlavor: fields[8] as String?,
       selectedSize: fields[9] as String?,
+      fullName: fields[10] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, OrderItemModel obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -135,7 +136,9 @@ class OrderItemModelAdapter extends TypeAdapter<OrderItemModel> {
       ..writeByte(8)
       ..write(obj.selectedFlavor)
       ..writeByte(9)
-      ..write(obj.selectedSize);
+      ..write(obj.selectedSize)
+      ..writeByte(10)
+      ..write(obj.fullName);
   }
 
   @override
@@ -275,7 +278,10 @@ _$OrderModelImpl _$$OrderModelImplFromJson(Map<String, dynamic> json) =>
       trackingNumber: json['trackingNumber'] as String?,
       notes: json['notes'] as String?,
       phoneNumber: json['phoneNumber'] as String?,
-      shippingAddress: json['shippingAddress'] as String?,
+      shippingAddress: json['shippingAddress'] == null
+          ? null
+          : AddressModel.fromJson(
+              json['shippingAddress'] as Map<String, dynamic>),
       items: (json['items'] as List<dynamic>?)
           ?.map((e) => OrderItemModel.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -332,6 +338,7 @@ _$OrderItemModelImpl _$$OrderItemModelImplFromJson(Map<String, dynamic> json) =>
       imageUrl: json['imageUrl'] as String?,
       selectedFlavor: json['selectedFlavor'] as String?,
       selectedSize: json['selectedSize'] as String?,
+      fullName: json['fullName'] as String?,
     );
 
 Map<String, dynamic> _$$OrderItemModelImplToJson(
@@ -347,4 +354,5 @@ Map<String, dynamic> _$$OrderItemModelImplToJson(
       'imageUrl': instance.imageUrl,
       'selectedFlavor': instance.selectedFlavor,
       'selectedSize': instance.selectedSize,
+      'fullName': instance.fullName,
     };

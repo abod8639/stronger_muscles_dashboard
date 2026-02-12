@@ -63,7 +63,8 @@ class OrderDetailsScreen extends StatelessWidget {
                   buildDetailRow(
                     Icons.person,
                     'اسم العميل',
-                    order.userName,
+                    // order.user?.name ??
+                    order.shippingAddress?.fullName ?? "" ,
                   ),
                   if(order.userEmail != "") ...[
                       const Divider(),
@@ -74,7 +75,7 @@ class OrderDetailsScreen extends StatelessWidget {
                   buildDetailRow(
                     Icons.phone,
                     'رقم الهاتف',
-                    order.phoneNumber ?? "000",
+                    order.user?.phoneNumber ?? order.phoneNumber?? "0000",
                   ),
                   // ],
                   const Divider(),
@@ -101,7 +102,11 @@ class OrderDetailsScreen extends StatelessWidget {
             buildSection(
               child: Column(
                 children: [
-                  buildDetailRow(Icons.location_on, 'العنوان الكامل', order.shippingAddress ?? ""),
+                  buildDetailRow(Icons.location_on, 'العنوان الكامل', order.shippingAddress?.fullAddress ?? ""),
+                  buildDetailRow(Icons.location_on, 'المدينة', order.shippingAddress?.city ?? ""),
+                  buildDetailRow(Icons.location_on, 'الولاية', order.shippingAddress?.state ?? ""),
+                  buildDetailRow(Icons.location_on, 'الرمز البريدي', order.shippingAddress?.postalCode ?? ""),
+                  buildDetailRow(Icons.location_on, 'الدولة', order.shippingAddress?.country ?? ""),
                 ],
               ),
             ),

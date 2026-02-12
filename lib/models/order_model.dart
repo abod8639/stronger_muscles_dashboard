@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive/hive.dart';
+import 'package:stronger_muscles_dashboard/models/address_model.dart';
 import 'user_model.dart';
 
 part 'order_model.freezed.dart';
@@ -52,7 +54,7 @@ class OrderModel with _$OrderModel {
     @HiveField(11) String? trackingNumber,
     @HiveField(12) String? notes,
     @HiveField(13) String? phoneNumber,
-    @HiveField(14) String? shippingAddress,
+    @HiveField(14) AddressModel? shippingAddress,
     @HiveField(15) List<OrderItemModel>? items,
     @HiveField(16) UserModel? user,
   }) = _OrderModel;
@@ -105,6 +107,7 @@ class OrderItemModel with _$OrderItemModel {
     @HiveField(7) String? imageUrl,
     @HiveField(8) String? selectedFlavor,
     @HiveField(9) String? selectedSize,
+    @HiveField(10) String?fullName,
   }) = _OrderItemModel;
 
   factory OrderItemModel.fromJson(Map<String, dynamic> json) =>
@@ -121,23 +124,54 @@ Map<String, dynamic> _mapOrderJson(Map<String, dynamic> json) {
     return '';
   }
 
+  dynamic rawAddress = json['shipping_address'] ?? json['shippingAddress'];
+  dynamic mappedAddress;
+
+  if (rawAddress is String && rawAddress.isNotEmpty) {
+    try {
+      mappedAddress = jsonDecode(rawAddress);
+    } catch (_) {
+      mappedAddress = {
+        'id': 0,
+        'street': rawAddress,
+        'city': 'Unknown',
+        'state': '',
+        'postal_code': '',
+        'country': '',
+      };
+    }
+  } else {
+    mappedAddress = rawAddress;
+  }
+
   return {
     ...json,
     'id': (json['id'] ?? '').toString(),
     'userId': extractUserId(),
+    'fullName': json['full_name'] ?? json['fullName'],
     'orderDate': json['order_date'] ?? json['orderDate'] ?? DateTime.now().toIso8601String(),
     'addressId': (json['address_id'] ?? json['addressId'] ?? '').toString(),
-    'shippingCost': (json['shippingCost'] ?? json['shipping_cost'] ?? 0.0).toDouble(),
-    'totalAmount': (json['total_amount'] ?? json['totalAmount'] ?? 0.0).toDouble(),
-    'subtotal': (json['subtotal'] ?? 0.0).toDouble(),
-    'discount': (json['discount'] ?? json['discount_amount'] ?? 0.0).toDouble(),
+    'shippingCost': _parseDouble(json['shippingCost'] ?? json['shipping_cost']),
+    'totalAmount': _parseDouble(json['total_amount'] ?? json['totalAmount']),
+    'subtotal': _parseDouble(json['subtotal']),
+    'discount': _parseDouble(json['discount'] ?? json['discount_amount']),
     'items': json['order_items'] ?? json['items'],
     'paymentStatus': json['payment_status'] ?? json['paymentStatus'],
     'paymentMethod': json['payment_method'] ?? json['paymentMethod'] ?? 'card',
     'trackingNumber': json['tracking_number'] ?? json['trackingNumber'],
-    'phoneNumber': json['phone_number'] ?? json['phoneNumber'],
-    'shippingAddress': json['shipping_address'] ?? json['shippingAddress'],
-    'user': json['user'],
+    'phoneNumber': json['phone'] ?? json['phone_number'] ?? json['phoneNumber'] ?? mappedAddress?['phone'],
+    'shippingAddress': mappedAddress,
+    'user': _mapUserJson(json['user']),
+  };
+}
+
+Map<String, dynamic>? _mapUserJson(dynamic json) {
+  if (json == null) return null;
+  if (json is! Map) return null;
+  
+  return {
+    ...json,
+    'id': _parseInt(json['id']),
   };
 }
 
@@ -145,14 +179,28 @@ Map<String, dynamic> _mapItemJson(Map<String, dynamic> json) {
   return {
     ...json,
     'id': (json['id'] ?? '').toString(),
-    'orderId': json['order_id'] ?? json['orderId'],
-    'productId': json['product_id'] ?? json['productId'],
-    'productName': json['product_name'] ?? json['productName'],
-    'unitPrice': (json['unit_price'] ?? json['unitPrice'] ?? 0.0).toDouble(),
-    'quantity': (json['quantity'] ?? 1).toInt(),
-    'subtotal': (json['subtotal'] ?? 0.0).toDouble(),
+    'orderId': (json['order_id'] ?? json['orderId'] ?? '').toString(),
+    'productId': (json['product_id'] ?? json['productId'] ?? '').toString(),
+    'productName': (json['product_name'] ?? json['productName'] ?? '').toString(),
+    'unitPrice': _parseDouble(json['unit_price'] ?? json['unitPrice']),
+    'quantity': _parseInt(json['quantity'] ?? 1),
+    'subtotal': _parseDouble(json['subtotal']),
     'imageUrl': json['image_url'] ?? json['imageUrl'],
     'selectedFlavor': json['selectedFlavor'] ?? json['flavor'],
     'selectedSize': json['selectedSize'] ?? json['size'],
   };
+}
+
+double _parseDouble(dynamic value) {
+  if (value == null) return 0.0;
+  if (value is num) return value.toDouble();
+  if (value is String) return double.tryParse(value) ?? 0.0;
+  return 0.0;
+}
+
+int _parseInt(dynamic value) {
+  if (value == null) return 0;
+  if (value is int) return value;
+  if (value is String) return int.tryParse(value) ?? 0;
+  return 0;
 }
