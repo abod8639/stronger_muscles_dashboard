@@ -6,12 +6,14 @@ import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/controllers/categories_controller.dart';
 import 'package:stronger_muscles_dashboard/models/category_model.dart';
+import 'package:stronger_muscles_dashboard/models/product_model.dart';
 import 'package:stronger_muscles_dashboard/screens/category_form_page/widget/gradient_background_painter.dart';
 import 'package:stronger_muscles_dashboard/screens/components/base_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/components/confirm_dialog.dart';
-import 'package:stronger_muscles_dashboard/screens/components/buildModernTextField.dart';
+import 'package:stronger_muscles_dashboard/screens/components/build_modern_text_field.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/availability_switch.dart';
+import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/category_tree_selector.dart';
 
 class CategoryFormPage extends StatefulWidget {
   final CategoryModel? category;
@@ -90,23 +92,72 @@ class _CategoryFormPageState extends State<CategoryFormPage>
                         delay: 200,
                         child: buildGlassmorphicCard(isDark, [
                           buildIdField(isDark),
-
                           const SizedBox(height: 20),
-
-                          buildModernTextField(
-                            controller.nameController,
-                            'اسم التصنيف',
-                            Icons.label_important_outline_rounded,
+                          Row(
+                            children: [
+                              Expanded(
+                                child: buildModernTextField(
+                                  controller.nameArController,
+                                  'اسم التصنيف (بالعربي)',
+                                  Icons.label_important_outline_rounded,
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: buildModernTextField(
+                                  controller.nameEnController,
+                                  'Category Name (EN)',
+                                  Icons.label_important_outline_rounded,
+                                ),
+                              ),
+                            ],
                           ),
-
                           const SizedBox(height: 20),
-
-                          buildModernTextField(
-                            controller.descriptionController,
-                            'وصف التصنيف (اختياري)',
-                            Icons.description_outlined,
-                            // maxLines: 3,
+                          Row(
+                            children: [
+                              Expanded(
+                                child: buildModernTextField(
+                                  controller.descArController,
+                                  'وصف التصنيف (بالعربي) - اختياري',
+                                  Icons.description_outlined,
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: buildModernTextField(
+                                  controller.descEnController,
+                                  'Description (EN) - Optional',
+                                  Icons.description_outlined,
+                                ),
+                              ),
+                            ],
                           ),
+                        ]),
+                      ),
+
+                      const SizedBox(height: 40),
+
+                      buildAnimatedSection(
+                        delay: 250,
+                        child: buildSectionTitle(
+                          'التصنيف الأب',
+                          Icons.account_tree_outlined,
+                          isDark,
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      buildAnimatedSection(
+                        delay: 280,
+                        child: buildGlassmorphicCard(isDark, [
+                          Obx(() => CategoryTreeSelector(
+                                categories: controller.categories,
+                                selectedId: controller.parentId.value,
+                                onSelected: (id) =>
+                                    controller.parentId.value = id,
+                                label: 'اختر التصنيف الرئيسي (اختياري)',
+                              )),
                         ]),
                       ),
 
@@ -163,13 +214,13 @@ class _CategoryFormPageState extends State<CategoryFormPage>
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    AppColors.primary.withOpacity(0.2),
-                    AppColors.primary.withOpacity(0.05),
+                    AppColors.primary.withValues(alpha: 0.2),
+                    AppColors.primary.withValues(alpha: 0.05),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: AppColors.primary.withOpacity(0.3),
+                  color: AppColors.primary.withValues(alpha: 0.3),
                   width: 1.5,
                 ),
               ),
@@ -202,8 +253,8 @@ class _CategoryFormPageState extends State<CategoryFormPage>
                         : 'قم بتحديث معلومات التصنيف',
                     style: TextStyle(
                       fontSize: 14,
-                      color: (isDark ? Colors.white : Colors.black).withOpacity(
-                        0.5,
+                      color: (isDark ? Colors.white : Colors.black).withValues(
+                        alpha: 0.5,
                       ),
                     ),
                   ),
@@ -241,8 +292,8 @@ class _CategoryFormPageState extends State<CategoryFormPage>
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  AppColors.primary.withOpacity(0.15),
-                  AppColors.primary.withOpacity(0.05),
+                  AppColors.primary.withValues(alpha: 0.15),
+                  AppColors.primary.withValues(alpha: 0.05),
                 ],
               ),
               borderRadius: BorderRadius.circular(12),
@@ -266,8 +317,8 @@ class _CategoryFormPageState extends State<CategoryFormPage>
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    AppColors.primary.withOpacity(0.3),
-                    AppColors.primary.withOpacity(0.0),
+                    AppColors.primary.withValues(alpha: 0.3),
+                    AppColors.primary.withValues(alpha: 0.0),
                   ],
                 ),
               ),
@@ -311,7 +362,7 @@ class _CategoryFormPageState extends State<CategoryFormPage>
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               color: _isIdFieldEnabled
-                  ? AppColors.warning.withOpacity(0.05)
+                  ? AppColors.warning.withValues(alpha: 0.05)
                   : (isDark ? Colors.white10 : Colors.grey[100]),
               border: Border.all(
                 color: _isIdFieldEnabled
@@ -369,7 +420,7 @@ class _CategoryFormPageState extends State<CategoryFormPage>
                 borderRadius: BorderRadius.circular(28),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primary.withOpacity(0.2),
+                    color: AppColors.primary.withValues(alpha: 0.2),
                     blurRadius: 30,
                     spreadRadius: -10,
                     offset: const Offset(0, 15),
@@ -394,9 +445,9 @@ class _CategoryFormPageState extends State<CategoryFormPage>
               padding: const EdgeInsets.all(12.0),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.5),
+                  color: Colors.black.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: Colors.white.withOpacity(0.1)),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -489,12 +540,12 @@ class _CategoryFormPageState extends State<CategoryFormPage>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: isDark
-              ? [Colors.white.withOpacity(0.05), Colors.white.withOpacity(0.02)]
-              : [Colors.grey.withOpacity(0.1), Colors.grey.withOpacity(0.05)],
+              ? [Colors.white.withValues(alpha: 0.05), Colors.white.withValues(alpha: 0.02)]
+              : [Colors.grey.withValues(alpha: 0.1), Colors.grey.withValues(alpha: 0.05)],
         ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: (isDark ? Colors.white : Colors.grey).withOpacity(0.2),
+          color: (isDark ? Colors.white : Colors.grey).withValues(alpha: 0.2),
           width: 2,
           style: BorderStyle.solid,
         ),
@@ -505,7 +556,7 @@ class _CategoryFormPageState extends State<CategoryFormPage>
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
+              color: AppColors.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -518,7 +569,7 @@ class _CategoryFormPageState extends State<CategoryFormPage>
           Text(
             'قم بإدخال رابط الصورة أعلاه',
             style: TextStyle(
-              color: (isDark ? Colors.white : Colors.black).withOpacity(0.5),
+              color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.5),
               fontSize: 14,
               fontWeight: FontWeight.w600,
             ),
@@ -527,7 +578,7 @@ class _CategoryFormPageState extends State<CategoryFormPage>
           Text(
             'سيتم عرض المعاينة هنا',
             style: TextStyle(
-              color: (isDark ? Colors.white : Colors.black).withOpacity(0.3),
+              color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.3),
               fontSize: 12,
             ),
           ),
@@ -543,9 +594,9 @@ class _CategoryFormPageState extends State<CategoryFormPage>
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.5),
+        color: Colors.black.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.2)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
       ),
       child: Material(
         color: Colors.transparent,
@@ -577,13 +628,13 @@ class _CategoryFormPageState extends State<CategoryFormPage>
           Icon(
             Icons.broken_image_outlined,
             size: 64,
-            color: (isDark ? Colors.white : Colors.black).withOpacity(0.3),
+            color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.3),
           ),
           const SizedBox(height: 12),
           Text(
             'فشل تحميل الصورة',
             style: TextStyle(
-              color: (isDark ? Colors.white : Colors.black).withOpacity(0.5),
+              color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.5),
               fontSize: 14,
             ),
           ),
@@ -591,7 +642,7 @@ class _CategoryFormPageState extends State<CategoryFormPage>
           Text(
             'تحقق من الرابط وحاول مرة أخرى',
             style: TextStyle(
-              color: (isDark ? Colors.white : Colors.black).withOpacity(0.3),
+              color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.3),
               fontSize: 12,
             ),
           ),
@@ -634,7 +685,7 @@ class _CategoryFormPageState extends State<CategoryFormPage>
         gradient: LinearGradient(
           colors: [
             Colors.transparent,
-            (isDark ? Colors.white : Colors.black).withOpacity(0.1),
+            (isDark ? Colors.white : Colors.black).withValues(alpha: 0.1),
             Colors.transparent,
           ],
         ),
@@ -645,10 +696,10 @@ class _CategoryFormPageState extends State<CategoryFormPage>
   Widget _buildImageShimmer(bool isDark) {
     // الألوان المختارة لتعطي إيحاء "المعدن السائل" أو النبض التقني
     final baseColor = isDark
-        ? Colors.white.withOpacity(0.05)
+        ? Colors.white.withValues(alpha: 0.05)
         : Colors.grey[300]!;
     final highlightColor = isDark
-        ? Colors.white.withOpacity(0.12)
+        ? Colors.white.withValues(alpha: 0.12)
         : Colors.grey[100]!;
 
     return Container(
@@ -786,8 +837,9 @@ class _CategoryFormPageState extends State<CategoryFormPage>
       return;
     }
 
-    if (controller.nameController.text.trim().isEmpty) {
-      _showErrorSnackbar('اسم التصنيف مطلوب');
+    if (controller.nameArController.text.trim().isEmpty &&
+        controller.nameEnController.text.trim().isEmpty) {
+      _showErrorSnackbar('اسم التصنيف مطلوب (عربي أو إنجليزي)');
       return;
     }
 
@@ -802,11 +854,18 @@ class _CategoryFormPageState extends State<CategoryFormPage>
 
     final categoryData = CategoryModel(
       id: controller.idController.text.trim(),
-      name: controller.nameController.text.trim(),
+      name: TranslatableString(
+        ar: controller.nameArController.text.trim(),
+        en: controller.nameEnController.text.trim(),
+      ),
       imageUrl: controller.imageController.text.trim(),
-      description: controller.descriptionController.text.trim(),
+      description: TranslatableString(
+        ar: controller.descArController.text.trim(),
+        en: controller.descEnController.text.trim(),
+      ),
       isActive: controller.isActive.value,
       icon: controller.iconController.text.trim(),
+      parentId: controller.parentId.value,
     );
 
     bool success = widget.category == null

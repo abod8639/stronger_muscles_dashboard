@@ -87,10 +87,10 @@ class OrdersScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: isOutline ? Colors.transparent : AppColors.primary,
         borderRadius: BorderRadius.circular(10),
-        border: isOutline ? Border.all(color: Colors.white.withOpacity(0.1)) : null,
+        border: isOutline ? Border.all(color: Colors.white.withValues(alpha: 0.1)) : null,
         boxShadow: isOutline ? null : [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
+            color: AppColors.primary.withValues(alpha: 0.3),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),

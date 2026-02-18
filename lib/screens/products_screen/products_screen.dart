@@ -3,8 +3,8 @@ import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/screens/components/enhanced_loading_widget.dart';
 import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
 import 'package:stronger_muscles_dashboard/screens/components/top_section.dart';
-import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/ProductFormPage.dart';
-import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/ProductListItem.dart';
+import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_form_page.dart';
+import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_list_item.dart';
 import 'package:stronger_muscles_dashboard/screens/components/generic_empty_state.dart';
 import 'package:stronger_muscles_dashboard/screens/components/base_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/components/horizontal_chips_selector.dart';
@@ -44,7 +44,7 @@ class ProductsScreen extends StatelessWidget {
                   selectedId: controller.selectedCategoryId.value,
                   // التعديل هنا: استدعاء الدالة التي تحتوي على منطق الفلترة
                   onSelect: (id) => controller.setCategory(id),
-                  labelKey: 'name',
+                  labelKey: 'displayName',
                   idKey: 'id',
                   showAllOption: true,
                   allLabel: 'الكل',
@@ -94,7 +94,7 @@ class ProductsScreen extends StatelessWidget {
                       onEdit: () =>
                           controller.showProductForm(context, product: product),
                       onDelete: () =>
-                          controller.confirmDelete(product.id, product.name),
+                          controller.confirmDelete(product.id, product.name.ar),
                     );
                   },
                 ),

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/screens/category_form_page/CategoryFormPage.dart';
+import 'package:stronger_muscles_dashboard/screens/category_form_page/category_form_page.dart';
 import 'package:stronger_muscles_dashboard/screens/components/enhanced_loading_widget.dart';
 import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
 import 'package:stronger_muscles_dashboard/screens/components/enhanced_error_widget.dart';
 import 'package:stronger_muscles_dashboard/screens/components/top_section.dart';
-import 'package:stronger_muscles_dashboard/screens/categories_screen/widgets/CategoryFormSheet.dart';
+import 'package:stronger_muscles_dashboard/screens/categories_screen/widgets/category_form_sheet.dart';
 import 'package:stronger_muscles_dashboard/screens/components/generic_grid_card.dart';
 import 'package:stronger_muscles_dashboard/screens/components/generic_list_card.dart';
 import 'package:stronger_muscles_dashboard/screens/components/base_app_bar.dart';
@@ -77,7 +77,7 @@ class CategoriesScreen extends StatelessWidget {
                         itemBuilder: (context, index) {
                           final category = controller.filteredCategories[index];
                           return GenericListCard<CategoryModel>(
-                            title: category.name,
+                            title: category.displayName,
                             metadata: 'ID: ${category.id}',
                             imageUrl: category.imageUrl,
                             fallbackIcon: Icons.category_outlined,
@@ -143,7 +143,7 @@ class CategoriesScreen extends StatelessWidget {
                         itemBuilder: (context, index) {
                           final category = controller.filteredCategories[index];
                           return GenericGridCard<CategoryModel>(
-                            title: category.name,
+                            title: category.displayName,
                             imageUrl: category.imageUrl,
                             icon: Icons.category_rounded,
                             statusWidget: !category.isActive

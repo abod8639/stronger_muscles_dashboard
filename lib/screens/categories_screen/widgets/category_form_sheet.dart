@@ -6,8 +6,10 @@ import 'package:stronger_muscles_dashboard/controllers/categories_controller.dar
 import 'package:stronger_muscles_dashboard/models/category_model.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
-import 'package:stronger_muscles_dashboard/screens/components/buildModernTextField.dart';
+import 'package:stronger_muscles_dashboard/screens/components/build_modern_text_field.dart';
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/availability_switch.dart';
+import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/category_tree_selector.dart';
+import 'package:stronger_muscles_dashboard/models/product_model.dart'; // For TranslatableString
 
 class CategoryFormSheet extends StatefulWidget {
   final CategoryModel? category;
@@ -99,7 +101,7 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
                       boxShadow: _isIdFieldEnabled
                           ? [
                               BoxShadow(
-                                color: AppColors.warning.withOpacity(0.1),
+                                color: AppColors.warning.withValues(alpha: 0.1),
                                 blurRadius: 10,
                               ),
                             ]
@@ -118,18 +120,58 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
 
               const SizedBox(height: 16),
 
-              buildModernTextField(
-                controller.nameController,
-                'اسم التصنيف',
-                Icons.label_important_outline_rounded,
+              const Text('الاسم والوصف (بالعربي والإنجليزي)', 
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 12),
+              
+              Row(
+                children: [
+                  Expanded(
+                    child: buildModernTextField(
+                      controller.nameArController,
+                      'الاسم (AR)',
+                      Icons.label_important_outline_rounded,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: buildModernTextField(
+                      controller.nameEnController,
+                      'Name (EN)',
+                      Icons.translate_rounded,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
 
-              buildModernTextField(
-                controller.descriptionController,
-                'وصف التصنيف',
-                Icons.description_outlined,
+              Row(
+                children: [
+                  Expanded(
+                    child: buildModernTextField(
+                      controller.descArController,
+                      'الوصف (AR)',
+                      Icons.description_outlined,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: buildModernTextField(
+                      controller.descEnController,
+                      'Description (EN)',
+                      Icons.description_outlined,
+                    ),
+                  ),
+                ],
               ),
+              const SizedBox(height: 16),
+
+              Obx(() => CategoryTreeSelector(
+                categories: controller.categories.where((c) => c.id != widget.category?.id).toList(),
+                selectedId: controller.parentId.value.isEmpty ? null : controller.parentId.value,
+                onSelected: (id) => controller.parentId.value = id,
+                label: 'التصنيف الأب (اختياري)',
+              )),
               const SizedBox(height: 16),
 
               _buildImageSection(res),
@@ -154,14 +196,14 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
         width: 50,
         height: 5,
         decoration: BoxDecoration(
-          color: Colors.grey.withOpacity(0.3),
+          color: Colors.grey.withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(10),
         ),
       ),
     );
   }
 
-  Widget _buildHeader(var res) {
+  Widget _buildHeader(ResponsiveLayout res) {
     return Row(
       children: [
         Icon(
@@ -183,7 +225,7 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
     );
   }
 
-  Widget _buildImageSection(var res) {
+  Widget _buildImageSection(ResponsiveLayout res) {
     return Column(
       children: [
         buildModernTextField(
@@ -205,7 +247,7 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(15),
@@ -239,7 +281,7 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
             boxShadow: [
               if (!isLoading)
                 BoxShadow(
-                  color: AppColors.primary.withOpacity(0.3),
+                  color: AppColors.primary.withValues(alpha: 0.3),
                   blurRadius: 15,
                   offset: const Offset(0, 8),
                 ),
@@ -278,40 +320,38 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
 
   void _submitForm() async {
     if (controller.idController.text.trim().isEmpty ||
-        controller.nameController.text.trim().isEmpty) {
+        controller.nameArController.text.trim().isEmpty) {
       Get.snackbar(
         'تنبيه',
         'يجب ملء حقل الكود والاسم على الأقل',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: AppColors.error.withOpacity(0.8),
+        backgroundColor: AppColors.error.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
       return;
     }
 
+    final categoryData = CategoryModel(
+      id: controller.idController.text.trim(),
+      name: TranslatableString(
+        ar: controller.nameArController.text.trim(),
+        en: controller.nameEnController.text.trim(),
+      ),
+      description: TranslatableString(
+        ar: controller.descArController.text.trim(),
+        en: controller.descEnController.text.trim(),
+      ),
+      imageUrl: controller.imageController.text.trim(),
+      isActive: controller.isActive.value,
+      parentId: controller.parentId.value.isEmpty ? null : controller.parentId.value,
+      icon: controller.iconController.text.trim(),
+    );
+
     bool success;
     if (widget.category == null) {
-      success = await controller.addCategory(
-        CategoryModel(
-          id: controller.idController.text.trim(),
-          name: controller.nameController.text.trim(),
-          imageUrl: controller.imageController.text.trim(),
-          description: controller.descriptionController.text.trim(),
-          isActive: controller.isActive.value,
-          icon: controller.iconController.text.trim(),
-        ),
-      );
+      success = await controller.addCategory(categoryData);
     } else {
-      success = await controller.updateCategory(
-        CategoryModel(
-          id: controller.idController.text.trim(),
-          name: controller.nameController.text.trim(),
-          imageUrl: controller.imageController.text.trim(),
-          description: controller.descriptionController.text.trim(),
-          isActive: controller.isActive.value,
-          icon: controller.iconController.text.trim(),
-        ),
-      );
+      success = await controller.updateCategory(categoryData);
     }
 
     if (success) Get.back();

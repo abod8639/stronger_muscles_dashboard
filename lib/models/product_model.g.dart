@@ -6,6 +6,221 @@ part of 'product_model.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
+class TranslatableStringAdapter extends TypeAdapter<TranslatableString> {
+  @override
+  final int typeId = 20;
+
+  @override
+  TranslatableString read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return TranslatableString(
+      ar: fields[0] as String,
+      en: fields[1] as String,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, TranslatableString obj) {
+    writer
+      ..writeByte(2)
+      ..writeByte(0)
+      ..write(obj.ar)
+      ..writeByte(1)
+      ..write(obj.en);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TranslatableStringAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class ProductImageAdapter extends TypeAdapter<ProductImage> {
+  @override
+  final int typeId = 21;
+
+  @override
+  ProductImage read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return ProductImage(
+      thumbnail: fields[0] as String,
+      medium: fields[1] as String,
+      original: fields[2] as String,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, ProductImage obj) {
+    writer
+      ..writeByte(3)
+      ..writeByte(0)
+      ..write(obj.thumbnail)
+      ..writeByte(1)
+      ..write(obj.medium)
+      ..writeByte(2)
+      ..write(obj.original);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ProductImageAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class ProductCategoryAdapter extends TypeAdapter<ProductCategory> {
+  @override
+  final int typeId = 23;
+
+  @override
+  ProductCategory read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return ProductCategory(
+      id: fields[0] as String,
+      name: fields[1] as TranslatableString,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, ProductCategory obj) {
+    writer
+      ..writeByte(2)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.name);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ProductCategoryAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class ProductVariantModelAdapter extends TypeAdapter<ProductVariantModel> {
+  @override
+  final int typeId = 22;
+
+  @override
+  ProductVariantModel read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return ProductVariantModel(
+      id: fields[0] as String,
+      sku: fields[1] as String,
+      price: fields[2] as double,
+      discountPrice: fields[3] as double?,
+      effectivePrice: fields[4] as double,
+      stockQuantity: fields[5] as int,
+      attributes: (fields[6] as Map).cast<String, dynamic>(),
+      isActive: fields[7] as bool,
+      discountStartDate: fields[8] as DateTime?,
+      discountEndDate: fields[9] as DateTime?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, ProductVariantModel obj) {
+    writer
+      ..writeByte(10)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.sku)
+      ..writeByte(2)
+      ..write(obj.price)
+      ..writeByte(3)
+      ..write(obj.discountPrice)
+      ..writeByte(4)
+      ..write(obj.effectivePrice)
+      ..writeByte(5)
+      ..write(obj.stockQuantity)
+      ..writeByte(6)
+      ..write(obj.attributes)
+      ..writeByte(7)
+      ..write(obj.isActive)
+      ..writeByte(8)
+      ..write(obj.discountStartDate)
+      ..writeByte(9)
+      ..write(obj.discountEndDate);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ProductVariantModelAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class ProductSizeAdapter extends TypeAdapter<ProductSize> {
+  @override
+  final int typeId = 18;
+
+  @override
+  ProductSize read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return ProductSize(
+      size: fields[0] as String,
+      price: fields[1] as double,
+      discountPrice: fields[2] as double?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, ProductSize obj) {
+    writer
+      ..writeByte(3)
+      ..writeByte(0)
+      ..write(obj.size)
+      ..writeByte(1)
+      ..write(obj.price)
+      ..writeByte(2)
+      ..write(obj.discountPrice);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ProductSizeAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
 class ProductModelAdapter extends TypeAdapter<ProductModel> {
   @override
   final int typeId = 8;
@@ -18,12 +233,13 @@ class ProductModelAdapter extends TypeAdapter<ProductModel> {
     };
     return ProductModel(
       id: fields[0] as String,
-      name: fields[1] as String,
+      name: fields[1] as TranslatableString,
       price: fields[2] as double,
       discountPrice: fields[3] as double?,
-      imageUrls: (fields[4] as List).cast<String>(),
-      description: fields[5] as String,
+      imageUrls: (fields[4] as List).cast<ProductImage>(),
+      description: fields[5] as TranslatableString,
       categoryId: fields[6] as String,
+      category: fields[27] as ProductCategory?,
       stockQuantity: fields[7] as int,
       averageRating: fields[8] as double,
       reviewCount: fields[9] as int,
@@ -36,31 +252,22 @@ class ProductModelAdapter extends TypeAdapter<ProductModel> {
       tags: (fields[16] as List?)?.cast<String>(),
       weight: fields[17] as double?,
       size: (fields[18] as List?)?.cast<String>(),
-      flavor: (fields[19] as List?)?.cast<String>(),
-      nutritionFacts: (fields[20] as Map?)?.cast<String, dynamic>(),
-      featured: fields[21] as bool,
-      newArrival: fields[22] as bool,
-      bestSeller: fields[23] as bool,
-      totalSales: fields[24] as int,
-      viewsCount: fields[25] as int,
-      shippingWeight: fields[26] as double?,
-      dimensions: (fields[27] as Map?)?.cast<String, dynamic>(),
-      ingredients: (fields[28] as List).cast<String>(),
-      usageInstructions: fields[29] as String?,
-      warnings: fields[30] as String?,
-      expiryDate: fields[31] as DateTime?,
-      manufacturer: fields[32] as String?,
-      countryOfOrigin: fields[33] as String?,
-      metaTitle: fields[34] as String?,
-      metaDescription: fields[35] as String?,
-      slug: fields[36] as String?,
+      productSizes: (fields[19] as List?)?.cast<ProductSize>(),
+      flavor: (fields[20] as List?)?.cast<String>(),
+      nutritionFacts: (fields[21] as Map?)?.cast<String, dynamic>(),
+      featured: fields[22] as bool,
+      newArrival: fields[23] as bool,
+      bestSeller: fields[24] as bool,
+      totalSales: fields[25] as int,
+      variants: (fields[26] as List).cast<ProductVariantModel>(),
+      hasVariants: fields[28] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, ProductModel obj) {
     writer
-      ..writeByte(37)
+      ..writeByte(29)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -75,6 +282,8 @@ class ProductModelAdapter extends TypeAdapter<ProductModel> {
       ..write(obj.description)
       ..writeByte(6)
       ..write(obj.categoryId)
+      ..writeByte(27)
+      ..write(obj.category)
       ..writeByte(7)
       ..write(obj.stockQuantity)
       ..writeByte(8)
@@ -100,41 +309,23 @@ class ProductModelAdapter extends TypeAdapter<ProductModel> {
       ..writeByte(18)
       ..write(obj.size)
       ..writeByte(19)
-      ..write(obj.flavor)
+      ..write(obj.productSizes)
       ..writeByte(20)
-      ..write(obj.nutritionFacts)
+      ..write(obj.flavor)
       ..writeByte(21)
-      ..write(obj.featured)
+      ..write(obj.nutritionFacts)
       ..writeByte(22)
-      ..write(obj.newArrival)
+      ..write(obj.featured)
       ..writeByte(23)
-      ..write(obj.bestSeller)
+      ..write(obj.newArrival)
       ..writeByte(24)
-      ..write(obj.totalSales)
+      ..write(obj.bestSeller)
       ..writeByte(25)
-      ..write(obj.viewsCount)
+      ..write(obj.totalSales)
       ..writeByte(26)
-      ..write(obj.shippingWeight)
-      ..writeByte(27)
-      ..write(obj.dimensions)
+      ..write(obj.variants)
       ..writeByte(28)
-      ..write(obj.ingredients)
-      ..writeByte(29)
-      ..write(obj.usageInstructions)
-      ..writeByte(30)
-      ..write(obj.warnings)
-      ..writeByte(31)
-      ..write(obj.expiryDate)
-      ..writeByte(32)
-      ..write(obj.manufacturer)
-      ..writeByte(33)
-      ..write(obj.countryOfOrigin)
-      ..writeByte(34)
-      ..write(obj.metaTitle)
-      ..writeByte(35)
-      ..write(obj.metaDescription)
-      ..writeByte(36)
-      ..write(obj.slug);
+      ..write(obj.hasVariants);
   }
 
   @override
@@ -152,18 +343,112 @@ class ProductModelAdapter extends TypeAdapter<ProductModel> {
 // JsonSerializableGenerator
 // **************************************************************************
 
+_$TranslatableStringImpl _$$TranslatableStringImplFromJson(
+        Map<String, dynamic> json) =>
+    _$TranslatableStringImpl(
+      ar: json['ar'] as String? ?? '',
+      en: json['en'] as String? ?? '',
+    );
+
+Map<String, dynamic> _$$TranslatableStringImplToJson(
+        _$TranslatableStringImpl instance) =>
+    <String, dynamic>{
+      'ar': instance.ar,
+      'en': instance.en,
+    };
+
+_$ProductImageImpl _$$ProductImageImplFromJson(Map<String, dynamic> json) =>
+    _$ProductImageImpl(
+      thumbnail: json['thumbnail'] as String,
+      medium: json['medium'] as String,
+      original: json['original'] as String,
+    );
+
+Map<String, dynamic> _$$ProductImageImplToJson(_$ProductImageImpl instance) =>
+    <String, dynamic>{
+      'thumbnail': instance.thumbnail,
+      'medium': instance.medium,
+      'original': instance.original,
+    };
+
+_$ProductCategoryImpl _$$ProductCategoryImplFromJson(
+        Map<String, dynamic> json) =>
+    _$ProductCategoryImpl(
+      id: json['id'] as String,
+      name: TranslatableString.fromJson(json['name'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$$ProductCategoryImplToJson(
+        _$ProductCategoryImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+    };
+
+_$ProductVariantModelImpl _$$ProductVariantModelImplFromJson(
+        Map<String, dynamic> json) =>
+    _$ProductVariantModelImpl(
+      id: json['id'] as String,
+      sku: json['sku'] as String,
+      price: (json['price'] as num).toDouble(),
+      discountPrice: (json['discount_price'] as num?)?.toDouble(),
+      effectivePrice: (json['effective_price'] as num).toDouble(),
+      stockQuantity: (json['stock_quantity'] as num).toInt(),
+      attributes: json['attributes'] as Map<String, dynamic>,
+      isActive: json['is_active'] as bool? ?? true,
+      discountStartDate: json['discount_start_date'] == null
+          ? null
+          : DateTime.parse(json['discount_start_date'] as String),
+      discountEndDate: json['discount_end_date'] == null
+          ? null
+          : DateTime.parse(json['discount_end_date'] as String),
+    );
+
+Map<String, dynamic> _$$ProductVariantModelImplToJson(
+        _$ProductVariantModelImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'sku': instance.sku,
+      'price': instance.price,
+      'discount_price': instance.discountPrice,
+      'effective_price': instance.effectivePrice,
+      'stock_quantity': instance.stockQuantity,
+      'attributes': instance.attributes,
+      'is_active': instance.isActive,
+      'discount_start_date': instance.discountStartDate?.toIso8601String(),
+      'discount_end_date': instance.discountEndDate?.toIso8601String(),
+    };
+
+_$ProductSizeImpl _$$ProductSizeImplFromJson(Map<String, dynamic> json) =>
+    _$ProductSizeImpl(
+      size: json['size'] as String,
+      price: (json['price'] as num).toDouble(),
+      discountPrice: (json['discount_price'] as num?)?.toDouble(),
+    );
+
+Map<String, dynamic> _$$ProductSizeImplToJson(_$ProductSizeImpl instance) =>
+    <String, dynamic>{
+      'size': instance.size,
+      'price': instance.price,
+      'discount_price': instance.discountPrice,
+    };
+
 _$ProductModelImpl _$$ProductModelImplFromJson(Map<String, dynamic> json) =>
     _$ProductModelImpl(
       id: json['id'] as String,
-      name: json['name'] as String,
+      name: TranslatableString.fromJson(json['name'] as Map<String, dynamic>),
       price: (json['price'] as num).toDouble(),
       discountPrice: (json['discount_price'] as num?)?.toDouble(),
-      imageUrls: (json['image_urls'] as List<dynamic>?)
-              ?.map((e) => e as String)
+      imageUrls: (json['imageUrls'] as List<dynamic>?)
+              ?.map((e) => ProductImage.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      description: json['description'] as String,
-      categoryId: json['category_id'] as String,
+      description: TranslatableString.fromJson(
+          json['description'] as Map<String, dynamic>),
+      categoryId: json['categoryId'] as String? ?? '',
+      category: json['category'] == null
+          ? null
+          : ProductCategory.fromJson(json['category'] as Map<String, dynamic>),
       stockQuantity: (json['stock_quantity'] as num?)?.toInt() ?? 0,
       averageRating: (json['average_rating'] as num?)?.toDouble() ?? 0.0,
       reviewCount: (json['review_count'] as num?)?.toInt() ?? 0,
@@ -180,6 +465,10 @@ _$ProductModelImpl _$$ProductModelImplFromJson(Map<String, dynamic> json) =>
       size:
           (json['size'] as List<dynamic>?)?.map((e) => e as String).toList() ??
               const [],
+      productSizes: (json['product_sizes'] as List<dynamic>?)
+              ?.map((e) => ProductSize.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
       flavor: (json['flavors'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
@@ -189,23 +478,12 @@ _$ProductModelImpl _$$ProductModelImplFromJson(Map<String, dynamic> json) =>
       newArrival: json['new_arrival'] as bool? ?? false,
       bestSeller: json['best_seller'] as bool? ?? false,
       totalSales: (json['total_sales'] as num?)?.toInt() ?? 0,
-      viewsCount: (json['views_count'] as num?)?.toInt() ?? 0,
-      shippingWeight: (json['shipping_weight'] as num?)?.toDouble(),
-      dimensions: json['dimensions'] as Map<String, dynamic>?,
-      ingredients: (json['ingredients'] as List<dynamic>?)
-              ?.map((e) => e as String)
+      variants: (json['product_variants'] as List<dynamic>?)
+              ?.map((e) =>
+                  ProductVariantModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      usageInstructions: json['usage_instructions'] as String?,
-      warnings: json['warnings'] as String?,
-      expiryDate: json['expiry_date'] == null
-          ? null
-          : DateTime.parse(json['expiry_date'] as String),
-      manufacturer: json['manufacturer'] as String?,
-      countryOfOrigin: json['country_of_origin'] as String?,
-      metaTitle: json['meta_title'] as String?,
-      metaDescription: json['meta_description'] as String?,
-      slug: json['slug'] as String?,
+      hasVariants: json['has_variants'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$$ProductModelImplToJson(_$ProductModelImpl instance) =>
@@ -214,9 +492,10 @@ Map<String, dynamic> _$$ProductModelImplToJson(_$ProductModelImpl instance) =>
       'name': instance.name,
       'price': instance.price,
       'discount_price': instance.discountPrice,
-      'image_urls': instance.imageUrls,
+      'imageUrls': instance.imageUrls,
       'description': instance.description,
-      'category_id': instance.categoryId,
+      'categoryId': instance.categoryId,
+      'category': instance.category,
       'stock_quantity': instance.stockQuantity,
       'average_rating': instance.averageRating,
       'review_count': instance.reviewCount,
@@ -229,22 +508,13 @@ Map<String, dynamic> _$$ProductModelImplToJson(_$ProductModelImpl instance) =>
       'tags': instance.tags,
       'weight': instance.weight,
       'size': instance.size,
+      'product_sizes': instance.productSizes,
       'flavors': instance.flavor,
       'nutrition_facts': instance.nutritionFacts,
       'featured': instance.featured,
       'new_arrival': instance.newArrival,
       'best_seller': instance.bestSeller,
       'total_sales': instance.totalSales,
-      'views_count': instance.viewsCount,
-      'shipping_weight': instance.shippingWeight,
-      'dimensions': instance.dimensions,
-      'ingredients': instance.ingredients,
-      'usage_instructions': instance.usageInstructions,
-      'warnings': instance.warnings,
-      'expiry_date': instance.expiryDate?.toIso8601String(),
-      'manufacturer': instance.manufacturer,
-      'country_of_origin': instance.countryOfOrigin,
-      'meta_title': instance.metaTitle,
-      'meta_description': instance.metaDescription,
-      'slug': instance.slug,
+      'product_variants': instance.variants,
+      'has_variants': instance.hasVariants,
     };

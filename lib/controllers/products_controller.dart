@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/models/flavors_model.dart';
-import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/ProductFormSheet.dart';
+import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_form_sheet.dart';
 import '../models/index.dart';
 import '../repositories/index.dart';
 import '../services/api_service.dart';
@@ -22,7 +22,7 @@ class ProductsController extends GetxController {
   final categories = <CategoryModel>[].obs;
   final flavors = <FlavorsModel>[].obs;
   final filteredProducts = <ProductModel>[].obs;
-  final productSizes = <String>[].obs;
+  final productSizes = <ProductSize>[].obs;
 
   // --- Filter Values ---
   final productWeight = 0.0.obs;
@@ -36,15 +36,81 @@ class ProductsController extends GetxController {
   RxList<String> imageUrls = <String>[].obs;
 
   final Map<String, TextEditingController> textcontrollers = {
-    'name': TextEditingController(),
+    'name_ar': TextEditingController(),
+    'name_en': TextEditingController(),
     'price': TextEditingController(),
     'discount': TextEditingController(),
-    'desc': TextEditingController(),
+    'desc_ar': TextEditingController(),
+    'desc_en': TextEditingController(),
     'stock': TextEditingController(),
     'brand': TextEditingController(),
     'serving': TextEditingController(),
     'sessions': TextEditingController(),
   };
+
+  final variants = <ProductVariantModel>[].obs;
+
+  // Controllers for each size
+  final Map<String, TextEditingController> sizePriceControllers = {};
+  final Map<String, TextEditingController> sizeDiscountControllers = {};
+
+  final selectedSizeIndex = (-1).obs;
+
+  void addVariant() {
+    final newVariant = ProductVariantModel(
+      id: 'VAR-${DateTime.now().millisecondsSinceEpoch}',
+      sku: '',
+      price: double.tryParse(textcontrollers['price']?.text ?? '0') ?? 0.0,
+      discountPrice: double.tryParse(textcontrollers['discount']?.text ?? ''),
+      effectivePrice: double.tryParse(textcontrollers['price']?.text ?? '0') ?? 0.0,
+      stockQuantity: int.tryParse(textcontrollers['stock']?.text ?? '0') ?? 0,
+      attributes: {},
+      isActive: true,
+    );
+    variants.add(newVariant);
+  }
+
+  void removeVariant(int index) {
+    if (index >= 0 && index < variants.length) {
+      variants.removeAt(index);
+    }
+  }
+
+  void updateVariant(int index, ProductVariantModel updated) {
+    if (index >= 0 && index < variants.length) {
+      variants[index] = updated;
+    }
+  }
+
+  void syncSizeControllers() {
+    // Basic cleanup: if productSizes is empty, we don't necessarily need to clear,
+    // but we must ensure each CURRENT size has a controller with its CURRENT value.
+    for (var size in productSizes) {
+      // If controller doesn't exist, create it.
+      // If it exists, update its text to match the model (important for editing different products)
+      if (!sizePriceControllers.containsKey(size.size)) {
+        sizePriceControllers[size.size] = TextEditingController(text: size.price.toString());
+      } else {
+        sizePriceControllers[size.size]!.text = size.price.toString();
+      }
+
+      if (!sizeDiscountControllers.containsKey(size.size)) {
+        sizeDiscountControllers[size.size] = TextEditingController(text: size.discountPrice?.toString() ?? '');
+      } else {
+        sizeDiscountControllers[size.size]!.text = size.discountPrice?.toString() ?? '';
+      }
+    }
+  }
+
+  void selectSize(int index) {
+    selectedSizeIndex.value = index;
+    // We can still update the "main" controller if needed, or just rely on size-specific ones
+    if (index >= 0 && index < productSizes.length) {
+      final size = productSizes[index];
+      textcontrollers['price']?.text = size.price.toString();
+      textcontrollers['discount']?.text = size.discountPrice?.toString() ?? '';
+    }
+  }
 
   @override
   void onInit() {
@@ -52,8 +118,10 @@ class ProductsController extends GetxController {
     _apiService = ApiService();
     _productRepository = ProductRepository(_apiService);
     _categoryRepository = CategoryRepository(_apiService);
-    // _flavorRepository = FlavorRepository(_apiService); // تأكد من وجود FlavorRepository
     fetchData();
+
+    // Listen to size list changes to sync controllers
+    ever(productSizes, (_) => syncSizeControllers());
   }
 
   /// جلب كافة البيانات الأساسية من السيرفر
@@ -63,7 +131,7 @@ class ProductsController extends GetxController {
 
       // جلب البيانات بالتوازي لتقليل وقت الانتظار
       final results = await Future.wait([
-        _categoryRepository.getCategories(),
+        _categoryRepository.getCategories(tree: true),
         _productRepository.getProducts(),
         // _flavorRepository.getFlavors(), // جلب النكهات
       ]);
@@ -124,7 +192,8 @@ class ProductsController extends GetxController {
       final query = searchQuery.value.toLowerCase();
       filtered = filtered.where(
         (p) =>
-            p.name.toLowerCase().contains(query) ||
+            p.name.ar.toLowerCase().contains(query) ||
+            p.name.en.toLowerCase().contains(query) ||
             (p.brand?.toLowerCase().contains(query) ?? false) ||
             p.id.contains(query),
       );
@@ -139,20 +208,19 @@ class ProductsController extends GetxController {
     try {
       isLoading.value = true;
 
-      // إنشاء ID تلقائي إذا لم يوجد
       final String productId = product.id.isEmpty
           ? 'PROD-${DateTime.now().millisecondsSinceEpoch}'
           : product.id;
 
-      final productData = product.toJson();
+      final productData = _buildApiJson(product);
       productData['id'] = productId;
 
       final newProduct = await _productRepository.addProduct(productData);
       products.insert(0, newProduct);
 
       _applyFiltering();
-      Get.back(); // إغلاق النموذج
-      Get.snackbar('نجاح', 'تم إضافة ${newProduct.name} بنجاح');
+      Get.back();
+      Get.snackbar('نجاح', 'تم إضافة ${newProduct.name.ar} بنجاح');
     } catch (e) {
       _showErrorSnackbar('خطأ في الإضافة', e.toString());
     } finally {
@@ -165,7 +233,7 @@ class ProductsController extends GetxController {
       isLoading.value = true;
       final updatedProduct = await _productRepository.updateProduct(
         product.id,
-        product.toJson(),
+        _buildApiJson(product),
       );
 
       final index = products.indexWhere((p) => p.id == product.id);
@@ -211,7 +279,7 @@ class ProductsController extends GetxController {
           'نجاح',
           'تم حذف المنتج بنجاح',
           snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green.withOpacity(0.1),
+          backgroundColor: Colors.green.withValues(alpha: 0.1),
         );
       }
     } catch (e) {
@@ -285,26 +353,41 @@ class ProductsController extends GetxController {
     try {
       isSaving.value = true;
 
+      // Update productSizes with values from individual controllers
+      final updatedSizes = productSizes.map((ps) {
+        final price = double.tryParse(sizePriceControllers[ps.size]?.text ?? '0') ?? 0.0;
+        final discount = double.tryParse(sizeDiscountControllers[ps.size]?.text ?? '');
+        return ps.copyWith(price: price, discountPrice: discount);
+      }).toList();
+
       final productData = ProductModel(
-        id:
-            existingProduct?.id ??
-            'PROD-${DateTime.now().millisecondsSinceEpoch}',
-        name: textcontrollers['name']!.text.trim(),
+        id: existingProduct?.id ?? 'PROD-${DateTime.now().millisecondsSinceEpoch}',
+        name: TranslatableString(
+          ar: textcontrollers['name_ar']!.text.trim(),
+          en: textcontrollers['name_en']!.text.trim(),
+        ),
         price: double.tryParse(textcontrollers['price']!.text) ?? 0.0,
         discountPrice: double.tryParse(textcontrollers['discount']!.text),
-        imageUrls: productImages,
-        description: textcontrollers['desc']!.text.trim(),
+        imageUrls: productImages.map((url) => ProductImage(
+          thumbnail: url,
+          medium: url,
+          original: url,
+        )).toList(),
+        description: TranslatableString(
+          ar: textcontrollers['desc_ar']!.text.trim(),
+          en: textcontrollers['desc_en']!.text.trim(),
+        ),
         categoryId: categoryId,
         stockQuantity: int.tryParse(textcontrollers['stock']!.text) ?? 0,
         brand: textcontrollers['brand']!.text.trim(),
         isActive: isFeatured.value,
         isBackgroundWhite: isBackgroundWhite.value,
         servingSize: textcontrollers['serving']!.text,
-        servingsPerContainer:
-            int.tryParse(textcontrollers['sessions']!.text) ?? 0,
+        servingsPerContainer: int.tryParse(textcontrollers['sessions']!.text) ?? 0,
         flavor: productFlavors.toList(),
-        size: productSizes.toList(),
-        weight: productWeight.value,
+        productSizes: updatedSizes,
+        size: updatedSizes.map((e) => e.size).toList(),
+        variants: variants.toList(),
       );
 
       if (existingProduct == null) {
@@ -313,19 +396,61 @@ class ProductsController extends GetxController {
         await updateProduct(productData);
       }
 
-      Get.back();
       debugPrint("======== success ========");
-      debugPrint(productData.toJson().toString());
       _showSuccess('تم بنجاح', 'تم حفظ بيانات المنتج بنجاح');
     } catch (e) {
       debugPrint("======== error ========");
       debugPrint(e.toString());
       _showError('خطأ', 'حدث خطأ أثناء حفظ المنتج: $e');
     } finally {
-      debugPrint("======== finally ========");
-      // debugPrint(productData.toJson().toString());
       isSaving.value = false;
     }
+  }
+
+  /// بناء JSON متوافق مع الـ API يدوياً
+  Map<String, dynamic> _buildApiJson(ProductModel product) {
+    return {
+      'id': product.id,
+      'name': {
+        'ar': product.name.ar,
+        'en': product.name.en,
+      },
+      'description': {
+        'ar': product.description.ar,
+        'en': product.description.en,
+      },
+      'price': product.price,
+      'discount_price': product.discountPrice,
+      'category_id': product.categoryId,
+      'stock_quantity': product.stockQuantity,
+      'brand': product.brand,
+      'is_active': product.isActive,
+      'is_background_white': product.isBackgroundWhite,
+      'serving_size': product.servingSize,
+      'servings_per_container': product.servingsPerContainer,
+      // الصور: إرسال قائمة روابط مباشرة
+      'image_urls': product.imageUrls.map((img) => img.original).toList(),
+      // النكهات
+      'flavors': product.flavor ?? [],
+      // الأحجام والأسعار
+      'product_sizes': (product.productSizes ?? []).map((s) => {
+        'size': s.size,
+        'price': s.price,
+        'discount_price': s.discountPrice,
+      }).toList(),
+      'size': (product.size ?? []),
+      // المتغيرات
+      'variants': (product.variants).map((v) => {
+        'id': v.id,
+        'sku': v.sku,
+        'price': v.price,
+        'discount_price': v.discountPrice,
+        'effective_price': v.effectivePrice,
+        'stock_quantity': v.stockQuantity,
+        'attributes': v.attributes,
+        'is_active': v.isActive,
+      }).toList(),
+    };
   }
 
   // دوال مساعدة للرسائل (Helpers)

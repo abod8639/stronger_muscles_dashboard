@@ -69,16 +69,16 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard>
         borderRadius: BorderRadius.circular(28),
         border: Border.all(
           color: _isHovered
-              ? widget.accentColor.withOpacity(0.5)
-              : Colors.white.withOpacity(0.1),
+              ? widget.accentColor.withValues(alpha: 0.5)
+              : Colors.white.withValues(alpha: 0.1),
           width: 1.5,
         ),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            widget.accentColor.withOpacity(0.15),
-            Colors.white.withOpacity(0.02),
+            widget.accentColor.withValues(alpha: 0.15),
+            Colors.white.withValues(alpha: 0.02),
           ],
         ),
         child: Container(
@@ -100,7 +100,7 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard>
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w800,
-                  color: Colors.white.withOpacity(0.5),
+                  color: Colors.white.withValues(alpha: 0.5),
                   letterSpacing: 1.5,
                 ),
               ),
@@ -109,7 +109,7 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard>
                   widget.subtitle!,
                   style: TextStyle(
                     fontSize: 10,
-                    color: Colors.white.withOpacity(0.3),
+                    color: Colors.white.withValues(alpha: 0.3),
                   ),
                 ),
 
@@ -123,7 +123,7 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard>
                     shaderCallback: (bounds) => LinearGradient(
                       colors: [
                         Colors.white,
-                        (widget.chartColor ?? widget.accentColor).withOpacity(0.7),
+                        (widget.chartColor ?? widget.accentColor).withValues(alpha: 0.7),
                       ],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
@@ -163,9 +163,9 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard>
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: iconColor.withOpacity(0.09),
+        color: iconColor.withValues(alpha: 0.09),
         shape: BoxShape.circle,
-        border: Border.all(color: iconColor.withOpacity(0.2)),
+        border: Border.all(color: iconColor.withValues(alpha: 0.2)),
       ),
       child: Icon(widget.icon ?? Icons.analytics, color: iconColor, size: 20),
     );
@@ -178,9 +178,9 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: trendColor.withOpacity(0.1),
+        color: trendColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: trendColor.withOpacity(0.2)),
+        border: Border.all(color: trendColor.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [
@@ -223,8 +223,8 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard>
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                chartColor.withOpacity(0.3),
-                widget.accentColor.withOpacity(0.0),
+                chartColor.withValues(alpha: 0.3),
+                widget.accentColor.withValues(alpha: 0.0),
               ],
             ),
           ),

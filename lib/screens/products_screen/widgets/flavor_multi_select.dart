@@ -63,7 +63,7 @@ class ProductFlavorSelector extends StatelessWidget {
                       }
                       onSelectionChanged(updatedList);
                     },
-                    selectedColor: AppColors.primary.withOpacity(0.2),
+                    selectedColor: AppColors.primary.withValues(alpha: 0.2),
                     checkmarkColor: AppColors.primary,
                     labelStyle: TextStyle(
                       color: isSelected
@@ -79,7 +79,7 @@ class ProductFlavorSelector extends StatelessWidget {
                       side: BorderSide(
                         color: isSelected
                             ? AppColors.primary
-                            : Colors.grey.withOpacity(0.3),
+                            : Colors.grey.withValues(alpha: 0.3),
                       ),
                     ),
                   );
@@ -94,7 +94,7 @@ class ProductFlavorSelector extends StatelessWidget {
                   ),
                   label: const Text("نكهة مخصصة"),
                   onPressed: () => _showAddFlavorDialog(context),
-                  backgroundColor: AppColors.primary.withOpacity(0.05),
+                  backgroundColor: AppColors.primary.withValues(alpha: 0.05),
                   shape: const StadiumBorder(
                     side: BorderSide(color: AppColors.primary),
                   ),

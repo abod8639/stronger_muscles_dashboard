@@ -5,12 +5,13 @@ import '../../config/api_config.dart';
 import 'api_base.dart';
 
 class CategoryService extends ApiBase {
-  Future<List<dynamic>> fetchCategories() async {
+  Future<List<dynamic>> fetchCategories({bool tree = false}) async {
     try {
+      final queryParam = tree ? '?tree=1' : '';
       final response = await http
           .get(
             Uri.parse(
-              '${ApiConfigController().baseUrl.value}${ApiConfig.shopCategories}',
+              '${ApiConfigController().baseUrl.value}${ApiConfig.shopCategories}$queryParam',
             ),
             headers: {'Accept': 'application/json'},
           )

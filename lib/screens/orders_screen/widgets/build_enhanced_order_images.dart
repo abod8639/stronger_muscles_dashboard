@@ -29,13 +29,13 @@ Widget buildEnhancedOrderImages(OrderModel order, bool isHovered) {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: isHovered
-                      ? AppColors.primary.withOpacity(0.4)
-                      : Colors.white.withOpacity(0.2),
+                      ? AppColors.primary.withValues(alpha: 0.4)
+                      : Colors.white.withValues(alpha: 0.2),
                   width: 2,
                 ),
                 boxShadow: isHovered ? [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
+                    color: Colors.black.withValues(alpha: 0.2),
                     blurRadius: 6,
                     offset: const Offset(1, 2),
                   ),
@@ -51,15 +51,15 @@ Widget buildEnhancedOrderImages(OrderModel order, bool isHovered) {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Colors.white.withOpacity(0.1),
-                          Colors.white.withOpacity(0.05),
+                          Colors.white.withValues(alpha: 0.1),
+                          Colors.white.withValues(alpha: 0.05),
                         ],
                       ),
                     ),
                     child: Icon(
                       Icons.inventory_2_outlined,
                       size: 18,
-                      color: Colors.white.withOpacity(0.3),
+                      color: Colors.white.withValues(alpha: 0.3),
                     ),
                   ),
                 ),
@@ -79,14 +79,14 @@ Widget buildEnhancedOrderImages(OrderModel order, bool isHovered) {
                 gradient: LinearGradient(
                   colors: [
                     AppColors.primary,
-                    AppColors.primary.withOpacity(0.8),
+                    AppColors.primary.withValues(alpha: 0.8),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.white, width: 1.5),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primary.withOpacity(0.4),
+                    color: AppColors.primary.withValues(alpha: 0.4),
                     blurRadius: 6,
                     offset: const Offset(0, 2),
                   ),

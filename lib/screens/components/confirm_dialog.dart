@@ -37,12 +37,12 @@ class ConfirmDialog extends StatelessWidget {
           borderRadius: BorderRadius.circular(28),
           border: Border.all(
             color: isDark
-                ? Colors.white.withOpacity(0.05)
-                : Colors.grey.withOpacity(0.1),
+                ? Colors.white.withValues(alpha: 0.05)
+                : Colors.grey.withValues(alpha: 0.1),
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
+              color: Colors.black.withValues(alpha: 0.2),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -55,7 +55,7 @@ class ConfirmDialog extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: primaryActionColor.withOpacity(0.1),
+                color: primaryActionColor.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(

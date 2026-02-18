@@ -62,8 +62,12 @@ class ApiService {
   }
 
   // جلب جميع التصنيفات (Public)
-  Future<List<dynamic>> fetchCategories() {
-    return _categoryService.fetchCategories();
+  Future<List<dynamic>> fetchCategories({bool tree = false}) async {
+    try {
+      return await _categoryService.fetchCategories(tree: tree);
+    } catch (e) {
+      rethrow;
+    }
   }
 
   // إضافة تصنيف جديد

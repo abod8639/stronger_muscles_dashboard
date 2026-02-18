@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:stronger_muscles_dashboard/screens/components/buildModernTextField.dart';
-import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/FlavorMultiSelect.dart';
+import 'package:stronger_muscles_dashboard/screens/components/build_modern_text_field.dart';
+import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/flavor_multi_select.dart';
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/availability_switch.dart';
-import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/buildModernDropdown.dart';
+import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/category_tree_selector.dart';
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_size_selector.dart';
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_form_mixin.dart';
 import '../../components/image_gallery_editor.dart';
@@ -115,35 +115,85 @@ class _ProductFormPageState extends State<ProductFormPage>
     return _buildCardWrapper(
       title: 'التسعير والمعلومات',
       icon: Icons.monetization_on_outlined,
-      child: Column(
+            child: Column(
         children: [
           buildModernTextField(
-            controller.textcontrollers['name']!,
-            'اسم المنتج بالكامل',
+            controller.textcontrollers['name_ar']!,
+            'اسم المنتج (AR)',
             Icons.drive_file_rename_outline,
           ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: buildModernTextField(
-                  controller.textcontrollers['price']!,
-                  'السعر الأساسي',
-                  Icons.payments_outlined,
-                  isNumber: true,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: buildModernTextField(
-                  controller.textcontrollers['discount']!,
-                  'سعر الخصم',
-                  Icons.sell_outlined,
-                  isNumber: true,
-                ),
-              ),
-            ],
+          const SizedBox(height: 12),
+          buildModernTextField(
+            controller.textcontrollers['name_en']!,
+            'Product Name (EN)',
+            Icons.translate,
           ),
+          const SizedBox(height: 16),
+          Obx(() {
+            if (controller.productSizes.isEmpty) {
+              return Row(
+                children: [
+                  Expanded(
+                    child: buildModernTextField(
+                      controller.textcontrollers['price']!,
+                      'السعر الأساسي',
+                      Icons.payments_outlined,
+                      isNumber: true,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: buildModernTextField(
+                      controller.textcontrollers['discount']!,
+                      'سعر الخصم',
+                      Icons.sell_outlined,
+                      isNumber: true,
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            return ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: controller.productSizes.length,
+              itemBuilder: (context, index) {
+                final size = controller.productSizes[index];
+                final priceCtrl = controller.sizePriceControllers[size.size];
+                final discountCtrl = controller.sizeDiscountControllers[size.size];
+
+                if (priceCtrl == null || discountCtrl == null) {
+                  return const SizedBox.shrink();
+                }
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: buildModernTextField(
+                          priceCtrl,
+                          'سعر (${size.size})',
+                          Icons.straighten,
+                          isNumber: true,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: buildModernTextField(
+                          discountCtrl,
+                          'خصم (${size.size})',
+                          Icons.sell_outlined,
+                          isNumber: true,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          }),
         ],
       ),
     );
@@ -155,16 +205,11 @@ class _ProductFormPageState extends State<ProductFormPage>
       icon: Icons.category_outlined,
       child: Column(
         children: [
-          CustomModernDropdown<String>(
-            value: _selectedCategoryId ?? "",
-            items: controller.categories
-                .map(
-                  (cat) =>
-                      DropdownMenuItem(value: cat.id, child: Text(cat.name)),
-                )
-                .toList(),
-            onChanged: (val) => setState(() => _selectedCategoryId = val),
-          ),
+          Obx(() => CategoryTreeSelector(
+            categories: controller.categories.toList(),
+            selectedId: _selectedCategoryId,
+            onSelected: (id) => setState(() => _selectedCategoryId = id),
+          )),
           const SizedBox(height: 20),
           Obx(
             () => ProductFlavorSelector(
@@ -177,6 +222,11 @@ class _ProductFormPageState extends State<ProductFormPage>
           Obx(
             () => ProductSizeSelector(
               selectedSizes: controller.productSizes.toList(),
+              selectedIndex: controller.selectedSizeIndex.value,
+              onSelectSize: (index) => controller.selectSize(index),
+              defaultPrice: double.tryParse(
+                      controller.textcontrollers['price']?.text ?? '0') ??
+                  0.0,
               onSelectionChanged: (list) =>
                   controller.productSizes.assignAll(list),
             ),
@@ -254,11 +304,22 @@ class _ProductFormPageState extends State<ProductFormPage>
     return _buildCardWrapper(
       title: 'الوصف التفصيلي',
       icon: Icons.description_outlined,
-      child: buildModernTextField(
-        controller.textcontrollers['desc']!,
-        'أدخل مواصفات المنتج وفوائده...',
-        Icons.text_snippet_outlined,
-        maxLines: 4,
+      child:      Column(
+        children: [
+          buildModernTextField(
+            controller.textcontrollers['desc_ar']!,
+            'الوصف (AR)',
+            Icons.text_snippet_outlined,
+            maxLines: 4,
+          ),
+          const SizedBox(height: 12),
+          buildModernTextField(
+            controller.textcontrollers['desc_en']!,
+            'Description (EN)',
+            Icons.translate,
+            maxLines: 4,
+          ),
+        ],
       ),
     );
   }

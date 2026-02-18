@@ -9,9 +9,11 @@ import '../repositories/index.dart';
 
 class CategoriesController extends GetxController {
   late final TextEditingController idController;
-  late final TextEditingController nameController;
+  late final TextEditingController nameArController;
+  late final TextEditingController nameEnController;
   late final TextEditingController imageController;
-  late final TextEditingController descriptionController;
+  late final TextEditingController descArController;
+  late final TextEditingController descEnController;
   late final TextEditingController iconController;
 
   late final CategoryRepository _categoryRepository;
@@ -20,14 +22,17 @@ class CategoriesController extends GetxController {
   final categories = <CategoryModel>[].obs;
   final filteredCategories = <CategoryModel>[].obs;
   final searchQuery = ''.obs;
+  final RxString parentId = ''.obs;
   final RxBool isActive = true.obs;
 
   @override
   void onInit() {
     idController = TextEditingController();
-    nameController = TextEditingController();
+    nameArController = TextEditingController();
+    nameEnController = TextEditingController();
     imageController = TextEditingController();
-    descriptionController = TextEditingController();
+    descArController = TextEditingController();
+    descEnController = TextEditingController();
     iconController = TextEditingController();
 
     super.onInit();
@@ -46,9 +51,11 @@ class CategoriesController extends GetxController {
   @override
   void onClose() {
     idController.dispose();
-    nameController.dispose();
+    nameArController.dispose();
+    nameEnController.dispose();
     imageController.dispose();
-    descriptionController.dispose();
+    descArController.dispose();
+    descEnController.dispose();
     iconController.dispose();
     super.onClose();
   }
@@ -56,7 +63,7 @@ class CategoriesController extends GetxController {
   Future<void> fetchCategories() async {
     try {
       isLoading.value = true;
-      final data = await _categoryRepository.getCategories();
+      final data = await _categoryRepository.getCategories(tree: true);
       categories.assignAll(data);
       _applySearch();
     } catch (e) {
@@ -77,7 +84,8 @@ class CategoriesController extends GetxController {
       final query = searchQuery.value.toLowerCase();
       filteredCategories.assignAll(
         categories.where((c) {
-          return c.name.toLowerCase().contains(query) ||
+          return c.name.ar.toLowerCase().contains(query) ||
+              c.name.en.toLowerCase().contains(query) ||
               c.id.toLowerCase().contains(query);
         }).toList(),
       );
@@ -89,25 +97,20 @@ class CategoriesController extends GetxController {
       isLoading.value = true;
       final newCategory = await _categoryRepository.addCategory({
         'id': category.id,
-        'name': category.name,
+        'name': category.name.toJson(),
         'image_url': category.imageUrl,
-        'description': category.description,
+        'description': category.description?.toJson(),
         'sort_order': 0,
         'is_active': isActive.value,
-        // 'icon': category.icon,
+        'parent_id': parentId.value.isEmpty ? null : parentId.value,
       });
 
       categories.add(newCategory);
       _applySearch();
 
-      Get.snackbar(
-        'نجاح',
-        'تم إضافة التصنيف بنجاح',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      Get.snackbar('نجاح', 'تم إضافة التصنيف بنجاح');
       return true;
     } catch (e) {
-      print('Error adding category: $e');
       Get.snackbar('خطأ', 'فشل في إضافة التصنيف: $e');
       return false;
     } finally {
@@ -121,12 +124,12 @@ class CategoriesController extends GetxController {
       final updatedCategory = await _categoryRepository.updateCategory(
         category.id,
         {
-          'name': category.name,
+          'name': category.name.toJson(),
           'image_url': category.imageUrl,
-          'description': category.description,
+          'description': category.description?.toJson(),
           'sort_order': 0,
           'is_active': isActive.value,
-          // 'icon': category.icon,
+          'parent_id': parentId.value.isEmpty ? null : parentId.value,
         },
       );
 
@@ -182,19 +185,25 @@ class CategoriesController extends GetxController {
 
   void clearForm() {
     idController.clear();
-    nameController.clear();
+    nameArController.clear();
+    nameEnController.clear();
     imageController.clear();
-    descriptionController.clear();
+    descArController.clear();
+    descEnController.clear();
     iconController.clear();
+    parentId.value = '';
     isActive.value = true;
   }
 
   void prepareFormForEdit(CategoryModel category) {
     idController.text = category.id;
-    nameController.text = category.name;
+    nameArController.text = category.name.ar;
+    nameEnController.text = category.name.en;
     imageController.text = category.imageUrl ?? '';
-    descriptionController.text = category.description ?? '';
-    iconController.text = category.icon ?? '';
+    descArController.text = category.description?.ar ?? '';
+    descEnController.text = category.description?.en ?? '';
+    iconController.text = category.icon?.toString() ?? '';
+    parentId.value = category.parentId ?? '';
     isActive.value = category.isActive;
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:stronger_muscles_dashboard/screens/components/buildModernTextField.dart';
+import 'package:stronger_muscles_dashboard/screens/components/build_modern_text_field.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/screens/components/image_gallery_editor.dart';
 import 'package:stronger_muscles_dashboard/config/app_colors.dart';
@@ -9,10 +9,11 @@ import 'package:stronger_muscles_dashboard/controllers/products_controller.dart'
 import 'package:stronger_muscles_dashboard/models/product_model.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
-import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/FlavorMultiSelect.dart';
+import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/flavor_multi_select.dart';
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/availability_switch.dart';
-import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/buildModernDropdown.dart';
+import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/category_tree_selector.dart';
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_size_selector.dart';
+import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_variant_manager.dart';
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_form_mixin.dart';
 
 class ProductFormSheet extends StatefulWidget {
@@ -76,11 +77,20 @@ class ProductFormSheetState extends State<ProductFormSheet>
                       const SizedBox(height: 24),
                       _buildBasicInfoSection(responsive),
                       const SizedBox(height: 16),
-                      _buildPricingSection(responsive),
-                      const SizedBox(height: 16),
                       _buildStockAndBrandSection(responsive),
                       const SizedBox(height: 16),
+                      _buildPricingSection(responsive),
+
+
+                      const SizedBox(height: 24),
+                      ProductVariantManager(controller: controller),
+                      const SizedBox(height: 16),
+                      _buildSelectorsSection(),
+                      
+                      const SizedBox(height: 16),
                       _buildNutritionalSection(responsive),
+                      const SizedBox(height: 16),
+                      _buildDescriptionSection(controller),
 
                       const SizedBox(height: 24),
                       AvailabilitySwitch(
@@ -98,11 +108,6 @@ class ProductFormSheetState extends State<ProductFormSheet>
                         title: "Background White",
                         isAvailable: controller.isBackgroundWhite,
                       ),
-
-                      const SizedBox(height: 16),
-                      _buildSelectorsSection(),
-                      const SizedBox(height: 16),
-                      _buildDescriptionSection(controller),
                       const SizedBox(height: 100), // مساحة للزر بالأسفل
                     ],
                   ),
@@ -169,35 +174,89 @@ class ProductFormSheetState extends State<ProductFormSheet>
   }
 
   Widget _buildBasicInfoSection(ResponsiveLayout responsive) {
-    return buildModernTextField(
-      controller.textcontrollers['name']!,
-      'اسم المنتج الكامل',
-      Icons.shopping_bag_outlined,
+    return Column(
+      children: [
+        buildModernTextField(
+          controller.textcontrollers['name_ar']!,
+          'اسم المنتج (AR)',
+          Icons.shopping_bag_outlined,
+        ),
+        const SizedBox(height: 12),
+        buildModernTextField(
+          controller.textcontrollers['name_en']!,
+          'Product Name (EN)',
+          Icons.translate,
+        ),
+      ],
     );
   }
 
   Widget _buildPricingSection(ResponsiveLayout responsive) {
-    return Row(
-      children: [
-        Expanded(
-          child: buildModernTextField(
-            controller.textcontrollers['price']!,
-            'السعر الأساسي',
-            Icons.payments_outlined,
-            isNumber: true,
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: buildModernTextField(
-            controller.textcontrollers['discount']!,
-            'سعر الخصم',
-            Icons.sell_outlined,
-            isNumber: true,
-          ),
-        ),
-      ],
-    );
+    return Obx(() {
+      if (controller.productSizes.isEmpty) {
+        return Row(
+          children: [
+            Expanded(
+              child: buildModernTextField(
+                controller.textcontrollers['price']!,
+                'السعر الأساسي',
+                Icons.payments_outlined,
+                isNumber: true,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: buildModernTextField(
+                controller.textcontrollers['discount']!,
+                'سعر الخصم',
+                Icons.sell_outlined,
+                isNumber: true,
+              ),
+            ),
+          ],
+        );
+      }
+
+      return ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: controller.productSizes.length,
+        itemBuilder: (context, index) {
+          final size = controller.productSizes[index];
+          final priceCtrl = controller.sizePriceControllers[size.size];
+          final discountCtrl = controller.sizeDiscountControllers[size.size];
+
+          if (priceCtrl == null || discountCtrl == null) {
+            return const SizedBox.shrink();
+          }
+
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: buildModernTextField(
+                    priceCtrl,
+                    'سعر (${size.size})',
+                    Icons.straighten,
+                    isNumber: true,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: buildModernTextField(
+                    discountCtrl,
+                    'خصم (${size.size})',
+                    Icons.sell_outlined,
+                    isNumber: true,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    });
   }
 
   Widget _buildStockAndBrandSection(ResponsiveLayout responsive) {
@@ -250,6 +309,19 @@ class ProductFormSheetState extends State<ProductFormSheet>
     return Column(
       children: [
         Obx(
+          () => ProductSizeSelector(
+            selectedSizes: controller.productSizes.toList(),
+            selectedIndex: controller.selectedSizeIndex.value,
+            onSelectSize: (index) => controller.selectSize(index),
+            defaultPrice: double.tryParse(
+                    controller.textcontrollers['price']?.text ?? '0') ??
+                0.0,
+            onSelectionChanged: (newList) =>
+                controller.productSizes.assignAll(newList),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Obx(
           () => ProductFlavorSelector(
             selectedFlavors: controller.productFlavors.toList(),
             onSelectionChanged: (newList) =>
@@ -257,33 +329,32 @@ class ProductFormSheetState extends State<ProductFormSheet>
           ),
         ),
         const SizedBox(height: 16),
-        Obx(
-          () => ProductSizeSelector(
-            selectedSizes: controller.productSizes.toList(),
-            onSelectionChanged: (newList) =>
-                controller.productSizes.assignAll(newList),
-          ),
-        ),
-        const SizedBox(height: 16),
-        CustomModernDropdown<String>(
-          value: selectedCategoryId,
-          items: controller.categories
-              .map(
-                (cat) => DropdownMenuItem(value: cat.id, child: Text(cat.name)),
-              )
-              .toList(),
-          onChanged: (val) => setState(() => selectedCategoryId = val),
-        ),
+        Obx(() => CategoryTreeSelector(
+          categories: controller.categories.toList(),
+          selectedId: selectedCategoryId,
+          onSelected: (id) => setState(() => selectedCategoryId = id),
+        )),
       ],
     );
   }
 
   Widget _buildDescriptionSection(ProductsController controller) {
-    return buildModernTextField(
-      controller.textcontrollers['desc']!,
-      'وصف المنتج بالتفصيل...',
-      Icons.description_outlined,
-      maxLines: 8,
+    return Column(
+      children: [
+        buildModernTextField(
+          controller.textcontrollers['desc_ar']!,
+          'وصف المنتج بالتفصيل (AR)',
+          Icons.description_outlined,
+          maxLines: 4,
+        ),
+        const SizedBox(height: 12),
+        buildModernTextField(
+          controller.textcontrollers['desc_en']!,
+          'Detailed Description (EN)',
+          Icons.translate,
+          maxLines: 4,
+        ),
+      ],
     );
   }
 

@@ -51,7 +51,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
           boxShadow: _focusNode.hasFocus
               ? [
                   BoxShadow(
-                    color: AppColors.primary.withOpacity(0.1),
+                    color: AppColors.primary.withValues(alpha: 0.1),
                     blurRadius: 15,
                     spreadRadius: 2,
                   ),
@@ -96,12 +96,12 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: Colors.white.withOpacity(0.05)),
+              borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide(
-                color: AppColors.primary.withOpacity(0.5),
+                color: AppColors.primary.withValues(alpha: 0.5),
                 width: 1.5,
               ),
             ),

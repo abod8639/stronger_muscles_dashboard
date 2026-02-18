@@ -6,9 +6,9 @@ class CategoryRepository {
 
   CategoryRepository(this._apiService);
 
-  Future<List<CategoryModel>> getCategories() async {
+  Future<List<CategoryModel>> getCategories({bool tree = false}) async {
     try {
-      final data = await _apiService.fetchCategories();
+      final data = await _apiService.fetchCategories(tree: tree);
       return data
           .map((json) => CategoryModel.fromJson(json as Map<String, dynamic>))
           .toList();

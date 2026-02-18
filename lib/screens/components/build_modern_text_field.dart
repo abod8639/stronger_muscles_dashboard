@@ -13,6 +13,7 @@ Widget buildModernTextField(
   bool isNumber = false,
   int maxLines = 1,
   TextFieldStyle style = TextFieldStyle.solid,
+  Function(String)? onChanged,
 }) {
   return Builder(
     builder: (context) {
@@ -22,6 +23,7 @@ Widget buildModernTextField(
       final textField = TextField(
         controller: controller,
         enabled: enabled,
+        onChanged: onChanged,
         cursorColor: AppColors.primary,
         keyboardType: isNumber ? TextInputType.number : TextInputType.text,
         maxLines: maxLines,

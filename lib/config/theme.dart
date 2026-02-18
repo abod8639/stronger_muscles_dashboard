@@ -142,7 +142,7 @@ class AppTheme {
 
       cardTheme: CardThemeData(
         elevation: 5,
-        shadowColor: AppColors.primary.withOpacity(0.2), // Neon glow shadow
+        shadowColor: AppColors.primary.withValues(alpha: 0.2), // Neon glow shadow
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         color: AppColors.surfaceDark,
       ),
@@ -152,11 +152,11 @@ class AppTheme {
         fillColor: AppColors.glassLow,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),
+          borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),
+          borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
@@ -195,7 +195,7 @@ class AppTheme {
       iconTheme: const IconThemeData(color: AppColors.textLight),
 
       dividerTheme: DividerThemeData(
-        color: Colors.white.withOpacity(0.1),
+        color: Colors.white.withValues(alpha: 0.1),
         thickness: 1,
       ),
     );

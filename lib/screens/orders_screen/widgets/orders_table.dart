@@ -43,10 +43,10 @@ class OrdersTable extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.015), // خلفية زجاجية خفيفة جداً
+        color: Colors.white.withValues(alpha: 0.015), // خلفية زجاجية خفيفة جداً
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         border: Border(
-          bottom: BorderSide(color: Colors.white.withOpacity(0.05), width: 1),
+          bottom: BorderSide(color: Colors.white.withValues(alpha: 0.05), width: 1),
         ),
       ),
       child: Column(
@@ -116,19 +116,19 @@ class OrdersTable extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.primary.withOpacity(0.15)
-              : Colors.white.withOpacity(0.03),
+              ? AppColors.primary.withValues(alpha: 0.15)
+              : Colors.white.withValues(alpha: 0.03),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected
                 ? AppColors.primary
-                : Colors.white.withOpacity(0.05),
+                : Colors.white.withValues(alpha: 0.05),
             width: 1.2,
           ),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: AppColors.primary.withOpacity(0.2),
+                    color: AppColors.primary.withValues(alpha: 0.2),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -138,7 +138,7 @@ class OrdersTable extends StatelessWidget {
         child: Text(
           label,
           style: TextStyle(
-            color: isSelected ? Colors.white : Colors.white.withOpacity(0.4),
+            color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.4),
             fontSize: 13,
             fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
             letterSpacing: 0.3,
@@ -148,37 +148,87 @@ class OrdersTable extends StatelessWidget {
     );
   }
 
-  Widget _buildSearchBox(OrdersController controller, {bool isFullWidth = false}) {
-    return Container(
-      width: isFullWidth ? double.infinity : 280,
-      height: 40,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.04),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.white.withOpacity(0.08)),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.search_rounded, size: 18, color: Colors.white.withOpacity(0.3)),
-          const SizedBox(width: 10),
-          Expanded(
-            child: TextField(
-              onChanged: (v) => controller.onSearchChanged(v),
-              style: const TextStyle(fontSize: 13, color: Colors.white),
-              decoration: InputDecoration(
-                hintText: 'Search orders...',
-                hintStyle: TextStyle(color: Colors.white.withOpacity(0.2), fontSize: 13),
-                border: InputBorder.none,
-                isDense: true,
-                contentPadding: EdgeInsets.zero,
+Widget _buildSearchBox(
+  OrdersController controller, {
+  bool isFullWidth = false,
+}) {
+  final textController = TextEditingController();
+  final focusNode = FocusNode();
+
+  return StatefulBuilder(
+    builder: (context, setState) {
+      final isFocused = focusNode.hasFocus;
+      final hasText = textController.text.isNotEmpty;
+
+      return AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOut,
+        width: isFullWidth ? double.infinity : 320,
+        height: 46,
+        padding: const EdgeInsets.symmetric(horizontal: 14),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(isFocused ? 0.07 : 0.04),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: isFocused
+                ? Colors.white.withValues(alpha: 0.18)
+                : Colors.white.withValues(alpha: 0.08),
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              Icons.search_rounded,
+              size: 20,
+              color: Colors.white.withOpacity(isFocused ? 0.9 : 0.5),
+            ),
+            const SizedBox(width: 12),
+
+            Expanded(
+              child: TextField(
+                controller: textController,
+                focusNode: focusNode,
+                cursorColor: Colors.white,
+                onChanged: (v) {
+                  controller.onSearchChanged(v);
+                  setState(() {});
+                },
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.white,
+                ),
+                decoration: InputDecoration(
+                  hintText: 'Search orders...',
+                  hintStyle: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.35),
+                    fontSize: 14,
+                  ),
+                  border: InputBorder.none,
+                  isDense: true,
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
+
+            if (hasText)
+              GestureDetector(
+                onTap: () {
+                  textController.clear();
+                  controller.onSearchChanged('');
+                  setState(() {});
+                },
+                child: Icon(
+                  Icons.close_rounded,
+                  size: 18,
+                  color: Colors.white.withValues(alpha: 0.6),
+                ),
+              ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
  
   Widget _buildTableContent(
     OrdersController controller,
@@ -192,7 +242,7 @@ class OrdersTable extends StatelessWidget {
           // Column Headers
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
-            color: Colors.white.withOpacity(0.02),
+            color: Colors.white.withValues(alpha: 0.02),
             child: Row(
               children: [
                 _buildColumnHeader('ORDER ID', flex: 3),
@@ -218,7 +268,7 @@ class OrdersTable extends StatelessWidget {
               padding: const EdgeInsets.all(40.0),
               child: Text(
                 'No orders found',
-                style: TextStyle(color: Colors.white.withOpacity(0.5)),
+                style: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
               ),
             ),
         ],
@@ -249,7 +299,7 @@ class OrdersTable extends StatelessWidget {
         label,
         textAlign: textAlign,
         style: TextStyle(
-          color: Colors.white.withOpacity(0.3),
+          color: Colors.white.withValues(alpha: 0.3),
           fontSize: 11,
           fontWeight: FontWeight.bold,
           letterSpacing: 1,
@@ -265,7 +315,7 @@ class OrdersTable extends StatelessWidget {
     bool isMobile = MediaQuery.of(context).size.width < 600;
         return InkWell(
           onTap: () => Get.to(() => OrderDetailsScreen(order: order)),
-          hoverColor: Colors.white.withOpacity(0.02),
+          hoverColor: Colors.white.withValues(alpha: 0.02),
           child: Container(
             padding: EdgeInsets.symmetric(
               horizontal: isMobile ? 16 : 24, 
@@ -273,7 +323,7 @@ class OrdersTable extends StatelessWidget {
             ),
             decoration: BoxDecoration(
               border: Border(
-                bottom: BorderSide(color: Colors.white.withOpacity(0.05), width: 1),
+                bottom: BorderSide(color: Colors.white.withValues(alpha: 0.05), width: 1),
               ),
             ),
             // التبديل بين Column للهاتف و Row للكمبيوتر
@@ -311,7 +361,7 @@ class OrdersTable extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 12),
-        Divider(color: Colors.white.withOpacity(0.05), thickness: 1),
+        Divider(color: Colors.white.withValues(alpha: 0.05), thickness: 1),
         const SizedBox(height: 8),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -352,7 +402,7 @@ class OrdersTable extends StatelessWidget {
               Text(order.userName, maxLines: 1, overflow: TextOverflow.ellipsis,
                   style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
               Text(order.userEmail, maxLines: 1, overflow: TextOverflow.ellipsis,
-                  style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 11)),
+                  style: TextStyle(color: Colors.white.withValues(alpha: 0.3), fontSize: 11)),
             ],
           ),
         ),
@@ -362,7 +412,7 @@ class OrdersTable extends StatelessWidget {
 
   Widget _buildDate(OrderModel order, DateFormat dateFormat) {
     return Text(dateFormat.format(order.orderDate),
-        style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12));
+        style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 12));
   }
 
   Widget _buildPrice(OrderModel order) {
@@ -385,11 +435,11 @@ class OrdersTable extends StatelessWidget {
         shape: BoxShape.circle,
         gradient: LinearGradient(
           colors: [
-            AppColors.primary.withOpacity(0.4),
-            AppColors.primary.withOpacity(0.1),
+            AppColors.primary.withValues(alpha: 0.4),
+            AppColors.primary.withValues(alpha: 0.1),
           ],
         ),
-        border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 1),
       ),
       child: Center(
         child: order.userPhoto != null
@@ -420,13 +470,13 @@ class OrdersTable extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.02),
+        color: Colors.white.withValues(alpha: 0.02),
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(20),
           bottomRight: Radius.circular(20),
         ),
         border: Border(
-          top: BorderSide(color: Colors.white.withOpacity(0.05)),
+          top: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
         ),
       ),
       child: Obx(() {
@@ -436,7 +486,7 @@ class OrdersTable extends StatelessWidget {
         // النص الإحصائي
         Widget statsText = Text(
           'Showing $start to $end of ${controller.filteredOrders.length} entries',
-          style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12),
+          style: TextStyle(color: Colors.white.withValues(alpha: 0.4), fontSize: 12),
         );
 
         // أزرار التنقل
@@ -483,7 +533,7 @@ class OrdersTable extends StatelessWidget {
           if (i == 2 || i == controller.totalPages - 1) {
             pages.add(Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: Text('...', style: TextStyle(color: Colors.white.withOpacity(0.2))),
+              child: Text('...', style: TextStyle(color: Colors.white.withValues(alpha: 0.2))),
             ));
           }
           continue;
@@ -506,16 +556,16 @@ class OrdersTable extends StatelessWidget {
         height: 32,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary : Colors.white.withOpacity(0.05),
+          color: isSelected ? AppColors.primary : Colors.white.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: isSelected ? AppColors.primary : Colors.white.withOpacity(0.1),
+            color: isSelected ? AppColors.primary : Colors.white.withValues(alpha: 0.1),
           ),
         ),
         child: Text(
           '$pageNum',
           style: TextStyle(
-            color: isSelected ? Colors.white : Colors.white.withOpacity(0.6),
+            color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.6),
             fontSize: 12,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
           ),
@@ -540,7 +590,7 @@ class OrdersTable extends StatelessWidget {
         child: Icon(
           icon,
           size: 20,
-          color: isDisabled ? Colors.white10 : Colors.white.withOpacity(0.7),
+          color: isDisabled ? Colors.white10 : Colors.white.withValues(alpha: 0.7),
         ),
       ),
     );

@@ -23,9 +23,9 @@ mixin _$CategoryModel {
   @HiveField(0)
   String get id => throw _privateConstructorUsedError;
   @HiveField(1)
-  String get name => throw _privateConstructorUsedError;
+  TranslatableString get name => throw _privateConstructorUsedError;
   @HiveField(2)
-  String? get description => throw _privateConstructorUsedError;
+  TranslatableString? get description => throw _privateConstructorUsedError;
   @HiveField(3)
   String? get imageUrl => throw _privateConstructorUsedError;
   @HiveField(4)
@@ -34,6 +34,11 @@ mixin _$CategoryModel {
   bool get isActive => throw _privateConstructorUsedError;
   @HiveField(6)
   dynamic get icon => throw _privateConstructorUsedError;
+  @JsonKey(name: 'parentId')
+  @HiveField(7)
+  String? get parentId => throw _privateConstructorUsedError;
+  @HiveField(8)
+  List<CategoryModel> get children => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -49,12 +54,17 @@ abstract class $CategoryModelCopyWith<$Res> {
   @useResult
   $Res call(
       {@HiveField(0) String id,
-      @HiveField(1) String name,
-      @HiveField(2) String? description,
+      @HiveField(1) TranslatableString name,
+      @HiveField(2) TranslatableString? description,
       @HiveField(3) String? imageUrl,
       @HiveField(4) int sortOrder,
       @HiveField(5) bool isActive,
-      @HiveField(6) dynamic icon});
+      @HiveField(6) dynamic icon,
+      @JsonKey(name: 'parentId') @HiveField(7) String? parentId,
+      @HiveField(8) List<CategoryModel> children});
+
+  $TranslatableStringCopyWith<$Res> get name;
+  $TranslatableStringCopyWith<$Res>? get description;
 }
 
 /// @nodoc
@@ -77,6 +87,8 @@ class _$CategoryModelCopyWithImpl<$Res, $Val extends CategoryModel>
     Object? sortOrder = null,
     Object? isActive = null,
     Object? icon = freezed,
+    Object? parentId = freezed,
+    Object? children = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -86,11 +98,11 @@ class _$CategoryModelCopyWithImpl<$Res, $Val extends CategoryModel>
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
-              as String,
+              as TranslatableString,
       description: freezed == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as TranslatableString?,
       imageUrl: freezed == imageUrl
           ? _value.imageUrl
           : imageUrl // ignore: cast_nullable_to_non_nullable
@@ -107,7 +119,35 @@ class _$CategoryModelCopyWithImpl<$Res, $Val extends CategoryModel>
           ? _value.icon
           : icon // ignore: cast_nullable_to_non_nullable
               as dynamic,
+      parentId: freezed == parentId
+          ? _value.parentId
+          : parentId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      children: null == children
+          ? _value.children
+          : children // ignore: cast_nullable_to_non_nullable
+              as List<CategoryModel>,
     ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $TranslatableStringCopyWith<$Res> get name {
+    return $TranslatableStringCopyWith<$Res>(_value.name, (value) {
+      return _then(_value.copyWith(name: value) as $Val);
+    });
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $TranslatableStringCopyWith<$Res>? get description {
+    if (_value.description == null) {
+      return null;
+    }
+
+    return $TranslatableStringCopyWith<$Res>(_value.description!, (value) {
+      return _then(_value.copyWith(description: value) as $Val);
+    });
   }
 }
 
@@ -121,12 +161,19 @@ abstract class _$$CategoryModelImplCopyWith<$Res>
   @useResult
   $Res call(
       {@HiveField(0) String id,
-      @HiveField(1) String name,
-      @HiveField(2) String? description,
+      @HiveField(1) TranslatableString name,
+      @HiveField(2) TranslatableString? description,
       @HiveField(3) String? imageUrl,
       @HiveField(4) int sortOrder,
       @HiveField(5) bool isActive,
-      @HiveField(6) dynamic icon});
+      @HiveField(6) dynamic icon,
+      @JsonKey(name: 'parentId') @HiveField(7) String? parentId,
+      @HiveField(8) List<CategoryModel> children});
+
+  @override
+  $TranslatableStringCopyWith<$Res> get name;
+  @override
+  $TranslatableStringCopyWith<$Res>? get description;
 }
 
 /// @nodoc
@@ -147,6 +194,8 @@ class __$$CategoryModelImplCopyWithImpl<$Res>
     Object? sortOrder = null,
     Object? isActive = null,
     Object? icon = freezed,
+    Object? parentId = freezed,
+    Object? children = null,
   }) {
     return _then(_$CategoryModelImpl(
       id: null == id
@@ -156,11 +205,11 @@ class __$$CategoryModelImplCopyWithImpl<$Res>
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
-              as String,
+              as TranslatableString,
       description: freezed == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as TranslatableString?,
       imageUrl: freezed == imageUrl
           ? _value.imageUrl
           : imageUrl // ignore: cast_nullable_to_non_nullable
@@ -177,13 +226,21 @@ class __$$CategoryModelImplCopyWithImpl<$Res>
           ? _value.icon
           : icon // ignore: cast_nullable_to_non_nullable
               as dynamic,
+      parentId: freezed == parentId
+          ? _value.parentId
+          : parentId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      children: null == children
+          ? _value._children
+          : children // ignore: cast_nullable_to_non_nullable
+              as List<CategoryModel>,
     ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
-class _$CategoryModelImpl implements _CategoryModel {
+class _$CategoryModelImpl extends _CategoryModel {
   const _$CategoryModelImpl(
       {@HiveField(0) required this.id,
       @HiveField(1) required this.name,
@@ -191,7 +248,11 @@ class _$CategoryModelImpl implements _CategoryModel {
       @HiveField(3) this.imageUrl,
       @HiveField(4) this.sortOrder = 0,
       @HiveField(5) this.isActive = true,
-      @HiveField(6) this.icon});
+      @HiveField(6) this.icon,
+      @JsonKey(name: 'parentId') @HiveField(7) this.parentId,
+      @HiveField(8) final List<CategoryModel> children = const []})
+      : _children = children,
+        super._();
 
   factory _$CategoryModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$CategoryModelImplFromJson(json);
@@ -201,10 +262,10 @@ class _$CategoryModelImpl implements _CategoryModel {
   final String id;
   @override
   @HiveField(1)
-  final String name;
+  final TranslatableString name;
   @override
   @HiveField(2)
-  final String? description;
+  final TranslatableString? description;
   @override
   @HiveField(3)
   final String? imageUrl;
@@ -219,10 +280,23 @@ class _$CategoryModelImpl implements _CategoryModel {
   @override
   @HiveField(6)
   final dynamic icon;
+  @override
+  @JsonKey(name: 'parentId')
+  @HiveField(7)
+  final String? parentId;
+  final List<CategoryModel> _children;
+  @override
+  @JsonKey()
+  @HiveField(8)
+  List<CategoryModel> get children {
+    if (_children is EqualUnmodifiableListView) return _children;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_children);
+  }
 
   @override
   String toString() {
-    return 'CategoryModel(id: $id, name: $name, description: $description, imageUrl: $imageUrl, sortOrder: $sortOrder, isActive: $isActive, icon: $icon)';
+    return 'CategoryModel(id: $id, name: $name, description: $description, imageUrl: $imageUrl, sortOrder: $sortOrder, isActive: $isActive, icon: $icon, parentId: $parentId, children: $children)';
   }
 
   @override
@@ -240,13 +314,25 @@ class _$CategoryModelImpl implements _CategoryModel {
                 other.sortOrder == sortOrder) &&
             (identical(other.isActive, isActive) ||
                 other.isActive == isActive) &&
-            const DeepCollectionEquality().equals(other.icon, icon));
+            const DeepCollectionEquality().equals(other.icon, icon) &&
+            (identical(other.parentId, parentId) ||
+                other.parentId == parentId) &&
+            const DeepCollectionEquality().equals(other._children, _children));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, description, imageUrl,
-      sortOrder, isActive, const DeepCollectionEquality().hash(icon));
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      name,
+      description,
+      imageUrl,
+      sortOrder,
+      isActive,
+      const DeepCollectionEquality().hash(icon),
+      parentId,
+      const DeepCollectionEquality().hash(_children));
 
   @JsonKey(ignore: true)
   @override
@@ -262,15 +348,18 @@ class _$CategoryModelImpl implements _CategoryModel {
   }
 }
 
-abstract class _CategoryModel implements CategoryModel {
+abstract class _CategoryModel extends CategoryModel {
   const factory _CategoryModel(
       {@HiveField(0) required final String id,
-      @HiveField(1) required final String name,
-      @HiveField(2) final String? description,
+      @HiveField(1) required final TranslatableString name,
+      @HiveField(2) final TranslatableString? description,
       @HiveField(3) final String? imageUrl,
       @HiveField(4) final int sortOrder,
       @HiveField(5) final bool isActive,
-      @HiveField(6) final dynamic icon}) = _$CategoryModelImpl;
+      @HiveField(6) final dynamic icon,
+      @JsonKey(name: 'parentId') @HiveField(7) final String? parentId,
+      @HiveField(8) final List<CategoryModel> children}) = _$CategoryModelImpl;
+  const _CategoryModel._() : super._();
 
   factory _CategoryModel.fromJson(Map<String, dynamic> json) =
       _$CategoryModelImpl.fromJson;
@@ -280,10 +369,10 @@ abstract class _CategoryModel implements CategoryModel {
   String get id;
   @override
   @HiveField(1)
-  String get name;
+  TranslatableString get name;
   @override
   @HiveField(2)
-  String? get description;
+  TranslatableString? get description;
   @override
   @HiveField(3)
   String? get imageUrl;
@@ -296,6 +385,13 @@ abstract class _CategoryModel implements CategoryModel {
   @override
   @HiveField(6)
   dynamic get icon;
+  @override
+  @JsonKey(name: 'parentId')
+  @HiveField(7)
+  String? get parentId;
+  @override
+  @HiveField(8)
+  List<CategoryModel> get children;
   @override
   @JsonKey(ignore: true)
   _$$CategoryModelImplCopyWith<_$CategoryModelImpl> get copyWith =>

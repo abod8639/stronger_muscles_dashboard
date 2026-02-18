@@ -38,13 +38,13 @@ class CustomModernDropdown<T> extends StatelessWidget {
         dropdownColor: AppColorsExtended.darkBg.withAlpha(250),
         icon: Icon(
           Icons.keyboard_arrow_down,
-          color: AppColors.primary.withOpacity(0.7),
+          color: AppColors.primary.withValues(alpha: 0.7),
         ),
         decoration: InputDecoration(
           labelText: label,
           prefixIcon: Icon(
             prefixIcon,
-            color: AppColors.primary.withOpacity(0.7),
+            color: AppColors.primary.withValues(alpha: 0.7),
             size: 24,
           ),
           filled: true,
@@ -56,7 +56,7 @@ class CustomModernDropdown<T> extends StatelessWidget {
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide(
-              color: AppColors.primary.withOpacity(0.15),
+              color: AppColors.primary.withValues(alpha: 0.15),
               width: 1.5,
             ),
           ),
@@ -65,7 +65,7 @@ class CustomModernDropdown<T> extends StatelessWidget {
             borderSide: const BorderSide(color: AppColors.primary, width: 2),
           ),
           labelStyle: TextStyle(
-            color: isDark ? Colors.white70 : AppColors.primary.withOpacity(0.6),
+            color: isDark ? Colors.white70 : AppColors.primary.withValues(alpha: 0.6),
             fontSize: 16,
           ),
           contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),

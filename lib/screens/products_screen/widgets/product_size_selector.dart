@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 
+import 'package:stronger_muscles_dashboard/models/product_model.dart';
+
 class ProductSizeSelector extends StatelessWidget {
-  final List<String> selectedSizes;
-  final Function(List<String>) onSelectionChanged;
+  final List<ProductSize> selectedSizes;
+  final Function(List<ProductSize>) onSelectionChanged;
+  final Function(int) onSelectSize;
+  final int selectedIndex;
+  final double defaultPrice;
 
   final List<String> availableSizes = [
     '500g',
@@ -29,23 +34,49 @@ class ProductSizeSelector extends StatelessWidget {
     super.key,
     required this.selectedSizes,
     required this.onSelectionChanged,
+    required this.onSelectSize,
+    required this.selectedIndex,
+    this.defaultPrice = 0.0,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final combinedSizes = {...availableSizes, ...selectedSizes}.toList();
-
     return GlassContainer(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Center(
-            child: Text(
-              "الأحجام / الأوزان المتوفرة لهذا المنتج",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "الأحجام / الأوزان المختارة",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              ),
+              PopupMenuButton<String>(
+                icon: const Icon(Icons.add_circle_outline, color: AppColors.primary),
+                tooltip: "إضافة من القائمة",
+                onSelected: (String sizeName) {
+                  if (!selectedSizes.any((s) => s.size == sizeName)) {
+                    List<ProductSize> updatedList = List.from(selectedSizes);
+                    updatedList.add(ProductSize(size: sizeName, price: defaultPrice));
+                    onSelectionChanged(updatedList);
+                    onSelectSize(updatedList.length - 1);
+                  }
+                },
+                itemBuilder: (BuildContext context) {
+                  return availableSizes
+                      .where((size) => !selectedSizes.any((s) => s.size == size))
+                      .map((String size) {
+                    return PopupMenuItem<String>(
+                      value: size,
+                      child: Text(size),
+                    );
+                  }).toList();
+                },
+              ),
+            ],
           ),
           const SizedBox(height: 10),
           GlassContainer(
@@ -55,28 +86,35 @@ class ProductSizeSelector extends StatelessWidget {
               spacing: 8,
               runSpacing: 8,
               children: [
-                // عرض الأحجام كـ FilterChips
-                ...combinedSizes.map((size) {
-                  final isSelected = selectedSizes.contains(size);
-                  return FilterChip(
-                    label: Text(size),
-                    selected: isSelected,
+                // عرض الأحجام المختارة فقط
+                ...selectedSizes.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final sizeObj = entry.value;
+                  final isActive = index == selectedIndex;
+
+                  return InputChip(
+                    avatar: isActive 
+                        ? const Icon(Icons.check_circle, size: 16, color: AppColors.primary)
+                        : null,
+                    label: Text(sizeObj.size),
+                    selected: isActive,
                     onSelected: (bool selected) {
-                      List<String> updatedList = List.from(selectedSizes);
-                      if (selected) {
-                        updatedList.add(size);
-                      } else {
-                        updatedList.remove(size);
-                      }
-                      onSelectionChanged(updatedList);
+                      onSelectSize(index);
                     },
-                    selectedColor: AppColors.primary.withOpacity(0.2),
-                    checkmarkColor: AppColors.primary,
+                    onDeleted: () {
+                      List<ProductSize> updatedList = List.from(selectedSizes);
+                      updatedList.removeAt(index);
+                      onSelectionChanged(updatedList);
+                      onSelectSize(-1);
+                    },
+                    deleteIconColor: Colors.redAccent,
+                    selectedColor: AppColors.primary.withValues(alpha: 0.1),
+                    showCheckmark: false,
                     labelStyle: TextStyle(
-                      color: isSelected
+                      color: isActive
                           ? AppColors.primary
                           : (isDark ? Colors.white70 : Colors.black87),
-                      fontWeight: isSelected
+                      fontWeight: isActive
                           ? FontWeight.bold
                           : FontWeight.normal,
                       fontSize: 12,
@@ -84,9 +122,10 @@ class ProductSizeSelector extends StatelessWidget {
                     backgroundColor: Colors.transparent,
                     shape: StadiumBorder(
                       side: BorderSide(
-                        color: isSelected
+                        color: isActive
                             ? AppColors.primary
-                            : Colors.grey.withOpacity(0.3),
+                            : Colors.grey.withValues(alpha: 0.3),
+                        width: isActive ? 2 : 1,
                       ),
                     ),
                   );
@@ -95,13 +134,13 @@ class ProductSizeSelector extends StatelessWidget {
                 // زر إضافة حجم مخصص (ActionChip)
                 ActionChip(
                   avatar: const Icon(
-                    Icons.add,
+                    Icons.edit_note,
                     size: 16,
                     color: AppColors.primary,
                   ),
                   label: const Text("حجم مخصص", style: TextStyle(fontSize: 12)),
                   onPressed: () => _showAddSizeDialog(context),
-                  backgroundColor: AppColors.primary.withOpacity(0.05),
+                  backgroundColor: AppColors.primary.withValues(alpha: 0.05),
                   shape: const StadiumBorder(
                     side: BorderSide(color: AppColors.primary),
                   ),
@@ -116,16 +155,17 @@ class ProductSizeSelector extends StatelessWidget {
 
   // نافذة إضافة حجم جديد
   void _showAddSizeDialog(BuildContext context) {
-    final TextEditingController controller = TextEditingController();
+    final TextEditingController sizeController = TextEditingController();
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text("إضافة حجم/وزن جديد", style: TextStyle(fontSize: 16)),
         content: TextField(
-          controller: controller,
+          controller: sizeController,
           autofocus: true,
           decoration: const InputDecoration(
             hintText: "مثلاً: 1.5kg أو 180 Tabs",
+            labelText: "الحجم",
             border: OutlineInputBorder(),
           ),
         ),
@@ -136,9 +176,15 @@ class ProductSizeSelector extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              final newSize = controller.text.trim();
-              if (newSize.isNotEmpty && !selectedSizes.contains(newSize)) {
-                onSelectionChanged([...selectedSizes, newSize]);
+              final newSize = sizeController.text.trim();
+              if (newSize.isNotEmpty &&
+                  !selectedSizes.any((s) => s.size == newSize)) {
+                final updatedList = [
+                  ...selectedSizes,
+                  ProductSize(size: newSize, price: defaultPrice)
+                ];
+                onSelectionChanged(updatedList);
+                onSelectSize(updatedList.length - 1);
               }
               Navigator.pop(context);
             },
@@ -149,3 +195,5 @@ class ProductSizeSelector extends StatelessWidget {
     );
   }
 }
+
+

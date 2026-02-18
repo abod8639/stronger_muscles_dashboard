@@ -17,13 +17,13 @@ Widget buildPriceSection(OrderModel order) {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              AppColors.primary.withOpacity(0.15),
-              AppColors.primary.withOpacity(0.05),
+              AppColors.primary.withValues(alpha: 0.15),
+              AppColors.primary.withValues(alpha: 0.05),
             ],
           ),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: AppColors.primary.withOpacity(0.3),
+            color: AppColors.primary.withValues(alpha: 0.3),
             width: 1.5,
           ),
         ),
@@ -35,7 +35,7 @@ Widget buildPriceSection(OrderModel order) {
               'الإجمالي',
               style: TextStyle(
                 fontSize: 10,
-                color: Colors.white.withOpacity(0.5),
+                color: Colors.white.withValues(alpha: 0.5),
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -59,7 +59,7 @@ Widget buildPriceSection(OrderModel order) {
                     'ريال',
                     style: TextStyle(
                       fontSize: 11,
-                      color: AppColors.primary.withOpacity(0.7),
+                      color: AppColors.primary.withValues(alpha: 0.7),
                       fontWeight: FontWeight.bold,
                     ),
                   ),

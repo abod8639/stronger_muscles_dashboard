@@ -40,9 +40,9 @@ class _LineChartWidgetState extends State<LineChartWidget> {
       gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [Colors.white.withOpacity(0.1), Colors.white.withOpacity(0.02)],
+        colors: [Colors.white.withValues(alpha: 0.1), Colors.white.withValues(alpha: 0.02)],
       ),
-      border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
+      border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 1),
       child: Padding(
         padding: EdgeInsets.all(responsive.defaultPadding.left),
         child: Column(
@@ -81,7 +81,7 @@ class _LineChartWidgetState extends State<LineChartWidget> {
                     horizontalInterval: widget.maxY / 5,
                     getDrawingHorizontalLine: (value) {
                       return FlLine(
-                        color: Colors.white.withOpacity(0.05),
+                        color: Colors.white.withValues(alpha: 0.05),
                         strokeWidth: 1,
                         dashArray: [5, 5],
                       );
@@ -162,8 +162,8 @@ class _LineChartWidgetState extends State<LineChartWidget> {
                         show: true,
                         gradient: LinearGradient(
                           colors: [
-                            widget.gradientColor.withOpacity(0.3),
-                            widget.gradientColor.withOpacity(0.0),
+                            widget.gradientColor.withValues(alpha: 0.3),
+                            widget.gradientColor.withValues(alpha: 0.0),
                           ],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,

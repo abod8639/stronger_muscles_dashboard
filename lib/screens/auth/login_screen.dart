@@ -80,7 +80,7 @@ class LoginScreen extends StatelessWidget {
         padding: const EdgeInsets.all(32),
         opacity: 0.08,
         border: Border.all(
-          color: Colors.white.withOpacity(0.2),
+          color: Colors.white.withValues(alpha: 0.2),
           width: 1.5,
         ),
         child: Column(
@@ -107,11 +107,11 @@ class LoginScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.12),
+        color: Colors.white.withValues(alpha: 0.12),
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
+            color: AppColors.primary.withValues(alpha: 0.3),
             blurRadius: 15,
             spreadRadius: 2,
           ),
@@ -141,7 +141,7 @@ class LoginScreen extends StatelessWidget {
         Text(
           'مرحباً بك في لوحة تحكم Stronger Muscles',
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 13, color: Colors.white.withOpacity(0.6)),
+          style: TextStyle(fontSize: 13, color: Colors.white.withValues(alpha: 0.6)),
         ),
       ],
     );
@@ -191,7 +191,7 @@ class LoginScreen extends StatelessWidget {
                     value: controller.rememberMe.value,
                     onChanged: (v) => controller.rememberMe.value = v!,
                     activeColor: AppColors.primary,
-                    side: BorderSide(color: Colors.white.withOpacity(0.4)),
+                    side: BorderSide(color: Colors.white.withValues(alpha: 0.4)),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4),
                     ),
@@ -201,7 +201,7 @@ class LoginScreen extends StatelessWidget {
                 Text(
                   'تذكرني',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
+                    color: Colors.white.withValues(alpha: 0.8),
                     fontSize: 13,
                   ),
                 ),
@@ -214,7 +214,7 @@ class LoginScreen extends StatelessWidget {
           child: Text(
             'نسيت كلمة المرور؟',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.7),
+              color: Colors.white.withValues(alpha: 0.7),
               fontSize: 12,
               decoration: TextDecoration.underline,
             ),
@@ -240,7 +240,7 @@ class LoginScreen extends StatelessWidget {
       children: [
         Text(
           'ليس لديك حساب؟ ',
-          style: TextStyle(color: Colors.white.withOpacity(0.6)),
+          style: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
         ),
         TextButton(
           onPressed: () => Get.to(

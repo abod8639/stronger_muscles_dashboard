@@ -80,8 +80,8 @@ class _OrderListTileState extends State<OrderListTile>
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
             color: _isHovered
-                ? AppColors.primary.withOpacity(0.3)
-                : Colors.white.withOpacity(0.08),
+                ? AppColors.primary.withValues(alpha: 0.3)
+                : Colors.white.withValues(alpha: 0.08),
             width: _isHovered ? 1.5 : 1,
           ),
           child: InkWell(

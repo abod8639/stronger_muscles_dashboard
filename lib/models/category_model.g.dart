@@ -18,19 +18,21 @@ class CategoryModelAdapter extends TypeAdapter<CategoryModel> {
     };
     return CategoryModel(
       id: fields[0] as String,
-      name: fields[1] as String,
-      description: fields[2] as String?,
+      name: fields[1] as TranslatableString,
+      description: fields[2] as TranslatableString?,
       imageUrl: fields[3] as String?,
       sortOrder: fields[4] as int,
       isActive: fields[5] as bool,
       icon: fields[6] as dynamic,
+      parentId: fields[7] as String?,
+      children: (fields[8] as List).cast<CategoryModel>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, CategoryModel obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -44,7 +46,11 @@ class CategoryModelAdapter extends TypeAdapter<CategoryModel> {
       ..writeByte(5)
       ..write(obj.isActive)
       ..writeByte(6)
-      ..write(obj.icon);
+      ..write(obj.icon)
+      ..writeByte(7)
+      ..write(obj.parentId)
+      ..writeByte(8)
+      ..write(obj.children);
   }
 
   @override
@@ -65,12 +71,20 @@ class CategoryModelAdapter extends TypeAdapter<CategoryModel> {
 _$CategoryModelImpl _$$CategoryModelImplFromJson(Map<String, dynamic> json) =>
     _$CategoryModelImpl(
       id: json['id'] as String,
-      name: json['name'] as String,
-      description: json['description'] as String?,
+      name: TranslatableString.fromJson(json['name'] as Map<String, dynamic>),
+      description: json['description'] == null
+          ? null
+          : TranslatableString.fromJson(
+              json['description'] as Map<String, dynamic>),
       imageUrl: json['imageUrl'] as String?,
       sortOrder: (json['sortOrder'] as num?)?.toInt() ?? 0,
       isActive: json['isActive'] as bool? ?? true,
       icon: json['icon'],
+      parentId: json['parentId'] as String?,
+      children: (json['children'] as List<dynamic>?)
+              ?.map((e) => CategoryModel.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
     );
 
 Map<String, dynamic> _$$CategoryModelImplToJson(_$CategoryModelImpl instance) =>
@@ -82,4 +96,6 @@ Map<String, dynamic> _$$CategoryModelImplToJson(_$CategoryModelImpl instance) =>
       'sortOrder': instance.sortOrder,
       'isActive': instance.isActive,
       'icon': instance.icon,
+      'parentId': instance.parentId,
+      'children': instance.children,
     };

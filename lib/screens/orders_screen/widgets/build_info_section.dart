@@ -15,9 +15,9 @@ Widget buildInfoSection(OrderModel order) {
           vertical: responsive.isDesktop ? 8 : 4,
         ),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.03),
+          color: Colors.white.withValues(alpha: 0.03),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white.withOpacity(0.05)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
         ),
         child: Row(
           children: [
@@ -31,7 +31,7 @@ Widget buildInfoSection(OrderModel order) {
             Container(
               width: 1,
               height: 20,
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.white.withValues(alpha: 0.1),
             ),
             const SizedBox(width: 12),
             Expanded(

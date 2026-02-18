@@ -7,7 +7,7 @@ Widget buildSection({required Widget child, EdgeInsets? padding}) {
     padding: padding ?? const EdgeInsets.all(16),
     decoration: BoxDecoration(
       color: Get.isDarkMode
-          ? Colors.white.withOpacity(0.05)
+          ? Colors.white.withValues(alpha: 0.05)
           : Colors.grey.shade50,
       borderRadius: BorderRadius.circular(12),
       border: Border.all(

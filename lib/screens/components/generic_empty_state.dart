@@ -33,14 +33,14 @@ class GenericEmptyState extends StatelessWidget {
                 gradient: showGradient
                     ? LinearGradient(
                         colors: [
-                          Colors.white.withOpacity(0.1),
-                          Colors.white.withOpacity(0.02),
+                          Colors.white.withValues(alpha: 0.1),
+                          Colors.white.withValues(alpha: 0.02),
                         ],
                       )
                     : null,
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, size: 80, color: Colors.white.withOpacity(0.3)),
+              child: Icon(icon, size: 80, color: Colors.white.withValues(alpha: 0.3)),
             ),
             const SizedBox(height: 24),
             Text(
@@ -57,7 +57,7 @@ class GenericEmptyState extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.white.withOpacity(0.6),
+                color: Colors.white.withValues(alpha: 0.6),
               ),
             ),
             if (onAction != null && actionLabel != null) ...[

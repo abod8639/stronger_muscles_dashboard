@@ -9,7 +9,7 @@ Widget buildInfoItem({
   return Row(
     mainAxisSize: MainAxisSize.min,
     children: [
-      Icon(icon, size: 14, color: AppColors.primary.withOpacity(0.7)),
+      Icon(icon, size: 14, color: AppColors.primary.withValues(alpha: 0.7)),
       const SizedBox(width: 6),
       Flexible(
         child: Column(
@@ -29,7 +29,7 @@ Widget buildInfoItem({
               sublabel,
               style: TextStyle(
                 fontSize: 9,
-                color: Colors.white.withOpacity(0.4),
+                color: Colors.white.withValues(alpha: 0.4),
                 fontWeight: FontWeight.w600,
               ),
             ),

@@ -8,9 +8,9 @@ Widget buildPaymentBadge(OrderModel order) {
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
     decoration: BoxDecoration(
-      color: color.withOpacity(0.15),
+      color: color.withValues(alpha: 0.15),
       borderRadius: BorderRadius.circular(6),
-      border: Border.all(color: color.withOpacity(0.3), width: 1),
+      border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
     ),
     child: Row(
       mainAxisSize: MainAxisSize.min,

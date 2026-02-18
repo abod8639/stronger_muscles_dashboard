@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:stronger_muscles_dashboard/controllers/products_controller.dart';
 import 'package:stronger_muscles_dashboard/models/product_model.dart';
 
@@ -11,8 +12,11 @@ mixin ProductFormMixin<T extends StatefulWidget> on State<T> {
   /// Initialize all text controllers and form state
   void initializeProductFields() {
     // Initialize text controllers
-    controller.textcontrollers['name'] = TextEditingController(
-      text: product?.name,
+    controller.textcontrollers['name_ar'] = TextEditingController(
+      text: product?.name.ar,
+    );
+    controller.textcontrollers['name_en'] = TextEditingController(
+      text: product?.name.en,
     );
     controller.textcontrollers['price'] = TextEditingController(
       text: product?.price.toString(),
@@ -23,8 +27,11 @@ mixin ProductFormMixin<T extends StatefulWidget> on State<T> {
     controller.textcontrollers['stock'] = TextEditingController(
       text: product?.stockQuantity.toString(),
     );
-    controller.textcontrollers['desc'] = TextEditingController(
-      text: product?.description,
+    controller.textcontrollers['desc_ar'] = TextEditingController(
+      text: product?.description.ar,
+    );
+    controller.textcontrollers['desc_en'] = TextEditingController(
+      text: product?.description.en,
     );
     controller.textcontrollers['brand'] = TextEditingController(
       text: product?.brand,
@@ -38,7 +45,8 @@ mixin ProductFormMixin<T extends StatefulWidget> on State<T> {
 
     // Initialize GetX reactive values
     controller.productFlavors.value = product?.flavor ?? [];
-    controller.productSizes.value = product?.size ?? [];
+    controller.productSizes.assignAll(product?.productSizes ?? []);
+    controller.variants.assignAll(product?.variants ?? []);
     controller.isFeatured.value = product?.isActive ?? true;
     controller.isBackgroundWhite.value = product?.isBackgroundWhite ?? false;
   }
@@ -53,7 +61,7 @@ mixin ProductFormMixin<T extends StatefulWidget> on State<T> {
 
   /// Get the initial image URLs
   List<String> getInitialImageUrls() {
-    return List<String>.from(product?.imageUrls ?? []);
+    return product?.imageUrls.map((e) => e.original).toList() ?? [];
   }
 
   /// Dispose all text controllers

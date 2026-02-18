@@ -16,12 +16,12 @@ Widget buildTextField({
     children: [
       Container(
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.1),
+          color: Colors.white.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: errorText != null
                 ? AppColors.error
-                : Colors.white.withOpacity(0.2),
+                : Colors.white.withValues(alpha: 0.2),
             width: 1.5,
           ),
         ),
@@ -32,15 +32,15 @@ Widget buildTextField({
           style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(
             labelText: label,
-            labelStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
-            prefixIcon: Icon(icon, color: Colors.white.withOpacity(0.7)),
+            labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
+            prefixIcon: Icon(icon, color: Colors.white.withValues(alpha: 0.7)),
             suffixIcon: isPassword
                 ? IconButton(
                     icon: Icon(
                       isPasswordVisible
                           ? Icons.visibility_outlined
                           : Icons.visibility_off_outlined,
-                      color: Colors.white.withOpacity(0.7),
+                      color: Colors.white.withValues(alpha: 0.7),
                     ),
                     onPressed: onTogglePassword,
                   )

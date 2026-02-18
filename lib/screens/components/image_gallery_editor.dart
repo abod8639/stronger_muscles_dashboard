@@ -112,7 +112,7 @@ class ImageGalleryEditor extends StatelessWidget {
           border: Border.all(color: isDark ? Colors.white10 : Colors.black12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.15),
+              color: Colors.black.withValues(alpha: 0.15),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -140,7 +140,7 @@ class ImageGalleryEditor extends StatelessWidget {
                     const Icon(Icons.broken_image, color: Colors.grey),
               ),
 
-              Container(color: Colors.black.withOpacity(0.25)),
+              Container(color: Colors.black.withValues(alpha: 0.25)),
 
               const Center(
                 child: Icon(
@@ -157,7 +157,7 @@ class ImageGalleryEditor extends StatelessWidget {
                   constraints: const BoxConstraints(),
                   padding: const EdgeInsets.all(6),
                   style: IconButton.styleFrom(
-                    backgroundColor: Colors.redAccent.withOpacity(0.9),
+                    backgroundColor: Colors.redAccent.withValues(alpha: 0.9),
                     shape: const CircleBorder(),
                   ),
                   icon: const Icon(

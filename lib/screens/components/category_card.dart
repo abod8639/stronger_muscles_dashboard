@@ -139,7 +139,7 @@ class CategoryCardState extends State<CategoryCard>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            widget.category.name,
+                            widget.category.displayName,
                             style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -149,10 +149,10 @@ class CategoryCardState extends State<CategoryCard>
                             overflow: TextOverflow.ellipsis,
                           ),
                           if (widget.category.description != null &&
-                              widget.category.description!.isNotEmpty) ...[
+                              widget.category.description!.ar.isNotEmpty) ...[
                             const SizedBox(height: 4),
                             Text(
-                              widget.category.description!,
+                              widget.category.description!.ar,
                               style: TextStyle(
                                 color: Colors.white.withValues(alpha: 0.8),
                                 fontSize: 11,

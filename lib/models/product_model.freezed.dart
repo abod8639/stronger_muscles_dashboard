@@ -14,6 +14,1212 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
+TranslatableString _$TranslatableStringFromJson(Map<String, dynamic> json) {
+  return _TranslatableString.fromJson(json);
+}
+
+/// @nodoc
+mixin _$TranslatableString {
+  @HiveField(0)
+  String get ar => throw _privateConstructorUsedError;
+  @HiveField(1)
+  String get en => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $TranslatableStringCopyWith<TranslatableString> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $TranslatableStringCopyWith<$Res> {
+  factory $TranslatableStringCopyWith(
+          TranslatableString value, $Res Function(TranslatableString) then) =
+      _$TranslatableStringCopyWithImpl<$Res, TranslatableString>;
+  @useResult
+  $Res call({@HiveField(0) String ar, @HiveField(1) String en});
+}
+
+/// @nodoc
+class _$TranslatableStringCopyWithImpl<$Res, $Val extends TranslatableString>
+    implements $TranslatableStringCopyWith<$Res> {
+  _$TranslatableStringCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? ar = null,
+    Object? en = null,
+  }) {
+    return _then(_value.copyWith(
+      ar: null == ar
+          ? _value.ar
+          : ar // ignore: cast_nullable_to_non_nullable
+              as String,
+      en: null == en
+          ? _value.en
+          : en // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$TranslatableStringImplCopyWith<$Res>
+    implements $TranslatableStringCopyWith<$Res> {
+  factory _$$TranslatableStringImplCopyWith(_$TranslatableStringImpl value,
+          $Res Function(_$TranslatableStringImpl) then) =
+      __$$TranslatableStringImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({@HiveField(0) String ar, @HiveField(1) String en});
+}
+
+/// @nodoc
+class __$$TranslatableStringImplCopyWithImpl<$Res>
+    extends _$TranslatableStringCopyWithImpl<$Res, _$TranslatableStringImpl>
+    implements _$$TranslatableStringImplCopyWith<$Res> {
+  __$$TranslatableStringImplCopyWithImpl(_$TranslatableStringImpl _value,
+      $Res Function(_$TranslatableStringImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? ar = null,
+    Object? en = null,
+  }) {
+    return _then(_$TranslatableStringImpl(
+      ar: null == ar
+          ? _value.ar
+          : ar // ignore: cast_nullable_to_non_nullable
+              as String,
+      en: null == en
+          ? _value.en
+          : en // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$TranslatableStringImpl extends _TranslatableString
+    with DiagnosticableTreeMixin {
+  const _$TranslatableStringImpl(
+      {@HiveField(0) this.ar = '', @HiveField(1) this.en = ''})
+      : super._();
+
+  factory _$TranslatableStringImpl.fromJson(Map<String, dynamic> json) =>
+      _$$TranslatableStringImplFromJson(json);
+
+  @override
+  @JsonKey()
+  @HiveField(0)
+  final String ar;
+  @override
+  @JsonKey()
+  @HiveField(1)
+  final String en;
+
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'TranslatableString(ar: $ar, en: $en)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'TranslatableString'))
+      ..add(DiagnosticsProperty('ar', ar))
+      ..add(DiagnosticsProperty('en', en));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$TranslatableStringImpl &&
+            (identical(other.ar, ar) || other.ar == ar) &&
+            (identical(other.en, en) || other.en == en));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(runtimeType, ar, en);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$TranslatableStringImplCopyWith<_$TranslatableStringImpl> get copyWith =>
+      __$$TranslatableStringImplCopyWithImpl<_$TranslatableStringImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$TranslatableStringImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _TranslatableString extends TranslatableString {
+  const factory _TranslatableString(
+      {@HiveField(0) final String ar,
+      @HiveField(1) final String en}) = _$TranslatableStringImpl;
+  const _TranslatableString._() : super._();
+
+  factory _TranslatableString.fromJson(Map<String, dynamic> json) =
+      _$TranslatableStringImpl.fromJson;
+
+  @override
+  @HiveField(0)
+  String get ar;
+  @override
+  @HiveField(1)
+  String get en;
+  @override
+  @JsonKey(ignore: true)
+  _$$TranslatableStringImplCopyWith<_$TranslatableStringImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+ProductImage _$ProductImageFromJson(Map<String, dynamic> json) {
+  return _ProductImage.fromJson(json);
+}
+
+/// @nodoc
+mixin _$ProductImage {
+  @HiveField(0)
+  String get thumbnail => throw _privateConstructorUsedError;
+  @HiveField(1)
+  String get medium => throw _privateConstructorUsedError;
+  @HiveField(2)
+  String get original => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $ProductImageCopyWith<ProductImage> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $ProductImageCopyWith<$Res> {
+  factory $ProductImageCopyWith(
+          ProductImage value, $Res Function(ProductImage) then) =
+      _$ProductImageCopyWithImpl<$Res, ProductImage>;
+  @useResult
+  $Res call(
+      {@HiveField(0) String thumbnail,
+      @HiveField(1) String medium,
+      @HiveField(2) String original});
+}
+
+/// @nodoc
+class _$ProductImageCopyWithImpl<$Res, $Val extends ProductImage>
+    implements $ProductImageCopyWith<$Res> {
+  _$ProductImageCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? thumbnail = null,
+    Object? medium = null,
+    Object? original = null,
+  }) {
+    return _then(_value.copyWith(
+      thumbnail: null == thumbnail
+          ? _value.thumbnail
+          : thumbnail // ignore: cast_nullable_to_non_nullable
+              as String,
+      medium: null == medium
+          ? _value.medium
+          : medium // ignore: cast_nullable_to_non_nullable
+              as String,
+      original: null == original
+          ? _value.original
+          : original // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$ProductImageImplCopyWith<$Res>
+    implements $ProductImageCopyWith<$Res> {
+  factory _$$ProductImageImplCopyWith(
+          _$ProductImageImpl value, $Res Function(_$ProductImageImpl) then) =
+      __$$ProductImageImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {@HiveField(0) String thumbnail,
+      @HiveField(1) String medium,
+      @HiveField(2) String original});
+}
+
+/// @nodoc
+class __$$ProductImageImplCopyWithImpl<$Res>
+    extends _$ProductImageCopyWithImpl<$Res, _$ProductImageImpl>
+    implements _$$ProductImageImplCopyWith<$Res> {
+  __$$ProductImageImplCopyWithImpl(
+      _$ProductImageImpl _value, $Res Function(_$ProductImageImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? thumbnail = null,
+    Object? medium = null,
+    Object? original = null,
+  }) {
+    return _then(_$ProductImageImpl(
+      thumbnail: null == thumbnail
+          ? _value.thumbnail
+          : thumbnail // ignore: cast_nullable_to_non_nullable
+              as String,
+      medium: null == medium
+          ? _value.medium
+          : medium // ignore: cast_nullable_to_non_nullable
+              as String,
+      original: null == original
+          ? _value.original
+          : original // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$ProductImageImpl with DiagnosticableTreeMixin implements _ProductImage {
+  const _$ProductImageImpl(
+      {@HiveField(0) required this.thumbnail,
+      @HiveField(1) required this.medium,
+      @HiveField(2) required this.original});
+
+  factory _$ProductImageImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ProductImageImplFromJson(json);
+
+  @override
+  @HiveField(0)
+  final String thumbnail;
+  @override
+  @HiveField(1)
+  final String medium;
+  @override
+  @HiveField(2)
+  final String original;
+
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'ProductImage(thumbnail: $thumbnail, medium: $medium, original: $original)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'ProductImage'))
+      ..add(DiagnosticsProperty('thumbnail', thumbnail))
+      ..add(DiagnosticsProperty('medium', medium))
+      ..add(DiagnosticsProperty('original', original));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ProductImageImpl &&
+            (identical(other.thumbnail, thumbnail) ||
+                other.thumbnail == thumbnail) &&
+            (identical(other.medium, medium) || other.medium == medium) &&
+            (identical(other.original, original) ||
+                other.original == original));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(runtimeType, thumbnail, medium, original);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ProductImageImplCopyWith<_$ProductImageImpl> get copyWith =>
+      __$$ProductImageImplCopyWithImpl<_$ProductImageImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$ProductImageImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _ProductImage implements ProductImage {
+  const factory _ProductImage(
+      {@HiveField(0) required final String thumbnail,
+      @HiveField(1) required final String medium,
+      @HiveField(2) required final String original}) = _$ProductImageImpl;
+
+  factory _ProductImage.fromJson(Map<String, dynamic> json) =
+      _$ProductImageImpl.fromJson;
+
+  @override
+  @HiveField(0)
+  String get thumbnail;
+  @override
+  @HiveField(1)
+  String get medium;
+  @override
+  @HiveField(2)
+  String get original;
+  @override
+  @JsonKey(ignore: true)
+  _$$ProductImageImplCopyWith<_$ProductImageImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+ProductCategory _$ProductCategoryFromJson(Map<String, dynamic> json) {
+  return _ProductCategory.fromJson(json);
+}
+
+/// @nodoc
+mixin _$ProductCategory {
+  @HiveField(0)
+  String get id => throw _privateConstructorUsedError;
+  @HiveField(1)
+  TranslatableString get name => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $ProductCategoryCopyWith<ProductCategory> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $ProductCategoryCopyWith<$Res> {
+  factory $ProductCategoryCopyWith(
+          ProductCategory value, $Res Function(ProductCategory) then) =
+      _$ProductCategoryCopyWithImpl<$Res, ProductCategory>;
+  @useResult
+  $Res call({@HiveField(0) String id, @HiveField(1) TranslatableString name});
+
+  $TranslatableStringCopyWith<$Res> get name;
+}
+
+/// @nodoc
+class _$ProductCategoryCopyWithImpl<$Res, $Val extends ProductCategory>
+    implements $ProductCategoryCopyWith<$Res> {
+  _$ProductCategoryCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? name = null,
+  }) {
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as TranslatableString,
+    ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $TranslatableStringCopyWith<$Res> get name {
+    return $TranslatableStringCopyWith<$Res>(_value.name, (value) {
+      return _then(_value.copyWith(name: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$ProductCategoryImplCopyWith<$Res>
+    implements $ProductCategoryCopyWith<$Res> {
+  factory _$$ProductCategoryImplCopyWith(_$ProductCategoryImpl value,
+          $Res Function(_$ProductCategoryImpl) then) =
+      __$$ProductCategoryImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({@HiveField(0) String id, @HiveField(1) TranslatableString name});
+
+  @override
+  $TranslatableStringCopyWith<$Res> get name;
+}
+
+/// @nodoc
+class __$$ProductCategoryImplCopyWithImpl<$Res>
+    extends _$ProductCategoryCopyWithImpl<$Res, _$ProductCategoryImpl>
+    implements _$$ProductCategoryImplCopyWith<$Res> {
+  __$$ProductCategoryImplCopyWithImpl(
+      _$ProductCategoryImpl _value, $Res Function(_$ProductCategoryImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? name = null,
+  }) {
+    return _then(_$ProductCategoryImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as TranslatableString,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$ProductCategoryImpl
+    with DiagnosticableTreeMixin
+    implements _ProductCategory {
+  const _$ProductCategoryImpl(
+      {@HiveField(0) required this.id, @HiveField(1) required this.name});
+
+  factory _$ProductCategoryImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ProductCategoryImplFromJson(json);
+
+  @override
+  @HiveField(0)
+  final String id;
+  @override
+  @HiveField(1)
+  final TranslatableString name;
+
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'ProductCategory(id: $id, name: $name)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'ProductCategory'))
+      ..add(DiagnosticsProperty('id', id))
+      ..add(DiagnosticsProperty('name', name));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ProductCategoryImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.name, name) || other.name == name));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(runtimeType, id, name);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ProductCategoryImplCopyWith<_$ProductCategoryImpl> get copyWith =>
+      __$$ProductCategoryImplCopyWithImpl<_$ProductCategoryImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$ProductCategoryImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _ProductCategory implements ProductCategory {
+  const factory _ProductCategory(
+          {@HiveField(0) required final String id,
+          @HiveField(1) required final TranslatableString name}) =
+      _$ProductCategoryImpl;
+
+  factory _ProductCategory.fromJson(Map<String, dynamic> json) =
+      _$ProductCategoryImpl.fromJson;
+
+  @override
+  @HiveField(0)
+  String get id;
+  @override
+  @HiveField(1)
+  TranslatableString get name;
+  @override
+  @JsonKey(ignore: true)
+  _$$ProductCategoryImplCopyWith<_$ProductCategoryImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+ProductVariantModel _$ProductVariantModelFromJson(Map<String, dynamic> json) {
+  return _ProductVariantModel.fromJson(json);
+}
+
+/// @nodoc
+mixin _$ProductVariantModel {
+  @HiveField(0)
+  String get id => throw _privateConstructorUsedError;
+  @HiveField(1)
+  String get sku => throw _privateConstructorUsedError;
+  @HiveField(2)
+  double get price => throw _privateConstructorUsedError;
+  @JsonKey(name: 'discount_price')
+  @HiveField(3)
+  double? get discountPrice => throw _privateConstructorUsedError;
+  @JsonKey(name: 'effective_price')
+  @HiveField(4)
+  double get effectivePrice => throw _privateConstructorUsedError;
+  @JsonKey(name: 'stock_quantity')
+  @HiveField(5)
+  int get stockQuantity => throw _privateConstructorUsedError;
+  @HiveField(6)
+  Map<String, dynamic> get attributes => throw _privateConstructorUsedError;
+  @JsonKey(name: 'is_active')
+  @HiveField(7)
+  bool get isActive => throw _privateConstructorUsedError;
+  @JsonKey(name: 'discount_start_date')
+  @HiveField(8)
+  DateTime? get discountStartDate => throw _privateConstructorUsedError;
+  @JsonKey(name: 'discount_end_date')
+  @HiveField(9)
+  DateTime? get discountEndDate => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $ProductVariantModelCopyWith<ProductVariantModel> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $ProductVariantModelCopyWith<$Res> {
+  factory $ProductVariantModelCopyWith(
+          ProductVariantModel value, $Res Function(ProductVariantModel) then) =
+      _$ProductVariantModelCopyWithImpl<$Res, ProductVariantModel>;
+  @useResult
+  $Res call(
+      {@HiveField(0) String id,
+      @HiveField(1) String sku,
+      @HiveField(2) double price,
+      @JsonKey(name: 'discount_price') @HiveField(3) double? discountPrice,
+      @JsonKey(name: 'effective_price') @HiveField(4) double effectivePrice,
+      @JsonKey(name: 'stock_quantity') @HiveField(5) int stockQuantity,
+      @HiveField(6) Map<String, dynamic> attributes,
+      @JsonKey(name: 'is_active') @HiveField(7) bool isActive,
+      @JsonKey(name: 'discount_start_date')
+      @HiveField(8)
+      DateTime? discountStartDate,
+      @JsonKey(name: 'discount_end_date')
+      @HiveField(9)
+      DateTime? discountEndDate});
+}
+
+/// @nodoc
+class _$ProductVariantModelCopyWithImpl<$Res, $Val extends ProductVariantModel>
+    implements $ProductVariantModelCopyWith<$Res> {
+  _$ProductVariantModelCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? sku = null,
+    Object? price = null,
+    Object? discountPrice = freezed,
+    Object? effectivePrice = null,
+    Object? stockQuantity = null,
+    Object? attributes = null,
+    Object? isActive = null,
+    Object? discountStartDate = freezed,
+    Object? discountEndDate = freezed,
+  }) {
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      sku: null == sku
+          ? _value.sku
+          : sku // ignore: cast_nullable_to_non_nullable
+              as String,
+      price: null == price
+          ? _value.price
+          : price // ignore: cast_nullable_to_non_nullable
+              as double,
+      discountPrice: freezed == discountPrice
+          ? _value.discountPrice
+          : discountPrice // ignore: cast_nullable_to_non_nullable
+              as double?,
+      effectivePrice: null == effectivePrice
+          ? _value.effectivePrice
+          : effectivePrice // ignore: cast_nullable_to_non_nullable
+              as double,
+      stockQuantity: null == stockQuantity
+          ? _value.stockQuantity
+          : stockQuantity // ignore: cast_nullable_to_non_nullable
+              as int,
+      attributes: null == attributes
+          ? _value.attributes
+          : attributes // ignore: cast_nullable_to_non_nullable
+              as Map<String, dynamic>,
+      isActive: null == isActive
+          ? _value.isActive
+          : isActive // ignore: cast_nullable_to_non_nullable
+              as bool,
+      discountStartDate: freezed == discountStartDate
+          ? _value.discountStartDate
+          : discountStartDate // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      discountEndDate: freezed == discountEndDate
+          ? _value.discountEndDate
+          : discountEndDate // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$ProductVariantModelImplCopyWith<$Res>
+    implements $ProductVariantModelCopyWith<$Res> {
+  factory _$$ProductVariantModelImplCopyWith(_$ProductVariantModelImpl value,
+          $Res Function(_$ProductVariantModelImpl) then) =
+      __$$ProductVariantModelImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {@HiveField(0) String id,
+      @HiveField(1) String sku,
+      @HiveField(2) double price,
+      @JsonKey(name: 'discount_price') @HiveField(3) double? discountPrice,
+      @JsonKey(name: 'effective_price') @HiveField(4) double effectivePrice,
+      @JsonKey(name: 'stock_quantity') @HiveField(5) int stockQuantity,
+      @HiveField(6) Map<String, dynamic> attributes,
+      @JsonKey(name: 'is_active') @HiveField(7) bool isActive,
+      @JsonKey(name: 'discount_start_date')
+      @HiveField(8)
+      DateTime? discountStartDate,
+      @JsonKey(name: 'discount_end_date')
+      @HiveField(9)
+      DateTime? discountEndDate});
+}
+
+/// @nodoc
+class __$$ProductVariantModelImplCopyWithImpl<$Res>
+    extends _$ProductVariantModelCopyWithImpl<$Res, _$ProductVariantModelImpl>
+    implements _$$ProductVariantModelImplCopyWith<$Res> {
+  __$$ProductVariantModelImplCopyWithImpl(_$ProductVariantModelImpl _value,
+      $Res Function(_$ProductVariantModelImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? sku = null,
+    Object? price = null,
+    Object? discountPrice = freezed,
+    Object? effectivePrice = null,
+    Object? stockQuantity = null,
+    Object? attributes = null,
+    Object? isActive = null,
+    Object? discountStartDate = freezed,
+    Object? discountEndDate = freezed,
+  }) {
+    return _then(_$ProductVariantModelImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      sku: null == sku
+          ? _value.sku
+          : sku // ignore: cast_nullable_to_non_nullable
+              as String,
+      price: null == price
+          ? _value.price
+          : price // ignore: cast_nullable_to_non_nullable
+              as double,
+      discountPrice: freezed == discountPrice
+          ? _value.discountPrice
+          : discountPrice // ignore: cast_nullable_to_non_nullable
+              as double?,
+      effectivePrice: null == effectivePrice
+          ? _value.effectivePrice
+          : effectivePrice // ignore: cast_nullable_to_non_nullable
+              as double,
+      stockQuantity: null == stockQuantity
+          ? _value.stockQuantity
+          : stockQuantity // ignore: cast_nullable_to_non_nullable
+              as int,
+      attributes: null == attributes
+          ? _value._attributes
+          : attributes // ignore: cast_nullable_to_non_nullable
+              as Map<String, dynamic>,
+      isActive: null == isActive
+          ? _value.isActive
+          : isActive // ignore: cast_nullable_to_non_nullable
+              as bool,
+      discountStartDate: freezed == discountStartDate
+          ? _value.discountStartDate
+          : discountStartDate // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      discountEndDate: freezed == discountEndDate
+          ? _value.discountEndDate
+          : discountEndDate // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$ProductVariantModelImpl
+    with DiagnosticableTreeMixin
+    implements _ProductVariantModel {
+  const _$ProductVariantModelImpl(
+      {@HiveField(0) required this.id,
+      @HiveField(1) required this.sku,
+      @HiveField(2) required this.price,
+      @JsonKey(name: 'discount_price') @HiveField(3) this.discountPrice,
+      @JsonKey(name: 'effective_price')
+      @HiveField(4)
+      required this.effectivePrice,
+      @JsonKey(name: 'stock_quantity')
+      @HiveField(5)
+      required this.stockQuantity,
+      @HiveField(6) required final Map<String, dynamic> attributes,
+      @JsonKey(name: 'is_active') @HiveField(7) this.isActive = true,
+      @JsonKey(name: 'discount_start_date')
+      @HiveField(8)
+      this.discountStartDate,
+      @JsonKey(name: 'discount_end_date') @HiveField(9) this.discountEndDate})
+      : _attributes = attributes;
+
+  factory _$ProductVariantModelImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ProductVariantModelImplFromJson(json);
+
+  @override
+  @HiveField(0)
+  final String id;
+  @override
+  @HiveField(1)
+  final String sku;
+  @override
+  @HiveField(2)
+  final double price;
+  @override
+  @JsonKey(name: 'discount_price')
+  @HiveField(3)
+  final double? discountPrice;
+  @override
+  @JsonKey(name: 'effective_price')
+  @HiveField(4)
+  final double effectivePrice;
+  @override
+  @JsonKey(name: 'stock_quantity')
+  @HiveField(5)
+  final int stockQuantity;
+  final Map<String, dynamic> _attributes;
+  @override
+  @HiveField(6)
+  Map<String, dynamic> get attributes {
+    if (_attributes is EqualUnmodifiableMapView) return _attributes;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_attributes);
+  }
+
+  @override
+  @JsonKey(name: 'is_active')
+  @HiveField(7)
+  final bool isActive;
+  @override
+  @JsonKey(name: 'discount_start_date')
+  @HiveField(8)
+  final DateTime? discountStartDate;
+  @override
+  @JsonKey(name: 'discount_end_date')
+  @HiveField(9)
+  final DateTime? discountEndDate;
+
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'ProductVariantModel(id: $id, sku: $sku, price: $price, discountPrice: $discountPrice, effectivePrice: $effectivePrice, stockQuantity: $stockQuantity, attributes: $attributes, isActive: $isActive, discountStartDate: $discountStartDate, discountEndDate: $discountEndDate)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'ProductVariantModel'))
+      ..add(DiagnosticsProperty('id', id))
+      ..add(DiagnosticsProperty('sku', sku))
+      ..add(DiagnosticsProperty('price', price))
+      ..add(DiagnosticsProperty('discountPrice', discountPrice))
+      ..add(DiagnosticsProperty('effectivePrice', effectivePrice))
+      ..add(DiagnosticsProperty('stockQuantity', stockQuantity))
+      ..add(DiagnosticsProperty('attributes', attributes))
+      ..add(DiagnosticsProperty('isActive', isActive))
+      ..add(DiagnosticsProperty('discountStartDate', discountStartDate))
+      ..add(DiagnosticsProperty('discountEndDate', discountEndDate));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ProductVariantModelImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.sku, sku) || other.sku == sku) &&
+            (identical(other.price, price) || other.price == price) &&
+            (identical(other.discountPrice, discountPrice) ||
+                other.discountPrice == discountPrice) &&
+            (identical(other.effectivePrice, effectivePrice) ||
+                other.effectivePrice == effectivePrice) &&
+            (identical(other.stockQuantity, stockQuantity) ||
+                other.stockQuantity == stockQuantity) &&
+            const DeepCollectionEquality()
+                .equals(other._attributes, _attributes) &&
+            (identical(other.isActive, isActive) ||
+                other.isActive == isActive) &&
+            (identical(other.discountStartDate, discountStartDate) ||
+                other.discountStartDate == discountStartDate) &&
+            (identical(other.discountEndDate, discountEndDate) ||
+                other.discountEndDate == discountEndDate));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      sku,
+      price,
+      discountPrice,
+      effectivePrice,
+      stockQuantity,
+      const DeepCollectionEquality().hash(_attributes),
+      isActive,
+      discountStartDate,
+      discountEndDate);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ProductVariantModelImplCopyWith<_$ProductVariantModelImpl> get copyWith =>
+      __$$ProductVariantModelImplCopyWithImpl<_$ProductVariantModelImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$ProductVariantModelImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _ProductVariantModel implements ProductVariantModel {
+  const factory _ProductVariantModel(
+      {@HiveField(0) required final String id,
+      @HiveField(1) required final String sku,
+      @HiveField(2) required final double price,
+      @JsonKey(name: 'discount_price')
+      @HiveField(3)
+      final double? discountPrice,
+      @JsonKey(name: 'effective_price')
+      @HiveField(4)
+      required final double effectivePrice,
+      @JsonKey(name: 'stock_quantity')
+      @HiveField(5)
+      required final int stockQuantity,
+      @HiveField(6) required final Map<String, dynamic> attributes,
+      @JsonKey(name: 'is_active') @HiveField(7) final bool isActive,
+      @JsonKey(name: 'discount_start_date')
+      @HiveField(8)
+      final DateTime? discountStartDate,
+      @JsonKey(name: 'discount_end_date')
+      @HiveField(9)
+      final DateTime? discountEndDate}) = _$ProductVariantModelImpl;
+
+  factory _ProductVariantModel.fromJson(Map<String, dynamic> json) =
+      _$ProductVariantModelImpl.fromJson;
+
+  @override
+  @HiveField(0)
+  String get id;
+  @override
+  @HiveField(1)
+  String get sku;
+  @override
+  @HiveField(2)
+  double get price;
+  @override
+  @JsonKey(name: 'discount_price')
+  @HiveField(3)
+  double? get discountPrice;
+  @override
+  @JsonKey(name: 'effective_price')
+  @HiveField(4)
+  double get effectivePrice;
+  @override
+  @JsonKey(name: 'stock_quantity')
+  @HiveField(5)
+  int get stockQuantity;
+  @override
+  @HiveField(6)
+  Map<String, dynamic> get attributes;
+  @override
+  @JsonKey(name: 'is_active')
+  @HiveField(7)
+  bool get isActive;
+  @override
+  @JsonKey(name: 'discount_start_date')
+  @HiveField(8)
+  DateTime? get discountStartDate;
+  @override
+  @JsonKey(name: 'discount_end_date')
+  @HiveField(9)
+  DateTime? get discountEndDate;
+  @override
+  @JsonKey(ignore: true)
+  _$$ProductVariantModelImplCopyWith<_$ProductVariantModelImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+ProductSize _$ProductSizeFromJson(Map<String, dynamic> json) {
+  return _ProductSize.fromJson(json);
+}
+
+/// @nodoc
+mixin _$ProductSize {
+  @HiveField(0)
+  String get size => throw _privateConstructorUsedError;
+  @HiveField(1)
+  double get price => throw _privateConstructorUsedError;
+  @JsonKey(name: 'discount_price')
+  @HiveField(2)
+  double? get discountPrice => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $ProductSizeCopyWith<ProductSize> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $ProductSizeCopyWith<$Res> {
+  factory $ProductSizeCopyWith(
+          ProductSize value, $Res Function(ProductSize) then) =
+      _$ProductSizeCopyWithImpl<$Res, ProductSize>;
+  @useResult
+  $Res call(
+      {@HiveField(0) String size,
+      @HiveField(1) double price,
+      @JsonKey(name: 'discount_price') @HiveField(2) double? discountPrice});
+}
+
+/// @nodoc
+class _$ProductSizeCopyWithImpl<$Res, $Val extends ProductSize>
+    implements $ProductSizeCopyWith<$Res> {
+  _$ProductSizeCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? size = null,
+    Object? price = null,
+    Object? discountPrice = freezed,
+  }) {
+    return _then(_value.copyWith(
+      size: null == size
+          ? _value.size
+          : size // ignore: cast_nullable_to_non_nullable
+              as String,
+      price: null == price
+          ? _value.price
+          : price // ignore: cast_nullable_to_non_nullable
+              as double,
+      discountPrice: freezed == discountPrice
+          ? _value.discountPrice
+          : discountPrice // ignore: cast_nullable_to_non_nullable
+              as double?,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$ProductSizeImplCopyWith<$Res>
+    implements $ProductSizeCopyWith<$Res> {
+  factory _$$ProductSizeImplCopyWith(
+          _$ProductSizeImpl value, $Res Function(_$ProductSizeImpl) then) =
+      __$$ProductSizeImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {@HiveField(0) String size,
+      @HiveField(1) double price,
+      @JsonKey(name: 'discount_price') @HiveField(2) double? discountPrice});
+}
+
+/// @nodoc
+class __$$ProductSizeImplCopyWithImpl<$Res>
+    extends _$ProductSizeCopyWithImpl<$Res, _$ProductSizeImpl>
+    implements _$$ProductSizeImplCopyWith<$Res> {
+  __$$ProductSizeImplCopyWithImpl(
+      _$ProductSizeImpl _value, $Res Function(_$ProductSizeImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? size = null,
+    Object? price = null,
+    Object? discountPrice = freezed,
+  }) {
+    return _then(_$ProductSizeImpl(
+      size: null == size
+          ? _value.size
+          : size // ignore: cast_nullable_to_non_nullable
+              as String,
+      price: null == price
+          ? _value.price
+          : price // ignore: cast_nullable_to_non_nullable
+              as double,
+      discountPrice: freezed == discountPrice
+          ? _value.discountPrice
+          : discountPrice // ignore: cast_nullable_to_non_nullable
+              as double?,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$ProductSizeImpl with DiagnosticableTreeMixin implements _ProductSize {
+  const _$ProductSizeImpl(
+      {@HiveField(0) required this.size,
+      @HiveField(1) required this.price,
+      @JsonKey(name: 'discount_price') @HiveField(2) this.discountPrice});
+
+  factory _$ProductSizeImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ProductSizeImplFromJson(json);
+
+  @override
+  @HiveField(0)
+  final String size;
+  @override
+  @HiveField(1)
+  final double price;
+  @override
+  @JsonKey(name: 'discount_price')
+  @HiveField(2)
+  final double? discountPrice;
+
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'ProductSize(size: $size, price: $price, discountPrice: $discountPrice)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'ProductSize'))
+      ..add(DiagnosticsProperty('size', size))
+      ..add(DiagnosticsProperty('price', price))
+      ..add(DiagnosticsProperty('discountPrice', discountPrice));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ProductSizeImpl &&
+            (identical(other.size, size) || other.size == size) &&
+            (identical(other.price, price) || other.price == price) &&
+            (identical(other.discountPrice, discountPrice) ||
+                other.discountPrice == discountPrice));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(runtimeType, size, price, discountPrice);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ProductSizeImplCopyWith<_$ProductSizeImpl> get copyWith =>
+      __$$ProductSizeImplCopyWithImpl<_$ProductSizeImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$ProductSizeImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _ProductSize implements ProductSize {
+  const factory _ProductSize(
+      {@HiveField(0) required final String size,
+      @HiveField(1) required final double price,
+      @JsonKey(name: 'discount_price')
+      @HiveField(2)
+      final double? discountPrice}) = _$ProductSizeImpl;
+
+  factory _ProductSize.fromJson(Map<String, dynamic> json) =
+      _$ProductSizeImpl.fromJson;
+
+  @override
+  @HiveField(0)
+  String get size;
+  @override
+  @HiveField(1)
+  double get price;
+  @override
+  @JsonKey(name: 'discount_price')
+  @HiveField(2)
+  double? get discountPrice;
+  @override
+  @JsonKey(ignore: true)
+  _$$ProductSizeImplCopyWith<_$ProductSizeImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
 ProductModel _$ProductModelFromJson(Map<String, dynamic> json) {
   return _ProductModel.fromJson(json);
 }
@@ -23,20 +1229,22 @@ mixin _$ProductModel {
   @HiveField(0)
   String get id => throw _privateConstructorUsedError;
   @HiveField(1)
-  String get name => throw _privateConstructorUsedError;
+  TranslatableString get name => throw _privateConstructorUsedError;
   @HiveField(2)
   double get price => throw _privateConstructorUsedError;
   @JsonKey(name: 'discount_price')
   @HiveField(3)
   double? get discountPrice => throw _privateConstructorUsedError;
-  @JsonKey(name: 'image_urls')
+  @JsonKey(name: 'imageUrls')
   @HiveField(4)
-  List<String> get imageUrls => throw _privateConstructorUsedError;
+  List<ProductImage> get imageUrls => throw _privateConstructorUsedError;
   @HiveField(5)
-  String get description => throw _privateConstructorUsedError;
-  @JsonKey(name: 'category_id')
+  TranslatableString get description =>
+      throw _privateConstructorUsedError; // Category: new API returns object, legacy returns category_id string
   @HiveField(6)
   String get categoryId => throw _privateConstructorUsedError;
+  @HiveField(27)
+  ProductCategory? get category => throw _privateConstructorUsedError;
   @JsonKey(name: 'stock_quantity')
   @HiveField(7)
   int get stockQuantity => throw _privateConstructorUsedError;
@@ -68,55 +1276,35 @@ mixin _$ProductModel {
   double? get weight => throw _privateConstructorUsedError;
   @HiveField(18)
   List<String>? get size => throw _privateConstructorUsedError;
-  @JsonKey(name: 'flavors')
+  @JsonKey(name: 'product_sizes')
   @HiveField(19)
+  List<ProductSize>? get productSizes => throw _privateConstructorUsedError;
+  @JsonKey(name: 'flavors')
+  @HiveField(20)
   List<String>? get flavor => throw _privateConstructorUsedError;
   @JsonKey(name: 'nutrition_facts')
-  @HiveField(20)
+  @HiveField(21)
   Map<String, dynamic>? get nutritionFacts =>
       throw _privateConstructorUsedError;
-  @HiveField(21)
+  @HiveField(22)
   bool get featured => throw _privateConstructorUsedError;
   @JsonKey(name: 'new_arrival')
-  @HiveField(22)
+  @HiveField(23)
   bool get newArrival => throw _privateConstructorUsedError;
   @JsonKey(name: 'best_seller')
-  @HiveField(23)
+  @HiveField(24)
   bool get bestSeller => throw _privateConstructorUsedError;
   @JsonKey(name: 'total_sales')
-  @HiveField(24)
-  int get totalSales => throw _privateConstructorUsedError;
-  @JsonKey(name: 'views_count')
   @HiveField(25)
-  int get viewsCount => throw _privateConstructorUsedError;
-  @JsonKey(name: 'shipping_weight')
+  int get totalSales =>
+      throw _privateConstructorUsedError; // Variants: new API uses 'product_variants', legacy uses 'variants'
+  @JsonKey(name: 'product_variants')
   @HiveField(26)
-  double? get shippingWeight => throw _privateConstructorUsedError;
-  @HiveField(27)
-  Map<String, dynamic>? get dimensions => throw _privateConstructorUsedError;
+  List<ProductVariantModel> get variants =>
+      throw _privateConstructorUsedError; // has_variants flag from API
+  @JsonKey(name: 'has_variants')
   @HiveField(28)
-  List<String> get ingredients => throw _privateConstructorUsedError;
-  @JsonKey(name: 'usage_instructions')
-  @HiveField(29)
-  String? get usageInstructions => throw _privateConstructorUsedError;
-  @HiveField(30)
-  String? get warnings => throw _privateConstructorUsedError;
-  @JsonKey(name: 'expiry_date')
-  @HiveField(31)
-  DateTime? get expiryDate => throw _privateConstructorUsedError;
-  @HiveField(32)
-  String? get manufacturer => throw _privateConstructorUsedError;
-  @JsonKey(name: 'country_of_origin')
-  @HiveField(33)
-  String? get countryOfOrigin => throw _privateConstructorUsedError;
-  @JsonKey(name: 'meta_title')
-  @HiveField(34)
-  String? get metaTitle => throw _privateConstructorUsedError;
-  @JsonKey(name: 'meta_description')
-  @HiveField(35)
-  String? get metaDescription => throw _privateConstructorUsedError;
-  @HiveField(36)
-  String? get slug => throw _privateConstructorUsedError;
+  bool get hasVariants => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -132,12 +1320,13 @@ abstract class $ProductModelCopyWith<$Res> {
   @useResult
   $Res call(
       {@HiveField(0) String id,
-      @HiveField(1) String name,
+      @HiveField(1) TranslatableString name,
       @HiveField(2) double price,
       @JsonKey(name: 'discount_price') @HiveField(3) double? discountPrice,
-      @JsonKey(name: 'image_urls') @HiveField(4) List<String> imageUrls,
-      @HiveField(5) String description,
-      @JsonKey(name: 'category_id') @HiveField(6) String categoryId,
+      @JsonKey(name: 'imageUrls') @HiveField(4) List<ProductImage> imageUrls,
+      @HiveField(5) TranslatableString description,
+      @HiveField(6) String categoryId,
+      @HiveField(27) ProductCategory? category,
       @JsonKey(name: 'stock_quantity') @HiveField(7) int stockQuantity,
       @JsonKey(name: 'average_rating') @HiveField(8) double averageRating,
       @JsonKey(name: 'review_count') @HiveField(9) int reviewCount,
@@ -154,30 +1343,25 @@ abstract class $ProductModelCopyWith<$Res> {
       @HiveField(16) List<String>? tags,
       @HiveField(17) double? weight,
       @HiveField(18) List<String>? size,
-      @JsonKey(name: 'flavors') @HiveField(19) List<String>? flavor,
+      @JsonKey(name: 'product_sizes')
+      @HiveField(19)
+      List<ProductSize>? productSizes,
+      @JsonKey(name: 'flavors') @HiveField(20) List<String>? flavor,
       @JsonKey(name: 'nutrition_facts')
-      @HiveField(20)
+      @HiveField(21)
       Map<String, dynamic>? nutritionFacts,
-      @HiveField(21) bool featured,
-      @JsonKey(name: 'new_arrival') @HiveField(22) bool newArrival,
-      @JsonKey(name: 'best_seller') @HiveField(23) bool bestSeller,
-      @JsonKey(name: 'total_sales') @HiveField(24) int totalSales,
-      @JsonKey(name: 'views_count') @HiveField(25) int viewsCount,
-      @JsonKey(name: 'shipping_weight') @HiveField(26) double? shippingWeight,
-      @HiveField(27) Map<String, dynamic>? dimensions,
-      @HiveField(28) List<String> ingredients,
-      @JsonKey(name: 'usage_instructions')
-      @HiveField(29)
-      String? usageInstructions,
-      @HiveField(30) String? warnings,
-      @JsonKey(name: 'expiry_date') @HiveField(31) DateTime? expiryDate,
-      @HiveField(32) String? manufacturer,
-      @JsonKey(name: 'country_of_origin')
-      @HiveField(33)
-      String? countryOfOrigin,
-      @JsonKey(name: 'meta_title') @HiveField(34) String? metaTitle,
-      @JsonKey(name: 'meta_description') @HiveField(35) String? metaDescription,
-      @HiveField(36) String? slug});
+      @HiveField(22) bool featured,
+      @JsonKey(name: 'new_arrival') @HiveField(23) bool newArrival,
+      @JsonKey(name: 'best_seller') @HiveField(24) bool bestSeller,
+      @JsonKey(name: 'total_sales') @HiveField(25) int totalSales,
+      @JsonKey(name: 'product_variants')
+      @HiveField(26)
+      List<ProductVariantModel> variants,
+      @JsonKey(name: 'has_variants') @HiveField(28) bool hasVariants});
+
+  $TranslatableStringCopyWith<$Res> get name;
+  $TranslatableStringCopyWith<$Res> get description;
+  $ProductCategoryCopyWith<$Res>? get category;
 }
 
 /// @nodoc
@@ -200,6 +1384,7 @@ class _$ProductModelCopyWithImpl<$Res, $Val extends ProductModel>
     Object? imageUrls = null,
     Object? description = null,
     Object? categoryId = null,
+    Object? category = freezed,
     Object? stockQuantity = null,
     Object? averageRating = null,
     Object? reviewCount = null,
@@ -212,24 +1397,15 @@ class _$ProductModelCopyWithImpl<$Res, $Val extends ProductModel>
     Object? tags = freezed,
     Object? weight = freezed,
     Object? size = freezed,
+    Object? productSizes = freezed,
     Object? flavor = freezed,
     Object? nutritionFacts = freezed,
     Object? featured = null,
     Object? newArrival = null,
     Object? bestSeller = null,
     Object? totalSales = null,
-    Object? viewsCount = null,
-    Object? shippingWeight = freezed,
-    Object? dimensions = freezed,
-    Object? ingredients = null,
-    Object? usageInstructions = freezed,
-    Object? warnings = freezed,
-    Object? expiryDate = freezed,
-    Object? manufacturer = freezed,
-    Object? countryOfOrigin = freezed,
-    Object? metaTitle = freezed,
-    Object? metaDescription = freezed,
-    Object? slug = freezed,
+    Object? variants = null,
+    Object? hasVariants = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -239,7 +1415,7 @@ class _$ProductModelCopyWithImpl<$Res, $Val extends ProductModel>
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
-              as String,
+              as TranslatableString,
       price: null == price
           ? _value.price
           : price // ignore: cast_nullable_to_non_nullable
@@ -251,15 +1427,19 @@ class _$ProductModelCopyWithImpl<$Res, $Val extends ProductModel>
       imageUrls: null == imageUrls
           ? _value.imageUrls
           : imageUrls // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+              as List<ProductImage>,
       description: null == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
-              as String,
+              as TranslatableString,
       categoryId: null == categoryId
           ? _value.categoryId
           : categoryId // ignore: cast_nullable_to_non_nullable
               as String,
+      category: freezed == category
+          ? _value.category
+          : category // ignore: cast_nullable_to_non_nullable
+              as ProductCategory?,
       stockQuantity: null == stockQuantity
           ? _value.stockQuantity
           : stockQuantity // ignore: cast_nullable_to_non_nullable
@@ -308,6 +1488,10 @@ class _$ProductModelCopyWithImpl<$Res, $Val extends ProductModel>
           ? _value.size
           : size // ignore: cast_nullable_to_non_nullable
               as List<String>?,
+      productSizes: freezed == productSizes
+          ? _value.productSizes
+          : productSizes // ignore: cast_nullable_to_non_nullable
+              as List<ProductSize>?,
       flavor: freezed == flavor
           ? _value.flavor
           : flavor // ignore: cast_nullable_to_non_nullable
@@ -332,55 +1516,43 @@ class _$ProductModelCopyWithImpl<$Res, $Val extends ProductModel>
           ? _value.totalSales
           : totalSales // ignore: cast_nullable_to_non_nullable
               as int,
-      viewsCount: null == viewsCount
-          ? _value.viewsCount
-          : viewsCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      shippingWeight: freezed == shippingWeight
-          ? _value.shippingWeight
-          : shippingWeight // ignore: cast_nullable_to_non_nullable
-              as double?,
-      dimensions: freezed == dimensions
-          ? _value.dimensions
-          : dimensions // ignore: cast_nullable_to_non_nullable
-              as Map<String, dynamic>?,
-      ingredients: null == ingredients
-          ? _value.ingredients
-          : ingredients // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      usageInstructions: freezed == usageInstructions
-          ? _value.usageInstructions
-          : usageInstructions // ignore: cast_nullable_to_non_nullable
-              as String?,
-      warnings: freezed == warnings
-          ? _value.warnings
-          : warnings // ignore: cast_nullable_to_non_nullable
-              as String?,
-      expiryDate: freezed == expiryDate
-          ? _value.expiryDate
-          : expiryDate // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      manufacturer: freezed == manufacturer
-          ? _value.manufacturer
-          : manufacturer // ignore: cast_nullable_to_non_nullable
-              as String?,
-      countryOfOrigin: freezed == countryOfOrigin
-          ? _value.countryOfOrigin
-          : countryOfOrigin // ignore: cast_nullable_to_non_nullable
-              as String?,
-      metaTitle: freezed == metaTitle
-          ? _value.metaTitle
-          : metaTitle // ignore: cast_nullable_to_non_nullable
-              as String?,
-      metaDescription: freezed == metaDescription
-          ? _value.metaDescription
-          : metaDescription // ignore: cast_nullable_to_non_nullable
-              as String?,
-      slug: freezed == slug
-          ? _value.slug
-          : slug // ignore: cast_nullable_to_non_nullable
-              as String?,
+      variants: null == variants
+          ? _value.variants
+          : variants // ignore: cast_nullable_to_non_nullable
+              as List<ProductVariantModel>,
+      hasVariants: null == hasVariants
+          ? _value.hasVariants
+          : hasVariants // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $TranslatableStringCopyWith<$Res> get name {
+    return $TranslatableStringCopyWith<$Res>(_value.name, (value) {
+      return _then(_value.copyWith(name: value) as $Val);
+    });
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $TranslatableStringCopyWith<$Res> get description {
+    return $TranslatableStringCopyWith<$Res>(_value.description, (value) {
+      return _then(_value.copyWith(description: value) as $Val);
+    });
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $ProductCategoryCopyWith<$Res>? get category {
+    if (_value.category == null) {
+      return null;
+    }
+
+    return $ProductCategoryCopyWith<$Res>(_value.category!, (value) {
+      return _then(_value.copyWith(category: value) as $Val);
+    });
   }
 }
 
@@ -394,12 +1566,13 @@ abstract class _$$ProductModelImplCopyWith<$Res>
   @useResult
   $Res call(
       {@HiveField(0) String id,
-      @HiveField(1) String name,
+      @HiveField(1) TranslatableString name,
       @HiveField(2) double price,
       @JsonKey(name: 'discount_price') @HiveField(3) double? discountPrice,
-      @JsonKey(name: 'image_urls') @HiveField(4) List<String> imageUrls,
-      @HiveField(5) String description,
-      @JsonKey(name: 'category_id') @HiveField(6) String categoryId,
+      @JsonKey(name: 'imageUrls') @HiveField(4) List<ProductImage> imageUrls,
+      @HiveField(5) TranslatableString description,
+      @HiveField(6) String categoryId,
+      @HiveField(27) ProductCategory? category,
       @JsonKey(name: 'stock_quantity') @HiveField(7) int stockQuantity,
       @JsonKey(name: 'average_rating') @HiveField(8) double averageRating,
       @JsonKey(name: 'review_count') @HiveField(9) int reviewCount,
@@ -416,30 +1589,28 @@ abstract class _$$ProductModelImplCopyWith<$Res>
       @HiveField(16) List<String>? tags,
       @HiveField(17) double? weight,
       @HiveField(18) List<String>? size,
-      @JsonKey(name: 'flavors') @HiveField(19) List<String>? flavor,
+      @JsonKey(name: 'product_sizes')
+      @HiveField(19)
+      List<ProductSize>? productSizes,
+      @JsonKey(name: 'flavors') @HiveField(20) List<String>? flavor,
       @JsonKey(name: 'nutrition_facts')
-      @HiveField(20)
+      @HiveField(21)
       Map<String, dynamic>? nutritionFacts,
-      @HiveField(21) bool featured,
-      @JsonKey(name: 'new_arrival') @HiveField(22) bool newArrival,
-      @JsonKey(name: 'best_seller') @HiveField(23) bool bestSeller,
-      @JsonKey(name: 'total_sales') @HiveField(24) int totalSales,
-      @JsonKey(name: 'views_count') @HiveField(25) int viewsCount,
-      @JsonKey(name: 'shipping_weight') @HiveField(26) double? shippingWeight,
-      @HiveField(27) Map<String, dynamic>? dimensions,
-      @HiveField(28) List<String> ingredients,
-      @JsonKey(name: 'usage_instructions')
-      @HiveField(29)
-      String? usageInstructions,
-      @HiveField(30) String? warnings,
-      @JsonKey(name: 'expiry_date') @HiveField(31) DateTime? expiryDate,
-      @HiveField(32) String? manufacturer,
-      @JsonKey(name: 'country_of_origin')
-      @HiveField(33)
-      String? countryOfOrigin,
-      @JsonKey(name: 'meta_title') @HiveField(34) String? metaTitle,
-      @JsonKey(name: 'meta_description') @HiveField(35) String? metaDescription,
-      @HiveField(36) String? slug});
+      @HiveField(22) bool featured,
+      @JsonKey(name: 'new_arrival') @HiveField(23) bool newArrival,
+      @JsonKey(name: 'best_seller') @HiveField(24) bool bestSeller,
+      @JsonKey(name: 'total_sales') @HiveField(25) int totalSales,
+      @JsonKey(name: 'product_variants')
+      @HiveField(26)
+      List<ProductVariantModel> variants,
+      @JsonKey(name: 'has_variants') @HiveField(28) bool hasVariants});
+
+  @override
+  $TranslatableStringCopyWith<$Res> get name;
+  @override
+  $TranslatableStringCopyWith<$Res> get description;
+  @override
+  $ProductCategoryCopyWith<$Res>? get category;
 }
 
 /// @nodoc
@@ -460,6 +1631,7 @@ class __$$ProductModelImplCopyWithImpl<$Res>
     Object? imageUrls = null,
     Object? description = null,
     Object? categoryId = null,
+    Object? category = freezed,
     Object? stockQuantity = null,
     Object? averageRating = null,
     Object? reviewCount = null,
@@ -472,24 +1644,15 @@ class __$$ProductModelImplCopyWithImpl<$Res>
     Object? tags = freezed,
     Object? weight = freezed,
     Object? size = freezed,
+    Object? productSizes = freezed,
     Object? flavor = freezed,
     Object? nutritionFacts = freezed,
     Object? featured = null,
     Object? newArrival = null,
     Object? bestSeller = null,
     Object? totalSales = null,
-    Object? viewsCount = null,
-    Object? shippingWeight = freezed,
-    Object? dimensions = freezed,
-    Object? ingredients = null,
-    Object? usageInstructions = freezed,
-    Object? warnings = freezed,
-    Object? expiryDate = freezed,
-    Object? manufacturer = freezed,
-    Object? countryOfOrigin = freezed,
-    Object? metaTitle = freezed,
-    Object? metaDescription = freezed,
-    Object? slug = freezed,
+    Object? variants = null,
+    Object? hasVariants = null,
   }) {
     return _then(_$ProductModelImpl(
       id: null == id
@@ -499,7 +1662,7 @@ class __$$ProductModelImplCopyWithImpl<$Res>
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
-              as String,
+              as TranslatableString,
       price: null == price
           ? _value.price
           : price // ignore: cast_nullable_to_non_nullable
@@ -511,15 +1674,19 @@ class __$$ProductModelImplCopyWithImpl<$Res>
       imageUrls: null == imageUrls
           ? _value._imageUrls
           : imageUrls // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+              as List<ProductImage>,
       description: null == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
-              as String,
+              as TranslatableString,
       categoryId: null == categoryId
           ? _value.categoryId
           : categoryId // ignore: cast_nullable_to_non_nullable
               as String,
+      category: freezed == category
+          ? _value.category
+          : category // ignore: cast_nullable_to_non_nullable
+              as ProductCategory?,
       stockQuantity: null == stockQuantity
           ? _value.stockQuantity
           : stockQuantity // ignore: cast_nullable_to_non_nullable
@@ -568,6 +1735,10 @@ class __$$ProductModelImplCopyWithImpl<$Res>
           ? _value._size
           : size // ignore: cast_nullable_to_non_nullable
               as List<String>?,
+      productSizes: freezed == productSizes
+          ? _value._productSizes
+          : productSizes // ignore: cast_nullable_to_non_nullable
+              as List<ProductSize>?,
       flavor: freezed == flavor
           ? _value._flavor
           : flavor // ignore: cast_nullable_to_non_nullable
@@ -592,54 +1763,14 @@ class __$$ProductModelImplCopyWithImpl<$Res>
           ? _value.totalSales
           : totalSales // ignore: cast_nullable_to_non_nullable
               as int,
-      viewsCount: null == viewsCount
-          ? _value.viewsCount
-          : viewsCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      shippingWeight: freezed == shippingWeight
-          ? _value.shippingWeight
-          : shippingWeight // ignore: cast_nullable_to_non_nullable
-              as double?,
-      dimensions: freezed == dimensions
-          ? _value._dimensions
-          : dimensions // ignore: cast_nullable_to_non_nullable
-              as Map<String, dynamic>?,
-      ingredients: null == ingredients
-          ? _value._ingredients
-          : ingredients // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      usageInstructions: freezed == usageInstructions
-          ? _value.usageInstructions
-          : usageInstructions // ignore: cast_nullable_to_non_nullable
-              as String?,
-      warnings: freezed == warnings
-          ? _value.warnings
-          : warnings // ignore: cast_nullable_to_non_nullable
-              as String?,
-      expiryDate: freezed == expiryDate
-          ? _value.expiryDate
-          : expiryDate // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      manufacturer: freezed == manufacturer
-          ? _value.manufacturer
-          : manufacturer // ignore: cast_nullable_to_non_nullable
-              as String?,
-      countryOfOrigin: freezed == countryOfOrigin
-          ? _value.countryOfOrigin
-          : countryOfOrigin // ignore: cast_nullable_to_non_nullable
-              as String?,
-      metaTitle: freezed == metaTitle
-          ? _value.metaTitle
-          : metaTitle // ignore: cast_nullable_to_non_nullable
-              as String?,
-      metaDescription: freezed == metaDescription
-          ? _value.metaDescription
-          : metaDescription // ignore: cast_nullable_to_non_nullable
-              as String?,
-      slug: freezed == slug
-          ? _value.slug
-          : slug // ignore: cast_nullable_to_non_nullable
-              as String?,
+      variants: null == variants
+          ? _value._variants
+          : variants // ignore: cast_nullable_to_non_nullable
+              as List<ProductVariantModel>,
+      hasVariants: null == hasVariants
+          ? _value.hasVariants
+          : hasVariants // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -652,11 +1783,12 @@ class _$ProductModelImpl extends _ProductModel with DiagnosticableTreeMixin {
       @HiveField(1) required this.name,
       @HiveField(2) required this.price,
       @JsonKey(name: 'discount_price') @HiveField(3) this.discountPrice,
-      @JsonKey(name: 'image_urls')
+      @JsonKey(name: 'imageUrls')
       @HiveField(4)
-      final List<String> imageUrls = const [],
+      final List<ProductImage> imageUrls = const [],
       @HiveField(5) required this.description,
-      @JsonKey(name: 'category_id') @HiveField(6) required this.categoryId,
+      @HiveField(6) this.categoryId = '',
+      @HiveField(27) this.category,
       @JsonKey(name: 'stock_quantity') @HiveField(7) this.stockQuantity = 0,
       @JsonKey(name: 'average_rating') @HiveField(8) this.averageRating = 0.0,
       @JsonKey(name: 'review_count') @HiveField(9) this.reviewCount = 0,
@@ -673,37 +1805,30 @@ class _$ProductModelImpl extends _ProductModel with DiagnosticableTreeMixin {
       @HiveField(16) final List<String>? tags = const [],
       @HiveField(17) this.weight,
       @HiveField(18) final List<String>? size = const [],
-      @JsonKey(name: 'flavors')
+      @JsonKey(name: 'product_sizes')
       @HiveField(19)
+      final List<ProductSize>? productSizes = const [],
+      @JsonKey(name: 'flavors')
+      @HiveField(20)
       final List<String>? flavor = const [],
       @JsonKey(name: 'nutrition_facts')
-      @HiveField(20)
+      @HiveField(21)
       final Map<String, dynamic>? nutritionFacts,
-      @HiveField(21) this.featured = false,
-      @JsonKey(name: 'new_arrival') @HiveField(22) this.newArrival = false,
-      @JsonKey(name: 'best_seller') @HiveField(23) this.bestSeller = false,
-      @JsonKey(name: 'total_sales') @HiveField(24) this.totalSales = 0,
-      @JsonKey(name: 'views_count') @HiveField(25) this.viewsCount = 0,
-      @JsonKey(name: 'shipping_weight') @HiveField(26) this.shippingWeight,
-      @HiveField(27) final Map<String, dynamic>? dimensions,
-      @HiveField(28) final List<String> ingredients = const [],
-      @JsonKey(name: 'usage_instructions')
-      @HiveField(29)
-      this.usageInstructions,
-      @HiveField(30) this.warnings,
-      @JsonKey(name: 'expiry_date') @HiveField(31) this.expiryDate,
-      @HiveField(32) this.manufacturer,
-      @JsonKey(name: 'country_of_origin') @HiveField(33) this.countryOfOrigin,
-      @JsonKey(name: 'meta_title') @HiveField(34) this.metaTitle,
-      @JsonKey(name: 'meta_description') @HiveField(35) this.metaDescription,
-      @HiveField(36) this.slug})
+      @HiveField(22) this.featured = false,
+      @JsonKey(name: 'new_arrival') @HiveField(23) this.newArrival = false,
+      @JsonKey(name: 'best_seller') @HiveField(24) this.bestSeller = false,
+      @JsonKey(name: 'total_sales') @HiveField(25) this.totalSales = 0,
+      @JsonKey(name: 'product_variants')
+      @HiveField(26)
+      final List<ProductVariantModel> variants = const [],
+      @JsonKey(name: 'has_variants') @HiveField(28) this.hasVariants = false})
       : _imageUrls = imageUrls,
         _tags = tags,
         _size = size,
+        _productSizes = productSizes,
         _flavor = flavor,
         _nutritionFacts = nutritionFacts,
-        _dimensions = dimensions,
-        _ingredients = ingredients,
+        _variants = variants,
         super._();
 
   factory _$ProductModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -714,7 +1839,7 @@ class _$ProductModelImpl extends _ProductModel with DiagnosticableTreeMixin {
   final String id;
   @override
   @HiveField(1)
-  final String name;
+  final TranslatableString name;
   @override
   @HiveField(2)
   final double price;
@@ -722,11 +1847,11 @@ class _$ProductModelImpl extends _ProductModel with DiagnosticableTreeMixin {
   @JsonKey(name: 'discount_price')
   @HiveField(3)
   final double? discountPrice;
-  final List<String> _imageUrls;
+  final List<ProductImage> _imageUrls;
   @override
-  @JsonKey(name: 'image_urls')
+  @JsonKey(name: 'imageUrls')
   @HiveField(4)
-  List<String> get imageUrls {
+  List<ProductImage> get imageUrls {
     if (_imageUrls is EqualUnmodifiableListView) return _imageUrls;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_imageUrls);
@@ -734,11 +1859,15 @@ class _$ProductModelImpl extends _ProductModel with DiagnosticableTreeMixin {
 
   @override
   @HiveField(5)
-  final String description;
+  final TranslatableString description;
+// Category: new API returns object, legacy returns category_id string
   @override
-  @JsonKey(name: 'category_id')
+  @JsonKey()
   @HiveField(6)
   final String categoryId;
+  @override
+  @HiveField(27)
+  final ProductCategory? category;
   @override
   @JsonKey(name: 'stock_quantity')
   @HiveField(7)
@@ -800,10 +1929,22 @@ class _$ProductModelImpl extends _ProductModel with DiagnosticableTreeMixin {
     return EqualUnmodifiableListView(value);
   }
 
+  final List<ProductSize>? _productSizes;
+  @override
+  @JsonKey(name: 'product_sizes')
+  @HiveField(19)
+  List<ProductSize>? get productSizes {
+    final value = _productSizes;
+    if (value == null) return null;
+    if (_productSizes is EqualUnmodifiableListView) return _productSizes;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
   final List<String>? _flavor;
   @override
   @JsonKey(name: 'flavors')
-  @HiveField(19)
+  @HiveField(20)
   List<String>? get flavor {
     final value = _flavor;
     if (value == null) return null;
@@ -815,7 +1956,7 @@ class _$ProductModelImpl extends _ProductModel with DiagnosticableTreeMixin {
   final Map<String, dynamic>? _nutritionFacts;
   @override
   @JsonKey(name: 'nutrition_facts')
-  @HiveField(20)
+  @HiveField(21)
   Map<String, dynamic>? get nutritionFacts {
     final value = _nutritionFacts;
     if (value == null) return null;
@@ -826,82 +1967,41 @@ class _$ProductModelImpl extends _ProductModel with DiagnosticableTreeMixin {
 
   @override
   @JsonKey()
-  @HiveField(21)
+  @HiveField(22)
   final bool featured;
   @override
   @JsonKey(name: 'new_arrival')
-  @HiveField(22)
+  @HiveField(23)
   final bool newArrival;
   @override
   @JsonKey(name: 'best_seller')
-  @HiveField(23)
+  @HiveField(24)
   final bool bestSeller;
   @override
   @JsonKey(name: 'total_sales')
-  @HiveField(24)
-  final int totalSales;
-  @override
-  @JsonKey(name: 'views_count')
   @HiveField(25)
-  final int viewsCount;
+  final int totalSales;
+// Variants: new API uses 'product_variants', legacy uses 'variants'
+  final List<ProductVariantModel> _variants;
+// Variants: new API uses 'product_variants', legacy uses 'variants'
   @override
-  @JsonKey(name: 'shipping_weight')
+  @JsonKey(name: 'product_variants')
   @HiveField(26)
-  final double? shippingWeight;
-  final Map<String, dynamic>? _dimensions;
-  @override
-  @HiveField(27)
-  Map<String, dynamic>? get dimensions {
-    final value = _dimensions;
-    if (value == null) return null;
-    if (_dimensions is EqualUnmodifiableMapView) return _dimensions;
+  List<ProductVariantModel> get variants {
+    if (_variants is EqualUnmodifiableListView) return _variants;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableMapView(value);
+    return EqualUnmodifiableListView(_variants);
   }
 
-  final List<String> _ingredients;
+// has_variants flag from API
   @override
-  @JsonKey()
+  @JsonKey(name: 'has_variants')
   @HiveField(28)
-  List<String> get ingredients {
-    if (_ingredients is EqualUnmodifiableListView) return _ingredients;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_ingredients);
-  }
-
-  @override
-  @JsonKey(name: 'usage_instructions')
-  @HiveField(29)
-  final String? usageInstructions;
-  @override
-  @HiveField(30)
-  final String? warnings;
-  @override
-  @JsonKey(name: 'expiry_date')
-  @HiveField(31)
-  final DateTime? expiryDate;
-  @override
-  @HiveField(32)
-  final String? manufacturer;
-  @override
-  @JsonKey(name: 'country_of_origin')
-  @HiveField(33)
-  final String? countryOfOrigin;
-  @override
-  @JsonKey(name: 'meta_title')
-  @HiveField(34)
-  final String? metaTitle;
-  @override
-  @JsonKey(name: 'meta_description')
-  @HiveField(35)
-  final String? metaDescription;
-  @override
-  @HiveField(36)
-  final String? slug;
+  final bool hasVariants;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'ProductModel(id: $id, name: $name, price: $price, discountPrice: $discountPrice, imageUrls: $imageUrls, description: $description, categoryId: $categoryId, stockQuantity: $stockQuantity, averageRating: $averageRating, reviewCount: $reviewCount, brand: $brand, servingSize: $servingSize, servingsPerContainer: $servingsPerContainer, isActive: $isActive, isBackgroundWhite: $isBackgroundWhite, sku: $sku, tags: $tags, weight: $weight, size: $size, flavor: $flavor, nutritionFacts: $nutritionFacts, featured: $featured, newArrival: $newArrival, bestSeller: $bestSeller, totalSales: $totalSales, viewsCount: $viewsCount, shippingWeight: $shippingWeight, dimensions: $dimensions, ingredients: $ingredients, usageInstructions: $usageInstructions, warnings: $warnings, expiryDate: $expiryDate, manufacturer: $manufacturer, countryOfOrigin: $countryOfOrigin, metaTitle: $metaTitle, metaDescription: $metaDescription, slug: $slug)';
+    return 'ProductModel(id: $id, name: $name, price: $price, discountPrice: $discountPrice, imageUrls: $imageUrls, description: $description, categoryId: $categoryId, category: $category, stockQuantity: $stockQuantity, averageRating: $averageRating, reviewCount: $reviewCount, brand: $brand, servingSize: $servingSize, servingsPerContainer: $servingsPerContainer, isActive: $isActive, isBackgroundWhite: $isBackgroundWhite, sku: $sku, tags: $tags, weight: $weight, size: $size, productSizes: $productSizes, flavor: $flavor, nutritionFacts: $nutritionFacts, featured: $featured, newArrival: $newArrival, bestSeller: $bestSeller, totalSales: $totalSales, variants: $variants, hasVariants: $hasVariants)';
   }
 
   @override
@@ -916,6 +2016,7 @@ class _$ProductModelImpl extends _ProductModel with DiagnosticableTreeMixin {
       ..add(DiagnosticsProperty('imageUrls', imageUrls))
       ..add(DiagnosticsProperty('description', description))
       ..add(DiagnosticsProperty('categoryId', categoryId))
+      ..add(DiagnosticsProperty('category', category))
       ..add(DiagnosticsProperty('stockQuantity', stockQuantity))
       ..add(DiagnosticsProperty('averageRating', averageRating))
       ..add(DiagnosticsProperty('reviewCount', reviewCount))
@@ -928,24 +2029,15 @@ class _$ProductModelImpl extends _ProductModel with DiagnosticableTreeMixin {
       ..add(DiagnosticsProperty('tags', tags))
       ..add(DiagnosticsProperty('weight', weight))
       ..add(DiagnosticsProperty('size', size))
+      ..add(DiagnosticsProperty('productSizes', productSizes))
       ..add(DiagnosticsProperty('flavor', flavor))
       ..add(DiagnosticsProperty('nutritionFacts', nutritionFacts))
       ..add(DiagnosticsProperty('featured', featured))
       ..add(DiagnosticsProperty('newArrival', newArrival))
       ..add(DiagnosticsProperty('bestSeller', bestSeller))
       ..add(DiagnosticsProperty('totalSales', totalSales))
-      ..add(DiagnosticsProperty('viewsCount', viewsCount))
-      ..add(DiagnosticsProperty('shippingWeight', shippingWeight))
-      ..add(DiagnosticsProperty('dimensions', dimensions))
-      ..add(DiagnosticsProperty('ingredients', ingredients))
-      ..add(DiagnosticsProperty('usageInstructions', usageInstructions))
-      ..add(DiagnosticsProperty('warnings', warnings))
-      ..add(DiagnosticsProperty('expiryDate', expiryDate))
-      ..add(DiagnosticsProperty('manufacturer', manufacturer))
-      ..add(DiagnosticsProperty('countryOfOrigin', countryOfOrigin))
-      ..add(DiagnosticsProperty('metaTitle', metaTitle))
-      ..add(DiagnosticsProperty('metaDescription', metaDescription))
-      ..add(DiagnosticsProperty('slug', slug));
+      ..add(DiagnosticsProperty('variants', variants))
+      ..add(DiagnosticsProperty('hasVariants', hasVariants));
   }
 
   @override
@@ -964,6 +2056,8 @@ class _$ProductModelImpl extends _ProductModel with DiagnosticableTreeMixin {
                 other.description == description) &&
             (identical(other.categoryId, categoryId) ||
                 other.categoryId == categoryId) &&
+            (identical(other.category, category) ||
+                other.category == category) &&
             (identical(other.stockQuantity, stockQuantity) ||
                 other.stockQuantity == stockQuantity) &&
             (identical(other.averageRating, averageRating) ||
@@ -983,6 +2077,8 @@ class _$ProductModelImpl extends _ProductModel with DiagnosticableTreeMixin {
             const DeepCollectionEquality().equals(other._tags, _tags) &&
             (identical(other.weight, weight) || other.weight == weight) &&
             const DeepCollectionEquality().equals(other._size, _size) &&
+            const DeepCollectionEquality()
+                .equals(other._productSizes, _productSizes) &&
             const DeepCollectionEquality().equals(other._flavor, _flavor) &&
             const DeepCollectionEquality()
                 .equals(other._nutritionFacts, _nutritionFacts) &&
@@ -994,29 +2090,9 @@ class _$ProductModelImpl extends _ProductModel with DiagnosticableTreeMixin {
                 other.bestSeller == bestSeller) &&
             (identical(other.totalSales, totalSales) ||
                 other.totalSales == totalSales) &&
-            (identical(other.viewsCount, viewsCount) ||
-                other.viewsCount == viewsCount) &&
-            (identical(other.shippingWeight, shippingWeight) ||
-                other.shippingWeight == shippingWeight) &&
-            const DeepCollectionEquality()
-                .equals(other._dimensions, _dimensions) &&
-            const DeepCollectionEquality()
-                .equals(other._ingredients, _ingredients) &&
-            (identical(other.usageInstructions, usageInstructions) ||
-                other.usageInstructions == usageInstructions) &&
-            (identical(other.warnings, warnings) ||
-                other.warnings == warnings) &&
-            (identical(other.expiryDate, expiryDate) ||
-                other.expiryDate == expiryDate) &&
-            (identical(other.manufacturer, manufacturer) ||
-                other.manufacturer == manufacturer) &&
-            (identical(other.countryOfOrigin, countryOfOrigin) ||
-                other.countryOfOrigin == countryOfOrigin) &&
-            (identical(other.metaTitle, metaTitle) ||
-                other.metaTitle == metaTitle) &&
-            (identical(other.metaDescription, metaDescription) ||
-                other.metaDescription == metaDescription) &&
-            (identical(other.slug, slug) || other.slug == slug));
+            const DeepCollectionEquality().equals(other._variants, _variants) &&
+            (identical(other.hasVariants, hasVariants) ||
+                other.hasVariants == hasVariants));
   }
 
   @JsonKey(ignore: true)
@@ -1030,6 +2106,7 @@ class _$ProductModelImpl extends _ProductModel with DiagnosticableTreeMixin {
         const DeepCollectionEquality().hash(_imageUrls),
         description,
         categoryId,
+        category,
         stockQuantity,
         averageRating,
         reviewCount,
@@ -1042,24 +2119,15 @@ class _$ProductModelImpl extends _ProductModel with DiagnosticableTreeMixin {
         const DeepCollectionEquality().hash(_tags),
         weight,
         const DeepCollectionEquality().hash(_size),
+        const DeepCollectionEquality().hash(_productSizes),
         const DeepCollectionEquality().hash(_flavor),
         const DeepCollectionEquality().hash(_nutritionFacts),
         featured,
         newArrival,
         bestSeller,
         totalSales,
-        viewsCount,
-        shippingWeight,
-        const DeepCollectionEquality().hash(_dimensions),
-        const DeepCollectionEquality().hash(_ingredients),
-        usageInstructions,
-        warnings,
-        expiryDate,
-        manufacturer,
-        countryOfOrigin,
-        metaTitle,
-        metaDescription,
-        slug
+        const DeepCollectionEquality().hash(_variants),
+        hasVariants
       ]);
 
   @JsonKey(ignore: true)
@@ -1079,16 +2147,17 @@ class _$ProductModelImpl extends _ProductModel with DiagnosticableTreeMixin {
 abstract class _ProductModel extends ProductModel {
   const factory _ProductModel(
       {@HiveField(0) required final String id,
-      @HiveField(1) required final String name,
+      @HiveField(1) required final TranslatableString name,
       @HiveField(2) required final double price,
       @JsonKey(name: 'discount_price')
       @HiveField(3)
       final double? discountPrice,
-      @JsonKey(name: 'image_urls') @HiveField(4) final List<String> imageUrls,
-      @HiveField(5) required final String description,
-      @JsonKey(name: 'category_id')
-      @HiveField(6)
-      required final String categoryId,
+      @JsonKey(name: 'imageUrls')
+      @HiveField(4)
+      final List<ProductImage> imageUrls,
+      @HiveField(5) required final TranslatableString description,
+      @HiveField(6) final String categoryId,
+      @HiveField(27) final ProductCategory? category,
       @JsonKey(name: 'stock_quantity') @HiveField(7) final int stockQuantity,
       @JsonKey(name: 'average_rating') @HiveField(8) final double averageRating,
       @JsonKey(name: 'review_count') @HiveField(9) final int reviewCount,
@@ -1105,34 +2174,23 @@ abstract class _ProductModel extends ProductModel {
       @HiveField(16) final List<String>? tags,
       @HiveField(17) final double? weight,
       @HiveField(18) final List<String>? size,
-      @JsonKey(name: 'flavors') @HiveField(19) final List<String>? flavor,
+      @JsonKey(name: 'product_sizes')
+      @HiveField(19)
+      final List<ProductSize>? productSizes,
+      @JsonKey(name: 'flavors') @HiveField(20) final List<String>? flavor,
       @JsonKey(name: 'nutrition_facts')
-      @HiveField(20)
+      @HiveField(21)
       final Map<String, dynamic>? nutritionFacts,
-      @HiveField(21) final bool featured,
-      @JsonKey(name: 'new_arrival') @HiveField(22) final bool newArrival,
-      @JsonKey(name: 'best_seller') @HiveField(23) final bool bestSeller,
-      @JsonKey(name: 'total_sales') @HiveField(24) final int totalSales,
-      @JsonKey(name: 'views_count') @HiveField(25) final int viewsCount,
-      @JsonKey(name: 'shipping_weight')
+      @HiveField(22) final bool featured,
+      @JsonKey(name: 'new_arrival') @HiveField(23) final bool newArrival,
+      @JsonKey(name: 'best_seller') @HiveField(24) final bool bestSeller,
+      @JsonKey(name: 'total_sales') @HiveField(25) final int totalSales,
+      @JsonKey(name: 'product_variants')
       @HiveField(26)
-      final double? shippingWeight,
-      @HiveField(27) final Map<String, dynamic>? dimensions,
-      @HiveField(28) final List<String> ingredients,
-      @JsonKey(name: 'usage_instructions')
-      @HiveField(29)
-      final String? usageInstructions,
-      @HiveField(30) final String? warnings,
-      @JsonKey(name: 'expiry_date') @HiveField(31) final DateTime? expiryDate,
-      @HiveField(32) final String? manufacturer,
-      @JsonKey(name: 'country_of_origin')
-      @HiveField(33)
-      final String? countryOfOrigin,
-      @JsonKey(name: 'meta_title') @HiveField(34) final String? metaTitle,
-      @JsonKey(name: 'meta_description')
-      @HiveField(35)
-      final String? metaDescription,
-      @HiveField(36) final String? slug}) = _$ProductModelImpl;
+      final List<ProductVariantModel> variants,
+      @JsonKey(name: 'has_variants')
+      @HiveField(28)
+      final bool hasVariants}) = _$ProductModelImpl;
   const _ProductModel._() : super._();
 
   factory _ProductModel.fromJson(Map<String, dynamic> json) =
@@ -1143,7 +2201,7 @@ abstract class _ProductModel extends ProductModel {
   String get id;
   @override
   @HiveField(1)
-  String get name;
+  TranslatableString get name;
   @override
   @HiveField(2)
   double get price;
@@ -1152,16 +2210,18 @@ abstract class _ProductModel extends ProductModel {
   @HiveField(3)
   double? get discountPrice;
   @override
-  @JsonKey(name: 'image_urls')
+  @JsonKey(name: 'imageUrls')
   @HiveField(4)
-  List<String> get imageUrls;
+  List<ProductImage> get imageUrls;
   @override
   @HiveField(5)
-  String get description;
-  @override
-  @JsonKey(name: 'category_id')
+  TranslatableString get description;
+  @override // Category: new API returns object, legacy returns category_id string
   @HiveField(6)
   String get categoryId;
+  @override
+  @HiveField(27)
+  ProductCategory? get category;
   @override
   @JsonKey(name: 'stock_quantity')
   @HiveField(7)
@@ -1206,71 +2266,40 @@ abstract class _ProductModel extends ProductModel {
   @HiveField(18)
   List<String>? get size;
   @override
-  @JsonKey(name: 'flavors')
+  @JsonKey(name: 'product_sizes')
   @HiveField(19)
+  List<ProductSize>? get productSizes;
+  @override
+  @JsonKey(name: 'flavors')
+  @HiveField(20)
   List<String>? get flavor;
   @override
   @JsonKey(name: 'nutrition_facts')
-  @HiveField(20)
+  @HiveField(21)
   Map<String, dynamic>? get nutritionFacts;
   @override
-  @HiveField(21)
+  @HiveField(22)
   bool get featured;
   @override
   @JsonKey(name: 'new_arrival')
-  @HiveField(22)
+  @HiveField(23)
   bool get newArrival;
   @override
   @JsonKey(name: 'best_seller')
-  @HiveField(23)
+  @HiveField(24)
   bool get bestSeller;
   @override
   @JsonKey(name: 'total_sales')
-  @HiveField(24)
-  int get totalSales;
-  @override
-  @JsonKey(name: 'views_count')
   @HiveField(25)
-  int get viewsCount;
-  @override
-  @JsonKey(name: 'shipping_weight')
+  int get totalSales;
+  @override // Variants: new API uses 'product_variants', legacy uses 'variants'
+  @JsonKey(name: 'product_variants')
   @HiveField(26)
-  double? get shippingWeight;
-  @override
-  @HiveField(27)
-  Map<String, dynamic>? get dimensions;
-  @override
+  List<ProductVariantModel> get variants;
+  @override // has_variants flag from API
+  @JsonKey(name: 'has_variants')
   @HiveField(28)
-  List<String> get ingredients;
-  @override
-  @JsonKey(name: 'usage_instructions')
-  @HiveField(29)
-  String? get usageInstructions;
-  @override
-  @HiveField(30)
-  String? get warnings;
-  @override
-  @JsonKey(name: 'expiry_date')
-  @HiveField(31)
-  DateTime? get expiryDate;
-  @override
-  @HiveField(32)
-  String? get manufacturer;
-  @override
-  @JsonKey(name: 'country_of_origin')
-  @HiveField(33)
-  String? get countryOfOrigin;
-  @override
-  @JsonKey(name: 'meta_title')
-  @HiveField(34)
-  String? get metaTitle;
-  @override
-  @JsonKey(name: 'meta_description')
-  @HiveField(35)
-  String? get metaDescription;
-  @override
-  @HiveField(36)
-  String? get slug;
+  bool get hasVariants;
   @override
   @JsonKey(ignore: true)
   _$$ProductModelImplCopyWith<_$ProductModelImpl> get copyWith =>

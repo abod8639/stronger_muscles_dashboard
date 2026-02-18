@@ -19,7 +19,7 @@ Widget buildOrderItem(OrderItemModel item, bool isDark) {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -35,7 +35,7 @@ Widget buildOrderItem(OrderItemModel item, bool isDark) {
                     placeholder: (context, url) => Center(
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white.withOpacity(0.2)),
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white.withValues(alpha: 0.2)),
                       ),
                     ),
                     errorWidget: (context, url, error) => const Icon(Icons.broken_image, color: Colors.white24),
@@ -66,7 +66,7 @@ Widget buildOrderItem(OrderItemModel item, bool isDark) {
               Text(
                 'الكمية: ${item.quantity} × ${item.unitPrice.toStringAsFixed(2)} ر.س',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.5),
+                  color: Colors.white.withValues(alpha: 0.5),
                   fontSize: 12,
                 ),
               ),
@@ -92,7 +92,7 @@ Widget buildOrderItem(OrderItemModel item, bool isDark) {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
+            color: Colors.white.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
@@ -115,9 +115,9 @@ Widget _buildAttributeChip(String label, Color color) {
     margin: const EdgeInsets.only(right: 6),
     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
     decoration: BoxDecoration(
-      color: color.withOpacity(0.1),
+      color: color.withValues(alpha: 0.1),
       borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: color.withOpacity(0.3)),
+      border: Border.all(color: color.withValues(alpha: 0.3)),
     ),
     child: Text(
       label,
