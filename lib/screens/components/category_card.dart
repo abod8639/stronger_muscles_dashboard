@@ -57,7 +57,7 @@ class CategoryCardState extends State<CategoryCard>
                         child: Image.network(
                           widget.category.imageUrl!,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Container(
+                          errorBuilder: (_, _, _) => Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(14),
                               color: AppColors.primary.withValues(alpha: 0.1),

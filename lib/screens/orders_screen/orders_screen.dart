@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/screens/components/enhanced_loading_widget.dart';
 import 'package:stronger_muscles_dashboard/screens/components/base_app_bar.dart';
+import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_stats_section.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/orders_table.dart';
 import 'package:stronger_muscles_dashboard/controllers/orders_controller.dart';
@@ -41,32 +42,34 @@ class OrdersScreen extends StatelessWidget {
           return const EnhancedLoadingWidget(message: 'جاري تحميل الطلبات...');
         }
 
-        return 
-        SingleChildScrollView(
-          physics:  responsive.isDesktop ? const NeverScrollableScrollPhysics() : const AlwaysScrollableScrollPhysics(),
-          padding: EdgeInsets.symmetric(
-            horizontal: responsive.defaultPadding.left,
-            // vertical: responsive.defaultPadding.top,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Stats Row
-              if (responsive.isDesktop)
-                SizedBox(
-                  height: 160,
-                  child: buildStatsSection(),
-                ),
+        return MyRefreshIndicator(
+          onRefresh: () async=>
+           await controller.fetchOrders(),
 
-              const SizedBox(height: 10),
-
-              // The Main Table
-              const OrdersTable(),
-
+          child: SingleChildScrollView(
+            physics:  responsive.isDesktop ? const NeverScrollableScrollPhysics() : const AlwaysScrollableScrollPhysics(),
+            padding: EdgeInsets.symmetric(
+              horizontal: responsive.defaultPadding.left,
+              // vertical: responsive.defaultPadding.top,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Stats Row
+                if (responsive.isDesktop)
+                  SizedBox(
+                    height: 160,
+                    child: buildStatsSection(),
+                  ),
           
-
-              const SizedBox(height: 10),
-            ],
+                const SizedBox(height: 10),
+          
+                // The Main Table
+                const OrdersTable(),
+          
+                const SizedBox(height: 10),
+              ],
+            ),
           ),
         );
       }),
@@ -119,7 +122,5 @@ class OrdersScreen extends StatelessWidget {
       ),
     );
   }
-
-
 
 }

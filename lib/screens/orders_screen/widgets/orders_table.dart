@@ -35,52 +35,75 @@ class OrdersTable extends StatelessWidget {
       ),
     );
   }
-
+  
   Widget _buildTableHeader(
     OrdersController controller,
     ResponsiveLayout responsive,
   ) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.02), // لمسة زجاجية خلفية
+        color: Colors.white.withOpacity(0.015), // خلفية زجاجية خفيفة جداً
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         border: Border(
-          bottom: BorderSide(color: Colors.white.withOpacity(0.08), width: 1.5),
+          bottom: BorderSide(color: Colors.white.withOpacity(0.05), width: 1),
         ),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1. قسم الفلاتر (Filter Tabs)
-          Expanded(
-            child: SizedBox(
-              height: 40,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                child: Obx(
-                  () => Row(
-                    children: [
-                      _buildTab(controller, 'all', 'All Orders'),
-                      _buildTab(controller, 'pending', 'Pending'),
-                      _buildTab(controller, 'processing', 'Processing'),
-                      _buildTab(controller, 'shipped', 'Shipped'),
-                      _buildTab(controller, 'delivered', 'Delivered'),
-                      _buildTab(controller, 'cancelled', 'Cancelled'),
-                    ],
+          // السطر الأول: العنوان + صندوق البحث (في الديسكتوب) أو البحث فقط (في الموبايل)
+          Row(
+            children: [
+              if (!responsive.isMobile) ...[
+                const Text(
+                  "Orders Management",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
                   ),
+                ),
+                const Spacer(),
+              ],
+              
+              // Search box: Fixed width on Desktop/Tablet, Full width on Mobile
+              if (responsive.isMobile)
+                Expanded(
+                  child: _buildSearchBox(controller, isFullWidth: true),
+                )
+              else
+                _buildSearchBox(controller, isFullWidth: false),
+            ],
+          ),
+          
+          const SizedBox(height: 20),
+
+          // السطر الثاني: الفلاتر (Tabs)
+          SizedBox(
+            height: 42,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
+              child: Obx(
+                () => Row(
+                  children: [
+                    _buildTab(controller, 'all', 'All Orders'),
+                    _buildTab(controller, 'pending', 'Pending'),
+                    _buildTab(controller, 'processing', 'Processing'),
+                    _buildTab(controller, 'shipped', 'Shipped'),
+                    _buildTab(controller, 'delivered', 'Delivered'),
+                    _buildTab(controller, 'cancelled', 'Cancelled'),
+                  ],
                 ),
               ),
             ),
           ),
-
-          const SizedBox(width: 20),
-
-          // 2. حقل البحث المحسن
-          _buildSearchBox(controller),
         ],
-      ),
+      )
     );
-  }
+    }
 
   Widget _buildTab(OrdersController controller, String id, String label) {
     final isSelected = controller.selectedStatusId.value == id;
@@ -125,37 +148,38 @@ class OrdersTable extends StatelessWidget {
     );
   }
 
-  Widget _buildSearchBox(OrdersController controller) {
+  Widget _buildSearchBox(OrdersController controller, {bool isFullWidth = false}) {
     return Container(
-      width: 280,
-      height: 42,
+      width: isFullWidth ? double.infinity : 280,
+      height: 40,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.3),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.12)),
+        color: Colors.white.withOpacity(0.04),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.white.withOpacity(0.08)),
       ),
-      child: TextField(
-        onChanged: (v) => controller.onSearchChanged(v),
-        style: const TextStyle(fontSize: 13, color: Colors.white),
-        cursorColor: AppColors.primary,
-        decoration: InputDecoration(
-          hintText: 'Search orders...',
-          hintStyle: TextStyle(
-            color: Colors.white.withOpacity(0.25),
-            fontSize: 13,
+      child: Row(
+        children: [
+          Icon(Icons.search_rounded, size: 18, color: Colors.white.withOpacity(0.3)),
+          const SizedBox(width: 10),
+          Expanded(
+            child: TextField(
+              onChanged: (v) => controller.onSearchChanged(v),
+              style: const TextStyle(fontSize: 13, color: Colors.white),
+              decoration: InputDecoration(
+                hintText: 'Search orders...',
+                hintStyle: TextStyle(color: Colors.white.withOpacity(0.2), fontSize: 13),
+                border: InputBorder.none,
+                isDense: true,
+                contentPadding: EdgeInsets.zero,
+              ),
+            ),
           ),
-          prefixIcon: Icon(
-            Icons.search_rounded,
-            size: 18,
-            color: Colors.white.withOpacity(0.4),
-          ),
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: 10),
-        ),
+        ],
       ),
     );
   }
-
+ 
   Widget _buildTableContent(
     OrdersController controller,
     ResponsiveLayout responsive,
@@ -387,12 +411,13 @@ class OrdersTable extends StatelessWidget {
     );
   }
 
-Widget _buildTableFooter(
+  Widget _buildTableFooter(
     OrdersController controller,
     ResponsiveLayout responsive,
   ) {
 
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.02),

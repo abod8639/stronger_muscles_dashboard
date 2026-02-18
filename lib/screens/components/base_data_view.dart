@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../../config/theme.dart';
 import '../../../config/responsive.dart';
 
@@ -78,36 +79,39 @@ class BaseDataView<T> extends StatelessWidget {
   }
 
   Widget _buildListView(ResponsiveLayout res) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: items.length,
-      padding: EdgeInsets.symmetric(horizontal: res.defaultPadding.left),
-      itemBuilder: (context, index) => Padding(
-        padding: const EdgeInsets.only(bottom: 12),
-        child: itemBuilder(context, items[index], index),
+    return Obx(()=>
+       ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: items.length,
+        padding: EdgeInsets.symmetric(horizontal: res.defaultPadding.left),
+        itemBuilder: (context, index) => Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: itemBuilder(context, items[index], index),
+        ),
       ),
     );
   }
 
   Widget _buildGridView(ResponsiveLayout res, int columns, double spacing) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.symmetric(
-        horizontal: res.defaultPadding.left,
-        vertical: spacing / 2,
+    return Obx(()=> GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        padding: EdgeInsets.symmetric(
+          horizontal: res.defaultPadding.left,
+          vertical: spacing / 2,
+        ),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: columns,
+          crossAxisSpacing: spacing,
+          mainAxisSpacing: spacing,
+          mainAxisExtent: mainAxisExtent,
+          childAspectRatio: childAspectRatio ?? res.getCardAspectRatio(),
+        ),
+        itemCount: items.length,
+        itemBuilder: (context, index) =>
+            itemBuilder(context, items[index], index),
       ),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: columns,
-        crossAxisSpacing: spacing,
-        mainAxisSpacing: spacing,
-        mainAxisExtent: mainAxisExtent,
-        childAspectRatio: childAspectRatio ?? res.getCardAspectRatio(),
-      ),
-      itemCount: items.length,
-      itemBuilder: (context, index) =>
-          itemBuilder(context, items[index], index),
     );
   }
 }

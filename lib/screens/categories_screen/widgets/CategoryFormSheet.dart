@@ -212,9 +212,9 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
         child: CachedNetworkImage(
           imageUrl: controller.imageController.text,
           fit: BoxFit.cover,
-          placeholder: (_, __) =>
+          placeholder: (_, _) =>
               const Center(child: CircularProgressIndicator()),
-          errorWidget: (_, __, ___) => const Center(
+          errorWidget: (_, _, _) => const Center(
             child: Icon(Icons.broken_image_outlined, color: Colors.grey),
           ),
         ),

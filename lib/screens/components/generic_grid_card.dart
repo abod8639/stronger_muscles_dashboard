@@ -65,9 +65,9 @@ class _GenericGridCardState<T> extends State<GenericGridCard<T>> {
                           imageUrl: widget.imageUrl!,
                           fit: BoxFit.cover,
                           cacheManager: CustomCacheManager.instance,
-                          errorWidget: (_, __, ___) =>
+                          errorWidget: (_, _, _) =>
                               _buildPlaceholder(isDark),
-                          placeholder: (_, __) => _buildPlaceholder(isDark),
+                          placeholder: (_, _) => _buildPlaceholder(isDark),
                         )
                       : widget.imageWidget ?? _buildPlaceholder(isDark),
                 ),

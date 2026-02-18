@@ -85,7 +85,7 @@ class ProductsScreen extends StatelessWidget {
                     vertical: 10,
                   ),
                   itemCount: controller.filteredProducts.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  separatorBuilder: (_, _) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     final product = controller.filteredProducts[index];
                     return ProductListItem(

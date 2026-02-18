@@ -102,11 +102,17 @@ class OrderDetailsScreen extends StatelessWidget {
             buildSection(
               child: Column(
                 children: [
+                  
                   buildDetailRow(Icons.location_on, 'العنوان الكامل', order.shippingAddress?.fullAddress ?? ""),
+
                   buildDetailRow(Icons.location_on, 'المدينة', order.shippingAddress?.city ?? ""),
+            
                   buildDetailRow(Icons.location_on, 'الولاية', order.shippingAddress?.state ?? ""),
+               
                   buildDetailRow(Icons.location_on, 'الرمز البريدي', order.shippingAddress?.postalCode ?? ""),
+                
                   buildDetailRow(Icons.location_on, 'الدولة', order.shippingAddress?.country ?? ""),
+
                 ],
               ),
             ),

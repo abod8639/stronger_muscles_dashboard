@@ -383,8 +383,8 @@ class _CategoryFormPageState extends State<CategoryFormPage>
                   child: CachedNetworkImage(
                     imageUrl: controller.imageController.text,
                     fit: BoxFit.cover,
-                    placeholder: (_, __) => _buildImageShimmer(isDark),
-                    errorWidget: (_, __, ___) => buildErrorWidget(isDark),
+                    placeholder: (_, _) => _buildImageShimmer(isDark),
+                    errorWidget: (_, _, _) => buildErrorWidget(isDark),
                   ),
                 ),
               ),

@@ -46,8 +46,8 @@ Widget buildEnhancedOrderImages(OrderModel order, bool isHovered) {
                 child: CachedNetworkImage(
                   imageUrl: items[index].imageUrl ?? '',
                   fit: BoxFit.cover,
-                  placeholder: (_, __) => buildImageShimmer(),
-                  errorWidget: (_, __, ___) => Container(
+                  placeholder: (_, _) => buildImageShimmer(),
+                  errorWidget: (_, _, _) => Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [

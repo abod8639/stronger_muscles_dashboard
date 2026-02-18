@@ -174,7 +174,7 @@ class _GenericListCardState<T> extends State<GenericListCard<T>>
                 imageUrl: widget.imageUrl!,
                 cacheManager: CustomCacheManager.instance,
                 fit: BoxFit.cover,
-                errorWidget: (_, __, ___) => Icon(
+                errorWidget: (_, _, _) => Icon(
                   widget.fallbackIcon ?? Icons.image_outlined,
                   color: AppColors.primary,
                 ),
