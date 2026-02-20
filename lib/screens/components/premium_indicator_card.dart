@@ -208,7 +208,7 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard>
     return LineChartData(
       gridData: const FlGridData(show: false),
       titlesData: const FlTitlesData(show: false),
-      borderData: FlBorderData(show: false),
+      borderData:  FlBorderData(show: false),
       lineBarsData: [
         LineChartBarData(
           spots: widget.chartSpots ?? [],

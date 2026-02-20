@@ -7,7 +7,7 @@ Widget buildDashboardTitle(ResponsiveLayout res) {
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Text(
-        'مرحباً بك مجدداً! 👋',
+        'مرحباً بك مجدداً!',
         style: TextStyle(
           fontSize: res.getTitleFontSize() + 2,
           fontWeight: FontWeight.w900,

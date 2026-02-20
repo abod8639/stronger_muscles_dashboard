@@ -8,8 +8,8 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // استدعاء الـ Controllers المتوفرة في الذاكرة
-    final authController = Get.put(AuthController());
+    // استخدام Get.find() بدلاً من Get.put() لاسترجاع AuthController المسجل
+    final authController = Get.find<AuthController>();
 
     return Scaffold(
       backgroundColor: Colors.transparent,

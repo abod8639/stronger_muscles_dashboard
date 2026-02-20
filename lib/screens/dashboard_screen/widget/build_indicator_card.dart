@@ -18,7 +18,17 @@ Widget buildIndicatorCard(int index) {
       trend: '${5 + index * 4}%',
       isUp: true,
       chartColor: AppColorsExtended.orangeAccent,
+      chartSpots: generateChartSpots(
+        5,
+        controller.processingOrders.value.toDouble() * 40,
+      ),
+
     ),
+  //     final pendingOrders = 0.obs;
+  // final processingOrders = 0.obs;
+  // final shippedOrders = 0.obs;
+  // final deliveredOrders = 0.obs;
+  // final cancelledOrders = 0.obs;
     // IndicatorsModel(
     //   title: 'معالجة',
     //   subtitle: 'Processing Orders',
@@ -45,9 +55,13 @@ Widget buildIndicatorCard(int index) {
       value: controller.deliveredOrders.value.toString(),
       color: AppColorsExtended.purpleDark,
       icon: Icons.check_circle,
-      trend: '${12 + index}%',
+      trend: '${2 + index }%',
       isUp: true,
       chartColor: AppColorsExtended.greenAccent,
+      chartSpots: generateChartSpots(
+        20,
+        controller.deliveredOrders.value.toDouble() + 10,
+      ),
     ),
     IndicatorsModel(
       title: 'ملغاة',
@@ -55,9 +69,13 @@ Widget buildIndicatorCard(int index) {
       value: controller.cancelledOrders.value.toString(),
       color: AppColorsExtended.purpleDark,
       icon: Icons.cancel,
-      trend: '${2 - index}%',
+      trend: '${ index}%',
       isUp: false,
       chartColor: AppColorsExtended.redAccent,
+      chartSpots: generateChartSpots(
+        20,
+        controller.cancelledOrders.value.toDouble() + 10,
+      ),
     ),
     // IndicatorsModel(
     //   title: 'إجمالي',
@@ -74,11 +92,6 @@ Widget buildIndicatorCard(int index) {
   if (index >= indicators.length) return const SizedBox();
 
   final indicator = indicators[index];
-  final chartSpots = generateChartSpots(
-    50,
-    controller.orders.length.toDouble() + 400,
-  );
-
   return PremiumIndicatorCard(
     title: indicator.title,
     subtitle: indicator.subtitle,
@@ -87,7 +100,7 @@ Widget buildIndicatorCard(int index) {
     accentColor: indicator.color,
     trend: indicator.trend,
     trendUp: indicator.isUp,
-    chartSpots: chartSpots,
+    chartSpots: indicator.chartSpots,
     chartColor: indicator.chartColor,
   );
 }

@@ -16,7 +16,8 @@ class UsersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(UsersController());
+    // استخدام Get.find() بدلاً من Get.put() لتجنب إنشاء instances جديدة
+    final controller = Get.find<UsersController>();
     final responsive = context.responsive;
 
     return Scaffold(

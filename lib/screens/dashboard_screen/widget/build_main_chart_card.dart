@@ -87,7 +87,7 @@ Widget buildMainChartCard(ResponsiveLayout res) {
           child: EnhancedLineChartWidget(
             title: '',
             spots: generateChartSpots(
-              10,
+              20,
               controller.orders.length.toDouble() + 100,
             ),
             lineColor: AppColorsExtended.cyanAccent,

@@ -196,7 +196,7 @@ Map<String, dynamic> _mapProductJson(Map<String, dynamic> json) {
         .map((e) => e is Map ? e : {'thumbnail': e, 'medium': e, 'original': e})
         .toList(),
     'category_id': categoryId,
-    if (categoryObj != null) 'category': categoryObj,
+    'category': ?categoryObj,
     'product_variants': variantsRaw,
     'has_variants': json['has_variants'] ?? (variantsRaw as List).isNotEmpty,
   };

@@ -7,7 +7,8 @@ class MyBottomNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(NavigationController());
+    // استخدام Get.find() بدلاً من Get.put() لاسترجاع NavigationController المسجل
+    final controller = Get.find<NavigationController>();
 
     return Obx(
       () => BottomNavigationBar(

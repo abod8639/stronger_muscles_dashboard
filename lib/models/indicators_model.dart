@@ -1,3 +1,4 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 class IndicatorsModel {
@@ -9,6 +10,7 @@ class IndicatorsModel {
   final String trend;
   final bool isUp;
   final Color? chartColor;
+  final List<FlSpot>? chartSpots;
 
   IndicatorsModel({
     required this.title,
@@ -18,6 +20,7 @@ class IndicatorsModel {
     required this.icon,
     required this.trend,
     required this.isUp,
-    this.chartColor,
+    this.chartColor, 
+    this.chartSpots,
   });
 }

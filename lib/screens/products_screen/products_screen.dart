@@ -17,7 +17,8 @@ class ProductsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(ProductsController());
+    // استخدام Get.find() بدلاً من Get.put() لتجنب إنشاء instances جديدة
+    final controller = Get.find<ProductsController>();
     final responsive = context.responsive;
 
     return Scaffold(
@@ -45,6 +46,10 @@ class ProductsScreen extends StatelessWidget {
                   // التعديل هنا: استدعاء الدالة التي تحتوي على منطق الفلترة
                   onSelect: (id) => controller.setCategory(id),
                   labelKey: 'displayName',
+                // "category": {
+                //     "id": "cat-mass-giner",
+                //     "name": null
+                // },
                   idKey: 'id',
                   showAllOption: true,
                   allLabel: 'الكل',

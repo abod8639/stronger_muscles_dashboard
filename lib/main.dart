@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:stronger_muscles_dashboard/controllers/navigation_controller.dart';
 import 'package:stronger_muscles_dashboard/functions/hive_init.dart';
 import 'package:stronger_muscles_dashboard/screens/components/my_bottomnavigationbar.dart';
 import 'package:stronger_muscles_dashboard/screens/components/sidebar.dart';
+import 'package:stronger_muscles_dashboard/services/cache_service.dart';
 import 'config/theme.dart';
 import 'config/theme_extended.dart';
 import 'screens/index.dart';
+import 'controllers/index.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,7 +17,27 @@ Future<void> main() async {
   await Hive.initFlutter();
   await GetStorage.init();
   await hiveInit();
+  
+  // تسجيل الخدمات والـ Controllers كـ Singletons
+  _initializeServices();
+  
   runApp(const StrongerMusclesDashboard());
+}
+
+/// تهيئة الخدمات والـ Controllers
+void _initializeServices() {
+  // تسجيل CacheService كـ GetxService (يبقى في الذاكرة طوال حياة التطبيق)
+  Get.put(CacheService(), permanent: true);
+  
+  // تسجيل Controllers كـ LazyPut (يتم إنشاؤها فقط عند الحاجة الأولى)
+  // وتبقى في الذاكرة طالما التطبيق يعمل
+  Get.lazyPut(() => NavigationController(), fenix: true);
+  Get.lazyPut(() => DashboardController(), fenix: true);
+  Get.lazyPut(() => CategoriesController(), fenix: true);
+  Get.lazyPut(() => ProductsController(), fenix: true);
+  Get.lazyPut(() => OrdersController(), fenix: true);
+  Get.lazyPut(() => UsersController(), fenix: true);
+  Get.lazyPut(() => AuthController(), fenix: true);
 }
 
 class StrongerMusclesDashboard extends StatelessWidget {
@@ -48,7 +69,8 @@ class MainNavigationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(NavigationController());
+    // استخدام Get.find() لاسترجاع NavigationController المسجل في _initializeServices()
+    final controller = Get.find<NavigationController>();
 
     return LayoutBuilder(
       builder: (context, constraints) {

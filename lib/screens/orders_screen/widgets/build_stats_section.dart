@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/controllers/orders_controller.dart';
 import 'package:stronger_muscles_dashboard/screens/components/premium_indicator_card.dart';
+import 'package:stronger_muscles_dashboard/screens/dashboard_screen/dashboard_screen.dart';
 
 Widget buildStatsSection() {
   final controller = Get.find<OrdersController>();
@@ -30,12 +31,15 @@ Widget buildStatsSection() {
         ),
         PremiumIndicatorCard(
           title: 'قيد الانتظار',
-          value: controller.pendingOrders.toString(),
+          value: (controller.pendingOrders*10).toString(),
           trend: '-2%',
           trendUp: false,
           accentColor: Colors.orange,
           chartColor: Colors.orangeAccent,
           icon: Icons.timer_rounded,
+          // chartSpots: generateChartSpots(500, controller.totalOrders.toDouble()),
+
+          
         ),
         PremiumIndicatorCard(
           title: 'تم التوصيل',

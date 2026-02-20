@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -22,7 +24,8 @@ class DashboardScreen extends GetView<DashboardController> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(DashboardController());
+    // استخدام Get.find() بدلاً من Get.put() لتجنب إنشاء instances جديدة
+    // سيتم التسجيل في main.dart باستخدام Get.lazyPut()
     final res = context.responsive;
 
     return Scaffold(
@@ -95,11 +98,23 @@ class DashboardScreen extends GetView<DashboardController> {
 
 List<FlSpot> generateChartSpots(int count, double maxY) {
   final controller = Get.find<DashboardController>();
+  
+  // تأكد أن maxY لا تقل عن قيمة دنيا لتجنب الخطأ
+  final double effectiveMaxY = maxY < 5.0 ? 50.0 : maxY;
+  final double baseValue = controller.orders.length.toDouble();
 
-  final random = List.generate(count, (i) {
-    final baseValue = (controller.orders.length / 1) * (i + 2);
-    final variation = (baseValue * 0.2 * (i % 2 == 0 ? -1 : 2)).toInt();
-    return FlSpot(i.toDouble(), (baseValue + variation).clamp(1, maxY));
+  return List.generate(count, (i) {
+    // استخدام Math.sin (تأكد من عمل import 'dart:math' as math;)
+    double sineValue = math.sin(i * 0.5) * (effectiveMaxY * 0.1);
+    double trend = (i / count) * (effectiveMaxY * 1.2);
+    
+    // حساب القيمة النهائية
+    double finalY = (baseValue + sineValue + trend);
+
+    // الحل الآمن: التأكد من أن الحد الأدنى دائماً أصغر من الحد الأقصى
+    return FlSpot(
+      i.toDouble(), 
+      finalY.clamp(0.0, effectiveMaxY) // استخدام 0.0 كحد أدنى أضمن
+    );
   });
-  return random;
 }

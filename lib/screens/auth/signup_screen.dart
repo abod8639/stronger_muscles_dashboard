@@ -10,7 +10,8 @@ class SignupScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(AuthController());
+    // استخدام Get.find() بدلاً من Get.put() لاسترجاع AuthController المسجل
+    final controller = Get.find<AuthController>();
     final size = MediaQuery.of(context).size;
     final isDesktop = size.width >= 900;
 

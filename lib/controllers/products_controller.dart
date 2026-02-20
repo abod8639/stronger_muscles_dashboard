@@ -36,15 +36,15 @@ class ProductsController extends GetxController {
   RxList<String> imageUrls = <String>[].obs;
 
   final Map<String, TextEditingController> textcontrollers = {
-    'name_ar': TextEditingController(),
-    'name_en': TextEditingController(),
-    'price': TextEditingController(),
+    'name_ar':  TextEditingController(),
+    'name_en':  TextEditingController(),
+    'price':    TextEditingController(),
     'discount': TextEditingController(),
-    'desc_ar': TextEditingController(),
-    'desc_en': TextEditingController(),
-    'stock': TextEditingController(),
-    'brand': TextEditingController(),
-    'serving': TextEditingController(),
+    'desc_ar':  TextEditingController(),
+    'desc_en':  TextEditingController(),
+    'stock':    TextEditingController(),
+    'brand':    TextEditingController(),
+    'serving':  TextEditingController(),
     'sessions': TextEditingController(),
   };
 
@@ -60,10 +60,10 @@ class ProductsController extends GetxController {
     final newVariant = ProductVariantModel(
       id: 'VAR-${DateTime.now().millisecondsSinceEpoch}',
       sku: '',
-      price: double.tryParse(textcontrollers['price']?.text ?? '0') ?? 0.0,
-      discountPrice: double.tryParse(textcontrollers['discount']?.text ?? ''),
-      effectivePrice: double.tryParse(textcontrollers['price']?.text ?? '0') ?? 0.0,
-      stockQuantity: int.tryParse(textcontrollers['stock']?.text ?? '0') ?? 0,
+      price:          double.tryParse(textcontrollers['price']?.text ?? '0') ?? 0,
+      discountPrice:  double.tryParse(textcontrollers['discount']?.text ?? ''),
+      effectivePrice: double.tryParse(textcontrollers['price']?.text ?? '0') ?? 0,
+      stockQuantity:  int.tryParse(textcontrollers['stock']?.text ?? '0') ?? 0,
       attributes: {},
       isActive: true,
     );
@@ -86,20 +86,25 @@ class ProductsController extends GetxController {
     // Basic cleanup: if productSizes is empty, we don't necessarily need to clear,
     // but we must ensure each CURRENT size has a controller with its CURRENT value.
     for (var size in productSizes) {
-      // If controller doesn't exist, create it.
-      // If it exists, update its text to match the model (important for editing different products)
       if (!sizePriceControllers.containsKey(size.size)) {
         sizePriceControllers[size.size] = TextEditingController(text: size.price.toString());
-      } else {
-        sizePriceControllers[size.size]!.text = size.price.toString();
       }
+      // REMOVED: updating existing controllers here. 
+      // This prevents overwriting user input when adding new sizes.
+      // If we need to force update (e.g. initial load), we should clear the controllers map first.
 
       if (!sizeDiscountControllers.containsKey(size.size)) {
         sizeDiscountControllers[size.size] = TextEditingController(text: size.discountPrice?.toString() ?? '');
-      } else {
-        sizeDiscountControllers[size.size]!.text = size.discountPrice?.toString() ?? '';
       }
     }
+  }
+
+  /// Clears and disposes size controllers. Call this when closing the form or initializing a new product.
+  void clearSizeControllers() {
+     sizePriceControllers.forEach((key, controller) => controller.dispose());
+     sizePriceControllers.clear();
+     sizeDiscountControllers.forEach((key, controller) => controller.dispose());
+     sizeDiscountControllers.clear();
   }
 
   void selectSize(int index) {
@@ -355,10 +360,17 @@ class ProductsController extends GetxController {
 
       // Update productSizes with values from individual controllers
       final updatedSizes = productSizes.map((ps) {
-        final price = double.tryParse(sizePriceControllers[ps.size]?.text ?? '0') ?? 0.0;
+        final price = double.tryParse(sizePriceControllers[ps.size]?.text ?? '0') ?? 0;
         final discount = double.tryParse(sizeDiscountControllers[ps.size]?.text ?? '');
         return ps.copyWith(price: price, discountPrice: discount);
       }).toList();
+
+      debugPrint('-------- SAVE PRODUCT DEBUG --------');
+      debugPrint('Product Sizes Count: ${updatedSizes.length}');
+      for (var s in updatedSizes) {
+        debugPrint('Size: ${s.size}, Price: ${s.price}, Discount: ${s.discountPrice}');
+      }
+      debugPrint('------------------------------------');
 
       final productData = ProductModel(
         id: existingProduct?.id ?? 'PROD-${DateTime.now().millisecondsSinceEpoch}',
@@ -366,7 +378,7 @@ class ProductsController extends GetxController {
           ar: textcontrollers['name_ar']!.text.trim(),
           en: textcontrollers['name_en']!.text.trim(),
         ),
-        price: double.tryParse(textcontrollers['price']!.text) ?? 0.0,
+        price: double.tryParse(textcontrollers['price']!.text) ?? 0,
         discountPrice: double.tryParse(textcontrollers['discount']!.text),
         imageUrls: productImages.map((url) => ProductImage(
           thumbnail: url,
@@ -398,6 +410,8 @@ class ProductsController extends GetxController {
 
       debugPrint("======== success ========");
       _showSuccess('تم بنجاح', 'تم حفظ بيانات المنتج بنجاح');
+      debugPrint(productData.toString());
+      
     } catch (e) {
       debugPrint("======== error ========");
       debugPrint(e.toString());

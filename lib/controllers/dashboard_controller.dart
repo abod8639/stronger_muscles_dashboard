@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import '../models/index.dart';
 import '../services/api_service.dart';
@@ -50,6 +51,10 @@ class DashboardController extends GetxController {
   final productsLowStock = 0.obs;
   final productsOutOfStock = 0.obs;
 
+  // --- Debounce Mechanism ---
+  DateTime? _lastFetchTime;
+  static const Duration _minFetchInterval = Duration(seconds: 2);
+
   @override
   void onInit() {
     super.onInit();
@@ -94,6 +99,15 @@ class DashboardController extends GetxController {
   }
 
   Future<void> fetchDashboardData() async {
+    // تطبيق debouncing لتجنب الطلبات المتكررة بفترة زمنية قصيرة
+    final now = DateTime.now();
+    if (_lastFetchTime != null &&
+        now.difference(_lastFetchTime!) < _minFetchInterval) {
+      debugPrint('⏭ تم تجاهل الطلب المكرر (في انتظار debounce)');
+      return;
+    }
+    _lastFetchTime = now;
+
     try {
       isLoading.value = true;
       errorMessage.value = '';

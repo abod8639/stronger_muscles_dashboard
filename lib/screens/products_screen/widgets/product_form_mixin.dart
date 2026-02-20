@@ -45,6 +45,10 @@ mixin ProductFormMixin<T extends StatefulWidget> on State<T> {
 
     // Initialize GetX reactive values
     controller.productFlavors.value = product?.flavor ?? [];
+    
+    // Clear old size controllers to ensure fresh start for this product
+    controller.clearSizeControllers();
+    
     controller.productSizes.assignAll(product?.productSizes ?? []);
     controller.variants.assignAll(product?.variants ?? []);
     controller.isFeatured.value = product?.isActive ?? true;
@@ -67,5 +71,6 @@ mixin ProductFormMixin<T extends StatefulWidget> on State<T> {
   /// Dispose all text controllers
   void disposeProductControllers() {
     controller.textcontrollers.forEach((_, c) => c.dispose());
+    controller.clearSizeControllers();
   }
 }
