@@ -16,28 +16,42 @@ class CategoryRepository {
     _cacheService = Get.put(CacheService(), permanent: true);
   }
 
-  Future<List<CategoryModel>> getCategories({bool tree = false}) async {
+  Future<List<CategoryModel>> getCategories({bool tree = false, bool forceRefresh = false}) async {
     try {
       final cacheKey = tree ? _cacheKeyCategoriesTree : _cacheKeyCategories;
 
+      if (forceRefresh) {
+        _cacheService.remove(cacheKey);
+      }
+
       // معادلة cache أولاً
       final cachedData = _cacheService.get<List<CategoryModel>>(cacheKey);
-      if (cachedData != null) {
-        debugPrint('✓ تم استرجاع التصنيفات من الـ Cache');
+      if (cachedData != null && !forceRefresh) {
+        debugPrint('✓ تم استرجاع التصنيفات من الـ Cache (${cachedData.length} عنصر)');
         return cachedData;
       }
 
-      debugPrint('↓ جاري تحميل التصنيفات من الخادم...');
+      debugPrint('↓ جاري تحميل التصنيفات من الخادم (tree: $tree)...');
       final data = await _apiService.fetchCategories(tree: tree);
-      final categories = data
-          .map((json) => CategoryModel.fromJson(json as Map<String, dynamic>))
-          .toList();
+      debugPrint('📦 استلمنا ${data.length} تصنيف من الخام');
+
+      final categories = <CategoryModel>[];
+      for (var item in data) {
+        try {
+          categories.add(CategoryModel.fromJson(item as Map<String, dynamic>));
+        } catch (e) {
+          debugPrint('❌ خطأ في معالجة تصنيف واحد: $e');
+          debugPrint('   البيانات التالفة: $item');
+        }
+      }
+
+      debugPrint('✅ تم تحويل ${categories.length} تصنيف بنجاح');
 
       // حفظ البيانات في الـ Cache لمدة 5 دقائق
       _cacheService.set(cacheKey, categories, cacheDurationSeconds: 300);
       return categories;
     } catch (e) {
-      print('خطأ في CategoryRepository: $e');
+      debugPrint('🚨 خطأ فادح في CategoryRepository: $e');
       rethrow;
     }
   }

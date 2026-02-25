@@ -32,6 +32,9 @@ class CategoryModel with _$CategoryModel {
 }
 
 Map<String, dynamic> _customJson(Map<String, dynamic> json) {
+  // If the object already has processed fields, return it as is (idempotency)
+  if (json['processed'] == true) return json;
+
   dynamic parseTranslatable(dynamic val) {
     if (val is Map) {
       return {
@@ -49,8 +52,12 @@ Map<String, dynamic> _customJson(Map<String, dynamic> json) {
     'id': json['id']?.toString() ?? '', // Ensure ID is a string
     'name': parseTranslatable(json['name']),
     'description': parseTranslatable(json['description']),
-    'image_url': json['imageUrl'] ?? json['image_url'],
+    // Map snake_case to camelCase if needed for the generated model
+    'imageUrl': json['imageUrl'] ?? json['image_url'],
     'parentId': json['parentId'] ?? json['parent_id'],
-    'children': (json['children'] as List?)?.map((e) => _customJson(e as Map<String, dynamic>)).toList() ?? [], // Recursively parse children
+    'sortOrder': json['sortOrder'] ?? json['sort_order'] ?? 0,
+    'isActive': json['isActive'] ?? json['is_active'] ?? true,
+    // Note: children recursion will be handled by CategoryModel.fromJson in the generated code
+    'processed': true,
   };
 }

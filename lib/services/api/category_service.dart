@@ -11,14 +11,17 @@ class CategoryService extends ApiBase {
       final response = await http
           .get(
             Uri.parse(
-              '${ApiConfigController().baseUrl.value}${ApiConfig.shopCategories}$queryParam',
+              '${ApiConfigController().baseUrl.value}${ApiConfig.adminCategories}$queryParam',
             ),
-            headers: {'Accept': 'application/json'},
+            headers: getAuthHeaders(),
           )
           .timeout(
             const Duration(seconds: ApiBase.timeoutSeconds),
             onTimeout: () => http.Response('Connection timeout', 408),
           );
+
+      // Handle auth errors
+      handleAuthErrors(response);
 
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);

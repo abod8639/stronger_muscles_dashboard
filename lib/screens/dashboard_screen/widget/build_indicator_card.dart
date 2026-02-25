@@ -69,7 +69,7 @@ Widget buildIndicatorCard(int index) {
       value: controller.cancelledOrders.value.toString(),
       color: AppColorsExtended.purpleDark,
       icon: Icons.cancel,
-      trend: '${ index}%',
+      trend: '$index%',
       isUp: false,
       chartColor: AppColorsExtended.redAccent,
       chartSpots: generateChartSpots(

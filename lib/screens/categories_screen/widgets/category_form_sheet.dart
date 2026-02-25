@@ -109,7 +109,7 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
                     ),
                     child: buildModernTextField(
                       controller.idController,
-                      'كود التصنيف (Unique ID)',
+                      'كود التصنيف (اختياري - سيتم توليده تلقائياً)',
                       Icons.fingerprint_rounded,
                       // الحقل يكون مفعلاً فقط إذا تحقق الشرطان
                       enabled: _isIdFieldEnabled && !controller.isLoading.value,
@@ -319,11 +319,10 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
   }
 
   void _submitForm() async {
-    if (controller.idController.text.trim().isEmpty ||
-        controller.nameArController.text.trim().isEmpty) {
+    if (controller.nameArController.text.trim().isEmpty) {
       Get.snackbar(
         'تنبيه',
-        'يجب ملء حقل الكود والاسم على الأقل',
+        'يجب ملء حقل الاسم على الأقل',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: AppColors.error.withValues(alpha: 0.8),
         colorText: Colors.white,
