@@ -1,42 +1,30 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'package:stronger_muscles_dashboard/config/api_config.dart';
 import 'package:stronger_muscles_dashboard/services/api/api_base.dart';
 
-class CategoryServiceFixed extends ApiBase {
+class CategoryService extends ApiBase {
   Future<List<dynamic>> fetchCategories({bool tree = false}) async {
     try {
-      final queryParam = tree ? '?tree=1' : '';
-      final response = await http
-          .get(
-            Uri.parse(
-              '${ApiConfigController().baseUrl.value}${ApiConfig.adminCategories}$queryParam',
-            ),
-            headers: getAuthHeaders(),
-          )
-          .timeout(
-            const Duration(seconds: ApiBase.timeoutSeconds),
-            onTimeout: () => http.Response('Connection timeout', 408),
-          );
+      final response = await dio.get(
+        ApiConfig.adminCategories,
+        queryParameters: tree ? {'tree': 1} : null,
+      );
 
-      // Handle auth errors
-      handleAuthErrors(response);
+      final decoded = response.data;
 
-      if (response.statusCode == 200) {
-        final decoded = json.decode(response.body);
-        if (decoded is Map && decoded.containsKey('data')) {
-          var data = decoded['data'];
-          if (data is Map && data.containsKey('data')) {
-            return data['data'] ?? [];
-          }
-          return data is List ? data : [];
+      if (decoded is Map && decoded.containsKey('data')) {
+        var data = decoded['data'];
+        
+        if (data is Map && data.containsKey('data')) {
+          return data['data'] ?? [];
         }
-        return decoded is List ? decoded : [];
-      } else {
-        throw Exception('فشل في جلب التصنيفات: ${response.statusCode}');
+        return data is List ? data : [];
       }
-    } catch (e) {
-      print('خطأ في جلب التصنيفات: $e');
+      
+      return decoded is List ? decoded : [];
+      
+    } on DioException catch (e) {
+      print('⚠️ [CategoryService] خطأ في جلب التصنيفات: ${e.message}');
       rethrow;
     }
   }
