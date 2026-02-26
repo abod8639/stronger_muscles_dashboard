@@ -6,9 +6,7 @@ import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/produ
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_form_mixin.dart';
 import '../../../config/theme.dart';
 
-/// Full-screen page لفورم المنتج.
-/// كل منطق الحقول موجود في [ProductFormBody] — هذا الـ Widget
-/// مسؤول فقط عن الـ Scaffold (الـ AppBar وزر الحفظ).
+
 class ProductFormPage extends StatefulWidget {
   final ProductModel? product;
   const ProductFormPage({super.key, this.product});

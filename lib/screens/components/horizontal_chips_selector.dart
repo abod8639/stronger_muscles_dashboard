@@ -11,6 +11,8 @@ class HorizontalChipsSelector extends StatelessWidget {
   final bool showAllOption;
   final String allLabel;
 
+  final String Function(dynamic item)? labelBuilder;
+
   const HorizontalChipsSelector({
     super.key,
     required this.items,
@@ -20,6 +22,7 @@ class HorizontalChipsSelector extends StatelessWidget {
     this.idKey = 'id',
     this.showAllOption = true,
     this.allLabel = 'الكل',
+    this.labelBuilder,
   });
 
   @override
@@ -39,7 +42,9 @@ class HorizontalChipsSelector extends StatelessWidget {
 
           final String displayLabel = isAllItem
               ? allLabel
-              : _getValue(items[showAllOption ? index - 1 : index], labelKey);
+              : labelBuilder != null
+                  ? labelBuilder!(items[showAllOption ? index - 1 : index])
+                  : _getValue(items[showAllOption ? index - 1 : index], labelKey);
 
           final String itemId = isAllItem
               ? 'all'

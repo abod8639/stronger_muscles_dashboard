@@ -9,9 +9,7 @@ import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/produ
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_form_mixin.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 
-/// Bottom-sheet wrapper لفورم المنتج.
-/// كل منطق الحقول موجود في [ProductFormBody] — هذا الـ Widget
-/// مسؤول فقط عن الـ Shell (الـ Handle، الـ Header، وزر الحفظ).
+
 class ProductFormSheet extends StatefulWidget {
   final ProductModel? product;
   const ProductFormSheet({super.key, this.product});

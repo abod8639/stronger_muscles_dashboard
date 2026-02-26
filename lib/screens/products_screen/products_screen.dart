@@ -43,13 +43,8 @@ class ProductsScreen extends StatelessWidget {
                 () => HorizontalChipsSelector(
                   items: controller.categories,
                   selectedId: controller.selectedCategoryId.value,
-                  // التعديل هنا: استدعاء الدالة التي تحتوي على منطق الفلترة
                   onSelect: (id) => controller.setCategory(id),
-                  labelKey: 'displayName',
-                // "category": {
-                //     "id": "cat-mass-giner",
-                //     "name": null
-                // },
+                  labelBuilder: (item) => item.displayName,
                   idKey: 'id',
                   showAllOption: true,
                   allLabel: 'الكل',
