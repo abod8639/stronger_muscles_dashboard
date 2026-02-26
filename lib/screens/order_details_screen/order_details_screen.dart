@@ -7,7 +7,7 @@ import 'package:stronger_muscles_dashboard/screens/order_details_screen/widget/b
 import 'package:stronger_muscles_dashboard/screens/order_details_screen/widget/build_section.dart';
 import 'package:stronger_muscles_dashboard/screens/order_details_screen/widget/build_summary_row.dart';
 import 'package:stronger_muscles_dashboard/screens/components/base_app_bar.dart';
-import '../../models/order_model.dart';
+import '../../data/models/order_model.dart';
 import '../../config/theme.dart';
 import '../components/status_badge.dart';
 

@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/controllers/dashboard_controller.dart';
 import 'package:stronger_muscles_dashboard/controllers/navigation_controller.dart';
-import 'package:stronger_muscles_dashboard/models/order_model.dart';
+import 'package:stronger_muscles_dashboard/data/models/order_model.dart';
 import 'package:stronger_muscles_dashboard/screens/components/base_data_view.dart';
 import 'package:stronger_muscles_dashboard/screens/order_details_screen/order_details_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/order_list_tile.dart';

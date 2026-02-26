@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive/hive.dart';
-import 'package:stronger_muscles_dashboard/models/user_address.dart';
+import 'package:stronger_muscles_dashboard/data/models/user_address.dart';
 
 part 'dashboard_user_model.freezed.dart';
 part 'dashboard_user_model.g.dart';

@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/models/dashboard_user_model.dart';
-import 'package:stronger_muscles_dashboard/services/api_service.dart';
+import 'package:stronger_muscles_dashboard/data/models/dashboard_user_model.dart';
+import 'package:stronger_muscles_dashboard/data/services/api_service.dart';
 
 class UsersController extends GetxController {
   final ApiService _apiService = ApiService();

@@ -12,7 +12,7 @@ import 'package:stronger_muscles_dashboard/screens/components/base_app_bar.dart'
 import 'package:stronger_muscles_dashboard/screens/components/custom_search_bar.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import '../../controllers/categories_controller.dart';
-import '../../models/index.dart';
+import '../../data/models/index.dart';
 import '../../config/responsive.dart';
 
 class CategoriesScreen extends StatelessWidget {

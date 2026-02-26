@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 
-import 'package:stronger_muscles_dashboard/models/product_model.dart';
+import 'package:stronger_muscles_dashboard/data/models/product_model.dart';
 
 class ProductSizeSelector extends StatelessWidget {
   final List<ProductSize> selectedSizes;

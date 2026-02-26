@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
-import 'package:stronger_muscles_dashboard/models/category_model.dart';
+import 'package:stronger_muscles_dashboard/data/models/category_model.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 
 class CategoryTreeSelector extends StatefulWidget {

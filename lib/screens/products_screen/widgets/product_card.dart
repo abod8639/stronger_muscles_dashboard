@@ -5,7 +5,7 @@ import 'package:stronger_muscles_dashboard/screens/components/stock_status_badge
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/functions/cache_manager.dart';
-import 'package:stronger_muscles_dashboard/models/product_model.dart';
+import 'package:stronger_muscles_dashboard/data/models/product_model.dart';
 
 class ProductCard extends StatelessWidget {
   final Function() onEdit;

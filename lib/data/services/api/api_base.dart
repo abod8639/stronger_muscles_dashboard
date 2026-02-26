@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:get/get.dart' hide Response; // لتجنب التعارض مع Dio Response
-import '../../config/api_config.dart';
+import '../../../config/api_config.dart';
 import '../auth_service.dart';
 
 class ApiBase {

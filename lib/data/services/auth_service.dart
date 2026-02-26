@@ -1,14 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:get_storage/get_storage.dart';
-import '../config/api_config.dart';
+import '../../config/api_config.dart';
 import '../models/user_model.dart';
 
 class AuthService extends GetxService {
   final GetStorage _storage = GetStorage();
   final ApiConfigController _apiConfig = ApiConfigController();
 
-  // تعريف Dio محلي لعمليات Login/Register (بدون Interceptor يطلب توكن غير موجود بعد)
   final Dio _dio = Dio();
 
   static const String _tokenKey = 'auth_token';

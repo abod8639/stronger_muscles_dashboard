@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
-import '../../config/api_config.dart';
+import '../../../config/api_config.dart';
 import 'api_base.dart';
 
 class UserService extends ApiBase {
-  
+
   Future<Map<String, dynamic>> fetchUsersStats() async {
     try {
       final response = await dio.get(ApiConfig.adminUsers);

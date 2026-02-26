@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:stronger_muscles_dashboard/controllers/orders_controller.dart';
-import 'package:stronger_muscles_dashboard/models/order_model.dart';
+import 'package:stronger_muscles_dashboard/data/models/order_model.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/screens/components/status_badge.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';

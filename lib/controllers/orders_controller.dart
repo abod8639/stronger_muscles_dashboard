@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../models/order_model.dart';
-import '../repositories/order_repository.dart';
-import '../services/api_service.dart';
+import '../data/models/order_model.dart';
+import '../data/repositories/order_repository.dart';
+import '../data/services/api_service.dart';
 
 class OrdersController extends GetxController {
   final OrderRepository _repository = OrderRepository(ApiService());

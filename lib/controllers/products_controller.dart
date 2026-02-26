@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/models/flavors_model.dart';
+import 'package:stronger_muscles_dashboard/data/models/flavors_model.dart';
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_form_sheet.dart';
-import '../models/index.dart';
-import '../repositories/index.dart';
-import '../services/api_service.dart';
+import '../data/models/index.dart';
+import '../data/repositories/index.dart';
+import '../data/services/api_service.dart';
 
 class ProductsController extends GetxController {
+  
   late final ProductRepository _productRepository;
   late final CategoryRepository _categoryRepository;
   RxList<String> productFlavors = <String>[].obs;

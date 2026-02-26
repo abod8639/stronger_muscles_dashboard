@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:stronger_muscles_dashboard/controllers/products_controller.dart';
-import 'package:stronger_muscles_dashboard/models/product_model.dart';
+import 'package:stronger_muscles_dashboard/data/models/product_model.dart';
 import 'package:stronger_muscles_dashboard/screens/components/build_modern_text_field.dart';
 import 'package:stronger_muscles_dashboard/screens/components/image_gallery_editor.dart';
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/availability_switch.dart';

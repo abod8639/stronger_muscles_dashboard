@@ -3,13 +3,13 @@ import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:stronger_muscles_dashboard/screens/components/confirm_dialog.dart';
 import 'package:stronger_muscles_dashboard/controllers/categories_controller.dart';
-import 'package:stronger_muscles_dashboard/models/category_model.dart';
+import 'package:stronger_muscles_dashboard/data/models/category_model.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/screens/components/build_modern_text_field.dart';
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/availability_switch.dart';
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/category_tree_selector.dart';
-import 'package:stronger_muscles_dashboard/models/product_model.dart'; // For TranslatableString
+import 'package:stronger_muscles_dashboard/data/models/product_model.dart'; // For TranslatableString
 
 class CategoryFormSheet extends StatefulWidget {
   final CategoryModel? category;

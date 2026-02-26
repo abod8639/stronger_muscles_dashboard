@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:stronger_muscles_dashboard/controllers/products_controller.dart';
-import 'package:stronger_muscles_dashboard/models/product_model.dart';
+import 'package:stronger_muscles_dashboard/data/models/product_model.dart';
 
 /// Mixin to handle common product form initialization logic
 /// Eliminates code duplication between ProductFormPage and ProductFormSheet

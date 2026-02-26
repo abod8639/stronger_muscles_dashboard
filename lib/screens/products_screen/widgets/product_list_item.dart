@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/models/product_model.dart';
+import 'package:stronger_muscles_dashboard/data/models/product_model.dart';
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_card.dart';
 
 class ProductListItem extends StatefulWidget {

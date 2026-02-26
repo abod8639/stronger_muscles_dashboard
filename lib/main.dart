@@ -5,7 +5,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:stronger_muscles_dashboard/functions/hive_init.dart';
 import 'package:stronger_muscles_dashboard/screens/components/my_bottomnavigationbar.dart';
 import 'package:stronger_muscles_dashboard/screens/components/sidebar.dart';
-import 'package:stronger_muscles_dashboard/services/cache_service.dart';
+import 'package:stronger_muscles_dashboard/data/services/cache_service.dart';
 import 'config/theme.dart';
 import 'config/theme_extended.dart';
 import 'screens/index.dart';

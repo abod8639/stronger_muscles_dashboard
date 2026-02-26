@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
-import 'package:stronger_muscles_dashboard/models/order_model.dart';
+import 'package:stronger_muscles_dashboard/data/models/order_model.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_image_shimmer.dart';
 
 Widget buildEnhancedOrderImages(OrderModel order, bool isHovered) {

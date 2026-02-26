@@ -7,7 +7,7 @@ import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_i
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_order_header.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_price_section.dart';
 import '../../../config/theme.dart';
-import '../../../models/index.dart';
+import '../../../data/models/index.dart';
 
 class OrderListTile extends StatefulWidget {
   final OrderModel order;

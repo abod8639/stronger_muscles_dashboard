@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/functions/cache_manager.dart';
-import 'package:stronger_muscles_dashboard/models/order_model.dart';
+import 'package:stronger_muscles_dashboard/data/models/order_model.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 
 Widget buildOrderItem(OrderItemModel item, bool isDark) {

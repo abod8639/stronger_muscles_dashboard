@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/app_colors.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/controllers/products_controller.dart';
-import 'package:stronger_muscles_dashboard/models/product_model.dart';
+import 'package:stronger_muscles_dashboard/data/models/product_model.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_form_body.dart';
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_form_mixin.dart';

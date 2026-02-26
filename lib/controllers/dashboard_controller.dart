@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import '../models/index.dart';
-import '../services/api_service.dart';
-import '../repositories/index.dart';
+import '../data/models/index.dart';
+import '../data/services/api_service.dart';
+import '../data/repositories/index.dart';
 
 class DashboardController extends GetxController {
   // --- Repositories ---

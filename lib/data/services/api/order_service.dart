@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import '../../config/api_config.dart';
+import '../../../config/api_config.dart';
 import 'api_base.dart';
 
 class OrderService extends ApiBase {
