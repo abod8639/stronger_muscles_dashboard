@@ -123,7 +123,9 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard>
                     shaderCallback: (bounds) => LinearGradient(
                       colors: [
                         Colors.white,
-                        (widget.chartColor ?? widget.accentColor).withValues(alpha: 0.7),
+                        (widget.chartColor ?? widget.accentColor).withValues(
+                          alpha: 0.7,
+                        ),
                       ],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
@@ -208,7 +210,7 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard>
     return LineChartData(
       gridData: const FlGridData(show: false),
       titlesData: const FlTitlesData(show: false),
-      borderData:  FlBorderData(show: false),
+      borderData: FlBorderData(show: false),
       lineBarsData: [
         LineChartBarData(
           spots: widget.chartSpots ?? [],

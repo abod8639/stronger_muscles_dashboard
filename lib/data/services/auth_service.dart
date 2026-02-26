@@ -14,22 +14,30 @@ class AuthService extends GetxService {
   static const String _userKey = 'user_data';
 
   // --- إدارة التخزين (Storage) ---
-  Future<void> saveToken(String token) async => await _storage.write(_tokenKey, token);
+  Future<void> saveToken(String token) async =>
+      await _storage.write(_tokenKey, token);
   String? getToken() => _storage.read(_tokenKey);
   Future<void> deleteToken() async => await _storage.remove(_tokenKey);
 
-  Future<void> saveUser(UserModel user) async => await _storage.write(_userKey, user.toJson());
+  Future<void> saveUser(UserModel user) async =>
+      await _storage.write(_userKey, user.toJson());
   UserModel? getUser() {
     final userData = _storage.read(_userKey);
-    return userData != null ? UserModel.fromJson(Map<String, dynamic>.from(userData)) : null;
+    return userData != null
+        ? UserModel.fromJson(Map<String, dynamic>.from(userData))
+        : null;
   }
+
   Future<void> deleteUser() async => await _storage.remove(_userKey);
 
   bool isLoggedIn() => getToken() != null;
 
   // --- العمليات (Auth Actions) ---
 
-  Future<Map<String, dynamic>> login({required String email, required String password}) async {
+  Future<Map<String, dynamic>> login({
+    required String email,
+    required String password,
+  }) async {
     try {
       final response = await _dio.post(
         '${_apiConfig.baseUrl.value}${ApiConfig.login}',
@@ -40,35 +48,55 @@ class AuthService extends GetxService {
       final responseData = response.data;
 
       if (response.statusCode == 200) {
-        if (responseData['token'] != null) await saveToken(responseData['token']);
-        if (responseData['user'] != null) await saveUser(UserModel.fromJson(responseData['user']));
+        if (responseData['token'] != null)
+          await saveToken(responseData['token']);
+        if (responseData['user'] != null)
+          await saveUser(UserModel.fromJson(responseData['user']));
 
-        return {'success': true, 'message': 'تم تسجيل الدخول بنجاح', 'data': responseData};
+        return {
+          'success': true,
+          'message': 'تم تسجيل الدخول بنجاح',
+          'data': responseData,
+        };
       }
-      return {'success': false, 'message': responseData['message'] ?? 'فشل تسجيل الدخول'};
-      
+      return {
+        'success': false,
+        'message': responseData['message'] ?? 'فشل تسجيل الدخول',
+      };
     } on DioException catch (e) {
       return _handleDioError(e, 'تسجيل الدخول');
     }
   }
 
-  Future<Map<String, dynamic>> signup({required String name, required String email, required String password}) async {
+  Future<Map<String, dynamic>> signup({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
     try {
       // ملاحظة: تأكد من رابط الـ Register الصحيح (أنت وضعت googleSignIn في الكود السابق)
       final response = await _dio.post(
-        '${_apiConfig.baseUrl.value}${ApiConfig.googleSignIn}', 
+        '${_apiConfig.baseUrl.value}${ApiConfig.googleSignIn}',
         data: {'name': name, 'email': email, 'password': password},
       );
 
       final responseData = response.data;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        if (responseData['token'] != null) await saveToken(responseData['token']);
-        if (responseData['user'] != null) await saveUser(UserModel.fromJson(responseData['user']));
-        return {'success': true, 'message': 'تم إنشاء الحساب بنجاح', 'data': responseData};
+        if (responseData['token'] != null)
+          await saveToken(responseData['token']);
+        if (responseData['user'] != null)
+          await saveUser(UserModel.fromJson(responseData['user']));
+        return {
+          'success': true,
+          'message': 'تم إنشاء الحساب بنجاح',
+          'data': responseData,
+        };
       }
-      return {'success': false, 'message': responseData['message'] ?? 'فشل إنشاء الحساب'};
-      
+      return {
+        'success': false,
+        'message': responseData['message'] ?? 'فشل إنشاء الحساب',
+      };
     } on DioException catch (e) {
       return _handleDioError(e, 'إنشاء الحساب');
     }

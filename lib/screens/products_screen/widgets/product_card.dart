@@ -63,8 +63,9 @@ class ProductCard extends StatelessWidget {
                         _buildBrandInfo(),
                         const SizedBox(height: 6),
                         _buildProductName(responsive),
-                        
-                        if (product.flavor != null && product.flavor!.isNotEmpty) ...[
+
+                        if (product.flavor != null &&
+                            product.flavor!.isNotEmpty) ...[
                           const SizedBox(height: 10),
                           _buildFlavorTags(responsive),
                         ],
@@ -75,14 +76,13 @@ class ProductCard extends StatelessWidget {
                     ),
                   ),
 
-                    Padding(
-                      padding: const EdgeInsets.only(left: 16),
-                      child: _buildDesktopActions(),
-                    ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16),
+                    child: _buildDesktopActions(),
+                  ),
                 ],
               ),
             ),
-
           ],
         ),
       ),
@@ -108,12 +108,24 @@ class ProductCard extends StatelessWidget {
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Container(
                   color: Colors.white.withValues(alpha: 0.05),
-                  child: const Center(child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))),
+                  child: const Center(
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  ),
                 ),
-                errorWidget: (context, url, error) =>
-                    const Icon(Icons.broken_image_rounded, color: Colors.white24),
+                errorWidget: (context, url, error) => const Icon(
+                  Icons.broken_image_rounded,
+                  color: Colors.white24,
+                ),
               )
-            : const Icon(Icons.inventory_2_rounded, color: Colors.white24, size: 35),
+            : const Icon(
+                Icons.inventory_2_rounded,
+                color: Colors.white24,
+                size: 35,
+              ),
       ),
     );
   }
@@ -158,22 +170,35 @@ class ProductCard extends StatelessWidget {
       runSpacing: 4,
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        ...product.flavor!.take(limit).map((f) => Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.05),
-            borderRadius: BorderRadius.circular(6),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
-          ),
-          child: Text(
-            f.toUpperCase(),
-            style: TextStyle(fontSize: 9, color: Colors.white.withValues(alpha: 0.6), fontWeight: FontWeight.w500),
-          ),
-        )),
+        ...product.flavor!
+            .take(limit)
+            .map(
+              (f) => Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.05),
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.05),
+                  ),
+                ),
+                child: Text(
+                  f.toUpperCase(),
+                  style: TextStyle(
+                    fontSize: 9,
+                    color: Colors.white.withValues(alpha: 0.6),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ),
         if (product.flavor!.length > limit)
           Text(
             '+${product.flavor!.length - limit}',
-            style: TextStyle(fontSize: 10, color: Colors.white.withValues(alpha: 0.3)),
+            style: TextStyle(
+              fontSize: 10,
+              color: Colors.white.withValues(alpha: 0.3),
+            ),
           ),
       ],
     );
@@ -222,17 +247,22 @@ class ProductCard extends StatelessWidget {
       children: [
         _circleActionBtn(Icons.edit_rounded, AppColors.primary, onEdit),
         const SizedBox(height: 10),
-        _circleActionBtn(Icons.delete_outline_rounded, Colors.redAccent.withValues(alpha: 0.8), onDelete),
+        _circleActionBtn(
+          Icons.delete_outline_rounded,
+          Colors.redAccent.withValues(alpha: 0.8),
+          onDelete,
+        ),
       ],
     );
   }
 
-
   Widget _circleActionBtn(
-    IconData icon, 
-    Color bgColor, 
-    VoidCallback onTap, 
-    {double size = 38, Color iconColor = Colors.white}) {
+    IconData icon,
+    Color bgColor,
+    VoidCallback onTap, {
+    double size = 38,
+    Color iconColor = Colors.white,
+  }) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -246,8 +276,13 @@ class ProductCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             // shape: BoxShape.circle,
             boxShadow: [
-              if (bgColor != Colors.transparent && !bgColor.toString().contains('Opacity'))
-                BoxShadow(color: bgColor.withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 3))
+              if (bgColor != Colors.transparent &&
+                  !bgColor.toString().contains('Opacity'))
+                BoxShadow(
+                  color: bgColor.withValues(alpha: 0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
+                ),
             ],
           ),
           child: Icon(icon, color: iconColor, size: size * 0.5),
@@ -255,5 +290,4 @@ class ProductCard extends StatelessWidget {
       ),
     );
   }
-
 }

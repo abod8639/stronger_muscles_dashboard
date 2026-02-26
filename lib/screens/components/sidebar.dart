@@ -170,7 +170,10 @@ class Sidebar extends StatelessWidget {
               shape: BoxShape.circle,
               // إطار متدرج يعطي مظهر "النيون" الهادئ
               gradient: LinearGradient(
-                colors: [AppColors.primary, AppColors.primary.withValues(alpha: 0.2)],
+                colors: [
+                  AppColors.primary,
+                  AppColors.primary.withValues(alpha: 0.2),
+                ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),

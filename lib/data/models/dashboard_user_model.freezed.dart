@@ -12,7 +12,8 @@ part of 'dashboard_user_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 DashboardResponse _$DashboardResponseFromJson(Map<String, dynamic> json) {
   return _DashboardResponse.fromJson(json);
@@ -32,8 +33,9 @@ mixin _$DashboardResponse {
 /// @nodoc
 abstract class $DashboardResponseCopyWith<$Res> {
   factory $DashboardResponseCopyWith(
-          DashboardResponse value, $Res Function(DashboardResponse) then) =
-      _$DashboardResponseCopyWithImpl<$Res, DashboardResponse>;
+    DashboardResponse value,
+    $Res Function(DashboardResponse) then,
+  ) = _$DashboardResponseCopyWithImpl<$Res, DashboardResponse>;
   @useResult
   $Res call({int totalUsers, List<DashboardUser> users});
 }
@@ -50,29 +52,30 @@ class _$DashboardResponseCopyWithImpl<$Res, $Val extends DashboardResponse>
 
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? totalUsers = null,
-    Object? users = null,
-  }) {
-    return _then(_value.copyWith(
-      totalUsers: null == totalUsers
-          ? _value.totalUsers
-          : totalUsers // ignore: cast_nullable_to_non_nullable
-              as int,
-      users: null == users
-          ? _value.users
-          : users // ignore: cast_nullable_to_non_nullable
-              as List<DashboardUser>,
-    ) as $Val);
+  $Res call({Object? totalUsers = null, Object? users = null}) {
+    return _then(
+      _value.copyWith(
+            totalUsers: null == totalUsers
+                ? _value.totalUsers
+                : totalUsers // ignore: cast_nullable_to_non_nullable
+                      as int,
+            users: null == users
+                ? _value.users
+                : users // ignore: cast_nullable_to_non_nullable
+                      as List<DashboardUser>,
+          )
+          as $Val,
+    );
   }
 }
 
 /// @nodoc
 abstract class _$$DashboardResponseImplCopyWith<$Res>
     implements $DashboardResponseCopyWith<$Res> {
-  factory _$$DashboardResponseImplCopyWith(_$DashboardResponseImpl value,
-          $Res Function(_$DashboardResponseImpl) then) =
-      __$$DashboardResponseImplCopyWithImpl<$Res>;
+  factory _$$DashboardResponseImplCopyWith(
+    _$DashboardResponseImpl value,
+    $Res Function(_$DashboardResponseImpl) then,
+  ) = __$$DashboardResponseImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({int totalUsers, List<DashboardUser> users});
@@ -82,35 +85,36 @@ abstract class _$$DashboardResponseImplCopyWith<$Res>
 class __$$DashboardResponseImplCopyWithImpl<$Res>
     extends _$DashboardResponseCopyWithImpl<$Res, _$DashboardResponseImpl>
     implements _$$DashboardResponseImplCopyWith<$Res> {
-  __$$DashboardResponseImplCopyWithImpl(_$DashboardResponseImpl _value,
-      $Res Function(_$DashboardResponseImpl) _then)
-      : super(_value, _then);
+  __$$DashboardResponseImplCopyWithImpl(
+    _$DashboardResponseImpl _value,
+    $Res Function(_$DashboardResponseImpl) _then,
+  ) : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? totalUsers = null,
-    Object? users = null,
-  }) {
-    return _then(_$DashboardResponseImpl(
-      totalUsers: null == totalUsers
-          ? _value.totalUsers
-          : totalUsers // ignore: cast_nullable_to_non_nullable
-              as int,
-      users: null == users
-          ? _value._users
-          : users // ignore: cast_nullable_to_non_nullable
-              as List<DashboardUser>,
-    ));
+  $Res call({Object? totalUsers = null, Object? users = null}) {
+    return _then(
+      _$DashboardResponseImpl(
+        totalUsers: null == totalUsers
+            ? _value.totalUsers
+            : totalUsers // ignore: cast_nullable_to_non_nullable
+                  as int,
+        users: null == users
+            ? _value._users
+            : users // ignore: cast_nullable_to_non_nullable
+                  as List<DashboardUser>,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$DashboardResponseImpl implements _DashboardResponse {
-  const _$DashboardResponseImpl(
-      {required this.totalUsers, required final List<DashboardUser> users})
-      : _users = users;
+  const _$DashboardResponseImpl({
+    required this.totalUsers,
+    required final List<DashboardUser> users,
+  }) : _users = users;
 
   factory _$DashboardResponseImpl.fromJson(Map<String, dynamic> json) =>
       _$$DashboardResponseImplFromJson(json);
@@ -143,27 +147,31 @@ class _$DashboardResponseImpl implements _DashboardResponse {
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
-      runtimeType, totalUsers, const DeepCollectionEquality().hash(_users));
+    runtimeType,
+    totalUsers,
+    const DeepCollectionEquality().hash(_users),
+  );
 
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$DashboardResponseImplCopyWith<_$DashboardResponseImpl> get copyWith =>
       __$$DashboardResponseImplCopyWithImpl<_$DashboardResponseImpl>(
-          this, _$identity);
+        this,
+        _$identity,
+      );
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$DashboardResponseImplToJson(
-      this,
-    );
+    return _$$DashboardResponseImplToJson(this);
   }
 }
 
 abstract class _DashboardResponse implements DashboardResponse {
-  const factory _DashboardResponse(
-      {required final int totalUsers,
-      required final List<DashboardUser> users}) = _$DashboardResponseImpl;
+  const factory _DashboardResponse({
+    required final int totalUsers,
+    required final List<DashboardUser> users,
+  }) = _$DashboardResponseImpl;
 
   factory _DashboardResponse.fromJson(Map<String, dynamic> json) =
       _$DashboardResponseImpl.fromJson;
@@ -218,22 +226,24 @@ mixin _$DashboardUser {
 /// @nodoc
 abstract class $DashboardUserCopyWith<$Res> {
   factory $DashboardUserCopyWith(
-          DashboardUser value, $Res Function(DashboardUser) then) =
-      _$DashboardUserCopyWithImpl<$Res, DashboardUser>;
+    DashboardUser value,
+    $Res Function(DashboardUser) then,
+  ) = _$DashboardUserCopyWithImpl<$Res, DashboardUser>;
   @useResult
-  $Res call(
-      {@HiveField(0) int id,
-      @HiveField(1) String name,
-      @HiveField(2) String? email,
-      @HiveField(3) String? phone,
-      @HiveField(4) String role,
-      @HiveField(5) bool isActive,
-      @HiveField(6) String? photoUrl,
-      @HiveField(7) double totalSpent,
-      @HiveField(8) DateTime? createdAt,
-      @HiveField(9) DateTime? lastLogin,
-      @HiveField(10) List<UserAddress> addresses,
-      @HiveField(11) int ordersCount});
+  $Res call({
+    @HiveField(0) int id,
+    @HiveField(1) String name,
+    @HiveField(2) String? email,
+    @HiveField(3) String? phone,
+    @HiveField(4) String role,
+    @HiveField(5) bool isActive,
+    @HiveField(6) String? photoUrl,
+    @HiveField(7) double totalSpent,
+    @HiveField(8) DateTime? createdAt,
+    @HiveField(9) DateTime? lastLogin,
+    @HiveField(10) List<UserAddress> addresses,
+    @HiveField(11) int ordersCount,
+  });
 }
 
 /// @nodoc
@@ -262,56 +272,59 @@ class _$DashboardUserCopyWithImpl<$Res, $Val extends DashboardUser>
     Object? addresses = null,
     Object? ordersCount = null,
   }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      email: freezed == email
-          ? _value.email
-          : email // ignore: cast_nullable_to_non_nullable
-              as String?,
-      phone: freezed == phone
-          ? _value.phone
-          : phone // ignore: cast_nullable_to_non_nullable
-              as String?,
-      role: null == role
-          ? _value.role
-          : role // ignore: cast_nullable_to_non_nullable
-              as String,
-      isActive: null == isActive
-          ? _value.isActive
-          : isActive // ignore: cast_nullable_to_non_nullable
-              as bool,
-      photoUrl: freezed == photoUrl
-          ? _value.photoUrl
-          : photoUrl // ignore: cast_nullable_to_non_nullable
-              as String?,
-      totalSpent: null == totalSpent
-          ? _value.totalSpent
-          : totalSpent // ignore: cast_nullable_to_non_nullable
-              as double,
-      createdAt: freezed == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      lastLogin: freezed == lastLogin
-          ? _value.lastLogin
-          : lastLogin // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      addresses: null == addresses
-          ? _value.addresses
-          : addresses // ignore: cast_nullable_to_non_nullable
-              as List<UserAddress>,
-      ordersCount: null == ordersCount
-          ? _value.ordersCount
-          : ordersCount // ignore: cast_nullable_to_non_nullable
-              as int,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as int,
+            name: null == name
+                ? _value.name
+                : name // ignore: cast_nullable_to_non_nullable
+                      as String,
+            email: freezed == email
+                ? _value.email
+                : email // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            phone: freezed == phone
+                ? _value.phone
+                : phone // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            role: null == role
+                ? _value.role
+                : role // ignore: cast_nullable_to_non_nullable
+                      as String,
+            isActive: null == isActive
+                ? _value.isActive
+                : isActive // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            photoUrl: freezed == photoUrl
+                ? _value.photoUrl
+                : photoUrl // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            totalSpent: null == totalSpent
+                ? _value.totalSpent
+                : totalSpent // ignore: cast_nullable_to_non_nullable
+                      as double,
+            createdAt: freezed == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            lastLogin: freezed == lastLogin
+                ? _value.lastLogin
+                : lastLogin // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            addresses: null == addresses
+                ? _value.addresses
+                : addresses // ignore: cast_nullable_to_non_nullable
+                      as List<UserAddress>,
+            ordersCount: null == ordersCount
+                ? _value.ordersCount
+                : ordersCount // ignore: cast_nullable_to_non_nullable
+                      as int,
+          )
+          as $Val,
+    );
   }
 }
 
@@ -319,23 +332,25 @@ class _$DashboardUserCopyWithImpl<$Res, $Val extends DashboardUser>
 abstract class _$$DashboardUserImplCopyWith<$Res>
     implements $DashboardUserCopyWith<$Res> {
   factory _$$DashboardUserImplCopyWith(
-          _$DashboardUserImpl value, $Res Function(_$DashboardUserImpl) then) =
-      __$$DashboardUserImplCopyWithImpl<$Res>;
+    _$DashboardUserImpl value,
+    $Res Function(_$DashboardUserImpl) then,
+  ) = __$$DashboardUserImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {@HiveField(0) int id,
-      @HiveField(1) String name,
-      @HiveField(2) String? email,
-      @HiveField(3) String? phone,
-      @HiveField(4) String role,
-      @HiveField(5) bool isActive,
-      @HiveField(6) String? photoUrl,
-      @HiveField(7) double totalSpent,
-      @HiveField(8) DateTime? createdAt,
-      @HiveField(9) DateTime? lastLogin,
-      @HiveField(10) List<UserAddress> addresses,
-      @HiveField(11) int ordersCount});
+  $Res call({
+    @HiveField(0) int id,
+    @HiveField(1) String name,
+    @HiveField(2) String? email,
+    @HiveField(3) String? phone,
+    @HiveField(4) String role,
+    @HiveField(5) bool isActive,
+    @HiveField(6) String? photoUrl,
+    @HiveField(7) double totalSpent,
+    @HiveField(8) DateTime? createdAt,
+    @HiveField(9) DateTime? lastLogin,
+    @HiveField(10) List<UserAddress> addresses,
+    @HiveField(11) int ordersCount,
+  });
 }
 
 /// @nodoc
@@ -343,8 +358,9 @@ class __$$DashboardUserImplCopyWithImpl<$Res>
     extends _$DashboardUserCopyWithImpl<$Res, _$DashboardUserImpl>
     implements _$$DashboardUserImplCopyWith<$Res> {
   __$$DashboardUserImplCopyWithImpl(
-      _$DashboardUserImpl _value, $Res Function(_$DashboardUserImpl) _then)
-      : super(_value, _then);
+    _$DashboardUserImpl _value,
+    $Res Function(_$DashboardUserImpl) _then,
+  ) : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -362,77 +378,79 @@ class __$$DashboardUserImplCopyWithImpl<$Res>
     Object? addresses = null,
     Object? ordersCount = null,
   }) {
-    return _then(_$DashboardUserImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      email: freezed == email
-          ? _value.email
-          : email // ignore: cast_nullable_to_non_nullable
-              as String?,
-      phone: freezed == phone
-          ? _value.phone
-          : phone // ignore: cast_nullable_to_non_nullable
-              as String?,
-      role: null == role
-          ? _value.role
-          : role // ignore: cast_nullable_to_non_nullable
-              as String,
-      isActive: null == isActive
-          ? _value.isActive
-          : isActive // ignore: cast_nullable_to_non_nullable
-              as bool,
-      photoUrl: freezed == photoUrl
-          ? _value.photoUrl
-          : photoUrl // ignore: cast_nullable_to_non_nullable
-              as String?,
-      totalSpent: null == totalSpent
-          ? _value.totalSpent
-          : totalSpent // ignore: cast_nullable_to_non_nullable
-              as double,
-      createdAt: freezed == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      lastLogin: freezed == lastLogin
-          ? _value.lastLogin
-          : lastLogin // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      addresses: null == addresses
-          ? _value._addresses
-          : addresses // ignore: cast_nullable_to_non_nullable
-              as List<UserAddress>,
-      ordersCount: null == ordersCount
-          ? _value.ordersCount
-          : ordersCount // ignore: cast_nullable_to_non_nullable
-              as int,
-    ));
+    return _then(
+      _$DashboardUserImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as int,
+        name: null == name
+            ? _value.name
+            : name // ignore: cast_nullable_to_non_nullable
+                  as String,
+        email: freezed == email
+            ? _value.email
+            : email // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        phone: freezed == phone
+            ? _value.phone
+            : phone // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        role: null == role
+            ? _value.role
+            : role // ignore: cast_nullable_to_non_nullable
+                  as String,
+        isActive: null == isActive
+            ? _value.isActive
+            : isActive // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        photoUrl: freezed == photoUrl
+            ? _value.photoUrl
+            : photoUrl // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        totalSpent: null == totalSpent
+            ? _value.totalSpent
+            : totalSpent // ignore: cast_nullable_to_non_nullable
+                  as double,
+        createdAt: freezed == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        lastLogin: freezed == lastLogin
+            ? _value.lastLogin
+            : lastLogin // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        addresses: null == addresses
+            ? _value._addresses
+            : addresses // ignore: cast_nullable_to_non_nullable
+                  as List<UserAddress>,
+        ordersCount: null == ordersCount
+            ? _value.ordersCount
+            : ordersCount // ignore: cast_nullable_to_non_nullable
+                  as int,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$DashboardUserImpl extends _DashboardUser {
-  const _$DashboardUserImpl(
-      {@HiveField(0) required this.id,
-      @HiveField(1) this.name = '',
-      @HiveField(2) this.email,
-      @HiveField(3) this.phone,
-      @HiveField(4) this.role = 'customer',
-      @HiveField(5) this.isActive = true,
-      @HiveField(6) this.photoUrl,
-      @HiveField(7) this.totalSpent = 0.0,
-      @HiveField(8) this.createdAt,
-      @HiveField(9) this.lastLogin,
-      @HiveField(10) final List<UserAddress> addresses = const [],
-      @HiveField(11) this.ordersCount = 0})
-      : _addresses = addresses,
-        super._();
+  const _$DashboardUserImpl({
+    @HiveField(0) required this.id,
+    @HiveField(1) this.name = '',
+    @HiveField(2) this.email,
+    @HiveField(3) this.phone,
+    @HiveField(4) this.role = 'customer',
+    @HiveField(5) this.isActive = true,
+    @HiveField(6) this.photoUrl,
+    @HiveField(7) this.totalSpent = 0.0,
+    @HiveField(8) this.createdAt,
+    @HiveField(9) this.lastLogin,
+    @HiveField(10) final List<UserAddress> addresses = const [],
+    @HiveField(11) this.ordersCount = 0,
+  }) : _addresses = addresses,
+       super._();
 
   factory _$DashboardUserImpl.fromJson(Map<String, dynamic> json) =>
       _$$DashboardUserImplFromJson(json);
@@ -511,8 +529,10 @@ class _$DashboardUserImpl extends _DashboardUser {
                 other.createdAt == createdAt) &&
             (identical(other.lastLogin, lastLogin) ||
                 other.lastLogin == lastLogin) &&
-            const DeepCollectionEquality()
-                .equals(other._addresses, _addresses) &&
+            const DeepCollectionEquality().equals(
+              other._addresses,
+              _addresses,
+            ) &&
             (identical(other.ordersCount, ordersCount) ||
                 other.ordersCount == ordersCount));
   }
@@ -520,19 +540,20 @@ class _$DashboardUserImpl extends _DashboardUser {
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      name,
-      email,
-      phone,
-      role,
-      isActive,
-      photoUrl,
-      totalSpent,
-      createdAt,
-      lastLogin,
-      const DeepCollectionEquality().hash(_addresses),
-      ordersCount);
+    runtimeType,
+    id,
+    name,
+    email,
+    phone,
+    role,
+    isActive,
+    photoUrl,
+    totalSpent,
+    createdAt,
+    lastLogin,
+    const DeepCollectionEquality().hash(_addresses),
+    ordersCount,
+  );
 
   @JsonKey(ignore: true)
   @override
@@ -542,26 +563,25 @@ class _$DashboardUserImpl extends _DashboardUser {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$DashboardUserImplToJson(
-      this,
-    );
+    return _$$DashboardUserImplToJson(this);
   }
 }
 
 abstract class _DashboardUser extends DashboardUser {
-  const factory _DashboardUser(
-      {@HiveField(0) required final int id,
-      @HiveField(1) final String name,
-      @HiveField(2) final String? email,
-      @HiveField(3) final String? phone,
-      @HiveField(4) final String role,
-      @HiveField(5) final bool isActive,
-      @HiveField(6) final String? photoUrl,
-      @HiveField(7) final double totalSpent,
-      @HiveField(8) final DateTime? createdAt,
-      @HiveField(9) final DateTime? lastLogin,
-      @HiveField(10) final List<UserAddress> addresses,
-      @HiveField(11) final int ordersCount}) = _$DashboardUserImpl;
+  const factory _DashboardUser({
+    @HiveField(0) required final int id,
+    @HiveField(1) final String name,
+    @HiveField(2) final String? email,
+    @HiveField(3) final String? phone,
+    @HiveField(4) final String role,
+    @HiveField(5) final bool isActive,
+    @HiveField(6) final String? photoUrl,
+    @HiveField(7) final double totalSpent,
+    @HiveField(8) final DateTime? createdAt,
+    @HiveField(9) final DateTime? lastLogin,
+    @HiveField(10) final List<UserAddress> addresses,
+    @HiveField(11) final int ordersCount,
+  }) = _$DashboardUserImpl;
   const _DashboardUser._() : super._();
 
   factory _DashboardUser.fromJson(Map<String, dynamic> json) =

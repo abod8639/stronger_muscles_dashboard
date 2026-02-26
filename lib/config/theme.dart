@@ -39,7 +39,6 @@ class AppColors {
 }
 
 class AppTheme {
-  
   static ThemeData getLightTheme() {
     return ThemeData(
       useMaterial3: true,
@@ -143,7 +142,9 @@ class AppTheme {
 
       cardTheme: CardThemeData(
         elevation: 5,
-        shadowColor: AppColors.primary.withValues(alpha: 0.2), // Neon glow shadow
+        shadowColor: AppColors.primary.withValues(
+          alpha: 0.2,
+        ), // Neon glow shadow
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         color: AppColors.surfaceDark,
       ),

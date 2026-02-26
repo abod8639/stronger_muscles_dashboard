@@ -4,7 +4,6 @@ import '../../../config/api_config.dart';
 import 'api_base.dart';
 
 class ProductService extends ApiBase {
-
   Future<List<dynamic>> fetchProducts() async {
     try {
       List<dynamic> allProducts = [];
@@ -58,9 +57,15 @@ class ProductService extends ApiBase {
   }
 
   /// تحديث منتج
-  Future<Map<String, dynamic>> updateProduct(String id, Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> updateProduct(
+    String id,
+    Map<String, dynamic> data,
+  ) async {
     try {
-      final response = await dio.put(ApiConfig.adminProductDetail(id), data: data);
+      final response = await dio.put(
+        ApiConfig.adminProductDetail(id),
+        data: data,
+      );
       return response.data;
     } on DioException catch (e) {
       throw Exception(_parseErrorMessage(e, 'تحديث المنتج'));
@@ -84,7 +89,10 @@ class ProductService extends ApiBase {
       if (!File(filePath).existsSync()) throw Exception('الملف غير موجود');
 
       FormData formData = FormData.fromMap({
-        'image': await MultipartFile.fromFile(filePath, filename: filePath.split('/').last),
+        'image': await MultipartFile.fromFile(
+          filePath,
+          filename: filePath.split('/').last,
+        ),
       });
 
       final response = await dio.post(
@@ -109,13 +117,12 @@ class ProductService extends ApiBase {
     }
   }
 
-
   String? _extractImageUrl(dynamic decoded) {
     if (decoded is! Map) return null;
-    return decoded['url']?.toString() ?? 
-           decoded['data']?['url']?.toString() ?? 
-           decoded['imageUrl']?.toString() ?? 
-           decoded['path']?.toString();
+    return decoded['url']?.toString() ??
+        decoded['data']?['url']?.toString() ??
+        decoded['imageUrl']?.toString() ??
+        decoded['path']?.toString();
   }
 
   String _parseErrorMessage(DioException e, String task) {

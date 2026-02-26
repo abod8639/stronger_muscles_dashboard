@@ -16,7 +16,10 @@ class CategoryRepository {
     _cacheService = Get.put(CacheService(), permanent: true);
   }
 
-  Future<List<CategoryModel>> getCategories({bool tree = false, bool forceRefresh = false}) async {
+  Future<List<CategoryModel>> getCategories({
+    bool tree = false,
+    bool forceRefresh = false,
+  }) async {
     try {
       final cacheKey = tree ? _cacheKeyCategoriesTree : _cacheKeyCategories;
 
@@ -27,7 +30,9 @@ class CategoryRepository {
       // معادلة cache أولاً
       final cachedData = _cacheService.get<List<CategoryModel>>(cacheKey);
       if (cachedData != null && !forceRefresh) {
-        debugPrint('✓ تم استرجاع التصنيفات من الـ Cache (${cachedData.length} عنصر)');
+        debugPrint(
+          '✓ تم استرجاع التصنيفات من الـ Cache (${cachedData.length} عنصر)',
+        );
         return cachedData;
       }
 

@@ -11,7 +11,6 @@ import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/flavo
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_size_selector.dart';
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_variant_manager.dart';
 
-
 class ProductFormBody extends StatefulWidget {
   final ProductsController controller;
 
@@ -228,7 +227,7 @@ class _ProductFormBodyState extends State<ProductFormBody> {
             onSelectSize: ctrl.selectSize,
             defaultPrice:
                 double.tryParse(ctrl.textcontrollers['price']?.text ?? '0') ??
-                    0.0,
+                0.0,
             onSelectionChanged: (List<ProductSize> newList) =>
                 ctrl.productSizes.assignAll(newList),
           ),

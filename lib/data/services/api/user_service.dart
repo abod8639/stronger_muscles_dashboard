@@ -3,7 +3,6 @@ import '../../../config/api_config.dart';
 import 'api_base.dart';
 
 class UserService extends ApiBase {
-
   Future<Map<String, dynamic>> fetchUsersStats() async {
     try {
       final response = await dio.get(ApiConfig.adminUsers);
@@ -15,10 +14,11 @@ class UserService extends ApiBase {
       } else {
         throw Exception('تنسيق البيانات المستلمة غير صحيح');
       }
-      
     } on DioException catch (e) {
       _logError(e, 'جلب إحصائيات المستخدمين');
-      throw Exception(e.response?.data?['message'] ?? 'فشل في جلب إحصائيات المستخدمين');
+      throw Exception(
+        e.response?.data?['message'] ?? 'فشل في جلب إحصائيات المستخدمين',
+      );
     } catch (e) {
       print('خطأ غير متوقع: $e');
       rethrow;
@@ -26,6 +26,8 @@ class UserService extends ApiBase {
   }
 
   void _logError(DioException e, String task) {
-    print('⚠️ [UserService] Error in $task: ${e.response?.statusCode} - ${e.message}');
+    print(
+      '⚠️ [UserService] Error in $task: ${e.response?.statusCode} - ${e.message}',
+    );
   }
 }

@@ -41,7 +41,10 @@ class StatCard extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [color.withValues(alpha: 0.15), color.withValues(alpha: 0.05)],
+          colors: [
+            color.withValues(alpha: 0.15),
+            color.withValues(alpha: 0.05),
+          ],
         ),
         border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
         child: Padding(

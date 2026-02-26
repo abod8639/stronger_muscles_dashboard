@@ -3,11 +3,10 @@ import '../../../config/api_config.dart';
 import 'api_base.dart';
 
 class OrderService extends ApiBase {
-
   Future<List<dynamic>> fetchOrders() async {
     try {
       final response = await dio.get(ApiConfig.adminOrders);
-      
+
       if (response.data is Map && response.data.containsKey('data')) {
         final innerData = response.data['data'];
         if (innerData is Map && innerData.containsKey('data')) {
@@ -27,11 +26,10 @@ class OrderService extends ApiBase {
       final response = await dio.get(ApiConfig.adminOrderDetail(id));
 
       final responseData = response.data;
-      
+
       return (responseData is Map && responseData.containsKey('data'))
           ? responseData['data']
           : responseData;
-          
     } on DioException catch (e) {
       _logError(e, 'جلب تفاصيل الطلب رقم: $id');
       rethrow;
@@ -39,7 +37,8 @@ class OrderService extends ApiBase {
   }
 
   void _logError(DioException e, String task) {
-    final String errorMsg = e.response?.data?['message'] ?? e.message ?? 'Unknown Error';
+    final String errorMsg =
+        e.response?.data?['message'] ?? e.message ?? 'Unknown Error';
     print('⚠️ [OrderService] خطأ في $task: $errorMsg');
   }
 }

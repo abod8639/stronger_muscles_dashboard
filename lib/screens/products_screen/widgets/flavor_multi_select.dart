@@ -57,7 +57,9 @@ class ProductFlavorSelector extends StatelessWidget {
                     label: Text(flavor),
                     selected: isSelected,
                     onSelected: (bool selected) {
-                      List<String> updatedList = List<String>.from(selectedFlavors);
+                      List<String> updatedList = List<String>.from(
+                        selectedFlavors,
+                      );
                       if (selected) {
                         updatedList.add(flavor);
                       } else {

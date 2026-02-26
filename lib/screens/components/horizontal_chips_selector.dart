@@ -43,8 +43,8 @@ class HorizontalChipsSelector extends StatelessWidget {
           final String displayLabel = isAllItem
               ? allLabel
               : labelBuilder != null
-                  ? labelBuilder!(items[showAllOption ? index - 1 : index])
-                  : _getValue(items[showAllOption ? index - 1 : index], labelKey);
+              ? labelBuilder!(items[showAllOption ? index - 1 : index])
+              : _getValue(items[showAllOption ? index - 1 : index], labelKey);
 
           final String itemId = isAllItem
               ? 'all'

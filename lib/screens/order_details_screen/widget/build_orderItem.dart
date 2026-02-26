@@ -6,7 +6,7 @@ import 'package:stronger_muscles_dashboard/screens/components/glass_container.da
 
 Widget buildOrderItem(OrderItemModel item, bool isDark) {
   return GlassContainer(
-    margin: const EdgeInsets.symmetric(vertical: 12 , horizontal: 16),
+    margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
     padding: const EdgeInsets.all(12),
     child: Row(
       children: [
@@ -35,16 +35,19 @@ Widget buildOrderItem(OrderItemModel item, bool isDark) {
                     placeholder: (context, url) => Center(
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white.withValues(alpha: 0.2)),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Colors.white.withValues(alpha: 0.2),
+                        ),
                       ),
                     ),
-                    errorWidget: (context, url, error) => const Icon(Icons.broken_image, color: Colors.white24),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.broken_image, color: Colors.white24),
                   )
                 : const Icon(Icons.inventory_2_outlined, color: Colors.white24),
           ),
         ),
         const SizedBox(width: 16),
-        
+
         // Product Details
         Expanded(
           child: Column(
@@ -61,7 +64,7 @@ Widget buildOrderItem(OrderItemModel item, bool isDark) {
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 4),
-              
+
               // Quantity & Unit Price
               Text(
                 'الكمية: ${item.quantity} × ${item.unitPrice.toStringAsFixed(2)} ر.س',
@@ -70,24 +73,33 @@ Widget buildOrderItem(OrderItemModel item, bool isDark) {
                   fontSize: 12,
                 ),
               ),
-              
+
               const SizedBox(height: 8),
-              
+
               // Attributes (Flavor/Size)
-              if ((item.selectedFlavor != null && item.selectedFlavor!.isNotEmpty) || 
+              if ((item.selectedFlavor != null &&
+                      item.selectedFlavor!.isNotEmpty) ||
                   (item.selectedSize != null && item.selectedSize!.isNotEmpty))
                 Row(
                   children: [
-                    if (item.selectedFlavor != null && item.selectedFlavor!.isNotEmpty)
-                      _buildAttributeChip(item.selectedFlavor!, Colors.orangeAccent),
-                    if (item.selectedSize != null && item.selectedSize!.isNotEmpty)
-                      _buildAttributeChip(item.selectedSize!, Colors.blueAccent),
+                    if (item.selectedFlavor != null &&
+                        item.selectedFlavor!.isNotEmpty)
+                      _buildAttributeChip(
+                        item.selectedFlavor!,
+                        Colors.orangeAccent,
+                      ),
+                    if (item.selectedSize != null &&
+                        item.selectedSize!.isNotEmpty)
+                      _buildAttributeChip(
+                        item.selectedSize!,
+                        Colors.blueAccent,
+                      ),
                   ],
                 ),
             ],
           ),
         ),
-        
+
         // Subtotal
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -121,11 +133,7 @@ Widget _buildAttributeChip(String label, Color color) {
     ),
     child: Text(
       label,
-      style: TextStyle(
-        color: color,
-        fontSize: 10,
-        fontWeight: FontWeight.bold,
-      ),
+      style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold),
     ),
   );
 }

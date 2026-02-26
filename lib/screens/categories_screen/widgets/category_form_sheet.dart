@@ -120,10 +120,15 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
 
               const SizedBox(height: 16),
 
-              const Text('الاسم والوصف (بالعربي والإنجليزي)', 
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              const Text(
+                'الاسم والوصف (بالعربي والإنجليزي)',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 12),
-              
+
               Row(
                 children: [
                   Expanded(
@@ -166,12 +171,18 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
               ),
               const SizedBox(height: 16),
 
-              Obx(() => CategoryTreeSelector(
-                categories: controller.categories.where((c) => c.id != widget.category?.id).toList(),
-                selectedId: controller.parentId.value.isEmpty ? null : controller.parentId.value,
-                onSelected: (id) => controller.parentId.value = id,
-                label: 'التصنيف الأب (اختياري)',
-              )),
+              Obx(
+                () => CategoryTreeSelector(
+                  categories: controller.categories
+                      .where((c) => c.id != widget.category?.id)
+                      .toList(),
+                  selectedId: controller.parentId.value.isEmpty
+                      ? null
+                      : controller.parentId.value,
+                  onSelected: (id) => controller.parentId.value = id,
+                  label: 'التصنيف الأب (اختياري)',
+                ),
+              ),
               const SizedBox(height: 16),
 
               _buildImageSection(res),
@@ -342,7 +353,9 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
       ),
       imageUrl: controller.imageController.text.trim(),
       isActive: controller.isActive.value,
-      parentId: controller.parentId.value.isEmpty ? null : controller.parentId.value,
+      parentId: controller.parentId.value.isEmpty
+          ? null
+          : controller.parentId.value,
       icon: controller.iconController.text.trim(),
     );
 

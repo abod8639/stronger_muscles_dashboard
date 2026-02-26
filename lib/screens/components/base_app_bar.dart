@@ -76,7 +76,10 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
           decoration: BoxDecoration(
             color: statusColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: statusColor.withValues(alpha: 0.2), width: 1),
+            border: Border.all(
+              color: statusColor.withValues(alpha: 0.2),
+              width: 1,
+            ),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,

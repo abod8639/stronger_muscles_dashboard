@@ -25,17 +25,16 @@ class OrdersTable extends StatelessWidget {
         children: [
           _buildTableHeader(controller, responsive),
 
-          responsive.isDesktop ?
-            _buildTableContent(controller, responsive)
-          :
-            buildRecentOrders(responsive),
+          responsive.isDesktop
+              ? _buildTableContent(controller, responsive)
+              : buildRecentOrders(responsive),
 
           _buildTableFooter(controller, responsive),
         ],
       ),
     );
   }
-  
+
   Widget _buildTableHeader(
     OrdersController controller,
     ResponsiveLayout responsive,
@@ -46,7 +45,10 @@ class OrdersTable extends StatelessWidget {
         color: Colors.white.withValues(alpha: 0.015), // خلفية زجاجية خفيفة جداً
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         border: Border(
-          bottom: BorderSide(color: Colors.white.withValues(alpha: 0.05), width: 1),
+          bottom: BorderSide(
+            color: Colors.white.withValues(alpha: 0.05),
+            width: 1,
+          ),
         ),
       ),
       child: Column(
@@ -67,17 +69,15 @@ class OrdersTable extends StatelessWidget {
                 ),
                 const Spacer(),
               ],
-              
+
               // Search box: Fixed width on Desktop/Tablet, Full width on Mobile
               if (responsive.isMobile)
-                Expanded(
-                  child: _buildSearchBox(controller, isFullWidth: true),
-                )
+                Expanded(child: _buildSearchBox(controller, isFullWidth: true))
               else
                 _buildSearchBox(controller, isFullWidth: false),
             ],
           ),
-          
+
           const SizedBox(height: 20),
 
           // السطر الثاني: الفلاتر (Tabs)
@@ -101,9 +101,9 @@ class OrdersTable extends StatelessWidget {
             ),
           ),
         ],
-      )
+      ),
     );
-    }
+  }
 
   Widget _buildTab(OrdersController controller, String id, String label) {
     final isSelected = controller.selectedStatusId.value == id;
@@ -138,7 +138,9 @@ class OrdersTable extends StatelessWidget {
         child: Text(
           label,
           style: TextStyle(
-            color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.4),
+            color: isSelected
+                ? Colors.white
+                : Colors.white.withValues(alpha: 0.4),
             fontSize: 13,
             fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
             letterSpacing: 0.3,
@@ -148,88 +150,84 @@ class OrdersTable extends StatelessWidget {
     );
   }
 
-Widget _buildSearchBox(
-  OrdersController controller, {
-  bool isFullWidth = false,
-}) {
-  final textController = TextEditingController();
-  final focusNode = FocusNode();
+  Widget _buildSearchBox(
+    OrdersController controller, {
+    bool isFullWidth = false,
+  }) {
+    final textController = TextEditingController();
+    final focusNode = FocusNode();
 
-  return StatefulBuilder(
-    builder: (context, setState) {
-      final isFocused = focusNode.hasFocus;
-      final hasText = textController.text.isNotEmpty;
+    return StatefulBuilder(
+      builder: (context, setState) {
+        final isFocused = focusNode.hasFocus;
+        final hasText = textController.text.isNotEmpty;
 
-      return AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        curve: Curves.easeOut,
-        width: isFullWidth ? double.infinity : 320,
-        height: 46,
-        padding: const EdgeInsets.symmetric(horizontal: 14),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(isFocused ? 0.07 : 0.04),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: isFocused
-                ? Colors.white.withValues(alpha: 0.18)
-                : Colors.white.withValues(alpha: 0.08),
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOut,
+          width: isFullWidth ? double.infinity : 320,
+          height: 46,
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(isFocused ? 0.07 : 0.04),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: isFocused
+                  ? Colors.white.withValues(alpha: 0.18)
+                  : Colors.white.withValues(alpha: 0.08),
+            ),
           ),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              Icons.search_rounded,
-              size: 20,
-              color: Colors.white.withOpacity(isFocused ? 0.9 : 0.5),
-            ),
-            const SizedBox(width: 12),
+          child: Row(
+            children: [
+              Icon(
+                Icons.search_rounded,
+                size: 20,
+                color: Colors.white.withOpacity(isFocused ? 0.9 : 0.5),
+              ),
+              const SizedBox(width: 12),
 
-            Expanded(
-              child: TextField(
-                controller: textController,
-                focusNode: focusNode,
-                cursorColor: Colors.white,
-                onChanged: (v) {
-                  controller.onSearchChanged(v);
-                  setState(() {});
-                },
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.white,
-                ),
-                decoration: InputDecoration(
-                  hintText: 'Search orders...',
-                  hintStyle: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.35),
-                    fontSize: 14,
+              Expanded(
+                child: TextField(
+                  controller: textController,
+                  focusNode: focusNode,
+                  cursorColor: Colors.white,
+                  onChanged: (v) {
+                    controller.onSearchChanged(v);
+                    setState(() {});
+                  },
+                  style: const TextStyle(fontSize: 14, color: Colors.white),
+                  decoration: InputDecoration(
+                    hintText: 'Search orders...',
+                    hintStyle: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.35),
+                      fontSize: 14,
+                    ),
+                    border: InputBorder.none,
+                    isDense: true,
                   ),
-                  border: InputBorder.none,
-                  isDense: true,
                 ),
               ),
-            ),
 
-            if (hasText)
-              GestureDetector(
-                onTap: () {
-                  textController.clear();
-                  controller.onSearchChanged('');
-                  setState(() {});
-                },
-                child: Icon(
-                  Icons.close_rounded,
-                  size: 18,
-                  color: Colors.white.withValues(alpha: 0.6),
+              if (hasText)
+                GestureDetector(
+                  onTap: () {
+                    textController.clear();
+                    controller.onSearchChanged('');
+                    setState(() {});
+                  },
+                  child: Icon(
+                    Icons.close_rounded,
+                    size: 18,
+                    color: Colors.white.withValues(alpha: 0.6),
+                  ),
                 ),
-              ),
-          ],
-        ),
-      );
-    },
-  );
-}
+            ],
+          ),
+        );
+      },
+    );
+  }
 
- 
   Widget _buildTableContent(
     OrdersController controller,
     ResponsiveLayout responsive,
@@ -257,7 +255,6 @@ Widget _buildSearchBox(
           // Rows
           ...List.generate(orders.length, (index) {
             return _buildOrderRow(
-              
               orders[index],
               isLast: index == orders.length - 1,
             );
@@ -308,31 +305,34 @@ Widget _buildSearchBox(
     );
   }
 
-  Widget _buildOrderRow( OrderModel order, {bool isLast = false}) {
+  Widget _buildOrderRow(OrderModel order, {bool isLast = false}) {
     final dateFormat = DateFormat('MMM dd, yyyy');
     return Builder(
       builder: (context) {
-    bool isMobile = MediaQuery.of(context).size.width < 600;
+        bool isMobile = MediaQuery.of(context).size.width < 600;
         return InkWell(
           onTap: () => Get.to(() => OrderDetailsScreen(order: order)),
           hoverColor: Colors.white.withValues(alpha: 0.02),
           child: Container(
             padding: EdgeInsets.symmetric(
-              horizontal: isMobile ? 16 : 24, 
-              vertical: 16
+              horizontal: isMobile ? 16 : 24,
+              vertical: 16,
             ),
             decoration: BoxDecoration(
               border: Border(
-                bottom: BorderSide(color: Colors.white.withValues(alpha: 0.05), width: 1),
+                bottom: BorderSide(
+                  color: Colors.white.withValues(alpha: 0.05),
+                  width: 1,
+                ),
               ),
             ),
             // التبديل بين Column للهاتف و Row للكمبيوتر
-            child: isMobile 
-              ? _buildMobileLayout(order, dateFormat) 
-              : _buildDesktopLayout(order, dateFormat),
+            child: isMobile
+                ? _buildMobileLayout(order, dateFormat)
+                : _buildDesktopLayout(order, dateFormat),
           ),
         );
-      }
+      },
     );
   }
 
@@ -381,11 +381,14 @@ Widget _buildSearchBox(
     );
   }
 
-
   Widget _buildOrderId(OrderModel order) {
     return Text(
       '#ORD-${order.id.toString().padLeft(4, '0')}',
-      style: const TextStyle(color: AppColors.accent, fontWeight: FontWeight.bold, fontSize: 12),
+      style: const TextStyle(
+        color: AppColors.accent,
+        fontWeight: FontWeight.bold,
+        fontSize: 12,
+      ),
     );
   }
 
@@ -395,14 +398,29 @@ Widget _buildSearchBox(
       children: [
         _buildAvatar(order),
         const SizedBox(width: 10),
-        Flexible( 
+        Flexible(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(order.userName, maxLines: 1, overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
-              Text(order.userEmail, maxLines: 1, overflow: TextOverflow.ellipsis,
-                  style: TextStyle(color: Colors.white.withValues(alpha: 0.3), fontSize: 11)),
+              Text(
+                order.userName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                order.userEmail,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.3),
+                  fontSize: 11,
+                ),
+              ),
             ],
           ),
         ),
@@ -411,13 +429,24 @@ Widget _buildSearchBox(
   }
 
   Widget _buildDate(OrderModel order, DateFormat dateFormat) {
-    return Text(dateFormat.format(order.orderDate),
-        style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 12));
+    return Text(
+      dateFormat.format(order.orderDate),
+      style: TextStyle(
+        color: Colors.white.withValues(alpha: 0.5),
+        fontSize: 12,
+      ),
+    );
   }
 
   Widget _buildPrice(OrderModel order) {
-    return Text('${order.totalAmount.toStringAsFixed(2)} SAR',
-        style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w800));
+    return Text(
+      '${order.totalAmount.toStringAsFixed(2)} SAR',
+      style: const TextStyle(
+        color: Colors.white,
+        fontSize: 14,
+        fontWeight: FontWeight.w800,
+      ),
+    );
   }
 
   Widget _buildActionBtn(OrderModel order) {
@@ -439,7 +468,10 @@ Widget _buildSearchBox(
             AppColors.primary.withValues(alpha: 0.1),
           ],
         ),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 1),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.1),
+          width: 1,
+        ),
       ),
       child: Center(
         child: order.userPhoto != null
@@ -465,7 +497,6 @@ Widget _buildSearchBox(
     OrdersController controller,
     ResponsiveLayout responsive,
   ) {
-
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -480,13 +511,21 @@ Widget _buildSearchBox(
         ),
       ),
       child: Obx(() {
-        final start = (controller.currentPage.value - 1) * controller.itemsPerPage.value + 1;
-        final end = (start + controller.paginatedOrders.length - 1).clamp(0, controller.filteredOrders.length);
+        final start =
+            (controller.currentPage.value - 1) * controller.itemsPerPage.value +
+            1;
+        final end = (start + controller.paginatedOrders.length - 1).clamp(
+          0,
+          controller.filteredOrders.length,
+        );
 
         // النص الإحصائي
         Widget statsText = Text(
           'Showing $start to $end of ${controller.filteredOrders.length} entries',
-          style: TextStyle(color: Colors.white.withValues(alpha: 0.4), fontSize: 12),
+          style: TextStyle(
+            color: Colors.white.withValues(alpha: 0.4),
+            fontSize: 12,
+          ),
         );
 
         // أزرار التنقل
@@ -495,14 +534,18 @@ Widget _buildSearchBox(
           children: [
             _buildNavButton(
               icon: Icons.chevron_left_rounded,
-              onPressed: controller.currentPage.value > 1 ? controller.previousPage : null,
+              onPressed: controller.currentPage.value > 1
+                  ? controller.previousPage
+                  : null,
             ),
             const SizedBox(width: 12),
             ..._buildPageNumbers(controller),
             const SizedBox(width: 12),
             _buildNavButton(
               icon: Icons.chevron_right_rounded,
-              onPressed: controller.currentPage.value < controller.totalPages ? controller.nextPage : null,
+              onPressed: controller.currentPage.value < controller.totalPages
+                  ? controller.nextPage
+                  : null,
             ),
           ],
         );
@@ -529,12 +572,20 @@ Widget _buildSearchBox(
     List<Widget> pages = [];
     for (int i = 1; i <= controller.totalPages; i++) {
       if (controller.totalPages > 5) {
-        if (i != 1 && i != controller.totalPages && (i < controller.currentPage.value - 1 || i > controller.currentPage.value + 1)) {
+        if (i != 1 &&
+            i != controller.totalPages &&
+            (i < controller.currentPage.value - 1 ||
+                i > controller.currentPage.value + 1)) {
           if (i == 2 || i == controller.totalPages - 1) {
-            pages.add(Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: Text('...', style: TextStyle(color: Colors.white.withValues(alpha: 0.2))),
-            ));
+            pages.add(
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: Text(
+                  '...',
+                  style: TextStyle(color: Colors.white.withValues(alpha: 0.2)),
+                ),
+              ),
+            );
           }
           continue;
         }
@@ -556,16 +607,22 @@ Widget _buildSearchBox(
         height: 32,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary : Colors.white.withValues(alpha: 0.05),
+          color: isSelected
+              ? AppColors.primary
+              : Colors.white.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: isSelected ? AppColors.primary : Colors.white.withValues(alpha: 0.1),
+            color: isSelected
+                ? AppColors.primary
+                : Colors.white.withValues(alpha: 0.1),
           ),
         ),
         child: Text(
           '$pageNum',
           style: TextStyle(
-            color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.6),
+            color: isSelected
+                ? Colors.white
+                : Colors.white.withValues(alpha: 0.6),
             fontSize: 12,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
           ),
@@ -585,15 +642,18 @@ Widget _buildSearchBox(
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(isDisabled ? 0.02 : 0.05),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.white.withOpacity(isDisabled ? 0.02 : 0.1)),
+          border: Border.all(
+            color: Colors.white.withOpacity(isDisabled ? 0.02 : 0.1),
+          ),
         ),
         child: Icon(
           icon,
           size: 20,
-          color: isDisabled ? Colors.white10 : Colors.white.withValues(alpha: 0.7),
+          color: isDisabled
+              ? Colors.white10
+              : Colors.white.withValues(alpha: 0.7),
         ),
       ),
     );
   }
-
 }

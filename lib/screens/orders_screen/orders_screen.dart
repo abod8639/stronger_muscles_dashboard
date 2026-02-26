@@ -22,7 +22,6 @@ class OrdersScreen extends StatelessWidget {
       backgroundColor: Colors.transparent,
       appBar: BaseAppBar(
         extraActions: [
-          
           _buildHeaderButton(
             icon: Icons.download_rounded,
             label: 'Export CSV',
@@ -31,7 +30,6 @@ class OrdersScreen extends StatelessWidget {
             },
             isOutline: true,
           ),
-
         ],
         title: 'إدارة الطلبات',
         onPressed: controller.fetchOrders,
@@ -44,11 +42,12 @@ class OrdersScreen extends StatelessWidget {
         }
 
         return MyRefreshIndicator(
-          onRefresh: () async=>
-           await controller.fetchOrders(),
+          onRefresh: () async => await controller.fetchOrders(),
 
           child: SingleChildScrollView(
-            physics:  responsive.isDesktop ? const NeverScrollableScrollPhysics() : const AlwaysScrollableScrollPhysics(),
+            physics: responsive.isDesktop
+                ? const NeverScrollableScrollPhysics()
+                : const AlwaysScrollableScrollPhysics(),
             padding: EdgeInsets.symmetric(
               horizontal: responsive.defaultPadding.left,
               // vertical: responsive.defaultPadding.top,
@@ -58,16 +57,13 @@ class OrdersScreen extends StatelessWidget {
               children: [
                 // Stats Row
                 if (responsive.isDesktop)
-                  SizedBox(
-                    height: 160,
-                    child: buildStatsSection(),
-                  ),
-          
+                  SizedBox(height: 160, child: buildStatsSection()),
+
                 const SizedBox(height: 10),
-          
+
                 // The Main Table
                 const OrdersTable(),
-          
+
                 const SizedBox(height: 10),
               ],
             ),
@@ -88,14 +84,18 @@ class OrdersScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: isOutline ? Colors.transparent : AppColors.primary,
         borderRadius: BorderRadius.circular(10),
-        border: isOutline ? Border.all(color: Colors.white.withValues(alpha: 0.1)) : null,
-        boxShadow: isOutline ? null : [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.3),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        border: isOutline
+            ? Border.all(color: Colors.white.withValues(alpha: 0.1))
+            : null,
+        boxShadow: isOutline
+            ? null
+            : [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.3),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
       ),
       child: Material(
         color: Colors.transparent,
@@ -123,5 +123,4 @@ class OrdersScreen extends StatelessWidget {
       ),
     );
   }
-
 }

@@ -20,7 +20,7 @@ class IndicatorsModel {
     required this.icon,
     required this.trend,
     required this.isUp,
-    this.chartColor, 
+    this.chartColor,
     this.chartSpots,
   });
 }

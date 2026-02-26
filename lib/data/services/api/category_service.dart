@@ -14,7 +14,9 @@ class CategoryService extends ApiBase {
       final decoded = response.data;
       if (decoded is Map && decoded.containsKey('data')) {
         var data = decoded['data'];
-        return (data is Map && data.containsKey('data')) ? data['data'] : (data is List ? data : []);
+        return (data is Map && data.containsKey('data'))
+            ? data['data']
+            : (data is List ? data : []);
       }
       return decoded is List ? decoded : [];
     } on DioException catch (e) {
@@ -32,9 +34,15 @@ class CategoryService extends ApiBase {
     }
   }
 
-  Future<Map<String, dynamic>> updateCategory(String id, Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> updateCategory(
+    String id,
+    Map<String, dynamic> data,
+  ) async {
     try {
-      final response = await dio.put(ApiConfig.adminCategoryDetail(id), data: data);
+      final response = await dio.put(
+        ApiConfig.adminCategoryDetail(id),
+        data: data,
+      );
       return response.data;
     } on DioException catch (e) {
       throw Exception(_parseErrorMessage(e, 'تحديث التصنيف'));
@@ -56,7 +64,10 @@ class CategoryService extends ApiBase {
       if (!File(filePath).existsSync()) throw Exception('الملف غير موجود');
 
       FormData formData = FormData.fromMap({
-        'image': await MultipartFile.fromFile(filePath, filename: filePath.split('/').last),
+        'image': await MultipartFile.fromFile(
+          filePath,
+          filename: filePath.split('/').last,
+        ),
       });
 
       final response = await dio.post(
@@ -87,7 +98,8 @@ class CategoryService extends ApiBase {
     if (decoded is! Map) return null;
     if (decoded.containsKey('url')) return decoded['url'].toString();
     if (decoded.containsKey('data') && decoded['data'] is Map) {
-      return decoded['data']['url']?.toString() ?? decoded['data']['imageUrl']?.toString();
+      return decoded['data']['url']?.toString() ??
+          decoded['data']['imageUrl']?.toString();
     }
     return decoded['imageUrl']?.toString() ?? decoded['path']?.toString();
   }
@@ -106,6 +118,8 @@ class CategoryService extends ApiBase {
   }
 
   void _logError(DioException e, String task) {
-    print('⚠️ [CategoryService] Error in $task: ${e.response?.statusCode} - ${e.message}');
+    print(
+      '⚠️ [CategoryService] Error in $task: ${e.response?.statusCode} - ${e.message}',
+    );
   }
 }

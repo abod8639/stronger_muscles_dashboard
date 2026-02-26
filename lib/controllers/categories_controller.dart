@@ -121,17 +121,15 @@ class CategoriesController extends GetxController {
   Future<bool> updateCategory(CategoryModel category) async {
     try {
       isLoading.value = true;
-      final updatedCategory = await _categoryRepository.updateCategory(
-        category.id,
-        {
-          'name': category.name.toJson(),
-          'image_url': category.imageUrl,
-          'description': category.description?.toJson(),
-          'sort_order': 0,
-          'is_active': isActive.value,
-          'parent_id': parentId.value.isEmpty ? null : parentId.value,
-        },
-      );
+      final updatedCategory = await _categoryRepository
+          .updateCategory(category.id, {
+            'name': category.name.toJson(),
+            'image_url': category.imageUrl,
+            'description': category.description?.toJson(),
+            'sort_order': 0,
+            'is_active': isActive.value,
+            'parent_id': parentId.value.isEmpty ? null : parentId.value,
+          });
 
       final index = categories.indexWhere((c) => c.id == category.id);
       if (index != -1) {

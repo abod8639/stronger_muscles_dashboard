@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/screens/components/status_badge.dart';
@@ -65,8 +64,8 @@ class _OrderListTileState extends State<OrderListTile>
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: _isHovered 
-                  ? AppColors.primary.withValues(alpha: 0.15) 
+              color: _isHovered
+                  ? AppColors.primary.withValues(alpha: 0.15)
                   : Colors.black.withValues(alpha: 0.04),
               blurRadius: _isHovered ? 20 : 8,
               offset: Offset(0, _isHovered ? 8 : 2),
@@ -89,7 +88,6 @@ class _OrderListTileState extends State<OrderListTile>
             borderRadius: BorderRadius.circular(24),
             child: Stack(
               children: [
-
                 // Content
                 Padding(
                   padding: const EdgeInsets.all(10),

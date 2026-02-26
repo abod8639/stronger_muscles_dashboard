@@ -40,7 +40,10 @@ class _LineChartWidgetState extends State<LineChartWidget> {
       gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [Colors.white.withValues(alpha: 0.1), Colors.white.withValues(alpha: 0.02)],
+        colors: [
+          Colors.white.withValues(alpha: 0.1),
+          Colors.white.withValues(alpha: 0.02),
+        ],
       ),
       border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 1),
       child: Padding(

@@ -18,7 +18,9 @@ class ProductRepository {
   Future<List<ProductModel>> getProducts() async {
     try {
       // معادلة cache أولاً
-      final cachedData = _cacheService.get<List<ProductModel>>(_cacheKeyProducts);
+      final cachedData = _cacheService.get<List<ProductModel>>(
+        _cacheKeyProducts,
+      );
       if (cachedData != null) {
         debugPrint('✓ تم استرجاع المنتجات من الـ Cache');
         return cachedData;

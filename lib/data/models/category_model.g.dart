@@ -75,13 +75,15 @@ _$CategoryModelImpl _$$CategoryModelImplFromJson(Map<String, dynamic> json) =>
       description: json['description'] == null
           ? null
           : TranslatableString.fromJson(
-              json['description'] as Map<String, dynamic>),
+              json['description'] as Map<String, dynamic>,
+            ),
       imageUrl: json['imageUrl'] as String?,
       sortOrder: (json['sortOrder'] as num?)?.toInt() ?? 0,
       isActive: json['isActive'] as bool? ?? true,
       icon: json['icon'],
       parentId: json['parentId'] as String?,
-      children: (json['children'] as List<dynamic>?)
+      children:
+          (json['children'] as List<dynamic>?)
               ?.map((e) => CategoryModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],

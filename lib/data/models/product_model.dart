@@ -56,11 +56,15 @@ class ProductVariantModel with _$ProductVariantModel {
     @HiveField(1) required String sku,
     @HiveField(2) required double price,
     @JsonKey(name: 'discount_price') @HiveField(3) double? discountPrice,
-    @JsonKey(name: 'effective_price') @HiveField(4) required double effectivePrice,
+    @JsonKey(name: 'effective_price')
+    @HiveField(4)
+    required double effectivePrice,
     @JsonKey(name: 'stock_quantity') @HiveField(5) required int stockQuantity,
     @HiveField(6) required Map<String, dynamic> attributes,
     @JsonKey(name: 'is_active') @HiveField(7) @Default(true) bool isActive,
-    @JsonKey(name: 'discount_start_date') @HiveField(8) DateTime? discountStartDate,
+    @JsonKey(name: 'discount_start_date')
+    @HiveField(8)
+    DateTime? discountStartDate,
     @JsonKey(name: 'discount_end_date') @HiveField(9) DateTime? discountEndDate,
   }) = _ProductVariantModel;
 
@@ -144,10 +148,16 @@ class ProductModel with _$ProductModel {
     @JsonKey(name: 'total_sales') @HiveField(25) @Default(0) int totalSales,
 
     // Variants: new API uses 'product_variants', legacy uses 'variants'
-    @JsonKey(name: 'product_variants') @HiveField(26) @Default([]) List<ProductVariantModel> variants,
+    @JsonKey(name: 'product_variants')
+    @HiveField(26)
+    @Default([])
+    List<ProductVariantModel> variants,
 
     // has_variants flag from API
-    @JsonKey(name: 'has_variants') @HiveField(28) @Default(false) bool hasVariants,
+    @JsonKey(name: 'has_variants')
+    @HiveField(28)
+    @Default(false)
+    bool hasVariants,
   }) = _ProductModel;
 
   const ProductModel._();
@@ -179,7 +189,10 @@ Map<String, dynamic> _mapProductJson(Map<String, dynamic> json) {
     categoryId = categoryObj['id']?.toString() ?? '';
     // Ensure category name is translatable
     if (categoryObj['name'] is! Map) {
-      categoryObj['name'] = {'ar': categoryObj['name']?.toString() ?? '', 'en': ''};
+      categoryObj['name'] = {
+        'ar': categoryObj['name']?.toString() ?? '',
+        'en': '',
+      };
     }
   } else {
     categoryId = (json['category_id'] ?? json['categoryId'] ?? '').toString();

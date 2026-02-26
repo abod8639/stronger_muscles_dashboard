@@ -79,8 +79,8 @@ class BaseDataView<T> extends StatelessWidget {
   }
 
   Widget _buildListView(ResponsiveLayout res) {
-    return Obx(()=>
-       ListView.builder(
+    return Obx(
+      () => ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: items.length,
@@ -94,7 +94,8 @@ class BaseDataView<T> extends StatelessWidget {
   }
 
   Widget _buildGridView(ResponsiveLayout res, int columns, double spacing) {
-    return Obx(()=> GridView.builder(
+    return Obx(
+      () => GridView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         padding: EdgeInsets.symmetric(

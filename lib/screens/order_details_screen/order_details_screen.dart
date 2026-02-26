@@ -64,11 +64,15 @@ class OrderDetailsScreen extends StatelessWidget {
                     Icons.person,
                     'اسم العميل',
                     // order.user?.name ??
-                    order.shippingAddress?.fullName ?? "" ,
+                    order.shippingAddress?.fullName ?? "",
                   ),
-                  if(order.userEmail != "") ...[
-                      const Divider(),
-                      buildDetailRow(Icons.email, 'البريد الإلكتروني', order.userEmail),
+                  if (order.userEmail != "") ...[
+                    const Divider(),
+                    buildDetailRow(
+                      Icons.email,
+                      'البريد الإلكتروني',
+                      order.userEmail,
+                    ),
                   ],
                   // if(order.phoneNumber != null && order.phoneNumber!.isNotEmpty) ...[
                   const Divider(),
@@ -102,24 +106,42 @@ class OrderDetailsScreen extends StatelessWidget {
             buildSection(
               child: Column(
                 children: [
-                  
-                  buildDetailRow(Icons.location_on, 'العنوان الكامل', order.shippingAddress?.fullAddress ?? ""),
+                  buildDetailRow(
+                    Icons.location_on,
+                    'العنوان الكامل',
+                    order.shippingAddress?.fullAddress ?? "",
+                  ),
 
-                  buildDetailRow(Icons.location_on, 'المدينة', order.shippingAddress?.city ?? ""),
-            
-                  buildDetailRow(Icons.location_on, 'الولاية', order.shippingAddress?.state ?? ""),
-               
-                  buildDetailRow(Icons.location_on, 'الرمز البريدي', order.shippingAddress?.postalCode ?? ""),
-                
-                  buildDetailRow(Icons.location_on, 'الدولة', order.shippingAddress?.country ?? ""),
+                  buildDetailRow(
+                    Icons.location_on,
+                    'المدينة',
+                    order.shippingAddress?.city ?? "",
+                  ),
 
+                  buildDetailRow(
+                    Icons.location_on,
+                    'الولاية',
+                    order.shippingAddress?.state ?? "",
+                  ),
+
+                  buildDetailRow(
+                    Icons.location_on,
+                    'الرمز البريدي',
+                    order.shippingAddress?.postalCode ?? "",
+                  ),
+
+                  buildDetailRow(
+                    Icons.location_on,
+                    'الدولة',
+                    order.shippingAddress?.country ?? "",
+                  ),
                 ],
               ),
             ),
+
             // buildSection(
             //   child: buildAddressSection(order.shippingAddress),
             // ),
-
             const SizedBox(height: 16),
 
             // --- Order Items ---

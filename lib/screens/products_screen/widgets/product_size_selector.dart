@@ -55,25 +55,35 @@ class ProductSizeSelector extends StatelessWidget {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
               ),
               PopupMenuButton<String>(
-                icon: const Icon(Icons.add_circle_outline, color: AppColors.primary),
+                icon: const Icon(
+                  Icons.add_circle_outline,
+                  color: AppColors.primary,
+                ),
                 tooltip: "إضافة من القائمة",
                 onSelected: (String sizeName) {
                   if (!selectedSizes.any((s) => s.size == sizeName)) {
-                    List<ProductSize> updatedList = List<ProductSize>.from(selectedSizes);
-                    updatedList.add(ProductSize(size: sizeName, price: defaultPrice));
+                    List<ProductSize> updatedList = List<ProductSize>.from(
+                      selectedSizes,
+                    );
+                    updatedList.add(
+                      ProductSize(size: sizeName, price: defaultPrice),
+                    );
                     onSelectionChanged(updatedList);
                     onSelectSize(updatedList.length - 1);
                   }
                 },
                 itemBuilder: (BuildContext context) {
                   return availableSizes
-                      .where((size) => !selectedSizes.any((s) => s.size == size))
+                      .where(
+                        (size) => !selectedSizes.any((s) => s.size == size),
+                      )
                       .map((String size) {
-                    return PopupMenuItem<String>(
-                      value: size,
-                      child: Text(size),
-                    );
-                  }).toList();
+                        return PopupMenuItem<String>(
+                          value: size,
+                          child: Text(size),
+                        );
+                      })
+                      .toList();
                 },
               ),
             ],
@@ -93,8 +103,12 @@ class ProductSizeSelector extends StatelessWidget {
                   final isActive = index == selectedIndex;
 
                   return InputChip(
-                    avatar: isActive 
-                        ? const Icon(Icons.check_circle, size: 16, color: AppColors.primary)
+                    avatar: isActive
+                        ? const Icon(
+                            Icons.check_circle,
+                            size: 16,
+                            color: AppColors.primary,
+                          )
                         : null,
                     label: Text(sizeObj.size),
                     selected: isActive,
@@ -102,7 +116,9 @@ class ProductSizeSelector extends StatelessWidget {
                       onSelectSize(index);
                     },
                     onDeleted: () {
-                      List<ProductSize> updatedList = List<ProductSize>.from(selectedSizes);
+                      List<ProductSize> updatedList = List<ProductSize>.from(
+                        selectedSizes,
+                      );
                       updatedList.removeAt(index);
                       onSelectionChanged(updatedList);
                       onSelectSize(-1);
@@ -181,7 +197,7 @@ class ProductSizeSelector extends StatelessWidget {
                   !selectedSizes.any((s) => s.size == newSize)) {
                 final updatedList = [
                   ...selectedSizes,
-                  ProductSize(size: newSize, price: defaultPrice)
+                  ProductSize(size: newSize, price: defaultPrice),
                 ];
                 onSelectionChanged(updatedList);
                 onSelectSize(updatedList.length - 1);
@@ -195,5 +211,3 @@ class ProductSizeSelector extends StatelessWidget {
     );
   }
 }
-
-

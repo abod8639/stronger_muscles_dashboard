@@ -6,7 +6,6 @@ import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/produ
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_form_mixin.dart';
 import '../../../config/theme.dart';
 
-
 class ProductFormPage extends StatefulWidget {
   final ProductModel? product;
   const ProductFormPage({super.key, this.product});
@@ -54,11 +53,11 @@ class _ProductFormPageState extends State<ProductFormPage>
               onPressed: controller.isLoading.value
                   ? null
                   : () => controller.saveProduct(
-                        existingProduct: widget.product,
-                        formKey: _formKey,
-                        categoryId: _selectedCategoryId ?? '',
-                        productImages: controller.imageUrls.toList(),
-                      ),
+                      existingProduct: widget.product,
+                      formKey: _formKey,
+                      categoryId: _selectedCategoryId ?? '',
+                      productImages: controller.imageUrls.toList(),
+                    ),
               icon: const Icon(Icons.save_as_rounded, color: AppColors.primary),
             ),
           ),
@@ -110,11 +109,11 @@ class _ProductFormPageState extends State<ProductFormPage>
         onPressed: controller.isLoading.value
             ? null
             : () => controller.saveProduct(
-                  existingProduct: widget.product,
-                  formKey: _formKey,
-                  categoryId: _selectedCategoryId ?? '',
-                  productImages: controller.imageUrls.toList(),
-                ),
+                existingProduct: widget.product,
+                formKey: _formKey,
+                categoryId: _selectedCategoryId ?? '',
+                productImages: controller.imageUrls.toList(),
+              ),
         child: controller.isLoading.value
             ? const CircularProgressIndicator(color: Colors.white)
             : const Text(

@@ -30,7 +30,11 @@ class _CategoryTreeSelectorState extends State<CategoryTreeSelector> {
       children: [
         Text(
           widget.label ?? "اختر القسم (التصنيف الشجري)",
-          style: const TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            color: Colors.white70,
+            fontSize: 13,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 10),
         GlassContainer(
@@ -38,7 +42,9 @@ class _CategoryTreeSelectorState extends State<CategoryTreeSelector> {
           borderRadius: BorderRadius.circular(15),
           border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
           child: Column(
-            children: widget.categories.map((cat) => _buildCategoryItem(cat, 0)).toList(),
+            children: widget.categories
+                .map((cat) => _buildCategoryItem(cat, 0))
+                .toList(),
           ),
         ),
       ],
@@ -55,7 +61,9 @@ class _CategoryTreeSelectorState extends State<CategoryTreeSelector> {
           onTap: () => widget.onSelected(category.id),
           child: Container(
             padding: EdgeInsets.fromLTRB(16, 12, 16 + (level * 20.0), 12),
-            color: isSelected ? AppColors.primary.withValues(alpha: 0.1) : Colors.transparent,
+            color: isSelected
+                ? AppColors.primary.withValues(alpha: 0.1)
+                : Colors.transparent,
             child: Row(
               children: [
                 if (hasChildren)
@@ -71,20 +79,30 @@ class _CategoryTreeSelectorState extends State<CategoryTreeSelector> {
                   child: Text(
                     category.displayName,
                     style: TextStyle(
-                      color: isSelected ? AppColors.primary : Colors.white.withValues(alpha: 0.8),
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      color: isSelected
+                          ? AppColors.primary
+                          : Colors.white.withValues(alpha: 0.8),
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                       fontSize: 14 - (level * 0.5),
                     ),
                   ),
                 ),
                 if (isSelected)
-                  const Icon(Icons.check_circle_rounded, color: AppColors.primary, size: 18),
+                  const Icon(
+                    Icons.check_circle_rounded,
+                    color: AppColors.primary,
+                    size: 18,
+                  ),
               ],
             ),
           ),
         ),
         if (hasChildren)
-          ...category.children.map((child) => _buildCategoryItem(child, level + 1)),
+          ...category.children.map(
+            (child) => _buildCategoryItem(child, level + 1),
+          ),
       ],
     );
   }

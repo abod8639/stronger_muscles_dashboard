@@ -264,11 +264,12 @@ _$OrderModelImpl _$$OrderModelImplFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       userId: json['userId'] as String,
       orderDate: DateTime.parse(json['orderDate'] as String),
-      status: $enumDecodeNullable(_$OrderStatusEnumMap, json['status']) ??
+      status:
+          $enumDecodeNullable(_$OrderStatusEnumMap, json['status']) ??
           OrderStatus.pending,
       paymentStatus:
           $enumDecodeNullable(_$PaymentStatusEnumMap, json['paymentStatus']) ??
-              PaymentStatus.pending,
+          PaymentStatus.pending,
       paymentMethod: json['paymentMethod'] as String? ?? 'card',
       addressId: json['addressId'] as String,
       subtotal: (json['subtotal'] as num).toDouble(),
@@ -281,7 +282,8 @@ _$OrderModelImpl _$$OrderModelImplFromJson(Map<String, dynamic> json) =>
       shippingAddress: json['shippingAddress'] == null
           ? null
           : AddressModel.fromJson(
-              json['shippingAddress'] as Map<String, dynamic>),
+              json['shippingAddress'] as Map<String, dynamic>,
+            ),
       items: (json['items'] as List<dynamic>?)
           ?.map((e) => OrderItemModel.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -342,17 +344,17 @@ _$OrderItemModelImpl _$$OrderItemModelImplFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$$OrderItemModelImplToJson(
-        _$OrderItemModelImpl instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'orderId': instance.orderId,
-      'productId': instance.productId,
-      'productName': instance.productName,
-      'unitPrice': instance.unitPrice,
-      'quantity': instance.quantity,
-      'subtotal': instance.subtotal,
-      'imageUrl': instance.imageUrl,
-      'selectedFlavor': instance.selectedFlavor,
-      'selectedSize': instance.selectedSize,
-      'fullName': instance.fullName,
-    };
+  _$OrderItemModelImpl instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'orderId': instance.orderId,
+  'productId': instance.productId,
+  'productName': instance.productName,
+  'unitPrice': instance.unitPrice,
+  'quantity': instance.quantity,
+  'subtotal': instance.subtotal,
+  'imageUrl': instance.imageUrl,
+  'selectedFlavor': instance.selectedFlavor,
+  'selectedSize': instance.selectedSize,
+  'fullName': instance.fullName,
+};

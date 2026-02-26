@@ -17,10 +17,10 @@ Future<void> main() async {
   await Hive.initFlutter();
   await GetStorage.init();
   await hiveInit();
-  
+
   // تسجيل الخدمات والـ Controllers كـ Singletons
   _initializeServices();
-  
+
   runApp(const StrongerMusclesDashboard());
 }
 
@@ -28,7 +28,7 @@ Future<void> main() async {
 void _initializeServices() {
   // تسجيل CacheService كـ GetxService (يبقى في الذاكرة طوال حياة التطبيق)
   Get.put(CacheService(), permanent: true);
-  
+
   // تسجيل Controllers كـ LazyPut (يتم إنشاؤها فقط عند الحاجة الأولى)
   // وتبقى في الذاكرة طالما التطبيق يعمل
   Get.lazyPut(() => NavigationController(), fenix: true);

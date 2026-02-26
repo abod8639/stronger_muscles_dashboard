@@ -22,13 +22,12 @@ Widget buildIndicatorCard(int index) {
         5,
         controller.processingOrders.value.toDouble() * 40,
       ),
-
     ),
-  //     final pendingOrders = 0.obs;
-  // final processingOrders = 0.obs;
-  // final shippedOrders = 0.obs;
-  // final deliveredOrders = 0.obs;
-  // final cancelledOrders = 0.obs;
+    //     final pendingOrders = 0.obs;
+    // final processingOrders = 0.obs;
+    // final shippedOrders = 0.obs;
+    // final deliveredOrders = 0.obs;
+    // final cancelledOrders = 0.obs;
     // IndicatorsModel(
     //   title: 'معالجة',
     //   subtitle: 'Processing Orders',
@@ -55,7 +54,7 @@ Widget buildIndicatorCard(int index) {
       value: controller.deliveredOrders.value.toString(),
       color: AppColorsExtended.purpleDark,
       icon: Icons.check_circle,
-      trend: '${2 + index }%',
+      trend: '${2 + index}%',
       isUp: true,
       chartColor: AppColorsExtended.greenAccent,
       chartSpots: generateChartSpots(

@@ -117,7 +117,8 @@ class OrdersController extends GetxController {
 
       // 2. الفلترة حسب البحث
       final String query = searchQuery.value.toLowerCase();
-      final bool matchesSearch = query.isEmpty ||
+      final bool matchesSearch =
+          query.isEmpty ||
           order.id.toString().toLowerCase().contains(query) ||
           order.userId.toString().toLowerCase().contains(query) ||
           order.userName.toLowerCase().contains(query) ||

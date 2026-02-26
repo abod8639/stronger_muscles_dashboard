@@ -7,7 +7,6 @@ import '../data/repositories/index.dart';
 import '../data/services/api_service.dart';
 
 class ProductsController extends GetxController {
-  
   late final ProductRepository _productRepository;
   late final CategoryRepository _categoryRepository;
   RxList<String> productFlavors = <String>[].obs;
@@ -37,15 +36,15 @@ class ProductsController extends GetxController {
   RxList<String> imageUrls = <String>[].obs;
 
   final Map<String, TextEditingController> textcontrollers = {
-    'name_ar':  TextEditingController(),
-    'name_en':  TextEditingController(),
-    'price':    TextEditingController(),
+    'name_ar': TextEditingController(),
+    'name_en': TextEditingController(),
+    'price': TextEditingController(),
     'discount': TextEditingController(),
-    'desc_ar':  TextEditingController(),
-    'desc_en':  TextEditingController(),
-    'stock':    TextEditingController(),
-    'brand':    TextEditingController(),
-    'serving':  TextEditingController(),
+    'desc_ar': TextEditingController(),
+    'desc_en': TextEditingController(),
+    'stock': TextEditingController(),
+    'brand': TextEditingController(),
+    'serving': TextEditingController(),
     'sessions': TextEditingController(),
   };
 
@@ -61,10 +60,11 @@ class ProductsController extends GetxController {
     final newVariant = ProductVariantModel(
       id: 'VAR-${DateTime.now().millisecondsSinceEpoch}',
       sku: '',
-      price:          double.tryParse(textcontrollers['price']?.text ?? '0') ?? 0,
-      discountPrice:  double.tryParse(textcontrollers['discount']?.text ?? ''),
-      effectivePrice: double.tryParse(textcontrollers['price']?.text ?? '0') ?? 0,
-      stockQuantity:  int.tryParse(textcontrollers['stock']?.text ?? '0') ?? 0,
+      price: double.tryParse(textcontrollers['price']?.text ?? '0') ?? 0,
+      discountPrice: double.tryParse(textcontrollers['discount']?.text ?? ''),
+      effectivePrice:
+          double.tryParse(textcontrollers['price']?.text ?? '0') ?? 0,
+      stockQuantity: int.tryParse(textcontrollers['stock']?.text ?? '0') ?? 0,
       attributes: {},
       isActive: true,
     );
@@ -88,24 +88,28 @@ class ProductsController extends GetxController {
     // but we must ensure each CURRENT size has a controller with its CURRENT value.
     for (var size in productSizes) {
       if (!sizePriceControllers.containsKey(size.size)) {
-        sizePriceControllers[size.size] = TextEditingController(text: size.price.toString());
+        sizePriceControllers[size.size] = TextEditingController(
+          text: size.price.toString(),
+        );
       }
-      // REMOVED: updating existing controllers here. 
+      // REMOVED: updating existing controllers here.
       // This prevents overwriting user input when adding new sizes.
       // If we need to force update (e.g. initial load), we should clear the controllers map first.
 
       if (!sizeDiscountControllers.containsKey(size.size)) {
-        sizeDiscountControllers[size.size] = TextEditingController(text: size.discountPrice?.toString() ?? '');
+        sizeDiscountControllers[size.size] = TextEditingController(
+          text: size.discountPrice?.toString() ?? '',
+        );
       }
     }
   }
 
   /// Clears and disposes size controllers. Call this when closing the form or initializing a new product.
   void clearSizeControllers() {
-     sizePriceControllers.forEach((key, controller) => controller.dispose());
-     sizePriceControllers.clear();
-     sizeDiscountControllers.forEach((key, controller) => controller.dispose());
-     sizeDiscountControllers.clear();
+    sizePriceControllers.forEach((key, controller) => controller.dispose());
+    sizePriceControllers.clear();
+    sizeDiscountControllers.forEach((key, controller) => controller.dispose());
+    sizeDiscountControllers.clear();
   }
 
   void selectSize(int index) {
@@ -361,31 +365,38 @@ class ProductsController extends GetxController {
 
       // Update productSizes with values from individual controllers
       final updatedSizes = productSizes.map((ps) {
-        final price = double.tryParse(sizePriceControllers[ps.size]?.text ?? '0') ?? 0;
-        final discount = double.tryParse(sizeDiscountControllers[ps.size]?.text ?? '');
+        final price =
+            double.tryParse(sizePriceControllers[ps.size]?.text ?? '0') ?? 0;
+        final discount = double.tryParse(
+          sizeDiscountControllers[ps.size]?.text ?? '',
+        );
         return ps.copyWith(price: price, discountPrice: discount);
       }).toList();
 
       debugPrint('-------- SAVE PRODUCT DEBUG --------');
       debugPrint('Product Sizes Count: ${updatedSizes.length}');
       for (var s in updatedSizes) {
-        debugPrint('Size: ${s.size}, Price: ${s.price}, Discount: ${s.discountPrice}');
+        debugPrint(
+          'Size: ${s.size}, Price: ${s.price}, Discount: ${s.discountPrice}',
+        );
       }
       debugPrint('------------------------------------');
 
       final productData = ProductModel(
-        id: existingProduct?.id ?? 'PROD-${DateTime.now().millisecondsSinceEpoch}',
+        id:
+            existingProduct?.id ??
+            'PROD-${DateTime.now().millisecondsSinceEpoch}',
         name: TranslatableString(
           ar: textcontrollers['name_ar']!.text.trim(),
           en: textcontrollers['name_en']!.text.trim(),
         ),
         price: double.tryParse(textcontrollers['price']!.text) ?? 0,
         discountPrice: double.tryParse(textcontrollers['discount']!.text),
-        imageUrls: productImages.map((url) => ProductImage(
-          thumbnail: url,
-          medium: url,
-          original: url,
-        )).toList(),
+        imageUrls: productImages
+            .map(
+              (url) => ProductImage(thumbnail: url, medium: url, original: url),
+            )
+            .toList(),
         description: TranslatableString(
           ar: textcontrollers['desc_ar']!.text.trim(),
           en: textcontrollers['desc_en']!.text.trim(),
@@ -396,7 +407,8 @@ class ProductsController extends GetxController {
         isActive: isFeatured.value,
         isBackgroundWhite: isBackgroundWhite.value,
         servingSize: textcontrollers['serving']!.text,
-        servingsPerContainer: int.tryParse(textcontrollers['sessions']!.text) ?? 0,
+        servingsPerContainer:
+            int.tryParse(textcontrollers['sessions']!.text) ?? 0,
         flavor: productFlavors.toList(),
         productSizes: updatedSizes,
         size: updatedSizes.map((e) => e.size).toList(),
@@ -412,7 +424,6 @@ class ProductsController extends GetxController {
       debugPrint("======== success ========");
       _showSuccess('تم بنجاح', 'تم حفظ بيانات المنتج بنجاح');
       debugPrint(productData.toString());
-      
     } catch (e) {
       debugPrint("======== error ========");
       debugPrint(e.toString());
@@ -426,10 +437,7 @@ class ProductsController extends GetxController {
   Map<String, dynamic> _buildApiJson(ProductModel product) {
     return {
       'id': product.id,
-      'name': {
-        'ar': product.name.ar,
-        'en': product.name.en,
-      },
+      'name': {'ar': product.name.ar, 'en': product.name.en},
       'description': {
         'ar': product.description.ar,
         'en': product.description.en,
@@ -448,23 +456,31 @@ class ProductsController extends GetxController {
       // النكهات
       'flavors': product.flavor ?? [],
       // الأحجام والأسعار
-      'product_sizes': (product.productSizes ?? []).map((s) => {
-        'size': s.size,
-        'price': s.price,
-        'discount_price': s.discountPrice,
-      }).toList(),
+      'product_sizes': (product.productSizes ?? [])
+          .map(
+            (s) => {
+              'size': s.size,
+              'price': s.price,
+              'discount_price': s.discountPrice,
+            },
+          )
+          .toList(),
       'size': (product.size ?? []),
       // المتغيرات
-      'variants': (product.variants).map((v) => {
-        'id': v.id,
-        'sku': v.sku,
-        'price': v.price,
-        'discount_price': v.discountPrice,
-        'effective_price': v.effectivePrice,
-        'stock_quantity': v.stockQuantity,
-        'attributes': v.attributes,
-        'is_active': v.isActive,
-      }).toList(),
+      'variants': (product.variants)
+          .map(
+            (v) => {
+              'id': v.id,
+              'sku': v.sku,
+              'price': v.price,
+              'discount_price': v.discountPrice,
+              'effective_price': v.effectivePrice,
+              'stock_quantity': v.stockQuantity,
+              'attributes': v.attributes,
+              'is_active': v.isActive,
+            },
+          )
+          .toList(),
     };
   }
 

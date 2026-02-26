@@ -151,13 +151,15 @@ class _CategoryFormPageState extends State<CategoryFormPage>
                       buildAnimatedSection(
                         delay: 280,
                         child: buildGlassmorphicCard(isDark, [
-                          Obx(() => CategoryTreeSelector(
-                                categories: controller.categories,
-                                selectedId: controller.parentId.value,
-                                onSelected: (id) =>
-                                    controller.parentId.value = id,
-                                label: 'اختر التصنيف الرئيسي (اختياري)',
-                              )),
+                          Obx(
+                            () => CategoryTreeSelector(
+                              categories: controller.categories,
+                              selectedId: controller.parentId.value,
+                              onSelected: (id) =>
+                                  controller.parentId.value = id,
+                              label: 'اختر التصنيف الرئيسي (اختياري)',
+                            ),
+                          ),
                         ]),
                       ),
 
@@ -447,7 +449,9 @@ class _CategoryFormPageState extends State<CategoryFormPage>
                 decoration: BoxDecoration(
                   color: Colors.black.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.1),
+                  ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -540,8 +544,14 @@ class _CategoryFormPageState extends State<CategoryFormPage>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: isDark
-              ? [Colors.white.withValues(alpha: 0.05), Colors.white.withValues(alpha: 0.02)]
-              : [Colors.grey.withValues(alpha: 0.1), Colors.grey.withValues(alpha: 0.05)],
+              ? [
+                  Colors.white.withValues(alpha: 0.05),
+                  Colors.white.withValues(alpha: 0.02),
+                ]
+              : [
+                  Colors.grey.withValues(alpha: 0.1),
+                  Colors.grey.withValues(alpha: 0.05),
+                ],
         ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
@@ -569,7 +579,9 @@ class _CategoryFormPageState extends State<CategoryFormPage>
           Text(
             'قم بإدخال رابط الصورة أعلاه',
             style: TextStyle(
-              color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.5),
+              color: (isDark ? Colors.white : Colors.black).withValues(
+                alpha: 0.5,
+              ),
               fontSize: 14,
               fontWeight: FontWeight.w600,
             ),
@@ -578,7 +590,9 @@ class _CategoryFormPageState extends State<CategoryFormPage>
           Text(
             'سيتم عرض المعاينة هنا',
             style: TextStyle(
-              color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.3),
+              color: (isDark ? Colors.white : Colors.black).withValues(
+                alpha: 0.3,
+              ),
               fontSize: 12,
             ),
           ),
@@ -628,13 +642,17 @@ class _CategoryFormPageState extends State<CategoryFormPage>
           Icon(
             Icons.broken_image_outlined,
             size: 64,
-            color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.3),
+            color: (isDark ? Colors.white : Colors.black).withValues(
+              alpha: 0.3,
+            ),
           ),
           const SizedBox(height: 12),
           Text(
             'فشل تحميل الصورة',
             style: TextStyle(
-              color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.5),
+              color: (isDark ? Colors.white : Colors.black).withValues(
+                alpha: 0.5,
+              ),
               fontSize: 14,
             ),
           ),
@@ -642,7 +660,9 @@ class _CategoryFormPageState extends State<CategoryFormPage>
           Text(
             'تحقق من الرابط وحاول مرة أخرى',
             style: TextStyle(
-              color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.3),
+              color: (isDark ? Colors.white : Colors.black).withValues(
+                alpha: 0.3,
+              ),
               fontSize: 12,
             ),
           ),

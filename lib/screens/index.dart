@@ -5,5 +5,5 @@ export 'orders_screen/orders_screen.dart';
 export 'users_screen/users_screen.dart';
 export 'settings_screen/settings_screen.dart';
 export 'components/drawer.dart';
-export 'auth/login_screen.dart';
-export 'auth/signup_screen.dart';
+export 'auth_screens/login_screen.dart';
+export 'auth_screens/signup_screen.dart';

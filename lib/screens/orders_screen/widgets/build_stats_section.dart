@@ -16,7 +16,6 @@ Widget buildStatsSection() {
       crossAxisSpacing: 10,
       // mainAxisSpacing: 10,
       childAspectRatio: 1.9,
-      
 
       children: [
         PremiumIndicatorCard(
@@ -30,15 +29,14 @@ Widget buildStatsSection() {
         ),
         PremiumIndicatorCard(
           title: 'قيد الانتظار',
-          value: (controller.pendingOrders*10).toString(),
+          value: (controller.pendingOrders * 10).toString(),
           trend: '-2%',
           trendUp: false,
           accentColor: Colors.orange,
           chartColor: Colors.orangeAccent,
           icon: Icons.timer_rounded,
-          // chartSpots: generateChartSpots(500, controller.totalOrders.toDouble()),
 
-          
+          // chartSpots: generateChartSpots(500, controller.totalOrders.toDouble()),
         ),
         PremiumIndicatorCard(
           title: 'تم التوصيل',

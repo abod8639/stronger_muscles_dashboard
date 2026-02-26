@@ -14,15 +14,14 @@ class CategoryService extends ApiBase {
 
       if (decoded is Map && decoded.containsKey('data')) {
         var data = decoded['data'];
-        
+
         if (data is Map && data.containsKey('data')) {
           return data['data'] ?? [];
         }
         return data is List ? data : [];
       }
-      
+
       return decoded is List ? decoded : [];
-      
     } on DioException catch (e) {
       print('⚠️ [CategoryService] خطأ في جلب التصنيفات: ${e.message}');
       rethrow;

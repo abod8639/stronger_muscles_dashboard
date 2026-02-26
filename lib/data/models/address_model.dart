@@ -20,12 +20,14 @@ class AddressModel with _$AddressModel {
     @HiveField(7) String? state,
     @HiveField(8) @JsonKey(name: 'postal_code') String? postalCode,
     @HiveField(9) String? country,
-    @HiveField(10) @JsonKey(name: 'is_default', fromJson: _parseBool) @Default(false) bool isDefault,
+    @HiveField(10)
+    @JsonKey(name: 'is_default', fromJson: _parseBool)
+    @Default(false)
+    bool isDefault,
     @HiveField(11) @JsonKey(fromJson: _parseDoubleNullable) double? latitude,
     @HiveField(12) @JsonKey(fromJson: _parseDoubleNullable) double? longitude,
     @HiveField(13) @JsonKey(name: 'created_at') DateTime? createdAt,
     @HiveField(14) @JsonKey(name: 'updated_at') DateTime? updatedAt,
-
   }) = _AddressModel;
 
   const AddressModel._();
@@ -33,9 +35,13 @@ class AddressModel with _$AddressModel {
   factory AddressModel.fromJson(Map<String, dynamic> json) =>
       _$AddressModelFromJson(json);
 
-  String get fullAddress => [street, city, state, postalCode, country]
-      .where((e) => e != null && e.isNotEmpty)
-      .join(', ');
+  String get fullAddress => [
+    street,
+    city,
+    state,
+    postalCode,
+    country,
+  ].where((e) => e != null && e.isNotEmpty).join(', ');
   String get shortAddress => '$city, $country';
   bool get hasCoordinates => latitude != null && longitude != null;
 }

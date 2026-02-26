@@ -9,7 +9,6 @@ import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/produ
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_form_mixin.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 
-
 class ProductFormSheet extends StatefulWidget {
   final ProductModel? product;
   const ProductFormSheet({super.key, this.product});
@@ -73,11 +72,12 @@ class ProductFormSheetState extends State<ProductFormSheet>
                             setState(() => _imageUrls.add(url)),
                         onRemoveImage: (i) =>
                             setState(() => _imageUrls.removeAt(i)),
-                        onReorderImage: (oldIdx, newIdx) =>
-                            setState(() => _imageUrls.insert(
-                                  newIdx,
-                                  _imageUrls.removeAt(oldIdx),
-                                )),
+                        onReorderImage: (oldIdx, newIdx) => setState(
+                          () => _imageUrls.insert(
+                            newIdx,
+                            _imageUrls.removeAt(oldIdx),
+                          ),
+                        ),
                         selectedCategoryId: _selectedCategoryId,
                         onCategorySelected: (id) =>
                             setState(() => _selectedCategoryId = id),

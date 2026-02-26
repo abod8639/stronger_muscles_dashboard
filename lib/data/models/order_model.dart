@@ -73,17 +73,17 @@ class OrderModel with _$OrderModel {
   // String get formattedAddress {
   //   if (shippingAddress == null) return 'العنوان غير متوفر';
   //   if (shippingAddress is String) return shippingAddress as String;
-    
+
   //   if (shippingAddress is Map) {
   //     final addr = shippingAddress['address'] ?? shippingAddress;
   //     if (addr is String) return addr;
-      
+
   //     final city = addr['city'] ?? addr['City'] ?? '';
   //     final street = addr['street'] ?? addr['Street'] ?? '';
   //     final formatted = [city, street].where((s) => s.toString().isNotEmpty).join(', ');
   //     return formatted.isEmpty ? 'العنوان غير محدد' : formatted;
   //   }
-    
+
   //   return shippingAddress.toString();
   // }
 
@@ -107,7 +107,7 @@ class OrderItemModel with _$OrderItemModel {
     @HiveField(7) String? imageUrl,
     @HiveField(8) String? selectedFlavor,
     @HiveField(9) String? selectedSize,
-    @HiveField(10) String?fullName,
+    @HiveField(10) String? fullName,
   }) = _OrderItemModel;
 
   factory OrderItemModel.fromJson(Map<String, dynamic> json) =>
@@ -149,7 +149,10 @@ Map<String, dynamic> _mapOrderJson(Map<String, dynamic> json) {
     'id': (json['id'] ?? '').toString(),
     'userId': extractUserId(),
     'fullName': json['full_name'] ?? json['fullName'],
-    'orderDate': json['order_date'] ?? json['orderDate'] ?? DateTime.now().toIso8601String(),
+    'orderDate':
+        json['order_date'] ??
+        json['orderDate'] ??
+        DateTime.now().toIso8601String(),
     'addressId': (json['address_id'] ?? json['addressId'] ?? '').toString(),
     'shippingCost': _parseDouble(json['shippingCost'] ?? json['shipping_cost']),
     'totalAmount': _parseDouble(json['total_amount'] ?? json['totalAmount']),
@@ -159,7 +162,11 @@ Map<String, dynamic> _mapOrderJson(Map<String, dynamic> json) {
     'paymentStatus': json['payment_status'] ?? json['paymentStatus'],
     'paymentMethod': json['payment_method'] ?? json['paymentMethod'] ?? 'card',
     'trackingNumber': json['tracking_number'] ?? json['trackingNumber'],
-    'phoneNumber': json['phone'] ?? json['phone_number'] ?? json['phoneNumber'] ?? mappedAddress?['phone'],
+    'phoneNumber':
+        json['phone'] ??
+        json['phone_number'] ??
+        json['phoneNumber'] ??
+        mappedAddress?['phone'],
     'shippingAddress': mappedAddress,
     'user': _mapUserJson(json['user']),
   };
@@ -168,11 +175,8 @@ Map<String, dynamic> _mapOrderJson(Map<String, dynamic> json) {
 Map<String, dynamic>? _mapUserJson(dynamic json) {
   if (json == null) return null;
   if (json is! Map) return null;
-  
-  return {
-    ...json,
-    'id': _parseInt(json['id']),
-  };
+
+  return {...json, 'id': _parseInt(json['id'])};
 }
 
 Map<String, dynamic> _mapItemJson(Map<String, dynamic> json) {
@@ -181,7 +185,8 @@ Map<String, dynamic> _mapItemJson(Map<String, dynamic> json) {
     'id': (json['id'] ?? '').toString(),
     'orderId': (json['order_id'] ?? json['orderId'] ?? '').toString(),
     'productId': (json['product_id'] ?? json['productId'] ?? '').toString(),
-    'productName': (json['product_name'] ?? json['productName'] ?? '').toString(),
+    'productName': (json['product_name'] ?? json['productName'] ?? '')
+        .toString(),
     'unitPrice': _parseDouble(json['unit_price'] ?? json['unitPrice']),
     'quantity': _parseInt(json['quantity'] ?? 1),
     'subtotal': _parseDouble(json['subtotal']),

@@ -63,11 +63,13 @@ class CacheService extends GetxService {
     return {
       'totalEntries': _cache.length,
       'entries': _cache.entries
-          .map((e) => {
-                'key': e.key,
-                'isExpired': e.value.isExpired(),
-                'expiresIn': e.value.expiresAt.difference(DateTime.now()),
-              })
+          .map(
+            (e) => {
+              'key': e.key,
+              'isExpired': e.value.isExpired(),
+              'expiresIn': e.value.expiresAt.difference(DateTime.now()),
+            },
+          )
           .toList(),
     };
   }
@@ -77,10 +79,7 @@ class CacheEntry {
   final dynamic data;
   final DateTime expiresAt;
 
-  CacheEntry({
-    required this.data,
-    required this.expiresAt,
-  });
+  CacheEntry({required this.data, required this.expiresAt});
 
   bool isExpired() => DateTime.now().isAfter(expiresAt);
 }
