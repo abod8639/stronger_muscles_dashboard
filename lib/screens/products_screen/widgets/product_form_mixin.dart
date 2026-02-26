@@ -57,10 +57,12 @@ mixin ProductFormMixin<T extends StatefulWidget> on State<T> {
 
   /// Get the initial category ID
   String? getInitialCategoryId() {
-    return product?.categoryId ??
-        (controller.categories.isNotEmpty
-            ? controller.categories.first.id
-            : null);
+    final id = product?.effectiveCategoryId;
+    if (id != null && id.isNotEmpty) return id;
+
+    return controller.categories.isNotEmpty
+        ? controller.categories.first.id
+        : null;
   }
 
   /// Get the initial image URLs

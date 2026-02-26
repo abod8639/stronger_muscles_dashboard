@@ -11,12 +11,7 @@ import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/flavo
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_size_selector.dart';
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_variant_manager.dart';
 
-/// [ProductFormBody] هو الـ Widget المشترك الذي يحتوي على جميع حقول فورم المنتج.
-///
-/// يُستخدَم في كلٍّ من [ProductFormSheet] (Bottom Sheet) و [ProductFormPage] (Full Screen)
-/// لتجنب تكرار الكود وتطبيق مبدأ DRY و SOLID.
-///
-/// يتلقّى هذا الـ Widget البيانات الضرورية ويمرّرها للـ Controller مباشرةً.
+
 class ProductFormBody extends StatefulWidget {
   final ProductsController controller;
 

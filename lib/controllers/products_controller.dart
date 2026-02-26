@@ -181,7 +181,7 @@ class ProductsController extends GetxController {
     // 1. التصفية حسب القسم
     if (selectedCategoryId.value != 'all') {
       filtered = filtered.where(
-        (p) => p.categoryId == selectedCategoryId.value,
+        (p) => p.effectiveCategoryId == selectedCategoryId.value,
       );
     }
 
