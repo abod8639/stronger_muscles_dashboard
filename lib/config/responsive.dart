@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// فئة للتعامل مع التصميم المتجاوب
 class ResponsiveLayout {
   final BuildContext context;
 

@@ -39,6 +39,7 @@ class AppColors {
 }
 
 class AppTheme {
+  
   static ThemeData getLightTheme() {
     return ThemeData(
       useMaterial3: true,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// تعريف جميع الألوان المستخدمة في التطبيق بأسلوب احترافي وحديث
 class AppColorsExtended {
   // --- الألوان الأساسية (Primary Palette) ---
   static const Color darkBg = Color(
