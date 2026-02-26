@@ -4,6 +4,7 @@ import '../../config/api_config.dart';
 import 'api_base.dart';
 
 class ProductService extends ApiBase {
+
   Future<List<dynamic>> fetchProducts() async {
     try {
       List<dynamic> allProducts = [];
@@ -20,10 +21,8 @@ class ProductService extends ApiBase {
         List<dynamic> pageItems = [];
 
         if (decoded is Map) {
-          // استخراج last_page من meta أو من الجسم مباشرة (Laravel Standard)
           lastPage = decoded['meta']?['last_page'] ?? decoded['last_page'] ?? 1;
 
-          // استخراج البيانات
           var data = decoded['data'];
           if (data is List) {
             pageItems = data;
@@ -110,7 +109,6 @@ class ProductService extends ApiBase {
     }
   }
 
-  // --- وظائف مساعدة (Helpers) ---
 
   String? _extractImageUrl(dynamic decoded) {
     if (decoded is! Map) return null;
