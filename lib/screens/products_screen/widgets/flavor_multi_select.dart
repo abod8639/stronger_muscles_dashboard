@@ -4,17 +4,19 @@ import 'package:stronger_muscles_dashboard/config/theme.dart';
 
 class ProductFlavorSelector extends StatelessWidget {
   final List<String> selectedFlavors;
-  final Function(List<String>) onSelectionChanged;
+  final void Function(List<String>) onSelectionChanged;
 
   final List<String> availableFlavors = [
     'Vanilla',
     'Strawberry',
-    'Choco',
+    'Chocolate',
     'Mango',
     'Caramel',
     'Coffee',
-    'Vanilla Cream',
-    'Tot',
+    'Berry',
+    'Cola',
+    'Peanut',
+    'Watermelon',
     'No Flavor',
   ];
 
@@ -55,7 +57,7 @@ class ProductFlavorSelector extends StatelessWidget {
                     label: Text(flavor),
                     selected: isSelected,
                     onSelected: (bool selected) {
-                      List<String> updatedList = List.from(selectedFlavors);
+                      List<String> updatedList = List<String>.from(selectedFlavors);
                       if (selected) {
                         updatedList.add(flavor);
                       } else {

@@ -44,13 +44,13 @@ mixin ProductFormMixin<T extends StatefulWidget> on State<T> {
     );
 
     // Initialize GetX reactive values
-    controller.productFlavors.value = product?.flavor ?? [];
+    controller.productFlavors.assignAll(product?.flavor ?? <String>[]);
     
     // Clear old size controllers to ensure fresh start for this product
     controller.clearSizeControllers();
     
-    controller.productSizes.assignAll(product?.productSizes ?? []);
-    controller.variants.assignAll(product?.variants ?? []);
+    controller.productSizes.assignAll(product?.productSizes ?? <ProductSize>[]);
+    controller.variants.assignAll(product?.variants ?? <ProductVariantModel>[]);
     controller.isFeatured.value = product?.isActive ?? true;
     controller.isBackgroundWhite.value = product?.isBackgroundWhite ?? false;
   }

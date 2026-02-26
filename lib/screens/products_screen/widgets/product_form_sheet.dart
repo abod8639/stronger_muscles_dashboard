@@ -316,7 +316,7 @@ class ProductFormSheetState extends State<ProductFormSheet>
             defaultPrice: double.tryParse(
                     controller.textcontrollers['price']?.text ?? '0') ??
                 0.0,
-            onSelectionChanged: (newList) =>
+            onSelectionChanged: (List<ProductSize> newList) =>
                 controller.productSizes.assignAll(newList),
           ),
         ),
@@ -324,7 +324,7 @@ class ProductFormSheetState extends State<ProductFormSheet>
         Obx(
           () => ProductFlavorSelector(
             selectedFlavors: controller.productFlavors.toList(),
-            onSelectionChanged: (newList) =>
+            onSelectionChanged: (List<String> newList) =>
                 controller.productFlavors.assignAll(newList),
           ),
         ),

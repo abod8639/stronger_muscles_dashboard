@@ -6,7 +6,7 @@ import 'package:stronger_muscles_dashboard/models/product_model.dart';
 
 class ProductSizeSelector extends StatelessWidget {
   final List<ProductSize> selectedSizes;
-  final Function(List<ProductSize>) onSelectionChanged;
+  final void Function(List<ProductSize>) onSelectionChanged;
   final Function(int) onSelectSize;
   final int selectedIndex;
   final double defaultPrice;
@@ -59,7 +59,7 @@ class ProductSizeSelector extends StatelessWidget {
                 tooltip: "إضافة من القائمة",
                 onSelected: (String sizeName) {
                   if (!selectedSizes.any((s) => s.size == sizeName)) {
-                    List<ProductSize> updatedList = List.from(selectedSizes);
+                    List<ProductSize> updatedList = List<ProductSize>.from(selectedSizes);
                     updatedList.add(ProductSize(size: sizeName, price: defaultPrice));
                     onSelectionChanged(updatedList);
                     onSelectSize(updatedList.length - 1);
@@ -102,7 +102,7 @@ class ProductSizeSelector extends StatelessWidget {
                       onSelectSize(index);
                     },
                     onDeleted: () {
-                      List<ProductSize> updatedList = List.from(selectedSizes);
+                      List<ProductSize> updatedList = List<ProductSize>.from(selectedSizes);
                       updatedList.removeAt(index);
                       onSelectionChanged(updatedList);
                       onSelectSize(-1);

@@ -40,7 +40,7 @@ class CategoryRepository {
         try {
           categories.add(CategoryModel.fromJson(item as Map<String, dynamic>));
         } catch (e) {
-          debugPrint('❌ خطأ في معالجة تصنيف واحد: $e');
+          debugPrint('X خطأ في معالجة تصنيف واحد: $e');
           debugPrint('   البيانات التالفة: $item');
         }
       }
@@ -51,7 +51,7 @@ class CategoryRepository {
       _cacheService.set(cacheKey, categories, cacheDurationSeconds: 300);
       return categories;
     } catch (e) {
-      debugPrint('🚨 خطأ فادح في CategoryRepository: $e');
+      debugPrint('X خطأ فادح في CategoryRepository: $e');
       rethrow;
     }
   }
@@ -62,7 +62,7 @@ class CategoryRepository {
       // تنظيف الـ Cache بعد إضافة تصنيف جديد
       _cacheService.remove(_cacheKeyCategories);
       _cacheService.remove(_cacheKeyCategoriesTree);
-      debugPrint('✗ تم حذف Cache التصنيفات بعد إضافة تصنيف جديد');
+      debugPrint('X تم حذف Cache التصنيفات بعد إضافة تصنيف جديد');
       return CategoryModel.fromJson(data);
     } catch (e) {
       print('خطأ في إضافة التصنيف: $e');
@@ -79,7 +79,7 @@ class CategoryRepository {
       // تنظيف الـ Cache بعد تحديث تصنيف
       _cacheService.remove(_cacheKeyCategories);
       _cacheService.remove(_cacheKeyCategoriesTree);
-      debugPrint('✗ تم حذف Cache التصنيفات بعد تحديث تصنيف');
+      debugPrint('X تم حذف Cache التصنيفات بعد تحديث تصنيف');
       return CategoryModel.fromJson(data);
     } catch (e) {
       print('خطأ في تحديث التصنيف: $e');
@@ -94,7 +94,7 @@ class CategoryRepository {
         // تنظيف الـ Cache بعد حذف تصنيف
         _cacheService.remove(_cacheKeyCategories);
         _cacheService.remove(_cacheKeyCategoriesTree);
-        debugPrint('✗ تم حذف Cache التصنيفات بعد حذف تصنيف');
+        debugPrint('X تم حذف Cache التصنيفات بعد حذف تصنيف');
       }
       return result;
     } catch (e) {
