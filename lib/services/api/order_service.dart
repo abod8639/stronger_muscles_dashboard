@@ -4,60 +4,42 @@ import 'api_base.dart';
 
 class OrderService extends ApiBase {
 
-  final Dio _dio = Dio(BaseOptions(
-    baseUrl: ApiConfigController().baseUrl.value,
-    connectTimeout: const Duration(seconds: ApiBase.timeoutSeconds),
-    receiveTimeout: const Duration(seconds: ApiBase.timeoutSeconds),
-  ));
-
   Future<List<dynamic>> fetchOrders() async {
     try {
-      final response = await _dio.get(
-        ApiConfig.adminOrders,
-        options: Options(headers: getAuthHeaders()),
-      );
-
-      final decoded = response.data;
-
-      if (decoded is Map && decoded.containsKey('data')) {
-        var data = decoded['data'];
-        if (data is Map && data.containsKey('data')) {
-          return data['data'] ?? [];
-        }
-        return data is List ? data : [];
-      }
-      return decoded is List ? decoded : [];
+      final response = await dio.get(ApiConfig.adminOrders);
       
+      if (response.data is Map && response.data.containsKey('data')) {
+        final innerData = response.data['data'];
+        if (innerData is Map && innerData.containsKey('data')) {
+          return innerData['data'] ?? [];
+        }
+        return innerData is List ? innerData : [];
+      }
+      return [];
     } on DioException catch (e) {
-      _handleDioError(e, 'جلب الطلبات');
+      _logError(e, 'جلب قائمة الطلبات');
       rethrow;
     }
   }
 
   Future<Map<String, dynamic>> fetchOrderDetail(String id) async {
     try {
-      final response = await _dio.get(
-        ApiConfig.adminOrderDetail(id),
-        options: Options(headers: getAuthHeaders()),
-      );
+      final response = await dio.get(ApiConfig.adminOrderDetail(id));
 
-      final decoded = response.data;
+      final responseData = response.data;
       
-      return (decoded is Map && decoded.containsKey('data'))
-          ? decoded['data']
-          : decoded;
-
+      return (responseData is Map && responseData.containsKey('data'))
+          ? responseData['data']
+          : responseData;
+          
     } on DioException catch (e) {
-      _handleDioError(e, 'جلب تفاصيل الطلب');
+      _logError(e, 'جلب تفاصيل الطلب رقم: $id');
       rethrow;
     }
   }
 
-  void _handleDioError(DioException e, String task) {
-    if (e.response?.statusCode == 401 || e.response?.statusCode == 403) {
-    }
-    
-    String message = e.response?.data['message'] ?? e.message;
-    print('خطأ في $task: $message');
+  void _logError(DioException e, String task) {
+    final String errorMsg = e.response?.data?['message'] ?? e.message ?? 'Unknown Error';
+    print('⚠️ [OrderService] خطأ في $task: $errorMsg');
   }
 }
