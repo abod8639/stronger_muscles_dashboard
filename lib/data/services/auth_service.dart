@@ -48,10 +48,12 @@ class AuthService extends GetxService {
       final responseData = response.data;
 
       if (response.statusCode == 200) {
-        if (responseData['token'] != null)
+        if (responseData['token'] != null) {
           await saveToken(responseData['token']);
-        if (responseData['user'] != null)
+        }
+        if (responseData['user'] != null) {
           await saveUser(UserModel.fromJson(responseData['user']));
+        }
 
         return {
           'success': true,
@@ -83,10 +85,12 @@ class AuthService extends GetxService {
       final responseData = response.data;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        if (responseData['token'] != null)
+        if (responseData['token'] != null) {
           await saveToken(responseData['token']);
-        if (responseData['user'] != null)
+        }
+        if (responseData['user'] != null) {
           await saveUser(UserModel.fromJson(responseData['user']));
+        }
         return {
           'success': true,
           'message': 'تم إنشاء الحساب بنجاح',

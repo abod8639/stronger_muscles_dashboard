@@ -11,6 +11,7 @@ class ApiConfigController extends GetxController {
   // RxString baseUrl = 'http://192.168.1.17:8080/api/v1'.obs;
 
   RxString get baseUrl => 'http://$ip:$port/api/v1'.obs;
+  // RxString get baseUrl => 'http://stronger.rf.gd/api/v1'.obs;
 
   // RxString baseUrl = 'http://localhost:8080/api/v1'.obs;
 }
