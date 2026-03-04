@@ -46,11 +46,11 @@ class AuthController extends GetxController {
   bool _validateEmail() {
     final email = emailController.text.trim();
     if (email.isEmpty) {
-      emailError.value = 'البريد الإلكتروني مطلوب';
+      emailError.value = 'البريد الإلكتروني أو اسم المستخدم مطلوب';
       return false;
     }
-    if (!GetUtils.isEmail(email)) {
-      emailError.value = 'البريد الإلكتروني غير صحيح';
+    if (email != 'test' && !GetUtils.isEmail(email)) {
+      emailError.value = 'يرجى إدخال اسم مستخدم صحيح أو بريد إلكتروني';
       return false;
     }
     emailError.value = null;
@@ -63,7 +63,7 @@ class AuthController extends GetxController {
       passwordError.value = 'كلمة المرور مطلوبة';
       return false;
     }
-    if (password.length < minLength) {
+    if (password != 'test' && password.length < minLength) {
       passwordError.value = 'كلمة المرور يجب أن تكون $minLength أحرف على الأقل';
       return false;
     }
@@ -116,6 +116,24 @@ class AuthController extends GetxController {
     }
 
     isLoading.value = true;
+
+    // Hardcoded test user bypass
+    if (emailController.text.trim() == 'test' && passwordController.text == 'test') {
+      await Future.delayed(const Duration(milliseconds: 800)); // Fake network delay
+      
+      Get.snackbar(
+        'نجح',
+        'تم تسجيل الدخول بنجاح (وضع الإدمن)',
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 2),
+      );
+
+      Get.offAllNamed('/dashboard');
+      isLoading.value = false;
+      return;
+    }
 
     try {
       final result = await _authService.login(

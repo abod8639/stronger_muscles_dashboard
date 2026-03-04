@@ -53,12 +53,11 @@ class StrongerMusclesDashboard extends StatelessWidget {
       theme: AppTheme.getLightTheme(),
       darkTheme: AppThemeExtended.getDarkTheme(),
       themeMode: ThemeMode.dark,
-      // initialRoute: isLoggedIn ? '/dashboard' : '/login',
-      initialRoute: '/dashboard',
+      initialRoute: '/login',
       getPages: [
         GetPage(name: '/dashboard', page: () => const MainNavigationScreen()),
-        // GetPage(name: '/login', page: () => const LoginScreen()),
-        // GetPage(name: '/signup', page: () => const SignupScreen()),
+        GetPage(name: '/login', page: () => const LoginScreen()),
+        GetPage(name: '/signup', page: () => const SignupScreen()),
       ],
     );
   }

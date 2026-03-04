@@ -157,8 +157,8 @@ class LoginScreen extends StatelessWidget {
         Obx(
           () => buildTextField(
             controller: controller.emailController,
-            label: 'البريد الإلكتروني',
-            icon: Icons.alternate_email_rounded,
+            label: 'اسم المستخدم (test) / البريد الإلكتروني',
+            icon: Icons.person_outline,
             keyboardType: TextInputType.emailAddress,
             errorText: controller.emailError.value,
           ),
