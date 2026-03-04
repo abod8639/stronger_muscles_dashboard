@@ -40,7 +40,7 @@ class AuthService extends GetxService {
   }) async {
     try {
       final response = await _dio.post(
-        '${_apiConfig.baseUrl.value}${ApiConfig.login}',
+        '${_apiConfig.baseUrl.value}${ApiConfig.adminLogin}',
         data: {'email': email, 'password': password},
         options: Options(headers: {'Accept': 'application/json'}),
       );
@@ -52,21 +52,22 @@ class AuthService extends GetxService {
           await saveToken(responseData['token']);
         }
         if (responseData['user'] != null) {
+          // Use DashboardUser model if it matches admin structure, or generic UserModel
           await saveUser(UserModel.fromJson(responseData['user']));
         }
 
         return {
           'success': true,
-          'message': 'تم تسجيل الدخول بنجاح',
+          'message': 'تم تسجيل دخول المشرف بنجاح',
           'data': responseData,
         };
       }
       return {
         'success': false,
-        'message': responseData['message'] ?? 'فشل تسجيل الدخول',
+        'message': responseData['message'] ?? 'فشل تسجيل دخول المشرف',
       };
     } on DioException catch (e) {
-      return _handleDioError(e, 'تسجيل الدخول');
+      return _handleDioError(e, 'تسجيل دخول المشرفين');
     }
   }
 

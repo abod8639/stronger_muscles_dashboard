@@ -23,6 +23,7 @@ class ApiConfigController extends GetxController {
 class ApiConfig {
   // ==================== Authentication Endpoints ====================
   static const String login = '/auth/login';
+  static const String adminLogin = '/admin/login';
   static const String register = '/auth/register';
   static const String googleSignIn = '/auth/google-signin';
   static const String updateProfile = '/auth/update-profile';

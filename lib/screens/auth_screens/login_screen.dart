@@ -12,7 +12,6 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // استخدام Get.find() بدلاً من Get.put() لاسترجاع AuthController المسجل
     final controller = Get.find<AuthController>();
     final size = MediaQuery.of(context).size;
     final isDesktop = size.width >= 900;
@@ -20,9 +19,7 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // خلفية متدرجة فخمة
           _buildAnimatedBackground(),
-
           SafeArea(
             child: Center(
               child: SingleChildScrollView(

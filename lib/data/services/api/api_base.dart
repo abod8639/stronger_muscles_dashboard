@@ -25,7 +25,6 @@ class ApiBase {
       ),
     );
 
-    // إضافة Interceptor لمعالجة التوكن والأخطاء بشكل تلقائي
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
@@ -46,14 +45,7 @@ class ApiBase {
     final statusCode = e.response?.statusCode;
 
     if (statusCode == 401) {
-      // Unauthorized - Session expired
-      _authService.logout(); // تأكد من مسح التوكن محلياً
-      Get.offAllNamed('/login');
-      Get.snackbar(
-        'خطأ',
-        'انتهت صلاحية الجلسة. يرجى تسجيل الدخول مرة أخرى',
-        snackPosition: SnackPosition.TOP,
-      );
+      print('⚠️ 401 Unauthorized - Admin Token might be invalid or not sent correctly');
     } else if (statusCode == 403) {
       // Forbidden
       Get.snackbar(

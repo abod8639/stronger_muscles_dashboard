@@ -24,6 +24,17 @@ class AuthController extends GetxController {
   final nameError = RxnString();
   final confirmPasswordError = RxnString();
 
+
+
+ @override
+  void onInit() {
+    emailController.text = '';
+    passwordController.text = '';
+    nameController.text = '';
+    confirmPasswordController.text = '';
+    super.onInit();
+  }
+
   @override
   void onClose() {
     emailController.dispose();
@@ -32,6 +43,8 @@ class AuthController extends GetxController {
     confirmPasswordController.dispose();
     super.onClose();
   }
+
+  
 
   // Toggle Password Visibility
   void togglePasswordVisibility() {
