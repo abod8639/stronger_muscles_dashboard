@@ -76,9 +76,8 @@ class AuthService extends GetxService {
     required String password,
   }) async {
     try {
-      // ملاحظة: تأكد من رابط الـ Register الصحيح (أنت وضعت googleSignIn في الكود السابق)
       final response = await _dio.post(
-        '${_apiConfig.baseUrl.value}${ApiConfig.googleSignIn}',
+        '${_apiConfig.baseUrl.value}${ApiConfig.register}',
         data: {'name': name, 'email': email, 'password': password},
       );
 
