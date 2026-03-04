@@ -19,6 +19,11 @@ class UserModel with _$UserModel {
     @HiveField(7) @Default('user') String? role,
   }) = _UserModel;
 
-  factory UserModel.fromJson(Map<String, dynamic> json) =>
-      _$UserModelFromJson(json);
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    final modifiedJson = Map<String, dynamic>.from(json);
+    if (modifiedJson['id'] is String) {
+      modifiedJson['id'] = int.tryParse(modifiedJson['id']) ?? 0;
+    }
+    return _$UserModelFromJson(modifiedJson);
+  }
 }

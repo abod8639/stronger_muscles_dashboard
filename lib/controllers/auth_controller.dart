@@ -270,6 +270,7 @@ class AuthController extends GetxController {
           snackPosition: SnackPosition.TOP,
           duration: const Duration(seconds: 3),
         );
+        print('signup error: $errorMessage');
       }
     } catch (e) {
       Get.snackbar(
@@ -279,6 +280,7 @@ class AuthController extends GetxController {
         colorText: Colors.white,
         snackPosition: SnackPosition.TOP,
       );
+      print('signup error: ${e.toString()}');
     } finally {
       isLoading.value = false;
     }
