@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/main.dart';
 import 'package:stronger_muscles_dashboard/screens/auth_screens/widgets/build_text_field.dart';
 import 'package:stronger_muscles_dashboard/screens/auth_screens/widgets/build_primary_button.dart';
 import '../../config/theme.dart';
@@ -17,7 +18,7 @@ class SignupScreen extends StatelessWidget {
     return Scaffold(
       body:  Stack(
         children: [
-          
+buildBackground(), 
           SafeArea(
               child: Center(
                 child: SingleChildScrollView(
