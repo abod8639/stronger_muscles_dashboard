@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/main.dart';
 import 'package:stronger_muscles_dashboard/screens/auth_screens/signup_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/auth_screens/widgets/build_primary_button.dart';
 import 'package:stronger_muscles_dashboard/screens/auth_screens/widgets/build_text_field.dart';
@@ -19,41 +20,7 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-              Positioned(
-        top: -100,
-        right: -100,
-        child: Container(
-          width: 500,
-          height: 500,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: RadialGradient(
-              colors: [
-                AppColors.primary.withValues(alpha: 0.15),
-                Colors.transparent,
-              ],
-            ),
-          ),
-        ),
-      ),
-
-      Positioned(
-        bottom: -150,
-        left: -150,
-        child: Container(
-          width: 600,
-          height: 600,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: RadialGradient(
-              colors: [
-                AppColors.accent.withValues(alpha: 0.1),
-                Colors.transparent,
-              ],
-            ),
-          ),
-        ),
-      ),
+          buildBackground(), 
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
