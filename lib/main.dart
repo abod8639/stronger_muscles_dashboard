@@ -17,20 +17,16 @@ Future<void> main() async {
   await Hive.initFlutter();
   await GetStorage.init();
   await hiveInit();
-
   initializeServices();
 
   runApp(const StrongerMusclesDashboard());
 }
-
-
 
 class StrongerMusclesDashboard extends StatelessWidget {
   const StrongerMusclesDashboard({super.key});
 
   @override
   Widget build(BuildContext context) {
-
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'لوحة تحكم Stronger Muscles',
@@ -52,7 +48,6 @@ class MainNavigationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // استخدام Get.find() لاسترجاع NavigationController المسجل في _initializeServices()
     final controller = Get.find<NavigationController>();
 
     return LayoutBuilder(
@@ -65,42 +60,7 @@ class MainNavigationScreen extends StatelessWidget {
           drawer: isDesktop ? null : myDrawer(),
           body: Stack(
             children: [
-              // Ambient Gradient Background
-              Positioned(
-                top: -100,
-                right: -100,
-                child: Container(
-                  width: 500,
-                  height: 500,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [
-                        AppColors.primary.withValues(alpha: 0.15),
-                        Colors.transparent,
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: -150,
-                left: -150,
-                child: Container(
-                  width: 600,
-                  height: 600,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [
-                        AppColors.accent.withValues(alpha: 0.1),
-                        Colors.transparent,
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-
+          buildBackground(),
               // Main Layout
               Row(
                 children: [
@@ -140,4 +100,46 @@ class MainNavigationScreen extends StatelessWidget {
       },
     );
   }
+}
+
+Widget buildBackground() {
+  return Column(
+    children: [
+      Positioned(
+        top: -100,
+        right: -100,
+        child: Container(
+          width: 500,
+          height: 500,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: RadialGradient(
+              colors: [
+                AppColors.primary.withValues(alpha: 0.15),
+                Colors.transparent,
+              ],
+            ),
+          ),
+        ),
+      ),
+
+      Positioned(
+        bottom: -150,
+        left: -150,
+        child: Container(
+          width: 600,
+          height: 600,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: RadialGradient(
+              colors: [
+                AppColors.accent.withValues(alpha: 0.1),
+                Colors.transparent,
+              ],
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
 }

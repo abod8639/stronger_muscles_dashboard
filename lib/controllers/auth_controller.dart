@@ -46,7 +46,6 @@ class AuthController extends GetxController {
 
   
 
-  // Toggle Password Visibility
   void togglePasswordVisibility() {
     isPasswordVisible.value = !isPasswordVisible.value;
   }
@@ -55,7 +54,6 @@ class AuthController extends GetxController {
     isConfirmPasswordVisible.value = !isConfirmPasswordVisible.value;
   }
 
-  // Validation Methods
   bool _validateEmail() {
     final email = emailController.text.trim();
     if (email.isEmpty) {
@@ -114,13 +112,10 @@ class AuthController extends GetxController {
     return true;
   }
 
-  // Login Method
   Future<void> login() async {
-    // Clear previous errors
     emailError.value = null;
     passwordError.value = null;
 
-    // Validate inputs
     final isEmailValid = _validateEmail();
     final isPasswordValid = _validatePassword();
 
@@ -130,9 +125,8 @@ class AuthController extends GetxController {
 
     isLoading.value = true;
 
-    // Hardcoded test user bypass
     if (emailController.text.trim() == 'test' && passwordController.text == 'test') {
-      await Future.delayed(const Duration(milliseconds: 800)); // Fake network delay
+      await Future.delayed(const Duration(milliseconds: 800)); 
       
       Get.snackbar(
         'نجح',
@@ -205,15 +199,12 @@ class AuthController extends GetxController {
     }
   }
 
-  // Signup Method
   Future<void> signup() async {
-    // Clear previous errors
     nameError.value = null;
     emailError.value = null;
     passwordError.value = null;
     confirmPasswordError.value = null;
 
-    // Validate inputs
     final isNameValid = _validateName();
     final isEmailValid = _validateEmail();
     final isPasswordValid = _validatePassword(minLength: 8);
@@ -226,7 +217,6 @@ class AuthController extends GetxController {
       return;
     }
 
-    // Check terms acceptance
     if (!acceptTerms.value) {
       Get.snackbar(
         'تنبيه',
@@ -257,13 +247,10 @@ class AuthController extends GetxController {
           duration: const Duration(seconds: 2),
         );
 
-        // Navigate to dashboard
         Get.offAllNamed('/dashboard');
       } else {
-        // Show error message
         String errorMessage = result['message'] ?? 'فشل إنشاء الحساب';
 
-        // Handle specific field errors
         if (result['errors'] != null) {
           final errors = result['errors'] as Map<String, dynamic>;
           if (errors['name'] != null) {
@@ -301,13 +288,11 @@ class AuthController extends GetxController {
     }
   }
 
-  // Logout Method
   Future<void> logout() async {
     await _authService.logout();
     Get.offAllNamed('/login');
   }
 
-  // Check if user is logged in
   bool isLoggedIn() {
     return _authService.isLoggedIn();
   }

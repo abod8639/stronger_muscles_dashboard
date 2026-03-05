@@ -84,18 +84,12 @@ class ProductsController extends GetxController {
   }
 
   void syncSizeControllers() {
-    // Basic cleanup: if productSizes is empty, we don't necessarily need to clear,
-    // but we must ensure each CURRENT size has a controller with its CURRENT value.
     for (var size in productSizes) {
       if (!sizePriceControllers.containsKey(size.size)) {
         sizePriceControllers[size.size] = TextEditingController(
           text: size.price.toString(),
         );
       }
-      // REMOVED: updating existing controllers here.
-      // This prevents overwriting user input when adding new sizes.
-      // If we need to force update (e.g. initial load), we should clear the controllers map first.
-
       if (!sizeDiscountControllers.containsKey(size.size)) {
         sizeDiscountControllers[size.size] = TextEditingController(
           text: size.discountPrice?.toString() ?? '',
@@ -104,7 +98,6 @@ class ProductsController extends GetxController {
     }
   }
 
-  /// Clears and disposes size controllers. Call this when closing the form or initializing a new product.
   void clearSizeControllers() {
     sizePriceControllers.forEach((key, controller) => controller.dispose());
     sizePriceControllers.clear();
@@ -114,7 +107,6 @@ class ProductsController extends GetxController {
 
   void selectSize(int index) {
     selectedSizeIndex.value = index;
-    // We can still update the "main" controller if needed, or just rely on size-specific ones
     if (index >= 0 && index < productSizes.length) {
       final size = productSizes[index];
       textcontrollers['price']?.text = size.price.toString();
@@ -130,20 +122,16 @@ class ProductsController extends GetxController {
     _categoryRepository = CategoryRepository(_apiService);
     fetchData();
 
-    // Listen to size list changes to sync controllers
     ever(productSizes, (_) => syncSizeControllers());
   }
 
-  /// جلب كافة البيانات الأساسية من السيرفر
   Future<void> fetchData() async {
     try {
       isLoading.value = true;
 
-      // جلب البيانات بالتوازي لتقليل وقت الانتظار
       final results = await Future.wait([
         _categoryRepository.getCategories(tree: true),
         _productRepository.getProducts(),
-        // _flavorRepository.getFlavors(), // جلب النكهات
       ]);
 
       categories.assignAll(results[0] as List<CategoryModel>);
@@ -183,7 +171,6 @@ class ProductsController extends GetxController {
   void _applyFiltering() {
     Iterable<ProductModel> filtered = products;
 
-    // 1. التصفية حسب القسم
     if (selectedCategoryId.value != 'all') {
       filtered = filtered.where(
         (p) => p.effectiveCategoryId == selectedCategoryId.value,
@@ -212,7 +199,6 @@ class ProductsController extends GetxController {
     filteredProducts.assignAll(filtered.toList());
   }
 
-  // --- CRUD Operations ---
 
   Future<void> addProduct(ProductModel product) async {
     try {
@@ -265,11 +251,8 @@ class ProductsController extends GetxController {
     Get.defaultDialog(
       title: 'تأكيد الحذف',
       middleText: 'هل أنت متأكد أنك تريد حذف المنتج "$productName"؟',
-      // backgroundColor: Colors.white,
-      // titleStyle: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
       textConfirm: 'حذف',
       textCancel: 'إلغاء',
-      // confirmTextColor: Colors.white,
       buttonColor: Colors.red,
       onConfirm: () {
         Get.back();
@@ -433,7 +416,6 @@ class ProductsController extends GetxController {
     }
   }
 
-  /// بناء JSON متوافق مع الـ API يدوياً
   Map<String, dynamic> _buildApiJson(ProductModel product) {
     return {
       'id': product.id,
@@ -484,7 +466,6 @@ class ProductsController extends GetxController {
     };
   }
 
-  // دوال مساعدة للرسائل (Helpers)
   void _showWarning(String title, String msg) => Get.snackbar(
     title,
     msg,

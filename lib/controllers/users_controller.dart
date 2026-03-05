@@ -5,14 +5,11 @@ import 'package:stronger_muscles_dashboard/data/services/api_service.dart';
 class UsersController extends GetxController {
   final ApiService _apiService = ApiService();
 
-  // الحالة (State)
   final isLoading = true.obs;
   final totalUsers = 0.obs;
 
-  // نستخدم قائمة خاصة كمصدر ثابت للبيانات لضمان عدم فقدانها عند البحث
   final _allUsers = <DashboardUser>[].obs;
 
-  // القائمة التي يتم ربطها بـ UI (ListView/Table)
   final filteredUsers = <DashboardUser>[].obs;
 
   final searchQuery = ''.obs;
@@ -20,19 +17,12 @@ class UsersController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-
-    // تشغيل جلب البيانات
     fetchUsersStats();
-
-    // تحسين: استخدام 'ever' بدلاً من استدعاء الدالة يدوياً
-    // سيقوم GetX بمراقبة searchQuery وتحديث الفلترة تلقائياً
     ever(searchQuery, (_) => _applyFilter());
   }
 
-  // تحديث نص البحث
   void onSearchChanged(String query) => searchQuery.value = query;
 
-  // تحسين: منطق الفلترة أصبح منفصلاً ومعتمداً على القائمة الأصلية
   void _applyFilter() {
     if (searchQuery.trim().isEmpty) {
       filteredUsers.assignAll(_allUsers);
@@ -49,7 +39,6 @@ class UsersController extends GetxController {
     }
   }
 
-  // تحسين: جلب البيانات مع معالجة أفضل
   Future<void> fetchUsersStats() async {
     try {
       isLoading.value = true;
@@ -59,7 +48,6 @@ class UsersController extends GetxController {
 
       totalUsers.value = response.totalUsers;
 
-      // تحديث المصدر والقائمة المفلترة
       _allUsers.assignAll(response.users);
       _applyFilter();
     } catch (e) {
@@ -69,7 +57,6 @@ class UsersController extends GetxController {
     }
   }
 
-  // دالة مساعدة لعرض الأخطاء بشكل موحد
   void _showErrorSnackbar(String message) {
     Get.snackbar(
       'خطأ',
@@ -80,12 +67,11 @@ class UsersController extends GetxController {
     );
   }
 
-  // تحسين إضافي: دالة لتحديث حالة المستخدم (Active/Inactive) مباشرة من الـ Controller
   void updateUserInfo(DashboardUser updatedUser) {
     final index = _allUsers.indexWhere((u) => u.id == updatedUser.id);
     if (index != -1) {
       _allUsers[index] = updatedUser;
-      _applyFilter(); // تحديث الواجهة فوراً
+      _applyFilter();
     }
   }
 }

@@ -79,11 +79,10 @@ class OrdersController extends GetxController {
     }
   }
 
-  /// تحويل الـ Enum إلى قائمة متوافقة مع الـ HorizontalChipsSelector
   List<Map<String, String>> get statusItems {
     return OrderStatus.values.map((status) {
       return {
-        'id': status.name, // نستخدم اسم الـ enum كمعرف (e.g., 'pending')
+        'id': status.name, 
         'name': getStatusText(status),
       };
     }).toList();
@@ -110,12 +109,10 @@ class OrdersController extends GetxController {
 
   void _applyFilters() {
     var result = _allOrders.where((order) {
-      // 1. الفلترة حسب الحالة
       final bool matchesStatus =
           selectedStatusId.value == 'all' ||
           order.status.name == selectedStatusId.value;
 
-      // 2. الفلترة حسب البحث
       final String query = searchQuery.value.toLowerCase();
       final bool matchesSearch =
           query.isEmpty ||
@@ -128,7 +125,6 @@ class OrdersController extends GetxController {
       return matchesStatus && matchesSearch;
     }).toList();
 
-    // الترتيب: الأحدث أولاً
     result.sort((a, b) => b.orderDate.compareTo(a.orderDate));
 
     filteredOrders.assignAll(result);

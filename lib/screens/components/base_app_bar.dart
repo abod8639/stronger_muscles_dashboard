@@ -27,13 +27,10 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    // نستخدم find بدلاً من put لضمان عدم إنشاء نسخة جديدة إذا كان موجوداً
     final DashboardController statusController =
         Get.find<DashboardController>();
 
     return AppBar(
-      // foregroundColor: Colors.white,
-      // shadowColor:shadowColor?? Colors.transparent,
       surfaceTintColor: surfaceTintColor ?? Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.transparent,
@@ -105,7 +102,6 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
 
-// إضافة تأثير نبضي بسيط للنقطة لجعل الواجهة حيوية
 class _StatusPulseDot extends StatefulWidget {
   final Color color;
   const _StatusPulseDot({required this.color});

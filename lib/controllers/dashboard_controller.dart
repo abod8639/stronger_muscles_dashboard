@@ -59,11 +59,7 @@ class DashboardController extends GetxController {
   void onInit() {
     super.onInit();
     _initializeRepositories();
-
-    // العامل (Worker): يراقب تغيير الفترة ويحدث البيانات تلقائياً
-    // سيتم تنفيذ fetchDashboardData كلما تغيرت قيمة selectPeriod
     ever(selectPeriod, (_) => fetchDashboardData());
-
     _checkInitialConnection();
   }
 
@@ -99,7 +95,6 @@ class DashboardController extends GetxController {
   }
 
   Future<void> fetchDashboardData() async {
-    // تطبيق debouncing لتجنب الطلبات المتكررة بفترة زمنية قصيرة
     final now = DateTime.now();
     if (_lastFetchTime != null &&
         now.difference(_lastFetchTime!) < _minFetchInterval) {
@@ -112,15 +107,11 @@ class DashboardController extends GetxController {
       isLoading.value = true;
       errorMessage.value = '';
 
-      // ملاحظة: يمكنك تمرير selectPeriod.value للـ repository إذا كان السيرفر يدعم الفلترة الزمانية
-      // مثال: await _orderRepository.getOrders(period: selectPeriod.value);
-
-      // جلب البيانات بالتوازي لزيادة الأداء
       final results = await Future.wait([
         _orderRepository.getOrders(),
         _productRepository.getProducts(),
         _categoryRepository.getCategories(),
-        _fetchUsersStats(), // جلب إحصائيات المستخدمين
+        _fetchUsersStats(), 
       ]);
 
       orders.assignAll(results[0] as List<OrderModel>);
@@ -192,7 +183,6 @@ class DashboardController extends GetxController {
 
   void updatePeriod(String periodId) {
     selectPeriod.value = periodId;
-    // الـ Worker (ever) سيتكفل بالباقي
   }
 
   Future<void> retryConnection() async {

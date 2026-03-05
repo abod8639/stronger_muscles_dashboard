@@ -15,21 +15,7 @@ class SignupScreen extends StatelessWidget {
     final isDesktop = size.width >= 900;
 
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: [
-              AppColors.primaryDark,
-              AppColors.primary,
-              AppColors.primaryDark,
-            ],
-          ),
-        ),
-        child: SafeArea(
+      body:  SafeArea(
           child: Center(
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(
@@ -232,7 +218,7 @@ class SignupScreen extends StatelessWidget {
             ),
           ),
         ),
-      ),
+      
     );
   }
 }
