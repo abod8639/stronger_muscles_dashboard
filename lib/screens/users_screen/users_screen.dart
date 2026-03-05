@@ -16,13 +16,11 @@ class UsersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // استخدام Get.find() بدلاً من Get.put() لتجنب إنشاء instances جديدة
     final controller = Get.find<UsersController>();
     final responsive = context.responsive;
 
     return Scaffold(
-      backgroundColor:
-          Colors.transparent, // Let MainNavigationScreen handle background
+      backgroundColor: Colors.transparent,
       appBar: BaseAppBar(
         title: 'المستخدمون',
         onPressed: controller.fetchUsersStats,

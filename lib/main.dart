@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:stronger_muscles_dashboard/functions/getx_init.dart';
 import 'package:stronger_muscles_dashboard/functions/hive_init.dart';
 import 'package:stronger_muscles_dashboard/screens/components/my_bottomnavigationbar.dart';
 import 'package:stronger_muscles_dashboard/screens/components/sidebar.dart';
-import 'package:stronger_muscles_dashboard/data/services/cache_service.dart';
 import 'config/theme.dart';
 import 'config/theme_extended.dart';
 import 'screens/index.dart';
@@ -18,34 +18,18 @@ Future<void> main() async {
   await GetStorage.init();
   await hiveInit();
 
-  // تسجيل الخدمات والـ Controllers كـ Singletons
-  _initializeServices();
+  initializeServices();
 
   runApp(const StrongerMusclesDashboard());
 }
 
-/// تهيئة الخدمات والـ Controllers
-void _initializeServices() {
-  // تسجيل CacheService كـ GetxService (يبقى في الذاكرة طوال حياة التطبيق)
-  Get.put(CacheService(), permanent: true);
 
-  // تسجيل Controllers كـ LazyPut (يتم إنشاؤها فقط عند الحاجة الأولى)
-  // وتبقى في الذاكرة طالما التطبيق يعمل
-  Get.lazyPut(() => NavigationController(), fenix: true);
-  Get.lazyPut(() => DashboardController(), fenix: true);
-  Get.lazyPut(() => CategoriesController(), fenix: true);
-  Get.lazyPut(() => ProductsController(), fenix: true);
-  Get.lazyPut(() => OrdersController(), fenix: true);
-  Get.lazyPut(() => UsersController(), fenix: true);
-  Get.lazyPut(() => AuthController(), fenix: true);
-}
 
 class StrongerMusclesDashboard extends StatelessWidget {
   const StrongerMusclesDashboard({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // final isLoggedIn = AuthService().isLoggedIn();
 
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
