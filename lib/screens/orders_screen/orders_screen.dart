@@ -45,9 +45,11 @@ class OrdersScreen extends StatelessWidget {
           onRefresh: () async => await controller.fetchOrders(),
 
           child: SingleChildScrollView(
-            physics: responsive.isDesktop
-                ? const NeverScrollableScrollPhysics()
-                : const AlwaysScrollableScrollPhysics(),
+            physics:
+            // responsive.isDesktop
+                // ? const NeverScrollableScrollPhysics()
+                // :
+                 const AlwaysScrollableScrollPhysics(),
             padding: EdgeInsets.symmetric(
               horizontal: responsive.defaultPadding.left,
               // vertical: responsive.defaultPadding.top,

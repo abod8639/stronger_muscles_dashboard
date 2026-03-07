@@ -55,7 +55,6 @@ class OrdersTable extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // السطر الأول: العنوان + صندوق البحث (في الديسكتوب) أو البحث فقط (في الموبايل)
           Row(
             children: [
               if (!responsive.isMobile) ...[
@@ -68,21 +67,18 @@ class OrdersTable extends StatelessWidget {
                     letterSpacing: 0.5,
                   ),
                 ),
-                const Spacer(),
+               if(responsive.isDesktop) const Spacer(),
               ],
-
 
                 Expanded(child:  CustomSearchBar(
                 onSearch:controller.onSearchChanged ,
-                hintText:"Search orders..." ,
+                hintText:"    Search orders..." ,
               ))
 
             ],
           ),
 
-          const SizedBox(height: 20),
 
-          // السطر الثاني: الفلاتر (Tabs)
           SizedBox(
             height: 42,
             child: SingleChildScrollView(
