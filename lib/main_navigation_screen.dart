@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/controllers/navigation_controller.dart';
+import 'package:stronger_muscles_dashboard/screens/add_screen/add_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/categories_screen/categories_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/components/build_background.dart';
 import 'package:stronger_muscles_dashboard/screens/components/drawer.dart';
@@ -55,6 +56,7 @@ class MainNavigationScreen extends StatelessWidget {
                               DashboardScreen(),
                               CategoriesScreen(),
                               ProductsScreen(),
+                              AddScreen(),
                               OrdersScreen(),
                               UsersScreen(),
                               SettingsScreen(),
