@@ -3,13 +3,15 @@ import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/controllers/navigation_controller.dart';
 
-Widget buildNavItem(
-  bool isDrawer,
-  NavigationController controller,
-  int index,
-  IconData icon,
-  IconData activeIcon,
-  String label,
+Widget buildNavItem({
+
+ required  bool isDrawer,
+ required  NavigationController controller,
+ required  int index,
+ required  IconData icon,
+ required  IconData activeIcon,
+ required  String label,
+}
 ) {
   return Builder(
     builder: (context) {

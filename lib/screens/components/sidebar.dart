@@ -95,7 +95,7 @@ class Sidebar extends StatelessWidget {
                   buildNavItem(
                    isDrawer:    isDrawer,
                    controller:  controller,
-                   index:       6,
+                   index:       3,
                    icon:        Icons.add_business_outlined,
                    activeIcon:  Icons.add_business_rounded ,
                    label:       'Products',
@@ -122,7 +122,7 @@ class Sidebar extends StatelessWidget {
                   buildNavItem(
                   isDrawer:     isDrawer,
                   controller:   controller,
-                  index:        3,
+                  index:        5,
                   icon:         Icons.local_shipping_outlined,
                   activeIcon:   Icons.local_shipping_rounded,
                   label:        'Orders',
@@ -130,7 +130,7 @@ class Sidebar extends StatelessWidget {
                   buildNavItem(
                   isDrawer:   isDrawer,
                   controller:  controller,
-                  index:        5,
+                  index:        6,
                   icon:        Icons.settings_outlined,
                   activeIcon:   Icons.settings_rounded,
                   label:        'Settings',
