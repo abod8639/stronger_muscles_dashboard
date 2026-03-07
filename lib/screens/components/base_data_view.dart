@@ -1,6 +1,5 @@
-import 'dart:math'; // لاستخدام دالة min
+import 'dart:math'; 
 import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
 import '../../../config/theme.dart';
 import '../../../config/responsive.dart';
 

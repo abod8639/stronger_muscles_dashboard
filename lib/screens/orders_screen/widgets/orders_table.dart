@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:stronger_muscles_dashboard/controllers/orders_controller.dart';
 import 'package:stronger_muscles_dashboard/data/models/order_model.dart';
+import 'package:stronger_muscles_dashboard/screens/components/custom_search_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/screens/components/status_badge.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
@@ -67,14 +68,18 @@ class OrdersTable extends StatelessWidget {
                     letterSpacing: 0.5,
                   ),
                 ),
-                const Spacer(),
+                // const Spacer(),
               ],
 
               // Search box: Fixed width on Desktop/Tablet, Full width on Mobile
               if (responsive.isMobile)
                 Expanded(child: _buildSearchBox(controller, isFullWidth: true))
               else
-                _buildSearchBox(controller, isFullWidth: false),
+              CustomSearchBar(
+                onSearch:controller.onSearchChanged ,
+                hintText:"Search orders..." ,
+              )
+                // _buildSearchBox(controller, isFullWidth: false),
             ],
           ),
 
@@ -188,6 +193,7 @@ class OrdersTable extends StatelessWidget {
 
               Expanded(
                 child: TextField(
+                  
                   controller: textController,
                   focusNode: focusNode,
                   cursorColor: Colors.white,
@@ -197,6 +203,8 @@ class OrdersTable extends StatelessWidget {
                   },
                   style: const TextStyle(fontSize: 14, color: Colors.white),
                   decoration: InputDecoration(
+                    fillColor: Colors.transparent,
+                    
                     hintText: 'Search orders...',
                     hintStyle: TextStyle(
                       color: Colors.white.withValues(alpha: 0.35),
@@ -567,7 +575,6 @@ class OrdersTable extends StatelessWidget {
     );
   }
 
-  // إنشاء أرقام الصفحات بشكل ذكي
   List<Widget> _buildPageNumbers(OrdersController controller) {
     List<Widget> pages = [];
     for (int i = 1; i <= controller.totalPages; i++) {
@@ -595,7 +602,6 @@ class OrdersTable extends StatelessWidget {
     return pages;
   }
 
-  // زر رقم الصفحة
   Widget _buildPageButton(int pageNum, OrdersController controller) {
     final isSelected = controller.currentPage.value == pageNum;
     return GestureDetector(
@@ -631,7 +637,6 @@ class OrdersTable extends StatelessWidget {
     );
   }
 
-  // أزرار السابق والتالي المحسنة
   Widget _buildNavButton({required IconData icon, VoidCallback? onPressed}) {
     bool isDisabled = onPressed == null;
     return InkWell(

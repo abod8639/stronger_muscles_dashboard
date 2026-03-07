@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:stronger_muscles_dashboard/data/services/auth_service.dart';
 import 'package:stronger_muscles_dashboard/functions/getx_init.dart';
 import 'package:stronger_muscles_dashboard/functions/hive_init.dart';
 import 'package:stronger_muscles_dashboard/screens/components/my_bottomnavigationbar.dart';
@@ -27,13 +28,17 @@ class StrongerMusclesDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // التحقق من حالة تسجيل الدخول
+    final authService = Get.put(AuthService());
+    final isLoggedIn = authService.isLoggedIn();
+
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'لوحة تحكم Stronger Muscles',
       theme: AppTheme.getLightTheme(),
       darkTheme: AppThemeExtended.getDarkTheme(),
       themeMode: ThemeMode.dark,
-      initialRoute: '/login',
+      initialRoute: isLoggedIn ? '/dashboard' : '/login',
       getPages: [
         GetPage(name: '/dashboard', page: () => const MainNavigationScreen()),
         GetPage(name: '/login', page: () => const LoginScreen()),
