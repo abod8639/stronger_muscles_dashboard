@@ -68,18 +68,15 @@ class OrdersTable extends StatelessWidget {
                     letterSpacing: 0.5,
                   ),
                 ),
-                // const Spacer(),
+                const Spacer(),
               ],
 
-              // Search box: Fixed width on Desktop/Tablet, Full width on Mobile
-              if (responsive.isMobile)
-                Expanded(child: _buildSearchBox(controller, isFullWidth: true))
-              else
-              CustomSearchBar(
+
+                Expanded(child:  CustomSearchBar(
                 onSearch:controller.onSearchChanged ,
                 hintText:"Search orders..." ,
-              )
-                // _buildSearchBox(controller, isFullWidth: false),
+              ))
+
             ],
           ),
 
@@ -155,86 +152,6 @@ class OrdersTable extends StatelessWidget {
     );
   }
 
-  Widget _buildSearchBox(
-    OrdersController controller, {
-    bool isFullWidth = false,
-  }) {
-    final textController = TextEditingController();
-    final focusNode = FocusNode();
-
-    return StatefulBuilder(
-      builder: (context, setState) {
-        final isFocused = focusNode.hasFocus;
-        final hasText = textController.text.isNotEmpty;
-
-        return AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          curve: Curves.easeOut,
-          width: isFullWidth ? double.infinity : 320,
-          height: 46,
-          padding: const EdgeInsets.symmetric(horizontal: 14),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(isFocused ? 0.07 : 0.04),
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: isFocused
-                  ? Colors.white.withValues(alpha: 0.18)
-                  : Colors.white.withValues(alpha: 0.08),
-            ),
-          ),
-          child: Row(
-            children: [
-              Icon(
-                Icons.search_rounded,
-                size: 20,
-                color: Colors.white.withOpacity(isFocused ? 0.9 : 0.5),
-              ),
-              const SizedBox(width: 12),
-
-              Expanded(
-                child: TextField(
-                  
-                  controller: textController,
-                  focusNode: focusNode,
-                  cursorColor: Colors.white,
-                  onChanged: (v) {
-                    controller.onSearchChanged(v);
-                    setState(() {});
-                  },
-                  style: const TextStyle(fontSize: 14, color: Colors.white),
-                  decoration: InputDecoration(
-                    fillColor: Colors.transparent,
-                    
-                    hintText: 'Search orders...',
-                    hintStyle: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.35),
-                      fontSize: 14,
-                    ),
-                    border: InputBorder.none,
-                    isDense: true,
-                  ),
-                ),
-              ),
-
-              if (hasText)
-                GestureDetector(
-                  onTap: () {
-                    textController.clear();
-                    controller.onSearchChanged('');
-                    setState(() {});
-                  },
-                  child: Icon(
-                    Icons.close_rounded,
-                    size: 18,
-                    color: Colors.white.withValues(alpha: 0.6),
-                  ),
-                ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 
   Widget _buildTableContent(
     OrdersController controller,
