@@ -43,7 +43,7 @@ class OrdersTable extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.015), // خلفية زجاجية خفيفة جداً
+        color: Colors.white.withValues(alpha: 0.015), 
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         border: Border(
           bottom: BorderSide(
@@ -361,7 +361,7 @@ class OrdersTable extends StatelessWidget {
 
   Widget _buildPrice(OrderModel order) {
     return Text(
-      '${order.totalAmount.toStringAsFixed(2)} SAR',
+      '${order.totalAmount.toStringAsFixed(2)} L.E ',
       style: const TextStyle(
         color: Colors.white,
         fontSize: 14,
