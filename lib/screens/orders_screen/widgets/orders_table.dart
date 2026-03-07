@@ -41,7 +41,7 @@ class OrdersTable extends StatelessWidget {
     ResponsiveLayout responsive,
   ) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.015), 
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),

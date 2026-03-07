@@ -26,7 +26,6 @@ class StrongerMusclesDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // التحقق من حالة تسجيل الدخول
     final authService = Get.put(AuthService());
     final isLoggedIn = authService.isLoggedIn();
 
