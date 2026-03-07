@@ -1,6 +1,6 @@
 import 'dart:math'; // لاستخدام دالة min
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+// import 'package:get/get.dart';
 import '../../../config/theme.dart';
 import '../../../config/responsive.dart';
 
@@ -86,8 +86,7 @@ class BaseDataView<T> extends StatelessWidget {
 
   Widget _buildListView(ResponsiveLayout res) {
     final displayList = _displayItems;
-    return Obx(
-      () => ListView.builder(
+    return ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: displayList.length,
@@ -96,14 +95,13 @@ class BaseDataView<T> extends StatelessWidget {
           padding: const EdgeInsets.only(bottom: 12),
           child: itemBuilder(context, displayList[index], index),
         ),
-      ),
+      
     );
   }
 
   Widget _buildGridView(ResponsiveLayout res, int columns, double spacing) {
     final displayList = _displayItems;
-    return Obx(
-      () => GridView.builder(
+    return  GridView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         padding: EdgeInsets.symmetric(
@@ -120,7 +118,7 @@ class BaseDataView<T> extends StatelessWidget {
         itemCount: displayList.length,
         itemBuilder: (context, index) =>
             itemBuilder(context, displayList[index], index),
-      ),
+      
     );
   }
 }
