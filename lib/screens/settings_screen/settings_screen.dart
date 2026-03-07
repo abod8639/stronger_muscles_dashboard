@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/config/app_colors.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/controllers/auth_controller.dart';
 import 'package:stronger_muscles_dashboard/controllers/users_controller.dart';
@@ -13,7 +14,7 @@ class SettingsScreen extends StatelessWidget {
     final usersController = Get.find<UsersController>();
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColorsExtended.backgroundColor,
       appBar: AppBar(title: const Text('الإعدادات')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
