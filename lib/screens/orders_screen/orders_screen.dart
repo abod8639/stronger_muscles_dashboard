@@ -20,8 +20,7 @@ class OrdersScreen extends StatelessWidget {
     final responsive = context.responsive;
 
     return Scaffold(
-      backgroundColor:
-            AppColorsExtended.darkBg.withAlpha(100),
+      backgroundColor: AppColorsExtended.backgroundColor,
 
       //  Colors.transparent,
       appBar: BaseAppBar(
