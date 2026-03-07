@@ -5,9 +5,7 @@ import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:stronger_muscles_dashboard/screens/components/enhanced_loading_widget.dart';
 import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
-import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_categories_section.dart';
-import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_dashboard_title.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_error_state.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_header_status.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_main_chart_card.dart';
@@ -24,14 +22,10 @@ class DashboardScreen extends GetView<DashboardController> {
 
   @override
   Widget build(BuildContext context) {
-    // استخدام Get.find() بدلاً من Get.put() لتجنب إنشاء instances جديدة
-    // سيتم التسجيل في main.dart باستخدام Get.lazyPut()
     final res = context.responsive;
 
     return Scaffold(
-      backgroundColor:
-      //  Colors.transparent,
-      AppColorsExtended.darkBg.withAlpha(100),
+      backgroundColor: AppColorsExtended.backgroundColor,
       // appBar: buildAppBar(),
       body: Obx(() {
         if (!controller.isConnected.value && controller.orders.isEmpty) {
