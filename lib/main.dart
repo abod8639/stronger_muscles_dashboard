@@ -5,13 +5,10 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:stronger_muscles_dashboard/data/services/auth_service.dart';
 import 'package:stronger_muscles_dashboard/functions/getx_init.dart';
 import 'package:stronger_muscles_dashboard/functions/hive_init.dart';
-import 'package:stronger_muscles_dashboard/screens/components/build_background.dart';
-import 'package:stronger_muscles_dashboard/screens/components/my_bottomnavigationbar.dart';
-import 'package:stronger_muscles_dashboard/screens/components/sidebar.dart';
+import 'package:stronger_muscles_dashboard/main_navigation_screen.dart';
 import 'config/theme.dart';
 import 'config/theme_extended.dart';
 import 'screens/index.dart';
-import 'controllers/index.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,67 +42,6 @@ class StrongerMusclesDashboard extends StatelessWidget {
         GetPage(name: '/login', page: () => const LoginScreen()),
         GetPage(name: '/signup', page: () => const SignupScreen()),
       ],
-    );
-  }
-}
-
-class MainNavigationScreen extends StatelessWidget {
-  const MainNavigationScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final controller = Get.find<NavigationController>();
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final isDesktop = constraints.maxWidth >= 900;
-
-        return Scaffold(
-          extendBodyBehindAppBar: true,
-          backgroundColor: AppColors.backgroundDark,
-          drawer: isDesktop ? null : myDrawer(),
-          body: Stack(
-            children: [
-
-              buildBackground(),
-
-              // Main Layout
-              Row(
-                children: [
-                  if (isDesktop) const Sidebar(),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        top: 10,
-                        bottom: 20,
-                        right: 10,
-                        left: 10,
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(32),
-                        child: Obx(
-                          () => IndexedStack(
-                            index: controller.selectedIndex.value,
-                            children: const [
-                              DashboardScreen(),
-                              CategoriesScreen(),
-                              ProductsScreen(),
-                              OrdersScreen(),
-                              UsersScreen(),
-                              SettingsScreen(),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          bottomNavigationBar: isDesktop ? null : MyBottomNavigationBar(),
-        );
-      },
     );
   }
 }
