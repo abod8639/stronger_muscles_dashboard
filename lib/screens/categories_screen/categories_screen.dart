@@ -21,7 +21,6 @@ class CategoriesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // استخدام Get.find() بدلاً من Get.put() لتجنب إنشاء instances جديدة
     final controller = Get.find<CategoriesController>();
     final responsive = context.responsive;
     final padding = responsive.defaultPadding;

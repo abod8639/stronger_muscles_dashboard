@@ -5,6 +5,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:stronger_muscles_dashboard/data/services/auth_service.dart';
 import 'package:stronger_muscles_dashboard/functions/getx_init.dart';
 import 'package:stronger_muscles_dashboard/functions/hive_init.dart';
+import 'package:stronger_muscles_dashboard/screens/components/build_background.dart';
 import 'package:stronger_muscles_dashboard/screens/components/my_bottomnavigationbar.dart';
 import 'package:stronger_muscles_dashboard/screens/components/sidebar.dart';
 import 'config/theme.dart';
@@ -67,7 +68,7 @@ class MainNavigationScreen extends StatelessWidget {
             children: [
 
               buildBackground(),
-              
+
               // Main Layout
               Row(
                 children: [
@@ -107,46 +108,4 @@ class MainNavigationScreen extends StatelessWidget {
       },
     );
   }
-}
-
-Widget buildBackground() {
-  return Stack(
-    children: [
-      Positioned(
-        top: -100,
-        right: -100,
-        child: Container(
-          width: 500,
-          height: 500,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: RadialGradient(
-              colors: [
-                AppColors.primary.withValues(alpha: 0.15),
-                Colors.transparent,
-              ],
-            ),
-          ),
-        ),
-      ),
-
-      Positioned(
-        bottom: -150,
-        left: -150,
-        child: Container(
-          width: 600,
-          height: 600,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: RadialGradient(
-              colors: [
-                AppColors.accent.withValues(alpha: 0.1),
-                Colors.transparent,
-              ],
-            ),
-          ),
-        ),
-      ),
-    ],
-  );
 }

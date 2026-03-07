@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/main.dart';
 import 'package:stronger_muscles_dashboard/screens/auth_screens/signup_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/auth_screens/widgets/build_primary_button.dart';
 import 'package:stronger_muscles_dashboard/screens/auth_screens/widgets/build_text_field.dart';
+import 'package:stronger_muscles_dashboard/screens/components/build_background.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 import '../../config/theme.dart';
 import '../../controllers/auth_controller.dart';
