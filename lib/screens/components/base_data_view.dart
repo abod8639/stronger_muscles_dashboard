@@ -1,3 +1,4 @@
+import 'dart:math'; // لاستخدام دالة min
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../config/theme.dart';
@@ -8,6 +9,7 @@ class BaseDataView<T> extends StatelessWidget {
   final List<T> items;
   final Widget Function(BuildContext context, T item, int index) itemBuilder;
   final VoidCallback? onSeeAll;
+  final int? showCount; 
 
   final int? crossAxisCount;
   final double? mainAxisExtent;
@@ -24,76 +26,82 @@ class BaseDataView<T> extends StatelessWidget {
     this.mainAxisExtent,
     this.childAspectRatio,
     this.useListView = false,
+    this.showCount,
   });
+
+  int get _displayCount => showCount != null ? min(showCount!, items.length) : items.length;
+
+  List<T> get _displayItems => items.take(_displayCount).toList();
 
   @override
   Widget build(BuildContext context) {
     final res = ResponsiveLayout(context);
-    final spacing = res.itemSpacing;
-
-    // تحديد عدد الأعمدة تلقائياً إذا لم يتم تمرير قيمة
+    
     final int effectiveCrossAxisCount =
         crossAxisCount ?? (res.isMobile ? 1 : res.getGridColumns());
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // قسم العنوان (Header) موحد لكل الويدجت
-        Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: res.defaultPadding.left,
-            vertical: res.defaultPadding.top / 2,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                title,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: res.getTitleFontSize(),
-                ),
-              ),
-              if (onSeeAll != null)
-                TextButton(
-                  onPressed: onSeeAll,
-                  child: Text(
-                    'عرض الكل',
-                    style: TextStyle(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w600,
-                      fontSize: res.getBodyFontSize() - 1,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-
-        // قسم المحتوى: إما قائمة أو شبكة
+        _buildHeader(context, res),
         useListView
             ? _buildListView(res)
-            : _buildGridView(res, effectiveCrossAxisCount, spacing),
+            : _buildGridView(res, effectiveCrossAxisCount, res.itemSpacing),
       ],
     );
   }
 
+  Widget _buildHeader(BuildContext context, ResponsiveLayout res) {
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: res.defaultPadding.left,
+        vertical: res.defaultPadding.top / 2,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              fontSize: res.getTitleFontSize(),
+            ),
+          ),
+          if (onSeeAll != null && (showCount == null || items.length > showCount!))
+            TextButton(
+              onPressed: onSeeAll,
+              child: Text(
+                'عرض الكل',
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w600,
+                  fontSize: res.getBodyFontSize() - 1,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildListView(ResponsiveLayout res) {
+    final displayList = _displayItems;
     return Obx(
       () => ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        itemCount: items.length,
+        itemCount: displayList.length,
         padding: EdgeInsets.symmetric(horizontal: res.defaultPadding.left),
         itemBuilder: (context, index) => Padding(
           padding: const EdgeInsets.only(bottom: 12),
-          child: itemBuilder(context, items[index], index),
+          child: itemBuilder(context, displayList[index], index),
         ),
       ),
     );
   }
 
   Widget _buildGridView(ResponsiveLayout res, int columns, double spacing) {
+    final displayList = _displayItems;
     return Obx(
       () => GridView.builder(
         shrinkWrap: true,
@@ -109,9 +117,9 @@ class BaseDataView<T> extends StatelessWidget {
           mainAxisExtent: mainAxisExtent,
           childAspectRatio: childAspectRatio ?? res.getCardAspectRatio(),
         ),
-        itemCount: items.length,
+        itemCount: displayList.length,
         itemBuilder: (context, index) =>
-            itemBuilder(context, items[index], index),
+            itemBuilder(context, displayList[index], index),
       ),
     );
   }

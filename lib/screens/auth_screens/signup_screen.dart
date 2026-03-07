@@ -18,7 +18,7 @@ class SignupScreen extends StatelessWidget {
     return Scaffold(
       body:  Stack(
         children: [
-buildBackground(), 
+          buildBackground(), 
           SafeArea(
               child: Center(
                 child: SingleChildScrollView(
