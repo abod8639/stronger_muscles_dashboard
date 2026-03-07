@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 class AppColorsExtended {
+
+  static const Color backgroundColor = Color( 0xFF0F0F1E );
+
   // --- الألوان الأساسية (Primary Palette) ---
   static const Color darkBg = Color(
     0xFF0F0F1E,

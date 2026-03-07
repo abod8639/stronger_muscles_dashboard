@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/config/app_colors.dart';
 import 'package:stronger_muscles_dashboard/screens/components/enhanced_error_widget.dart';
 import 'package:stronger_muscles_dashboard/screens/components/enhanced_loading_widget.dart';
 import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
@@ -20,7 +21,10 @@ class UsersScreen extends StatelessWidget {
     final responsive = context.responsive;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor:
+            AppColorsExtended.darkBg.withAlpha(100),
+
+      //  Colors.transparent,
       appBar: BaseAppBar(
         title: 'المستخدمون',
         onPressed: controller.fetchUsersStats,

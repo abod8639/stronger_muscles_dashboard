@@ -65,7 +65,9 @@ class MainNavigationScreen extends StatelessWidget {
           drawer: isDesktop ? null : myDrawer(),
           body: Stack(
             children: [
-buildBackground(),
+
+              buildBackground(),
+              
               // Main Layout
               Row(
                 children: [

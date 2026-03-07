@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/config/app_colors.dart';
 import 'package:stronger_muscles_dashboard/screens/category_form_page/category_form_page.dart';
 import 'package:stronger_muscles_dashboard/screens/components/enhanced_loading_widget.dart';
 import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
@@ -26,7 +27,10 @@ class CategoriesScreen extends StatelessWidget {
     final padding = responsive.defaultPadding;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor:
+            AppColorsExtended.darkBg.withAlpha(100),
+
+      //  Colors.transparent,
       appBar: BaseAppBar(
         title: 'إدارة التصنيفات',
         onPressed: () => showCategoryForm(context, controller),

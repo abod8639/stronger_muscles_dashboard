@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/config/app_colors.dart';
 import 'package:stronger_muscles_dashboard/screens/components/enhanced_loading_widget.dart';
 import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
 import 'package:stronger_muscles_dashboard/screens/components/top_section.dart';
@@ -17,12 +18,14 @@ class ProductsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // استخدام Get.find() بدلاً من Get.put() لتجنب إنشاء instances جديدة
     final controller = Get.find<ProductsController>();
     final responsive = context.responsive;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor:
+            AppColorsExtended.darkBg.withAlpha(100),
+
+      //  Colors.transparent,
       appBar: BaseAppBar(
         title: 'المنتجات',
         onPressed: () => Get.to(ProductFormPage()),

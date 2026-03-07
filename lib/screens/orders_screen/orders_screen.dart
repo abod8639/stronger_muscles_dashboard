@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/config/app_colors.dart';
 import 'package:stronger_muscles_dashboard/screens/components/enhanced_loading_widget.dart';
 import 'package:stronger_muscles_dashboard/screens/components/base_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
@@ -19,7 +20,10 @@ class OrdersScreen extends StatelessWidget {
     final responsive = context.responsive;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor:
+            AppColorsExtended.darkBg.withAlpha(100),
+
+      //  Colors.transparent,
       appBar: BaseAppBar(
         extraActions: [
           _buildHeaderButton(
@@ -57,6 +61,7 @@ class OrdersScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+
                 // Stats Row
                 if (responsive.isDesktop)
                   SizedBox(height: 160, child: buildStatsSection()),

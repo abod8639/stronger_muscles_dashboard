@@ -29,8 +29,10 @@ class DashboardScreen extends GetView<DashboardController> {
     final res = context.responsive;
 
     return Scaffold(
-      backgroundColor: AppColorsExtended.darkBg.withAlpha(100),
-      appBar: buildAppBar(),
+      backgroundColor:
+      //  Colors.transparent,
+      AppColorsExtended.darkBg.withAlpha(100),
+      // appBar: buildAppBar(),
       body: Obx(() {
         if (!controller.isConnected.value && controller.orders.isEmpty) {
           return buildErrorState();
@@ -56,9 +58,9 @@ class DashboardScreen extends GetView<DashboardController> {
                 children: [
                   buildHeaderStatus(),
 
-                  SizedBox(height: res.itemSpacing * 2),
+                  // SizedBox(height: res.itemSpacing * 2),
 
-                  buildDashboardTitle(res),
+                  // buildDashboardTitle(res),
 
                   SizedBox(height: res.itemSpacing * 2),
 

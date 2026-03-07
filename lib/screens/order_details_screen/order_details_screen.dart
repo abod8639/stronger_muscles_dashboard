@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:stronger_muscles_dashboard/config/app_colors.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_section_title.dart';
 import 'package:stronger_muscles_dashboard/screens/order_details_screen/widget/build_detail_row.dart';
@@ -23,7 +24,10 @@ class OrderDetailsScreen extends StatelessWidget {
     final dateFormat = intl.DateFormat('yyyy-MM-dd HH:mm');
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundDark,
+      backgroundColor: 
+            AppColorsExtended.darkBg.withAlpha(100),
+
+      // AppColors.backgroundDark,
       appBar: BaseAppBar(title: 'تفاصيل الطلب #${order.id}', centerTitle: true),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
