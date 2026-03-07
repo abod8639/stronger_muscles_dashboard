@@ -24,10 +24,7 @@ class OrderDetailsScreen extends StatelessWidget {
     final dateFormat = intl.DateFormat('yyyy-MM-dd HH:mm');
 
     return Scaffold(
-      backgroundColor: 
-            AppColorsExtended.darkBg.withAlpha(100),
-
-      // AppColors.backgroundDark,
+      backgroundColor: AppColorsExtended.backgroundColor,
       appBar: BaseAppBar(title: 'تفاصيل الطلب #${order.id}', centerTitle: true),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
