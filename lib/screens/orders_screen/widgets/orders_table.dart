@@ -43,7 +43,7 @@ class OrdersTable extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.015), 
+        color: Colors.white.withValues(alpha: 0.015),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         border: Border(
           bottom: BorderSide(
@@ -67,17 +67,17 @@ class OrdersTable extends StatelessWidget {
                     letterSpacing: 0.5,
                   ),
                 ),
-               if(responsive.isDesktop) const Spacer(),
+                if (responsive.isDesktop) const Spacer(),
               ],
 
-                Expanded(child:  CustomSearchBar(
-                onSearch:controller.onSearchChanged ,
-                hintText:"    Search orders..." ,
-              ))
-
+              Expanded(
+                child: CustomSearchBar(
+                  onSearch: controller.onSearchChanged,
+                  hintText: "    Search orders...",
+                ),
+              ),
             ],
           ),
-
 
           SizedBox(
             height: 42,
@@ -147,7 +147,6 @@ class OrdersTable extends StatelessWidget {
       ),
     );
   }
-
 
   Widget _buildTableContent(
     OrdersController controller,

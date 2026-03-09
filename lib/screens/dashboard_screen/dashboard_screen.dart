@@ -52,15 +52,11 @@ class DashboardScreen extends GetView<DashboardController> {
                 children: [
                   buildHeaderStatus(),
 
-                  // SizedBox(height: res.itemSpacing * 2),
-
-                  // buildDashboardTitle(res),
-
-                  SizedBox(height: res.itemSpacing * 2),
+                  SizedBox(height: res.itemSpacing * 1),
 
                   buildPeriodSelector(res),
 
-                  SizedBox(height: res.itemSpacing * 3),
+                  SizedBox(height: res.itemSpacing * 1),
 
                   if (controller.orders.isEmpty)
                     buildNoDataState(res)

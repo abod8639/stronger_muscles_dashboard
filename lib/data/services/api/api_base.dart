@@ -45,7 +45,9 @@ class ApiBase {
     final statusCode = e.response?.statusCode;
 
     if (statusCode == 401) {
-      print('⚠️ 401 Unauthorized - Admin Token might be invalid or not sent correctly');
+      print(
+        '⚠️ 401 Unauthorized - Admin Token might be invalid or not sent correctly',
+      );
     } else if (statusCode == 403) {
       // Forbidden
       Get.snackbar(

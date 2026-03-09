@@ -34,10 +34,9 @@ class SettingsScreen extends StatelessWidget {
                   );
                 }
 
-                final admins =
-                    usersController.filteredUsers
-                        .where((user) => user.role.toLowerCase() == 'admin')
-                        .toList();
+                final admins = usersController.filteredUsers
+                    .where((user) => user.role.toLowerCase() == 'admin')
+                    .toList();
 
                 if (admins.isEmpty) {
                   return const Padding(
@@ -56,7 +55,9 @@ class SettingsScreen extends StatelessWidget {
                     return ListTile(
                       contentPadding: EdgeInsets.zero,
                       leading: CircleAvatar(
-                        backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                        backgroundColor: AppColors.primary.withValues(
+                          alpha: 0.1,
+                        ),
                         child: Text(
                           admin.name[0].toUpperCase(),
                           style: TextStyle(color: AppColors.primary),

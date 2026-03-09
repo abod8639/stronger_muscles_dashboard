@@ -49,10 +49,10 @@ class OrdersScreen extends StatelessWidget {
 
           child: SingleChildScrollView(
             physics:
-            // responsive.isDesktop
+                // responsive.isDesktop
                 // ? const NeverScrollableScrollPhysics()
                 // :
-                 const AlwaysScrollableScrollPhysics(),
+                const AlwaysScrollableScrollPhysics(),
             padding: EdgeInsets.symmetric(
               horizontal: responsive.defaultPadding.left,
               // vertical: responsive.defaultPadding.top,
@@ -60,7 +60,6 @@ class OrdersScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 // Stats Row
                 if (responsive.isDesktop)
                   SizedBox(height: 160, child: buildStatsSection()),

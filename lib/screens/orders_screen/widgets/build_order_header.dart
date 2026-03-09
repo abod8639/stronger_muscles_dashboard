@@ -32,9 +32,11 @@ class OrderHeader extends StatelessWidget {
                   width: 1,
                 ),
               ),
-              // 
+              //
               child: Text(
-                orderId.length > 10 ? '${orderId.substring(0, 30)}...' : orderId ,
+                orderId.length > 10
+                    ? '${orderId.substring(0, 30)}...'
+                    : orderId,
                 style: TextStyle(
                   fontWeight: FontWeight.w900,
                   fontSize: 13,

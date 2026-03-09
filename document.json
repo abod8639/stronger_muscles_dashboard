@@ -2743,18 +2743,6 @@
                               "image_url": {
                                 "type": "string"
                               },
-                              "selectedFlavor": {
-                                "type": [
-                                  "string",
-                                  "null"
-                                ]
-                              },
-                              "selectedSize": {
-                                "type": [
-                                  "string",
-                                  "null"
-                                ]
-                              },
                               "selected_flavor": {
                                 "type": [
                                   "string",
@@ -2777,8 +2765,6 @@
                               "quantity",
                               "subtotal",
                               "image_url",
-                              "selectedFlavor",
-                              "selectedSize",
                               "selected_flavor",
                               "selected_size"
                             ]
@@ -3014,18 +3000,6 @@
                               "image_url": {
                                 "type": "string"
                               },
-                              "selectedFlavor": {
-                                "type": [
-                                  "string",
-                                  "null"
-                                ]
-                              },
-                              "selectedSize": {
-                                "type": [
-                                  "string",
-                                  "null"
-                                ]
-                              },
                               "selected_flavor": {
                                 "type": [
                                   "string",
@@ -3048,8 +3022,6 @@
                               "quantity",
                               "subtotal",
                               "image_url",
-                              "selectedFlavor",
-                              "selectedSize",
                               "selected_flavor",
                               "selected_size"
                             ]
@@ -3203,18 +3175,6 @@
                           ]
                         },
                         "selected_size": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
-                        },
-                        "selectedFlavor": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
-                        },
-                        "selectedSize": {
                           "type": [
                             "string",
                             "null"
@@ -4557,19 +4517,6 @@
               "string",
               "null"
             ]
-          },
-          "selectedFlavor": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Adding camelCase for compatibility if user's Flutter model expects it"
-          },
-          "selectedSize": {
-            "type": [
-              "string",
-              "null"
-            ]
           }
         },
         "required": [
@@ -4582,9 +4529,7 @@
           "subtotal",
           "image_url",
           "selected_flavor",
-          "selected_size",
-          "selectedFlavor",
-          "selectedSize"
+          "selected_size"
         ],
         "title": "OrderItemResource"
       },

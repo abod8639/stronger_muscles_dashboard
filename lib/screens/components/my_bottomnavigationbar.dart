@@ -33,7 +33,7 @@ class MyBottomNavigationBar extends StatelessWidget {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add_business_outlined),
-            activeIcon: Icon(Icons.add_business_rounded ),
+            activeIcon: Icon(Icons.add_business_rounded),
             label: 'الاعلانات',
           ),
           BottomNavigationBarItem(
