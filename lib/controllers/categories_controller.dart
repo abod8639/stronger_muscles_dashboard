@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/screens/components/confirm_dialog.dart';
 import '../data/models/index.dart';
-import '../data/services/api_service.dart';
+import 'package:stronger_muscles_dashboard/core/network/api_service.dart';
 import '../data/repositories/index.dart';
 
 class CategoriesController extends GetxController {
@@ -16,7 +15,9 @@ class CategoriesController extends GetxController {
   late final TextEditingController descEnController;
   late final TextEditingController iconController;
 
+  final ApiService _apiService = Get.find<ApiService>();
   late final CategoryRepository _categoryRepository;
+  
   final RxBool isLoading = true.obs;
   final RxBool isProcessing = false.obs;
   final categories = <CategoryModel>[].obs;
@@ -36,8 +37,7 @@ class CategoriesController extends GetxController {
     iconController = TextEditingController();
 
     super.onInit();
-    final apiService = Get.put(ApiService());
-    _categoryRepository = CategoryRepository(apiService);
+    _categoryRepository = CategoryRepository(_apiService);
 
     debounce(
       searchQuery,

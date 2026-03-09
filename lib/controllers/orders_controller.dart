@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../data/models/order_model.dart';
 import '../data/repositories/order_repository.dart';
-import '../data/services/api_service.dart';
+import 'package:stronger_muscles_dashboard/core/network/api_service.dart';
 
 class OrdersController extends GetxController {
-  final OrderRepository _repository = OrderRepository(ApiService());
+  final ApiService _apiService = Get.find<ApiService>();
+  late final OrderRepository _repository;
 
   final RxList<OrderModel> _allOrders = <OrderModel>[].obs;
   final RxList<OrderModel> filteredOrders = <OrderModel>[].obs;
@@ -37,13 +38,12 @@ class OrdersController extends GetxController {
   int get deliveredOrders =>
       _allOrders.where((o) => o.status == OrderStatus.delivered).length;
 
-  // نستخدم String ليتوافق مع الـ 'all' ومع الـ IDs الخاصة بالحالات
   final RxString selectedStatusId = 'all'.obs;
 
   @override
   void onInit() {
     super.onInit();
-    // مراقبة التغيرات وتحديث الفلترة تلقائياً (Worker)
+    _repository = OrderRepository(_apiService);
     debounce(searchQuery, (_) => _applyFilters(), time: 300.milliseconds);
     ever(selectedStatusId, (_) => _applyFilters());
 
@@ -52,13 +52,13 @@ class OrdersController extends GetxController {
 
   void onSearchChanged(String query) {
     searchQuery.value = query;
-    currentPage.value = 1; // Reset to first page on search
+    currentPage.value = 1;
     _applyFilters();
   }
 
   void onStatusChanged(String statusId) {
     selectedStatusId.value = statusId;
-    currentPage.value = 1; // Reset to first page on filter
+    currentPage.value = 1;
   }
 
   void nextPage() {
@@ -126,8 +126,6 @@ class OrdersController extends GetxController {
 
     filteredOrders.assignAll(result);
   }
-
-  // --- Helpers ---
 
   String getStatusText(OrderStatus status) {
     switch (status) {

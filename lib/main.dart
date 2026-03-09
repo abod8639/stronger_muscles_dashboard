@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:stronger_muscles_dashboard/data/services/auth_service.dart';
+import 'package:stronger_muscles_dashboard/core/network/auth_service.dart';
 import 'package:stronger_muscles_dashboard/functions/getx_init.dart';
 import 'package:stronger_muscles_dashboard/functions/hive_init.dart';
 import 'package:stronger_muscles_dashboard/main_navigation_screen.dart';

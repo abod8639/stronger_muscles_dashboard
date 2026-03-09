@@ -4,7 +4,7 @@ import '../../domain/usecases/get_products_usecase.dart';
 import '../../data/datasources/product_remote_datasource.dart';
 import '../../data/repositories/product_repository_impl.dart';
 import 'products_controller.dart';
-import '../../../../data/services/api/api_base.dart';
+import 'package:stronger_muscles_dashboard/core/network/api_base.dart';
 
 class ProductsBinding extends Bindings {
   @override

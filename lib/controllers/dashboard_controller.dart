@@ -1,12 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import '../data/models/index.dart';
-import '../data/services/api_service.dart';
+import "package:stronger_muscles_dashboard/core/network/api_service.dart";
 import '../data/repositories/index.dart';
 
 class DashboardController extends GetxController {
   // --- Repositories ---
-  late final ApiService _apiService;
+  final ApiService _apiService = Get.find<ApiService>();
   late final OrderRepository _orderRepository;
   late final ProductRepository _productRepository;
   late final CategoryRepository _categoryRepository;
@@ -18,10 +18,8 @@ class DashboardController extends GetxController {
   final errorMessage = ''.obs;
 
   // --- Period Filter Configuration ---
-  // المعرف المختار حالياً للفترة الزمنية
   final selectPeriod = 'week'.obs;
 
-  // القائمة المتوافقة مع HorizontalChipsSelector
   final List<Map<String, String>> periodItems = const [
     {'id': 'week', 'name': 'هذا الأسبوع'},
     {'id': 'month', 'name': 'هذا الشهر'},
@@ -64,11 +62,10 @@ class DashboardController extends GetxController {
   }
 
   void _initializeRepositories() {
-    _apiService = ApiService();
     _orderRepository = OrderRepository(_apiService);
     _productRepository = ProductRepository(_apiService);
     _categoryRepository = CategoryRepository(_apiService);
-    _userRepository = UserRepository(_apiService);
+    _userRepository = UserRepository();
   }
 
   Future<void> _checkInitialConnection() async {
@@ -144,41 +141,22 @@ class DashboardController extends GetxController {
   }
 
   void _calculateStatistics() {
-    // 1. إحصائيات الطلبات
-    pendingOrders.value = orders
-        .where((o) => o.status == OrderStatus.pending)
-        .length;
-    processingOrders.value = orders
-        .where((o) => o.status == OrderStatus.processing)
-        .length;
-    shippedOrders.value = orders
-        .where((o) => o.status == OrderStatus.shipped)
-        .length;
-    deliveredOrders.value = orders
-        .where((o) => o.status == OrderStatus.delivered)
-        .length;
-    cancelledOrders.value = orders
-        .where((o) => o.status == OrderStatus.cancelled)
-        .length;
+    pendingOrders.value = orders.where((o) => o.status == OrderStatus.pending).length;
+    processingOrders.value = orders.where((o) => o.status == OrderStatus.processing).length;
+    shippedOrders.value = orders.where((o) => o.status == OrderStatus.shipped).length;
+    deliveredOrders.value = orders.where((o) => o.status == OrderStatus.delivered).length;
+    cancelledOrders.value = orders.where((o) => o.status == OrderStatus.cancelled).length;
 
-    // 2. الماليات
     totalRevenue.value = orders
-        .where(
-          (o) => o.status != OrderStatus.cancelled,
-        ) // لا تحسب المبيعات الملغاة
+        .where((o) => o.status != OrderStatus.cancelled)
         .fold(0.0, (sum, order) => sum + order.totalAmount);
 
     totalOrders.value = orders.length;
     totalProducts.value = products.length;
 
-    // 3. إحصائيات المخزون
     productsInStock.value = products.where((p) => p.stockQuantity > 10).length;
-    productsLowStock.value = products
-        .where((p) => p.stockQuantity > 0 && p.stockQuantity <= 10)
-        .length;
-    productsOutOfStock.value = products
-        .where((p) => p.stockQuantity == 0)
-        .length;
+    productsLowStock.value = products.where((p) => p.stockQuantity > 0 && p.stockQuantity <= 10).length;
+    productsOutOfStock.value = products.where((p) => p.stockQuantity == 0).length;
   }
 
   void updatePeriod(String periodId) {

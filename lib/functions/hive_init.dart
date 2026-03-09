@@ -1,10 +1,9 @@
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:stronger_muscles_dashboard/data/models/category_model.dart';
 import 'package:stronger_muscles_dashboard/data/models/dashboard_user_model.dart';
-import 'package:stronger_muscles_dashboard/data/models/order_model.dart';
-import 'package:stronger_muscles_dashboard/data/models/product_model.dart';
 import 'package:stronger_muscles_dashboard/data/models/user_address.dart';
-import 'package:stronger_muscles_dashboard/data/models/user_model.dart';
+import 'package:stronger_muscles_dashboard/features/categories/data/models/category_model.dart';
+import 'package:stronger_muscles_dashboard/features/orders/data/models/order_model.dart';
+import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
 
 Future<void> hiveInit() async {
   await Hive.initFlutter();

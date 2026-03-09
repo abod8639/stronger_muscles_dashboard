@@ -4,7 +4,7 @@ import '../../domain/usecases/get_categories_usecase.dart';
 import '../../data/datasources/category_remote_datasource.dart';
 import '../../data/repositories/category_repository_impl.dart';
 import 'categories_controller.dart';
-import '../../../../data/services/api/api_base.dart';
+import 'package:stronger_muscles_dashboard/core/network/api_base.dart';
 
 class CategoriesBinding extends Bindings {
   @override

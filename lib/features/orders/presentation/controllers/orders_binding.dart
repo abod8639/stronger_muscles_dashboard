@@ -1,10 +1,10 @@
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/core/network/api_base.dart';
 import '../../domain/repositories/order_repository.dart';
 import '../../domain/usecases/get_orders_usecase.dart';
 import '../../data/datasources/order_remote_datasource.dart';
 import '../../data/repositories/order_repository_impl.dart';
 import 'orders_controller.dart';
-import '../../../../data/services/api/api_base.dart';
 
 class OrdersBinding extends Bindings {
   @override

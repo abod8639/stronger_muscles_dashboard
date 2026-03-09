@@ -6,7 +6,7 @@ import '../../data/datasources/auth_local_datasource.dart';
 import '../../data/datasources/auth_remote_datasource.dart';
 import '../../data/repositories/auth_repository_impl.dart';
 import 'auth_controller.dart';
-import '../../../../data/services/api/api_base.dart';
+import 'package:stronger_muscles_dashboard/core/network/api_base.dart';
 
 class AuthBinding extends Bindings {
   @override

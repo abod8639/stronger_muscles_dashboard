@@ -1,12 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:get/get.dart' hide Response;
-import 'package:get_storage/get_storage.dart';
+import 'auth_service.dart';
 import '../../config/api_config.dart';
 
 class ApiBase {
   late final Dio dio;
   static const int timeoutSeconds = 30;
-  final GetStorage _storage = GetStorage();
+  final AuthService _authService = Get.find<AuthService>();
 
   ApiBase() {
     _initDio();
@@ -28,10 +28,7 @@ class ApiBase {
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
-          final token = _storage.read('admin_token');
-          if (token != null) {
-            options.headers['Authorization'] = 'Bearer $token';
-          }
+          options.headers.addAll(_authService.getAuthHeaders());
           return handler.next(options);
         },
         onError: (DioException e, handler) {
@@ -44,7 +41,7 @@ class ApiBase {
 
   void _handleError(DioException e) {
     if (e.response?.statusCode == 401) {
-      Get.offAllNamed('/login');
+      _authService.logout();
       Get.snackbar('انتهت الجلسة', 'يرجى تسجيل الدخول مرة أخرى');
     }
   }

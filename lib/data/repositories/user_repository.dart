@@ -1,9 +1,8 @@
-import '../services/api_service.dart';
+import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/core/network/api_service.dart';
 
 class UserRepository {
-  final ApiService _apiService;
-
-  UserRepository(this._apiService);
+  final ApiService _apiService = Get.find<ApiService>();
 
   Future<Map<String, dynamic>> getUsersStats() async {
     try {

@@ -4,13 +4,14 @@ import 'package:stronger_muscles_dashboard/data/models/flavors_model.dart';
 import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_form_sheet.dart';
 import '../data/models/index.dart';
 import '../data/repositories/index.dart';
-import '../data/services/api_service.dart';
+import 'package:stronger_muscles_dashboard/core/network/api_service.dart';
 
 class ProductsController extends GetxController {
+  final ApiService _apiService = Get.find<ApiService>();
   late final ProductRepository _productRepository;
   late final CategoryRepository _categoryRepository;
+  
   RxList<String> productFlavors = <String>[].obs;
-  late final ApiService _apiService;
   RxBool isFeatured = false.obs;
 
   // --- States ---
@@ -117,7 +118,6 @@ class ProductsController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _apiService = ApiService();
     _productRepository = ProductRepository(_apiService);
     _categoryRepository = CategoryRepository(_apiService);
     fetchData();
@@ -136,7 +136,6 @@ class ProductsController extends GetxController {
 
       categories.assignAll(results[0] as List<CategoryModel>);
       products.assignAll(results[1] as List<ProductModel>);
-      // flavors.assignAll(results[2] as List<FlavorsModel>);
 
       _applyFiltering();
       isLoading.value = false;
@@ -145,8 +144,6 @@ class ProductsController extends GetxController {
       _showErrorSnackbar('فشل في تحميل البيانات', e.toString());
     }
   }
-
-  // --- Logic الفلترة ---
 
   void onSearchChanged(String query) {
     searchQuery.value = query;
@@ -177,14 +174,12 @@ class ProductsController extends GetxController {
       );
     }
 
-    // 2. التصفية حسب النكهة
     if (selectedFlavorId.value != 'all') {
       filtered = filtered.where(
         (p) => p.flavor?.contains(selectedFlavorId.value) ?? false,
       );
     }
 
-    // 3. التصفية حسب البحث (الاسم، الماركة، أو الكود)
     if (searchQuery.isNotEmpty) {
       final query = searchQuery.value.toLowerCase();
       filtered = filtered.where(
@@ -281,17 +276,14 @@ class ProductsController extends GetxController {
     }
   }
 
-  // --- Media Upload ---
-
   Future<String?> uploadImage(
     String filePath, {
     bool isCategory = false,
   }) async {
     try {
       isUploadingImage.value = true;
-      final imageUrl = isCategory
-          ? await _apiService.uploadCategoryImage(filePath)
-          : await _apiService.uploadProductImage(filePath);
+      // Note: upload logic in ApiService bridge is placeholder for now
+      final imageUrl = await _apiService.uploadProductImage(filePath);
       return imageUrl;
     } catch (e) {
       _showErrorSnackbar('خطأ في الرفع', e.toString());
@@ -300,8 +292,6 @@ class ProductsController extends GetxController {
       isUploadingImage.value = false;
     }
   }
-
-  // --- Helpers ---
 
   void _showErrorSnackbar(String title, String message) {
     Get.snackbar(
@@ -345,7 +335,6 @@ class ProductsController extends GetxController {
     try {
       isSaving.value = true;
 
-      // Update productSizes with values from individual controllers
       final updatedSizes = productSizes.map((ps) {
         final price =
             double.tryParse(sizePriceControllers[ps.size]?.text ?? '0') ?? 0;
@@ -354,15 +343,6 @@ class ProductsController extends GetxController {
         );
         return ps.copyWith(price: price, discountPrice: discount);
       }).toList();
-
-      debugPrint('-------- SAVE PRODUCT DEBUG --------');
-      debugPrint('Product Sizes Count: ${updatedSizes.length}');
-      for (var s in updatedSizes) {
-        debugPrint(
-          'Size: ${s.size}, Price: ${s.price}, Discount: ${s.discountPrice}',
-        );
-      }
-      debugPrint('------------------------------------');
 
       final productData = ProductModel(
         id:
@@ -403,12 +383,8 @@ class ProductsController extends GetxController {
         await updateProduct(productData);
       }
 
-      debugPrint("======== success ========");
       _showSuccess('تم بنجاح', 'تم حفظ بيانات المنتج بنجاح');
-      debugPrint(productData.toString());
     } catch (e) {
-      debugPrint("======== error ========");
-      debugPrint(e.toString());
       _showError('خطأ', 'حدث خطأ أثناء حفظ المنتج: $e');
     } finally {
       isSaving.value = false;
@@ -432,11 +408,8 @@ class ProductsController extends GetxController {
       'is_background_white': product.isBackgroundWhite,
       'serving_size': product.servingSize,
       'servings_per_container': product.servingsPerContainer,
-      // الصور: إرسال قائمة روابط مباشرة
       'image_urls': product.imageUrls.map((img) => img.original).toList(),
-      // النكهات
       'flavors': product.flavor ?? [],
-      // الأحجام والأسعار
       'product_sizes': (product.productSizes ?? [])
           .map(
             (s) => {
@@ -447,7 +420,6 @@ class ProductsController extends GetxController {
           )
           .toList(),
       'size': (product.size ?? []),
-      // المتغيرات
       'variants': (product.variants)
           .map(
             (v) => {
