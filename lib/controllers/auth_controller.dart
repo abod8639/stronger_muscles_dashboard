@@ -24,9 +24,7 @@ class AuthController extends GetxController {
   final nameError = RxnString();
   final confirmPasswordError = RxnString();
 
-
-
- @override
+  @override
   void onInit() {
     emailController.text = '';
     passwordController.text = '';
@@ -43,8 +41,6 @@ class AuthController extends GetxController {
     confirmPasswordController.dispose();
     super.onClose();
   }
-
-  
 
   void togglePasswordVisibility() {
     isPasswordVisible.value = !isPasswordVisible.value;
@@ -125,9 +121,10 @@ class AuthController extends GetxController {
 
     isLoading.value = true;
 
-    if (emailController.text.trim() == 'test' && passwordController.text == 'test') {
-      await Future.delayed(const Duration(milliseconds: 800)); 
-      
+    if (emailController.text.trim() == 'test' &&
+        passwordController.text == 'test') {
+      await Future.delayed(const Duration(milliseconds: 800));
+
       Get.snackbar(
         'نجح',
         'تم تسجيل الدخول بنجاح (وضع الإدمن)',

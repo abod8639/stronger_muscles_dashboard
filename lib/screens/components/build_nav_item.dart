@@ -4,15 +4,13 @@ import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/controllers/navigation_controller.dart';
 
 Widget buildNavItem({
-
- required  bool isDrawer,
- required  NavigationController controller,
- required  int index,
- required  IconData icon,
- required  IconData activeIcon,
- required  String label,
-}
-) {
+  required bool isDrawer,
+  required NavigationController controller,
+  required int index,
+  required IconData icon,
+  required IconData activeIcon,
+  required String label,
+}) {
   return Builder(
     builder: (context) {
       return Obx(() {

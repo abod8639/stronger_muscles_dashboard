@@ -111,7 +111,7 @@ class DashboardController extends GetxController {
         _orderRepository.getOrders(),
         _productRepository.getProducts(),
         _categoryRepository.getCategories(),
-        _fetchUsersStats(), 
+        _fetchUsersStats(),
       ]);
 
       orders.assignAll(results[0] as List<OrderModel>);

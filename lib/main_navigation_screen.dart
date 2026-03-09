@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
@@ -32,7 +31,6 @@ class MainNavigationScreen extends StatelessWidget {
           drawer: isDesktop ? null : myDrawer(),
           body: Stack(
             children: [
-
               buildBackground(),
 
               // Main Layout
