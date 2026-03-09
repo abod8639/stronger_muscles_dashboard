@@ -199,6 +199,7 @@ class ProductsController extends GetxController {
     filteredProducts.assignAll(filtered.toList());
   }
 
+
   Future<void> addProduct(ProductModel product) async {
     try {
       isLoading.value = true;

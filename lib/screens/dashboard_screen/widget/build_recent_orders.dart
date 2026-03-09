@@ -28,7 +28,7 @@ Widget buildRecentOrders(ResponsiveLayout res) {
         items: dashboardController.orders,
         onSeeAll: () => navigationController.changeIndex(3),
         useListView: res.isTablet,
-        showCount: 4,
+        showCount:4,
         mainAxisExtent: 190,
         itemBuilder: (context, order, index) => OrderListTile(
           order: order,

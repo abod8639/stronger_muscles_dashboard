@@ -6,7 +6,7 @@ import 'package:stronger_muscles_dashboard/controllers/dashboard_controller.dart
 class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final List<Widget>? extraActions;
-  final bool showStatus;
+  final bool showStatus; 
   final VoidCallback? onPressed;
   final bool centerTitle;
   final IconData icon;
@@ -81,7 +81,7 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _StatusPulseDot(color: statusColor),
+              _StatusPulseDot(color: statusColor), 
               const SizedBox(width: 6),
               Text(
                 isConnected ? 'متصل' : 'قطع اتصال',

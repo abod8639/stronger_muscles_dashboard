@@ -81,7 +81,10 @@ class OrdersController extends GetxController {
 
   List<Map<String, String>> get statusItems {
     return OrderStatus.values.map((status) {
-      return {'id': status.name, 'name': getStatusText(status)};
+      return {
+        'id': status.name, 
+        'name': getStatusText(status),
+      };
     }).toList();
   }
 

@@ -20,7 +20,7 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          buildBackground(),
+          buildBackground(), 
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
@@ -42,6 +42,8 @@ class LoginScreen extends StatelessWidget {
       ),
     );
   }
+
+
 
   Widget _buildLoginCard(AuthController controller) {
     return TweenAnimationBuilder<double>(
@@ -245,4 +247,5 @@ class LoginScreen extends StatelessWidget {
       ],
     );
   }
+
 }

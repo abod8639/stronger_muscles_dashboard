@@ -79,8 +79,8 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
               size: responsive.iconSize,
             ),
             suffixIcon: _hasText
-                // التحقق من حالة تسجيل الدخول
-                ? IconButton(
+               // التحقق من حالة تسجيل الدخول
+     ? IconButton(
                     icon: const Icon(Icons.close_rounded, size: 20),
                     onPressed: () {
                       _textController.clear();
