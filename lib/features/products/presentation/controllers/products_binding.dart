@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import 'package:dio/dio.dart';
 import '../../domain/repositories/product_repository.dart';
 import '../../domain/usecases/get_products_usecase.dart';
 import '../../data/datasources/product_remote_datasource.dart';
