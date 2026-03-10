@@ -1,53 +1,63 @@
-import '../../domain/entities/category_entity.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:hive/hive.dart';
+import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
 
-class CategoryModel extends CategoryEntity {
-  const CategoryModel({
-    required super.id,
-    required super.nameAr,
-    required super.nameEn,
-    super.descriptionAr,
-    super.descriptionEn,
-    super.imageUrl,
-    super.parentId,
-    required super.isActive,
-    List<CategoryModel>? super.children,
-  });
+part 'category_model.freezed.dart';
+part 'category_model.g.dart';
 
-  factory CategoryModel.fromJson(Map<String, dynamic> json) {
-    // Helper to parse translatable strings
-    String parseAr(dynamic val) {
-      if (val is Map) return val['ar']?.toString() ?? '';
-      return val?.toString() ?? '';
-    }
+@freezed
+@HiveType(typeId: 13)
+class CategoryModel with _$CategoryModel {
+  const factory CategoryModel({
+    @HiveField(0) required String id,
+    @HiveField(1) required TranslatableString name,
+    @HiveField(2) TranslatableString? description,
+    @HiveField(3) String? imageUrl,
+    @HiveField(4) @Default(0) int sortOrder,
+    @HiveField(5) @Default(true) bool isActive,
+    @HiveField(6) dynamic icon,
+    @JsonKey(name: 'parentId') @HiveField(7) String? parentId,
+    @HiveField(8) @Default([]) List<CategoryModel> children,
+  }) = _CategoryModel;
 
-    String parseEn(dynamic val) {
-      if (val is Map) return val['en']?.toString() ?? '';
-      return '';
-    }
-
-    return CategoryModel(
-      id: json['id']?.toString() ?? '',
-      nameAr: parseAr(json['name']),
-      nameEn: parseEn(json['name']),
-      descriptionAr: parseAr(json['description']),
-      descriptionEn: parseEn(json['description']),
-      imageUrl: json['image_url']?.toString(),
-      parentId: json['parent_id']?.toString(),
-      isActive: json['is_active'] ?? true,
-      children: (json['children'] as List?)
-          ?.map((e) => CategoryModel.fromJson(e))
-          .toList(),
-    );
+  const CategoryModel._();
+  String get displayName {
+    if (name.ar.isNotEmpty) return name.ar;
+    if (name.en.isNotEmpty) return name.en;
+    return id; // Fallback to ID if no name is available
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': {'ar': nameAr, 'en': nameEn},
-      'description': {'ar': descriptionAr, 'en': descriptionEn},
-      'image_url': imageUrl,
-      'parent_id': parentId,
-      'is_active': isActive,
-    };
+  factory CategoryModel.fromJson(Map<String, dynamic> json) =>
+      _$CategoryModelFromJson(_customJson(json));
+}
+
+Map<String, dynamic> _customJson(Map<String, dynamic> json) {
+  // If the object already has processed fields, return it as is (idempotency)
+  if (json['processed'] == true) return json;
+
+  dynamic parseTranslatable(dynamic val) {
+    if (val is Map) {
+      return {
+        'ar': val['ar']?.toString() ?? '',
+        'en': val['en']?.toString() ?? '',
+      };
+    }
+    // If it's a string, use it for both or specific logic (here assuming ar)
+    final strVal = val?.toString() ?? '';
+    return {'ar': strVal, 'en': strVal}; // Use same string for both as fallback
   }
+
+  return {
+    ...json,
+    'id': json['id']?.toString() ?? '', // Ensure ID is a string
+    'name': parseTranslatable(json['name']),
+    'description': parseTranslatable(json['description']),
+    // Map snake_case to camelCase if needed for the generated model
+    'imageUrl': json['imageUrl'] ?? json['image_url'],
+    'parentId': json['parentId'] ?? json['parent_id'],
+    'sortOrder': json['sortOrder'] ?? json['sort_order'] ?? 0,
+    'isActive': json['isActive'] ?? json['is_active'] ?? true,
+    // Note: children recursion will be handled by CategoryModel.fromJson in the generated code
+    'processed': true,
+  };
 }

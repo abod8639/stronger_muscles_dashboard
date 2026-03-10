@@ -6,7 +6,7 @@ class GetCategoriesUseCase {
 
   GetCategoriesUseCase(this.repository);
 
-  Future<List<CategoryEntity>> call({bool tree = true}) async {
-    return await repository.getCategories(tree: tree);
+  Future<List<CategoryEntity>> call({bool tree = true, bool forceRefresh = false}) async {
+    return await repository.getCategories(tree: tree, forceRefresh: forceRefresh);
   }
 }

@@ -6,7 +6,7 @@ class GetProductsUseCase {
 
   const GetProductsUseCase(this.repository);
 
-  Future<List<ProductEntity>> call() async {
-    return await repository.getProducts();
+  Future<List<ProductEntity>> call({bool forceRefresh = false}) async {
+    return await repository.getProducts(forceRefresh: forceRefresh);
   }
 }

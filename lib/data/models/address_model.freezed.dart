@@ -12,8 +12,7 @@ part of 'address_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 AddressModel _$AddressModelFromJson(Map<String, dynamic> json) {
   return _AddressModel.fromJson(json);
@@ -70,31 +69,29 @@ mixin _$AddressModel {
 /// @nodoc
 abstract class $AddressModelCopyWith<$Res> {
   factory $AddressModelCopyWith(
-    AddressModel value,
-    $Res Function(AddressModel) then,
-  ) = _$AddressModelCopyWithImpl<$Res, AddressModel>;
+          AddressModel value, $Res Function(AddressModel) then) =
+      _$AddressModelCopyWithImpl<$Res, AddressModel>;
   @useResult
-  $Res call({
-    @HiveField(0) @JsonKey(fromJson: _parseInt) int id,
-    @HiveField(1)
-    @JsonKey(name: 'user_id', fromJson: _parseIntNullable)
-    int? userId,
-    @HiveField(2) String? label,
-    @HiveField(3) @JsonKey(name: 'full_name') String? fullName,
-    @HiveField(4) String? phone,
-    @HiveField(5) String street,
-    @HiveField(6) String city,
-    @HiveField(7) String? state,
-    @HiveField(8) @JsonKey(name: 'postal_code') String? postalCode,
-    @HiveField(9) String? country,
-    @HiveField(10)
-    @JsonKey(name: 'is_default', fromJson: _parseBool)
-    bool isDefault,
-    @HiveField(11) @JsonKey(fromJson: _parseDoubleNullable) double? latitude,
-    @HiveField(12) @JsonKey(fromJson: _parseDoubleNullable) double? longitude,
-    @HiveField(13) @JsonKey(name: 'created_at') DateTime? createdAt,
-    @HiveField(14) @JsonKey(name: 'updated_at') DateTime? updatedAt,
-  });
+  $Res call(
+      {@HiveField(0) @JsonKey(fromJson: _parseInt) int id,
+      @HiveField(1)
+      @JsonKey(name: 'user_id', fromJson: _parseIntNullable)
+      int? userId,
+      @HiveField(2) String? label,
+      @HiveField(3) @JsonKey(name: 'full_name') String? fullName,
+      @HiveField(4) String? phone,
+      @HiveField(5) String street,
+      @HiveField(6) String city,
+      @HiveField(7) String? state,
+      @HiveField(8) @JsonKey(name: 'postal_code') String? postalCode,
+      @HiveField(9) String? country,
+      @HiveField(10)
+      @JsonKey(name: 'is_default', fromJson: _parseBool)
+      bool isDefault,
+      @HiveField(11) @JsonKey(fromJson: _parseDoubleNullable) double? latitude,
+      @HiveField(12) @JsonKey(fromJson: _parseDoubleNullable) double? longitude,
+      @HiveField(13) @JsonKey(name: 'created_at') DateTime? createdAt,
+      @HiveField(14) @JsonKey(name: 'updated_at') DateTime? updatedAt});
 }
 
 /// @nodoc
@@ -126,71 +123,68 @@ class _$AddressModelCopyWithImpl<$Res, $Val extends AddressModel>
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
   }) {
-    return _then(
-      _value.copyWith(
-            id: null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as int,
-            userId: freezed == userId
-                ? _value.userId
-                : userId // ignore: cast_nullable_to_non_nullable
-                      as int?,
-            label: freezed == label
-                ? _value.label
-                : label // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            fullName: freezed == fullName
-                ? _value.fullName
-                : fullName // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            phone: freezed == phone
-                ? _value.phone
-                : phone // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            street: null == street
-                ? _value.street
-                : street // ignore: cast_nullable_to_non_nullable
-                      as String,
-            city: null == city
-                ? _value.city
-                : city // ignore: cast_nullable_to_non_nullable
-                      as String,
-            state: freezed == state
-                ? _value.state
-                : state // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            postalCode: freezed == postalCode
-                ? _value.postalCode
-                : postalCode // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            country: freezed == country
-                ? _value.country
-                : country // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            isDefault: null == isDefault
-                ? _value.isDefault
-                : isDefault // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            latitude: freezed == latitude
-                ? _value.latitude
-                : latitude // ignore: cast_nullable_to_non_nullable
-                      as double?,
-            longitude: freezed == longitude
-                ? _value.longitude
-                : longitude // ignore: cast_nullable_to_non_nullable
-                      as double?,
-            createdAt: freezed == createdAt
-                ? _value.createdAt
-                : createdAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-            updatedAt: freezed == updatedAt
-                ? _value.updatedAt
-                : updatedAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as int,
+      userId: freezed == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as int?,
+      label: freezed == label
+          ? _value.label
+          : label // ignore: cast_nullable_to_non_nullable
+              as String?,
+      fullName: freezed == fullName
+          ? _value.fullName
+          : fullName // ignore: cast_nullable_to_non_nullable
+              as String?,
+      phone: freezed == phone
+          ? _value.phone
+          : phone // ignore: cast_nullable_to_non_nullable
+              as String?,
+      street: null == street
+          ? _value.street
+          : street // ignore: cast_nullable_to_non_nullable
+              as String,
+      city: null == city
+          ? _value.city
+          : city // ignore: cast_nullable_to_non_nullable
+              as String,
+      state: freezed == state
+          ? _value.state
+          : state // ignore: cast_nullable_to_non_nullable
+              as String?,
+      postalCode: freezed == postalCode
+          ? _value.postalCode
+          : postalCode // ignore: cast_nullable_to_non_nullable
+              as String?,
+      country: freezed == country
+          ? _value.country
+          : country // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isDefault: null == isDefault
+          ? _value.isDefault
+          : isDefault // ignore: cast_nullable_to_non_nullable
+              as bool,
+      latitude: freezed == latitude
+          ? _value.latitude
+          : latitude // ignore: cast_nullable_to_non_nullable
+              as double?,
+      longitude: freezed == longitude
+          ? _value.longitude
+          : longitude // ignore: cast_nullable_to_non_nullable
+              as double?,
+      createdAt: freezed == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      updatedAt: freezed == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+    ) as $Val);
   }
 }
 
@@ -198,32 +192,30 @@ class _$AddressModelCopyWithImpl<$Res, $Val extends AddressModel>
 abstract class _$$AddressModelImplCopyWith<$Res>
     implements $AddressModelCopyWith<$Res> {
   factory _$$AddressModelImplCopyWith(
-    _$AddressModelImpl value,
-    $Res Function(_$AddressModelImpl) then,
-  ) = __$$AddressModelImplCopyWithImpl<$Res>;
+          _$AddressModelImpl value, $Res Function(_$AddressModelImpl) then) =
+      __$$AddressModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    @HiveField(0) @JsonKey(fromJson: _parseInt) int id,
-    @HiveField(1)
-    @JsonKey(name: 'user_id', fromJson: _parseIntNullable)
-    int? userId,
-    @HiveField(2) String? label,
-    @HiveField(3) @JsonKey(name: 'full_name') String? fullName,
-    @HiveField(4) String? phone,
-    @HiveField(5) String street,
-    @HiveField(6) String city,
-    @HiveField(7) String? state,
-    @HiveField(8) @JsonKey(name: 'postal_code') String? postalCode,
-    @HiveField(9) String? country,
-    @HiveField(10)
-    @JsonKey(name: 'is_default', fromJson: _parseBool)
-    bool isDefault,
-    @HiveField(11) @JsonKey(fromJson: _parseDoubleNullable) double? latitude,
-    @HiveField(12) @JsonKey(fromJson: _parseDoubleNullable) double? longitude,
-    @HiveField(13) @JsonKey(name: 'created_at') DateTime? createdAt,
-    @HiveField(14) @JsonKey(name: 'updated_at') DateTime? updatedAt,
-  });
+  $Res call(
+      {@HiveField(0) @JsonKey(fromJson: _parseInt) int id,
+      @HiveField(1)
+      @JsonKey(name: 'user_id', fromJson: _parseIntNullable)
+      int? userId,
+      @HiveField(2) String? label,
+      @HiveField(3) @JsonKey(name: 'full_name') String? fullName,
+      @HiveField(4) String? phone,
+      @HiveField(5) String street,
+      @HiveField(6) String city,
+      @HiveField(7) String? state,
+      @HiveField(8) @JsonKey(name: 'postal_code') String? postalCode,
+      @HiveField(9) String? country,
+      @HiveField(10)
+      @JsonKey(name: 'is_default', fromJson: _parseBool)
+      bool isDefault,
+      @HiveField(11) @JsonKey(fromJson: _parseDoubleNullable) double? latitude,
+      @HiveField(12) @JsonKey(fromJson: _parseDoubleNullable) double? longitude,
+      @HiveField(13) @JsonKey(name: 'created_at') DateTime? createdAt,
+      @HiveField(14) @JsonKey(name: 'updated_at') DateTime? updatedAt});
 }
 
 /// @nodoc
@@ -231,9 +223,8 @@ class __$$AddressModelImplCopyWithImpl<$Res>
     extends _$AddressModelCopyWithImpl<$Res, _$AddressModelImpl>
     implements _$$AddressModelImplCopyWith<$Res> {
   __$$AddressModelImplCopyWithImpl(
-    _$AddressModelImpl _value,
-    $Res Function(_$AddressModelImpl) _then,
-  ) : super(_value, _then);
+      _$AddressModelImpl _value, $Res Function(_$AddressModelImpl) _then)
+      : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -254,97 +245,95 @@ class __$$AddressModelImplCopyWithImpl<$Res>
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
   }) {
-    return _then(
-      _$AddressModelImpl(
-        id: null == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as int,
-        userId: freezed == userId
-            ? _value.userId
-            : userId // ignore: cast_nullable_to_non_nullable
-                  as int?,
-        label: freezed == label
-            ? _value.label
-            : label // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        fullName: freezed == fullName
-            ? _value.fullName
-            : fullName // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        phone: freezed == phone
-            ? _value.phone
-            : phone // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        street: null == street
-            ? _value.street
-            : street // ignore: cast_nullable_to_non_nullable
-                  as String,
-        city: null == city
-            ? _value.city
-            : city // ignore: cast_nullable_to_non_nullable
-                  as String,
-        state: freezed == state
-            ? _value.state
-            : state // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        postalCode: freezed == postalCode
-            ? _value.postalCode
-            : postalCode // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        country: freezed == country
-            ? _value.country
-            : country // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        isDefault: null == isDefault
-            ? _value.isDefault
-            : isDefault // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        latitude: freezed == latitude
-            ? _value.latitude
-            : latitude // ignore: cast_nullable_to_non_nullable
-                  as double?,
-        longitude: freezed == longitude
-            ? _value.longitude
-            : longitude // ignore: cast_nullable_to_non_nullable
-                  as double?,
-        createdAt: freezed == createdAt
-            ? _value.createdAt
-            : createdAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-        updatedAt: freezed == updatedAt
-            ? _value.updatedAt
-            : updatedAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-      ),
-    );
+    return _then(_$AddressModelImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as int,
+      userId: freezed == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as int?,
+      label: freezed == label
+          ? _value.label
+          : label // ignore: cast_nullable_to_non_nullable
+              as String?,
+      fullName: freezed == fullName
+          ? _value.fullName
+          : fullName // ignore: cast_nullable_to_non_nullable
+              as String?,
+      phone: freezed == phone
+          ? _value.phone
+          : phone // ignore: cast_nullable_to_non_nullable
+              as String?,
+      street: null == street
+          ? _value.street
+          : street // ignore: cast_nullable_to_non_nullable
+              as String,
+      city: null == city
+          ? _value.city
+          : city // ignore: cast_nullable_to_non_nullable
+              as String,
+      state: freezed == state
+          ? _value.state
+          : state // ignore: cast_nullable_to_non_nullable
+              as String?,
+      postalCode: freezed == postalCode
+          ? _value.postalCode
+          : postalCode // ignore: cast_nullable_to_non_nullable
+              as String?,
+      country: freezed == country
+          ? _value.country
+          : country // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isDefault: null == isDefault
+          ? _value.isDefault
+          : isDefault // ignore: cast_nullable_to_non_nullable
+              as bool,
+      latitude: freezed == latitude
+          ? _value.latitude
+          : latitude // ignore: cast_nullable_to_non_nullable
+              as double?,
+      longitude: freezed == longitude
+          ? _value.longitude
+          : longitude // ignore: cast_nullable_to_non_nullable
+              as double?,
+      createdAt: freezed == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      updatedAt: freezed == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$AddressModelImpl extends _AddressModel {
-  const _$AddressModelImpl({
-    @HiveField(0) @JsonKey(fromJson: _parseInt) required this.id,
-    @HiveField(1)
-    @JsonKey(name: 'user_id', fromJson: _parseIntNullable)
-    this.userId,
-    @HiveField(2) this.label,
-    @HiveField(3) @JsonKey(name: 'full_name') this.fullName,
-    @HiveField(4) this.phone,
-    @HiveField(5) required this.street,
-    @HiveField(6) required this.city,
-    @HiveField(7) this.state,
-    @HiveField(8) @JsonKey(name: 'postal_code') this.postalCode,
-    @HiveField(9) this.country,
-    @HiveField(10)
-    @JsonKey(name: 'is_default', fromJson: _parseBool)
-    this.isDefault = false,
-    @HiveField(11) @JsonKey(fromJson: _parseDoubleNullable) this.latitude,
-    @HiveField(12) @JsonKey(fromJson: _parseDoubleNullable) this.longitude,
-    @HiveField(13) @JsonKey(name: 'created_at') this.createdAt,
-    @HiveField(14) @JsonKey(name: 'updated_at') this.updatedAt,
-  }) : super._();
+  const _$AddressModelImpl(
+      {@HiveField(0) @JsonKey(fromJson: _parseInt) required this.id,
+      @HiveField(1)
+      @JsonKey(name: 'user_id', fromJson: _parseIntNullable)
+      this.userId,
+      @HiveField(2) this.label,
+      @HiveField(3) @JsonKey(name: 'full_name') this.fullName,
+      @HiveField(4) this.phone,
+      @HiveField(5) required this.street,
+      @HiveField(6) required this.city,
+      @HiveField(7) this.state,
+      @HiveField(8) @JsonKey(name: 'postal_code') this.postalCode,
+      @HiveField(9) this.country,
+      @HiveField(10)
+      @JsonKey(name: 'is_default', fromJson: _parseBool)
+      this.isDefault = false,
+      @HiveField(11) @JsonKey(fromJson: _parseDoubleNullable) this.latitude,
+      @HiveField(12) @JsonKey(fromJson: _parseDoubleNullable) this.longitude,
+      @HiveField(13) @JsonKey(name: 'created_at') this.createdAt,
+      @HiveField(14) @JsonKey(name: 'updated_at') this.updatedAt})
+      : super._();
 
   factory _$AddressModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$AddressModelImplFromJson(json);
@@ -441,23 +430,22 @@ class _$AddressModelImpl extends _AddressModel {
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
-    runtimeType,
-    id,
-    userId,
-    label,
-    fullName,
-    phone,
-    street,
-    city,
-    state,
-    postalCode,
-    country,
-    isDefault,
-    latitude,
-    longitude,
-    createdAt,
-    updatedAt,
-  );
+      runtimeType,
+      id,
+      userId,
+      label,
+      fullName,
+      phone,
+      street,
+      city,
+      state,
+      postalCode,
+      country,
+      isDefault,
+      latitude,
+      longitude,
+      createdAt,
+      updatedAt);
 
   @JsonKey(ignore: true)
   @override
@@ -467,36 +455,39 @@ class _$AddressModelImpl extends _AddressModel {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$AddressModelImplToJson(this);
+    return _$$AddressModelImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _AddressModel extends AddressModel {
-  const factory _AddressModel({
-    @HiveField(0) @JsonKey(fromJson: _parseInt) required final int id,
-    @HiveField(1)
-    @JsonKey(name: 'user_id', fromJson: _parseIntNullable)
-    final int? userId,
-    @HiveField(2) final String? label,
-    @HiveField(3) @JsonKey(name: 'full_name') final String? fullName,
-    @HiveField(4) final String? phone,
-    @HiveField(5) required final String street,
-    @HiveField(6) required final String city,
-    @HiveField(7) final String? state,
-    @HiveField(8) @JsonKey(name: 'postal_code') final String? postalCode,
-    @HiveField(9) final String? country,
-    @HiveField(10)
-    @JsonKey(name: 'is_default', fromJson: _parseBool)
-    final bool isDefault,
-    @HiveField(11)
-    @JsonKey(fromJson: _parseDoubleNullable)
-    final double? latitude,
-    @HiveField(12)
-    @JsonKey(fromJson: _parseDoubleNullable)
-    final double? longitude,
-    @HiveField(13) @JsonKey(name: 'created_at') final DateTime? createdAt,
-    @HiveField(14) @JsonKey(name: 'updated_at') final DateTime? updatedAt,
-  }) = _$AddressModelImpl;
+  const factory _AddressModel(
+      {@HiveField(0) @JsonKey(fromJson: _parseInt) required final int id,
+      @HiveField(1)
+      @JsonKey(name: 'user_id', fromJson: _parseIntNullable)
+      final int? userId,
+      @HiveField(2) final String? label,
+      @HiveField(3) @JsonKey(name: 'full_name') final String? fullName,
+      @HiveField(4) final String? phone,
+      @HiveField(5) required final String street,
+      @HiveField(6) required final String city,
+      @HiveField(7) final String? state,
+      @HiveField(8) @JsonKey(name: 'postal_code') final String? postalCode,
+      @HiveField(9) final String? country,
+      @HiveField(10)
+      @JsonKey(name: 'is_default', fromJson: _parseBool)
+      final bool isDefault,
+      @HiveField(11)
+      @JsonKey(fromJson: _parseDoubleNullable)
+      final double? latitude,
+      @HiveField(12)
+      @JsonKey(fromJson: _parseDoubleNullable)
+      final double? longitude,
+      @HiveField(13) @JsonKey(name: 'created_at') final DateTime? createdAt,
+      @HiveField(14)
+      @JsonKey(name: 'updated_at')
+      final DateTime? updatedAt}) = _$AddressModelImpl;
   const _AddressModel._() : super._();
 
   factory _AddressModel.fromJson(Map<String, dynamic> json) =

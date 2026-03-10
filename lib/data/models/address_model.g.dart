@@ -98,9 +98,8 @@ _$AddressModelImpl _$$AddressModelImplFromJson(Map<String, dynamic> json) =>
       state: json['state'] as String?,
       postalCode: json['postal_code'] as String?,
       country: json['country'] as String?,
-      isDefault: json['is_default'] == null
-          ? false
-          : _parseBool(json['is_default']),
+      isDefault:
+          json['is_default'] == null ? false : _parseBool(json['is_default']),
       latitude: _parseDoubleNullable(json['latitude']),
       longitude: _parseDoubleNullable(json['longitude']),
       createdAt: json['created_at'] == null
