@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 
-import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
+import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
 
 class ProductSizeSelector extends StatelessWidget {
-  final List<ProductSize> selectedSizes;
-  final void Function(List<ProductSize>) onSelectionChanged;
+  final List<ProductSizeEntity> selectedSizes;
+  final void Function(List<ProductSizeEntity>) onSelectionChanged;
   final Function(int) onSelectSize;
   final int selectedIndex;
   final double defaultPrice;
@@ -62,11 +62,12 @@ class ProductSizeSelector extends StatelessWidget {
                 tooltip: "إضافة من القائمة",
                 onSelected: (String sizeName) {
                   if (!selectedSizes.any((s) => s.size == sizeName)) {
-                    List<ProductSize> updatedList = List<ProductSize>.from(
+                    List<ProductSizeEntity> updatedList =
+                        List<ProductSizeEntity>.from(
                       selectedSizes,
                     );
                     updatedList.add(
-                      ProductSize(size: sizeName, price: defaultPrice),
+                      ProductSizeEntity(size: sizeName, price: defaultPrice),
                     );
                     onSelectionChanged(updatedList);
                     onSelectSize(updatedList.length - 1);
@@ -116,7 +117,8 @@ class ProductSizeSelector extends StatelessWidget {
                       onSelectSize(index);
                     },
                     onDeleted: () {
-                      List<ProductSize> updatedList = List<ProductSize>.from(
+                      List<ProductSizeEntity> updatedList =
+                          List<ProductSizeEntity>.from(
                         selectedSizes,
                       );
                       updatedList.removeAt(index);
@@ -130,9 +132,7 @@ class ProductSizeSelector extends StatelessWidget {
                       color: isActive
                           ? AppColors.primary
                           : (isDark ? Colors.white70 : Colors.black87),
-                      fontWeight: isActive
-                          ? FontWeight.bold
-                          : FontWeight.normal,
+                      fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
                       fontSize: 12,
                     ),
                     backgroundColor: Colors.transparent,
@@ -197,7 +197,7 @@ class ProductSizeSelector extends StatelessWidget {
                   !selectedSizes.any((s) => s.size == newSize)) {
                 final updatedList = [
                   ...selectedSizes,
-                  ProductSize(size: newSize, price: defaultPrice),
+                  ProductSizeEntity(size: newSize, price: defaultPrice),
                 ];
                 onSelectionChanged(updatedList);
                 onSelectSize(updatedList.length - 1);

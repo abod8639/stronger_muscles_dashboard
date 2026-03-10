@@ -1,17 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
-import 'package:stronger_muscles_dashboard/screens/components/stock_status_badge.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/stock_status_badge.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/functions/cache_manager.dart';
-import '../../data/models/product_model.dart';
+import '../../domain/entities/product_entity.dart';
 
 class ProductCard extends StatelessWidget {
   final Function() onEdit;
   final Function() onDelete;
   final bool isHovered;
-  final ProductModel product;
+  final ProductEntity product;
 
   const ProductCard({
     super.key,
@@ -64,8 +64,8 @@ class ProductCard extends StatelessWidget {
                         const SizedBox(height: 6),
                         _buildProductName(responsive),
 
-                        if (product.flavor != null &&
-                            product.flavor!.isNotEmpty) ...[
+                        if (product.flavors != null &&
+                            product.flavors!.isNotEmpty) ...[
                           const SizedBox(height: 10),
                           _buildFlavorTags(responsive),
                         ],
@@ -104,7 +104,7 @@ class ProductCard extends StatelessWidget {
         child: product.imageUrls.isNotEmpty
             ? CachedNetworkImage(
                 cacheManager: CustomCacheManager.instance,
-                imageUrl: product.imageUrls.first.medium,
+                imageUrl: product.imageUrls.first,
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Container(
                   color: Colors.white.withValues(alpha: 0.05),
@@ -132,7 +132,7 @@ class ProductCard extends StatelessWidget {
 
   Widget _buildProductName(dynamic responsive) {
     return Text(
-      product.name.ar,
+      product.nameAr,
       style: TextStyle(
         fontWeight: FontWeight.bold,
         fontSize: responsive.isMobile ? 15 : 18,
@@ -170,7 +170,7 @@ class ProductCard extends StatelessWidget {
       runSpacing: 4,
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        ...product.flavor!
+        ...product.flavors!
             .take(limit)
             .map(
               (f) => Container(
@@ -192,9 +192,9 @@ class ProductCard extends StatelessWidget {
                 ),
               ),
             ),
-        if (product.flavor!.length > limit)
+        if (product.flavors!.length > limit)
           Text(
-            '+${product.flavor!.length - limit}',
+            '+${product.flavors!.length - limit}',
             style: TextStyle(
               fontSize: 10,
               color: Colors.white.withValues(alpha: 0.3),

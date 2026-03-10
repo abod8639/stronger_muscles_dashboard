@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/screens/components/enhanced_line_chart.dart';
-import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/enhanced_line_chart.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/presentation/page/dashboard_screen.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/presentation/page/widget/build_section_title.dart';
 import 'package:stronger_muscles_dashboard/config/app_colors.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_controller.dart';
-import 'package:stronger_muscles_dashboard/screens/dashboard_screen/dashboard_screen.dart';
-import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_section_title.dart';
 
 Widget buildChartsSection(ResponsiveLayout res) {
   final isSmallScreen = res.isMobile;

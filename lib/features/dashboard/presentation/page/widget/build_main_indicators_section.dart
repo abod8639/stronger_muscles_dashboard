@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
-import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_indicator_card.dart';
-import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_section_title.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/presentation/page/widget/build_indicator_card.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/presentation/page/widget/build_section_title.dart';
 
 Widget buildMainIndicatorsSection(ResponsiveLayout res) {
   final bool isSmallScreen = res.isMobile;

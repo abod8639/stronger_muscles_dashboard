@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:stronger_muscles_dashboard/config/api_config.dart';
-import 'package:stronger_muscles_dashboard/data/services/api/api_base.dart';
+import 'package:stronger_muscles_dashboard/core/network/api/api_base.dart';
 
 class CategoryService extends ApiBase {
   Future<List<dynamic>> fetchCategories({bool tree = false}) async {

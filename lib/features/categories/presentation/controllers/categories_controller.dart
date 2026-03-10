@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/features/categories/data/models/category_model.dart';
+import '../../domain/entities/category_entity.dart';
 import '../../domain/usecases/get_categories_usecase.dart';
 import '../../domain/usecases/add_category_usecase.dart';
 import '../../domain/usecases/update_category_usecase.dart';
@@ -23,8 +22,8 @@ class CategoriesController extends GetxController {
 
   final RxBool isLoading = true.obs;
   final RxBool isProcessing = false.obs;
-  final categories = <CategoryModel>[].obs;
-  final filteredCategories = <CategoryModel>[].obs;
+  final categories = <CategoryEntity>[].obs;
+  final filteredCategories = <CategoryEntity>[].obs;
   final searchQuery = ''.obs;
   final RxString parentId = ''.obs;
   final RxBool isActive = true.obs;
@@ -73,7 +72,7 @@ class CategoriesController extends GetxController {
     try {
       isLoading.value = true;
       final data = await getCategoriesUseCase(tree: true, forceRefresh: forceRefresh);
-      categories.assignAll(data as List<CategoryModel>);
+      categories.assignAll(data);
       _applySearch();
     } catch (e) {
       Get.snackbar('خطأ', 'فشل في تحميل التصنيفات: ${e.toString()}');
@@ -101,12 +100,12 @@ class CategoriesController extends GetxController {
     }
   }
 
-  Future<bool> addCategory(CategoryModel category) async {
+  Future<bool> addCategory(CategoryEntity category) async {
     try {
       isLoading.value = true;
       final newCategory = await addCategoryUseCase(category);
 
-      categories.add(newCategory as CategoryModel);
+      categories.add(newCategory);
       _applySearch();
 
       Get.snackbar('نجاح', 'تم إضافة التصنيف بنجاح');
@@ -119,14 +118,14 @@ class CategoriesController extends GetxController {
     }
   }
 
-  Future<bool> updateCategory(CategoryModel category) async {
+  Future<bool> updateCategory(CategoryEntity category) async {
     try {
       isLoading.value = true;
       final updatedCategory = await updateCategoryUseCase(category);
 
       final index = categories.indexWhere((c) => c.id == category.id);
       if (index != -1) {
-        categories[index] = updatedCategory as CategoryModel;
+        categories[index] = updatedCategory;
         _applySearch();
       }
 
@@ -141,7 +140,6 @@ class CategoriesController extends GetxController {
   }
 
   Future<void> deleteCategory(String id) async {
-    // Note: Use existing AppColors/Theme if available
     Get.defaultDialog(
       title: 'حذف التصنيف',
       middleText: 'هل أنت متأكد من رغبتك في حذف هذا التصنيف؟ لا يمكن التراجع عن هذا الإجراء.',
@@ -185,13 +183,13 @@ class CategoriesController extends GetxController {
     isActive.value = true;
   }
 
-  void prepareFormForEdit(CategoryModel category) {
+  void prepareFormForEdit(CategoryEntity category) {
     idController.text = category.id;
-    nameArController.text = category.name.ar;
-    nameEnController.text = category.name.en;
+    nameArController.text = category.nameAr;
+    nameEnController.text = category.nameEn;
     imageController.text = category.imageUrl ?? '';
-    descArController.text = category.description?.ar ?? '';
-    descEnController.text = category.description?.en ?? '';
+    descArController.text = category.descriptionAr ?? '';
+    descEnController.text = category.descriptionEn ?? '';
     iconController.text = category.icon?.toString() ?? '';
     parentId.value = category.parentId ?? '';
     isActive.value = category.isActive;

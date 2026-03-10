@@ -78,15 +78,44 @@ class ProductRepositoryImpl implements ProductRepository {
       id: product.id,
       price: product.price,
       discountPrice: product.discountPrice,
-      imageUrls: product.imageUrls,
+      imageUrls: product.imageUrls
+          .map((url) => ProductImage(
+                thumbnail: url,
+                medium: url,
+                original: url,
+              ))
+          .toList(),
       categoryId: product.categoryId,
       stockQuantity: product.stockQuantity,
       brand: product.brand,
       isActive: product.isActive,
-      productSizes: product.productSizes,
-      flavor: product.flavors, 
-      name: TranslatableString(ar: product.nameAr, en: product.nameEn), 
-      description: TranslatableString(ar: product.descriptionAr, en: product.descriptionEn),
+      isBackgroundWhite: product.isBackgroundWhite,
+      servingSize: product.servingSize,
+      servingsPerContainer: product.servingsPerContainer,
+      productSizes: product.productSizes
+          ?.map((s) => ProductSize(
+                size: s.size,
+                price: s.price,
+                discountPrice: s.discountPrice,
+              ))
+          .toList(),
+      flavor: product.flavors,
+      name: TranslatableString(ar: product.nameAr, en: product.nameEn),
+      description:
+          TranslatableString(ar: product.descriptionAr, en: product.descriptionEn),
+      variants: product.variants
+              ?.map((v) => ProductVariantModel(
+                    id: v.id,
+                    sku: v.sku,
+                    price: v.price,
+                    discountPrice: v.discountPrice,
+                    effectivePrice: v.effectivePrice,
+                    stockQuantity: v.stockQuantity,
+                    attributes: v.attributes,
+                    isActive: v.isActive,
+                  ))
+              .toList() ??
+          [],
     );
   }
 }

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/app_colors.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/base_app_bar.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/custom_search_bar.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/enhanced_loading_widget.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/generic_empty_state.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/horizontal_chips_selector.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/my_refreshIndicator.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/top_section.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_form_page.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
-import 'package:stronger_muscles_dashboard/screens/components/enhanced_loading_widget.dart';
-import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
-import 'package:stronger_muscles_dashboard/screens/components/top_section.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_list_item.dart';
-import 'package:stronger_muscles_dashboard/screens/components/generic_empty_state.dart';
-import 'package:stronger_muscles_dashboard/screens/components/base_app_bar.dart';
-import 'package:stronger_muscles_dashboard/screens/components/horizontal_chips_selector.dart';
-import 'package:stronger_muscles_dashboard/screens/components/custom_search_bar.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 
 class ProductsScreen extends StatelessWidget {
@@ -96,7 +96,7 @@ class ProductsScreen extends StatelessWidget {
                       onEdit: () =>
                           controller.showProductForm(context, product: product),
                       onDelete: () =>
-                          controller.confirmDelete(product.id, product.name.ar),
+                          controller.confirmDelete(product.id, product.nameAr ),
                     );
                   },
                 ),

@@ -2,10 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
-import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/build_nav_item.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_controller.dart';
 import 'package:stronger_muscles_dashboard/functions/cache_manager.dart';
-import 'package:stronger_muscles_dashboard/screens/components/build_nav_item.dart';
 
 class Sidebar extends StatelessWidget {
   final bool isDrawer;

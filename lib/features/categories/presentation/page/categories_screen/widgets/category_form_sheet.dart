@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
 import 'package:stronger_muscles_dashboard/screens/components/confirm_dialog.dart';
 import 'package:stronger_muscles_dashboard/features/categories/presentation/controllers/categories_controller.dart';
-import 'package:stronger_muscles_dashboard/features/categories/data/models/category_model.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/screens/components/build_modern_text_field.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/availability_switch.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/category_tree_selector.dart';
-import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart'; // For TranslatableString
 
 class CategoryFormSheet extends StatefulWidget {
-  final CategoryModel? category;
+  final CategoryEntity? category;
 
   const CategoryFormSheet({super.key, this.category});
 
@@ -65,15 +64,12 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
               const SizedBox(height: 20),
               _buildHeader(res),
               const SizedBox(height: 24),
-
-              // حقل الـ ID مع حماية متقدمة وتجربة مستخدم محسنة
               Tooltip(
                 message: _isIdFieldEnabled
                     ? 'الحقل مفعل حالياً'
                     : 'انقر مرتين لتعديل الكود المعرف',
                 child: GestureDetector(
                   onDoubleTap: () {
-                    // إذا كان الحقل مغلقاً، نطلب التأكيد لتفعيله
                     if (!_isIdFieldEnabled) {
                       Get.dialog(
                         ConfirmDialog(
@@ -84,12 +80,11 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
                           confirmColor: AppColors.primaryDark,
                           onConfirm: () {
                             setState(() => _isIdFieldEnabled = true);
-                            Get.back(); // إغلاق الحوار
+                            Get.back();
                           },
                         ),
                       );
                     } else {
-                      // إذا كان مفعلاً، نقوم بقفله فوراً دون الحاجة لحوار تأكيد
                       setState(() => _isIdFieldEnabled = false);
                     }
                   },
@@ -97,7 +92,6 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
                     duration: const Duration(milliseconds: 300),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
-                      // إضافة وميض بسيط أو ظل خفيف عندما يكون الحقل مفعلاً للتنبيه
                       boxShadow: _isIdFieldEnabled
                           ? [
                               BoxShadow(
@@ -111,15 +105,12 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
                       controller.idController,
                       'كود التصنيف (اختياري - سيتم توليده تلقائياً)',
                       Icons.fingerprint_rounded,
-                      // الحقل يكون مفعلاً فقط إذا تحقق الشرطان
                       enabled: _isIdFieldEnabled && !controller.isLoading.value,
                     ),
                   ),
                 ),
               ),
-
               const SizedBox(height: 16),
-
               const Text(
                 'الاسم والوصف (بالعربي والإنجليزي)',
                 style: TextStyle(
@@ -128,7 +119,6 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
                 ),
               ),
               const SizedBox(height: 12),
-
               Row(
                 children: [
                   Expanded(
@@ -149,7 +139,6 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
                 ],
               ),
               const SizedBox(height: 16),
-
               Row(
                 children: [
                   Expanded(
@@ -170,7 +159,6 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
                 ],
               ),
               const SizedBox(height: 16),
-
               Obx(
                 () => CategoryTreeSelector(
                   categories: controller.categories
@@ -184,15 +172,12 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
                 ),
               ),
               const SizedBox(height: 16),
-
               _buildImageSection(res),
               const SizedBox(height: 32),
-
               AvailabilitySwitch(
                 isAvailable: controller.isActive,
                 title: 'التصنيف مفعل',
               ),
-
               _buildSubmitButton(),
             ],
           ),
@@ -341,16 +326,12 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
       return;
     }
 
-    final categoryData = CategoryModel(
+    final categoryData = CategoryEntity(
       id: controller.idController.text.trim(),
-      name: TranslatableString(
-        ar: controller.nameArController.text.trim(),
-        en: controller.nameEnController.text.trim(),
-      ),
-      description: TranslatableString(
-        ar: controller.descArController.text.trim(),
-        en: controller.descEnController.text.trim(),
-      ),
+      nameAr: controller.nameArController.text.trim(),
+      nameEn: controller.nameEnController.text.trim(),
+      descriptionAr: controller.descArController.text.trim(),
+      descriptionEn: controller.descEnController.text.trim(),
       imageUrl: controller.imageController.text.trim(),
       isActive: controller.isActive.value,
       parentId: controller.parentId.value.isEmpty

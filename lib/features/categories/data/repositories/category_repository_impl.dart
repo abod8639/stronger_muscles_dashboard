@@ -1,5 +1,4 @@
 import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
-
 import '../../domain/entities/category_entity.dart';
 import '../../domain/repositories/category_repository.dart';
 import '../datasources/category_remote_datasource.dart';
@@ -38,17 +37,17 @@ class CategoryRepositoryImpl implements CategoryRepository {
           debugPrint(
             '✓ Retrieved categories from cache (${cachedData.length} items)',
           );
-          return cachedData;
+          return cachedData.map((e) => e.toEntity()).toList();
         }
       }
 
       debugPrint('↓ Fetching categories from remote (tree: $tree)...');
-      final categories = await remoteDataSource.getCategories(tree: tree);
-      debugPrint('📦 Received ${categories.length} categories');
+      final models = await remoteDataSource.getCategories(tree: tree);
+      debugPrint('📦 Received ${models.length} categories');
 
       // Save to cache
-      _cacheService.set(cacheKey, categories);
-      return categories;
+      _cacheService.set(cacheKey, models);
+      return models.map((e) => e.toEntity()).toList();
     } catch (e) {
       debugPrint('X Error in CategoryRepositoryImpl: $e');
       rethrow;
@@ -59,10 +58,10 @@ class CategoryRepositoryImpl implements CategoryRepository {
   Future<CategoryEntity> addCategory(CategoryEntity category) async {
     try {
       final model = _toModel(category);
-      final newCategory = await remoteDataSource.addCategory(model);
+      final newModel = await remoteDataSource.addCategory(model);
       
       _clearCache();
-      return newCategory;
+      return newModel.toEntity();
     } catch (e) {
       debugPrint('X Error adding category: $e');
       rethrow;
@@ -73,10 +72,10 @@ class CategoryRepositoryImpl implements CategoryRepository {
   Future<CategoryEntity> updateCategory(CategoryEntity category) async {
     try {
       final model = _toModel(category);
-      final updatedCategory = await remoteDataSource.updateCategory(model);
+      final updatedModel = await remoteDataSource.updateCategory(model);
       
       _clearCache();
-      return updatedCategory;
+      return updatedModel.toEntity();
     } catch (e) {
       debugPrint('X Error updating category: $e');
       rethrow;
@@ -106,14 +105,16 @@ class CategoryRepositoryImpl implements CategoryRepository {
   CategoryModel _toModel(CategoryEntity category) {
     return CategoryModel(
       id: category.id,
-      nameAr: category.nameAr,
-      nameEn: category.nameEn,
-      descriptionAr: category.descriptionAr,
-      descriptionEn: category.descriptionEn,
+      name: TranslatableString(ar: category.nameAr, en: category.nameEn),
+      description: TranslatableString(
+        ar: category.descriptionAr ?? '',
+        en: category.descriptionEn ?? '',
+      ),
       imageUrl: category.imageUrl,
       parentId: category.parentId,
       isActive: category.isActive,
-      name: TranslatableString(ar: category.nameAr, en: category.nameEn),
+      sortOrder: category.sortOrder,
+      icon: category.icon,
     );
   }
 }

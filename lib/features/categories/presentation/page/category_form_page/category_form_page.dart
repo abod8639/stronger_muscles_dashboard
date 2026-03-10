@@ -4,19 +4,18 @@ import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/base_app_bar.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/build_modern_text_field.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/confirm_dialog.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
+import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
 import 'package:stronger_muscles_dashboard/features/categories/presentation/controllers/categories_controller.dart';
-import 'package:stronger_muscles_dashboard/features/categories/data/models/category_model.dart';
-import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
-import 'package:stronger_muscles_dashboard/screens/category_form_page/widget/gradient_background_painter.dart';
-import 'package:stronger_muscles_dashboard/screens/components/base_app_bar.dart';
-import 'package:stronger_muscles_dashboard/screens/components/confirm_dialog.dart';
-import 'package:stronger_muscles_dashboard/screens/components/build_modern_text_field.dart';
-import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
+import 'package:stronger_muscles_dashboard/features/categories/presentation/page/category_form_page/widget/gradient_background_painter.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/availability_switch.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/category_tree_selector.dart';
 
 class CategoryFormPage extends StatefulWidget {
-  final CategoryModel? category;
+  final CategoryEntity? category;
 
   const CategoryFormPage({super.key, this.category});
 
@@ -50,14 +49,11 @@ class _CategoryFormPageState extends State<CategoryFormPage>
           ? const Color(0xFF0A0A0A)
           : const Color(0xFFF5F7FA),
       extendBodyBehindAppBar: true,
-      appBar: BaseAppBar(title: ""), // buildAppBar(isDark),
+      appBar: const BaseAppBar(title: ""),
       floatingActionButton: buildFloatingActionButton(isDark),
       body: Stack(
         children: [
-          // Animated gradient background
           buildGradientBackground(isDark),
-
-          // Form content
           Form(
             key: _formKey,
             child: SingleChildScrollView(
@@ -74,9 +70,7 @@ class _CategoryFormPageState extends State<CategoryFormPage>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       buildPageHeader(isDark),
-
                       const SizedBox(height: 32),
-
                       buildAnimatedSection(
                         delay: 100,
                         child: buildSectionTitle(
@@ -85,9 +79,7 @@ class _CategoryFormPageState extends State<CategoryFormPage>
                           isDark,
                         ),
                       ),
-
                       const SizedBox(height: 20),
-
                       buildAnimatedSection(
                         delay: 200,
                         child: buildGlassmorphicCard(isDark, [
@@ -134,9 +126,7 @@ class _CategoryFormPageState extends State<CategoryFormPage>
                           ),
                         ]),
                       ),
-
                       const SizedBox(height: 40),
-
                       buildAnimatedSection(
                         delay: 250,
                         child: buildSectionTitle(
@@ -145,15 +135,13 @@ class _CategoryFormPageState extends State<CategoryFormPage>
                           isDark,
                         ),
                       ),
-
                       const SizedBox(height: 20),
-
                       buildAnimatedSection(
                         delay: 280,
                         child: buildGlassmorphicCard(isDark, [
                           Obx(
                             () => CategoryTreeSelector(
-                              categories: controller.categories,
+                              categories: controller.categories.toList(),
                               selectedId: controller.parentId.value,
                               onSelected: (id) =>
                                   controller.parentId.value = id,
@@ -162,9 +150,7 @@ class _CategoryFormPageState extends State<CategoryFormPage>
                           ),
                         ]),
                       ),
-
                       const SizedBox(height: 40),
-
                       buildAnimatedSection(
                         delay: 300,
                         child: buildSectionTitle(
@@ -173,9 +159,7 @@ class _CategoryFormPageState extends State<CategoryFormPage>
                           isDark,
                         ),
                       ),
-
                       const SizedBox(height: 20),
-
                       buildAnimatedSection(
                         delay: 400,
                         child: buildGlassmorphicCard(isDark, [
@@ -186,7 +170,6 @@ class _CategoryFormPageState extends State<CategoryFormPage>
                           buildStatusSection(isDark),
                         ]),
                       ),
-
                       const SizedBox(height: 50),
                     ],
                   ),
@@ -339,7 +322,6 @@ class _CategoryFormPageState extends State<CategoryFormPage>
       ),
     );
   }
-  // --- داخل _CategoryFormPageState ---
 
   Widget buildIdField(bool isDark) {
     return Column(
@@ -360,7 +342,7 @@ class _CategoryFormPageState extends State<CategoryFormPage>
           onDoubleTap: () => _toggleIdLock(),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 500),
-            curve: Curves.elasticOut, // حركة مطاطية عند فتح القفل
+            curve: Curves.elasticOut,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               color: _isIdFieldEnabled
@@ -379,7 +361,7 @@ class _CategoryFormPageState extends State<CategoryFormPage>
                 buildModernTextField(
                   controller.idController,
                   'ID: e.g. supplements_creatine',
-                  Icons.terminal_rounded, // أيقونة تقنية أكثر
+                  Icons.terminal_rounded,
                   enabled: _isIdFieldEnabled && !controller.isLoading.value,
                 ),
                 Positioned(
@@ -406,13 +388,12 @@ class _CategoryFormPageState extends State<CategoryFormPage>
     );
   }
 
-  // --- تحسين معاينة الصورة ---
   Widget buildEnhancedImagePreview(bool isDark) {
     return Center(
       child: Container(
         constraints: const BoxConstraints(
           maxWidth: 500,
-        ), // عدم تمدد الصورة بشكل مفرط في الويب
+        ),
         child: Stack(
           alignment: Alignment.topRight,
           children: [
@@ -442,7 +423,6 @@ class _CategoryFormPageState extends State<CategoryFormPage>
                 ),
               ),
             ),
-            // أزرار التحكم الطافية
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: Container(
@@ -601,38 +581,6 @@ class _CategoryFormPageState extends State<CategoryFormPage>
     );
   }
 
-  Widget buildImageActionButton({
-    required IconData icon,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
-          child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Icon(icon, size: 20, color: color),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget buildShimmerPlaceholder() {
-    return Container(
-      color: Colors.grey[300],
-      child: const Center(child: CircularProgressIndicator()),
-    );
-  }
-
   Widget buildErrorWidget(bool isDark) {
     return Container(
       color: isDark ? Colors.grey[900] : Colors.grey[100],
@@ -714,7 +662,6 @@ class _CategoryFormPageState extends State<CategoryFormPage>
   }
 
   Widget _buildImageShimmer(bool isDark) {
-    // الألوان المختارة لتعطي إيحاء "المعدن السائل" أو النبض التقني
     final baseColor = isDark
         ? Colors.white.withValues(alpha: 0.05)
         : Colors.grey[300]!;
@@ -733,12 +680,10 @@ class _CategoryFormPageState extends State<CategoryFormPage>
         builder: (context, constraints) {
           return Stack(
             children: [
-              // استخدام TweenAnimationBuilder لعمل حركة لمعان مخصصة بدون حزم خارجية
               TweenAnimationBuilder<double>(
                 tween: Tween(begin: -1.0, end: 2.0),
                 duration: const Duration(milliseconds: 1500),
                 curve: Curves.easeInOutSine,
-                onEnd: () {}, // سنستخدم شيمر خارجي أو نكرر الحركة
                 builder: (context, value, child) {
                   return Container(
                     decoration: BoxDecoration(
@@ -756,8 +701,6 @@ class _CategoryFormPageState extends State<CategoryFormPage>
                   );
                 },
               ),
-
-              // إضافة أيقونة في المنتصف تعطي إيحاء "جاري التحميل" بشكل هادئ
               Center(
                 child: Opacity(
                   opacity: 0.5,
@@ -770,7 +713,6 @@ class _CategoryFormPageState extends State<CategoryFormPage>
                         color: isDark ? Colors.white24 : Colors.black26,
                       ),
                       const SizedBox(height: 12),
-                      // شريط صغير تحت الأيقونة
                       Container(
                         width: 60,
                         height: 4,
@@ -796,7 +738,7 @@ class _CategoryFormPageState extends State<CategoryFormPage>
       return AnimatedContainer(
         duration: const Duration(milliseconds: 400),
         curve: Curves.fastOutSlowIn,
-        width: isLoading ? 70 : 180, // يتحول لدائرة عند التحميل
+        width: isLoading ? 70 : 180,
         height: 60,
         child: FloatingActionButton.extended(
           onPressed: isLoading ? null : _submitForm,
@@ -845,13 +787,11 @@ class _CategoryFormPageState extends State<CategoryFormPage>
       );
     } else {
       setState(() => _isIdFieldEnabled = !_isIdFieldEnabled);
-
       HapticFeedback.lightImpact();
     }
   }
 
   void _submitForm() async {
-    // Validate required fields
     if (controller.idController.text.trim().isEmpty) {
       _showErrorSnackbar('المعرف الفريد مطلوب');
       return;
@@ -863,26 +803,15 @@ class _CategoryFormPageState extends State<CategoryFormPage>
       return;
     }
 
-    // Validate ID format (alphanumeric and underscores only)
-    // final idRegex = RegExp(r'^[a-zA-Z0-9_]+$');
-    // if (!idRegex.hasMatch(controller.idController.text.trim())) {
-    //   _showErrorSnackbar('المعرف يجب أن يحتوي على أحرف وأرقام فقط');
-    //   return;
-    // }
-
     HapticFeedback.mediumImpact();
 
-    final categoryData = CategoryModel(
+    final categoryData = CategoryEntity(
       id: controller.idController.text.trim(),
-      name: TranslatableString(
-        ar: controller.nameArController.text.trim(),
-        en: controller.nameEnController.text.trim(),
-      ),
+      nameAr: controller.nameArController.text.trim(),
+      nameEn: controller.nameEnController.text.trim(),
       imageUrl: controller.imageController.text.trim(),
-      description: TranslatableString(
-        ar: controller.descArController.text.trim(),
-        en: controller.descEnController.text.trim(),
-      ),
+      descriptionAr: controller.descArController.text.trim(),
+      descriptionEn: controller.descEnController.text.trim(),
       isActive: controller.isActive.value,
       icon: controller.iconController.text.trim(),
       parentId: controller.parentId.value,

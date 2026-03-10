@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/custom_search_bar.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/status_badge.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/presentation/page/widget/build_recent_orders.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/controllers/orders_controller.dart';
-import 'package:stronger_muscles_dashboard/screens/components/custom_search_bar.dart';
-import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
-import 'package:stronger_muscles_dashboard/screens/components/status_badge.dart';
+import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/order_details_screen/order_details_screen.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
-import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_recent_orders.dart';
-import 'package:stronger_muscles_dashboard/screens/order_details_screen/order_details_screen.dart';
 
 class OrdersTable extends StatelessWidget {
   const OrdersTable({super.key});

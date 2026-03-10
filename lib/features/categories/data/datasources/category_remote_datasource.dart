@@ -18,7 +18,16 @@ class CategoryRemoteDataSourceImpl implements CategoryRemoteDataSource {
     final response = await dio.get('/categories', queryParameters: {'tree': tree});
     if (response.statusCode == 200) {
       final List data = response.data;
-      return data.map((e) => CategoryModel.fromJson(e)).toList();
+      final categories = <CategoryModel>[];
+      for (var item in data) {
+        try {
+          categories.add(CategoryModel.fromJson(item as Map<String, dynamic>));
+        } catch (e) {
+          print('X Error parsing category: $e');
+          print('  Corrupted data: $item');
+        }
+      }
+      return categories;
     }
     throw Exception('Failed to load categories');
   }

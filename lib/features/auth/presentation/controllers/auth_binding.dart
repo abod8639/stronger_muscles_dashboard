@@ -2,6 +2,9 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../domain/usecases/login_usecase.dart';
+import '../../domain/usecases/signup_usecase.dart';
+import '../../domain/usecases/logout_usecase.dart';
+import '../../domain/usecases/check_auth_status_usecase.dart';
 import '../../data/datasources/auth_local_datasource.dart';
 import '../../data/datasources/auth_remote_datasource.dart';
 import '../../data/repositories/auth_repository_impl.dart';
@@ -25,10 +28,17 @@ class AuthBinding extends Bindings {
           localDataSource: Get.find<AuthLocalDataSource>(),
         ));
 
-    // Use Case
+    // Use Cases
     Get.lazyPut(() => LoginUseCase(Get.find<AuthRepository>()));
+    Get.lazyPut(() => SignupUseCase(Get.find<AuthRepository>()));
+    Get.lazyPut(() => LogoutUseCase(Get.find<AuthRepository>()));
+    Get.lazyPut(() => CheckAuthStatusUseCase(Get.find<AuthRepository>()));
 
     // Controller
-    Get.put(AuthController(loginUseCase: Get.find<LoginUseCase>()));
+    Get.put(AuthController(
+      loginUseCase: Get.find<LoginUseCase>(),
+      signupUseCase: Get.find<SignupUseCase>(),
+      logoutUseCase: Get.find<LogoutUseCase>(),
+    ));
   }
 }

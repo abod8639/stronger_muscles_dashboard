@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/core/network/api_service.dart';
 import 'package:stronger_muscles_dashboard/data/models/flavors_model.dart';
-import 'package:stronger_muscles_dashboard/features/categories/data/models/category_model.dart';
+import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/repositories/category_repository.dart';
-import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
+// Unused Import removed
+import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/usecases/get_products_usecase.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/usecases/add_product_usecase.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/usecases/update_product_usecase.dart';
@@ -34,11 +35,11 @@ class ProductsController extends GetxController {
   final isUploadingImage = false.obs;
 
   // --- Data Lists ---
-  final products = <ProductModel>[].obs;
-  final categories = <CategoryModel>[].obs;
+  final products = <ProductEntity>[].obs;
+  final categories = <CategoryEntity>[].obs;
   final flavors = <FlavorsModel>[].obs;
-  final filteredProducts = <ProductModel>[].obs;
-  final productSizes = <ProductSize>[].obs;
+  final filteredProducts = <ProductEntity>[].obs;
+  final productSizes = <ProductSizeEntity>[].obs;
 
   // --- Filter Values ---
   final productWeight = 0.0.obs;
@@ -64,7 +65,7 @@ class ProductsController extends GetxController {
     'sessions': TextEditingController(),
   };
 
-  final variants = <ProductVariantModel>[].obs;
+  final variants = <ProductVariantEntity>[].obs;
 
   // Controllers for each size
   final Map<String, TextEditingController> sizePriceControllers = {};
@@ -73,7 +74,7 @@ class ProductsController extends GetxController {
   final selectedSizeIndex = (-1).obs;
 
   void addVariant() {
-    final newVariant = ProductVariantModel(
+    final newVariant = ProductVariantEntity(
       id: 'VAR-${DateTime.now().millisecondsSinceEpoch}',
       sku: '',
       price: double.tryParse(textcontrollers['price']?.text ?? '0') ?? 0,
@@ -93,7 +94,7 @@ class ProductsController extends GetxController {
     }
   }
 
-  void updateVariant(int index, ProductVariantModel updated) {
+  void updateVariant(int index, ProductVariantEntity updated) {
     if (index >= 0 && index < variants.length) {
       variants[index] = updated;
     }
@@ -153,8 +154,8 @@ class ProductsController extends GetxController {
         getProductsUseCase(forceRefresh: forceRefresh),
       ]);
 
-      categories.assignAll(results[0] as List<CategoryModel>);
-      products.assignAll(results[1] as List<ProductModel>);
+      categories.assignAll(results[0] as List<CategoryEntity>);
+      products.assignAll(results[1] as List<ProductEntity>);
 
       _applyFiltering();
       isLoading.value = false;
@@ -163,6 +164,8 @@ class ProductsController extends GetxController {
       _showErrorSnackbar('فشل في تحميل البيانات', e.toString());
     }
   }
+
+  // --- Logic الفلترة ---
 
   void onSearchChanged(String query) {
     searchQuery.value = query;
@@ -185,26 +188,28 @@ class ProductsController extends GetxController {
   }
 
   void _applyFiltering() {
-    Iterable<ProductModel> filtered = products;
+    Iterable<ProductEntity> filtered = products;
 
     if (selectedCategoryId.value != 'all') {
       filtered = filtered.where(
-        (p) => p.effectiveCategoryId == selectedCategoryId.value,
+        (p) => p.categoryId == selectedCategoryId.value,
       );
     }
 
+    // 2. التصفية حسب النكهة
     if (selectedFlavorId.value != 'all') {
       filtered = filtered.where(
-        (p) => p.flavor?.contains(selectedFlavorId.value) ?? false,
+        (p) => p.flavors?.contains(selectedFlavorId.value) ?? false,
       );
     }
 
+    // 3. التصفية حسب البحث (الاسم، الماركة، أو الكود)
     if (searchQuery.isNotEmpty) {
       final query = searchQuery.value.toLowerCase();
       filtered = filtered.where(
         (p) =>
-            p.name.ar.toLowerCase().contains(query) ||
-            p.name.en.toLowerCase().contains(query) ||
+            p.nameAr.toLowerCase().contains(query) ||
+            p.nameEn.toLowerCase().contains(query) ||
             (p.brand?.toLowerCase().contains(query) ?? false) ||
             p.id.contains(query),
       );
@@ -213,15 +218,15 @@ class ProductsController extends GetxController {
     filteredProducts.assignAll(filtered.toList());
   }
 
-  Future<void> addProduct(ProductModel product) async {
+  Future<void> addProduct(ProductEntity product) async {
     try {
       isLoading.value = true;
       final newProduct = await addProductUseCase(product);
-      products.insert(0, newProduct as ProductModel);
+      products.insert(0, newProduct);
 
       _applyFiltering();
       Get.back();
-      Get.snackbar('نجاح', 'تم إضافة ${newProduct.name.ar} بنجاح');
+      Get.snackbar('نجاح', 'تم إضافة ${newProduct.nameAr} بنجاح');
     } catch (e) {
       _showErrorSnackbar('خطأ في الإضافة', e.toString());
     } finally {
@@ -229,14 +234,14 @@ class ProductsController extends GetxController {
     }
   }
 
-  Future<void> updateProduct(ProductModel product) async {
+  Future<void> updateProduct(ProductEntity product) async {
     try {
       isLoading.value = true;
       final updatedProduct = await updateProductUseCase(product);
 
       final index = products.indexWhere((p) => p.id == product.id);
       if (index != -1) {
-        products[index] = updatedProduct as ProductModel;
+        products[index] = updatedProduct;
         _applyFiltering();
       }
 
@@ -284,6 +289,8 @@ class ProductsController extends GetxController {
     }
   }
 
+  // --- Media Upload ---
+
   Future<String?> uploadImage(
     String filePath, {
     bool isCategory = false,
@@ -302,6 +309,8 @@ class ProductsController extends GetxController {
     }
   }
 
+  // --- Helpers ---
+
   void _showErrorSnackbar(String title, String message) {
     Get.snackbar(
       title,
@@ -314,7 +323,7 @@ class ProductsController extends GetxController {
     );
   }
 
-  void showProductForm(BuildContext context, {ProductModel? product}) {
+  void showProductForm(BuildContext context, {ProductEntity? product}) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -327,7 +336,7 @@ class ProductsController extends GetxController {
     required GlobalKey<FormState> formKey,
     required String categoryId,
     required List<String> productImages,
-    ProductModel? existingProduct,
+    ProductEntity? existingProduct,
   }) async {
     if (!formKey.currentState!.validate()) return;
 
@@ -344,34 +353,27 @@ class ProductsController extends GetxController {
     try {
       isSaving.value = true;
 
+      // Update productSizes with values from individual controllers
       final updatedSizes = productSizes.map((ps) {
         final price =
             double.tryParse(sizePriceControllers[ps.size]?.text ?? '0') ?? 0;
         final discount = double.tryParse(
           sizeDiscountControllers[ps.size]?.text ?? '',
         );
-        return ps.copyWith(price: price, discountPrice: discount);
+        return ProductSizeEntity(size: ps.size, price: price, discountPrice: discount);
       }).toList();
 
-      final productData = ProductModel(
+      final productData = ProductEntity(
         id:
             existingProduct?.id ??
             'PROD-${DateTime.now().millisecondsSinceEpoch}',
-        name: TranslatableString(
-          ar: textcontrollers['name_ar']!.text.trim(),
-          en: textcontrollers['name_en']!.text.trim(),
-        ),
+        nameAr: textcontrollers['name_ar']!.text.trim(),
+        nameEn: textcontrollers['name_en']!.text.trim(),
         price: double.tryParse(textcontrollers['price']!.text) ?? 0,
         discountPrice: double.tryParse(textcontrollers['discount']!.text),
-        imageUrls: productImages
-            .map(
-              (url) => ProductImage(thumbnail: url, medium: url, original: url),
-            )
-            .toList(),
-        description: TranslatableString(
-          ar: textcontrollers['desc_ar']!.text.trim(),
-          en: textcontrollers['desc_en']!.text.trim(),
-        ),
+        imageUrls: productImages,
+        descriptionAr: textcontrollers['desc_ar']!.text.trim(),
+        descriptionEn: textcontrollers['desc_en']!.text.trim(),
         categoryId: categoryId,
         stockQuantity: int.tryParse(textcontrollers['stock']!.text) ?? 0,
         brand: textcontrollers['brand']!.text.trim(),
@@ -380,9 +382,8 @@ class ProductsController extends GetxController {
         servingSize: textcontrollers['serving']!.text,
         servingsPerContainer:
             int.tryParse(textcontrollers['sessions']!.text) ?? 0,
-        flavor: productFlavors.toList(),
+        flavors: productFlavors.toList(),
         productSizes: updatedSizes,
-        size: updatedSizes.map((e) => e.size).toList(),
         variants: variants.toList(),
       );
 

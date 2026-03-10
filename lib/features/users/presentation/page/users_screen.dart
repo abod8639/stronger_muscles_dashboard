@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/app_colors.dart';
-import 'package:stronger_muscles_dashboard/screens/components/enhanced_error_widget.dart';
-import 'package:stronger_muscles_dashboard/screens/components/enhanced_loading_widget.dart';
-import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
-import 'package:stronger_muscles_dashboard/screens/components/top_section.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/base_app_bar.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/custom_search_bar.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/enhanced_error_widget.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/enhanced_loading_widget.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/my_refreshIndicator.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/top_section.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import '../controllers/users_controller.dart';
 import 'widgets/buildUserCard.dart';
 import 'widgets/build_stats_header.dart';
-import 'package:stronger_muscles_dashboard/screens/components/base_app_bar.dart';
-import 'package:stronger_muscles_dashboard/screens/components/custom_search_bar.dart';
 
 class UsersScreen extends StatelessWidget {
   const UsersScreen({super.key});

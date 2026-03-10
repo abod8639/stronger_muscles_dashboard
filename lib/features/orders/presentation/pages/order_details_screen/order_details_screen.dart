@@ -3,13 +3,13 @@ import 'package:intl/intl.dart' as intl;
 import 'package:stronger_muscles_dashboard/config/app_colors.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
-import 'package:stronger_muscles_dashboard/screens/components/status_badge.dart';
-import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_section_title.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/base_app_bar.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/status_badge.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/presentation/page/widget/build_section_title.dart';
 import 'widget/build_detail_row.dart';
 import 'widget/build_orderItem.dart';
 import 'widget/build_section.dart';
 import 'widget/build_summary_row.dart';
-import 'package:stronger_muscles_dashboard/screens/components/base_app_bar.dart';
 import '../../../domain/entities/order_entity.dart';
 
 

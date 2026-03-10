@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/functions/cache_manager.dart';
 import '../../../../domain/entities/order_entity.dart';
-import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 
 Widget buildOrderItem(OrderItemEntity item, bool isDark) {
   return GlassContainer(

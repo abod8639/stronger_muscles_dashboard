@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive/hive.dart';
 import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
+import '../../domain/entities/category_entity.dart';
 
 part 'category_model.freezed.dart';
 part 'category_model.g.dart';
@@ -21,18 +22,32 @@ class CategoryModel with _$CategoryModel {
   }) = _CategoryModel;
 
   const CategoryModel._();
+
   String get displayName {
     if (name.ar.isNotEmpty) return name.ar;
     if (name.en.isNotEmpty) return name.en;
-    return id; // Fallback to ID if no name is available
+    return id;
   }
+
+  CategoryEntity toEntity() => CategoryEntity(
+        id: id,
+        nameAr: name.ar,
+        nameEn: name.en,
+        descriptionAr: description?.ar,
+        descriptionEn: description?.en,
+        imageUrl: imageUrl,
+        parentId: parentId,
+        isActive: isActive,
+        sortOrder: sortOrder,
+        icon: icon,
+        children: children.map((e) => e.toEntity()).toList(),
+      );
 
   factory CategoryModel.fromJson(Map<String, dynamic> json) =>
       _$CategoryModelFromJson(_customJson(json));
 }
 
 Map<String, dynamic> _customJson(Map<String, dynamic> json) {
-  // If the object already has processed fields, return it as is (idempotency)
   if (json['processed'] == true) return json;
 
   dynamic parseTranslatable(dynamic val) {
@@ -42,22 +57,19 @@ Map<String, dynamic> _customJson(Map<String, dynamic> json) {
         'en': val['en']?.toString() ?? '',
       };
     }
-    // If it's a string, use it for both or specific logic (here assuming ar)
     final strVal = val?.toString() ?? '';
-    return {'ar': strVal, 'en': strVal}; // Use same string for both as fallback
+    return {'ar': strVal, 'en': strVal};
   }
 
   return {
     ...json,
-    'id': json['id']?.toString() ?? '', // Ensure ID is a string
+    'id': json['id']?.toString() ?? '',
     'name': parseTranslatable(json['name']),
     'description': parseTranslatable(json['description']),
-    // Map snake_case to camelCase if needed for the generated model
     'imageUrl': json['imageUrl'] ?? json['image_url'],
     'parentId': json['parentId'] ?? json['parent_id'],
     'sortOrder': json['sortOrder'] ?? json['sort_order'] ?? 0,
     'isActive': json['isActive'] ?? json['is_active'] ?? true,
-    // Note: children recursion will be handled by CategoryModel.fromJson in the generated code
     'processed': true,
   };
 }

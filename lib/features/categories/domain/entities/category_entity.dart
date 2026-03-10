@@ -7,7 +7,9 @@ class CategoryEntity {
   final String? imageUrl;
   final String? parentId;
   final bool isActive;
-  final List<CategoryEntity>? children;
+  final int sortOrder;
+  final dynamic icon;
+  final List<CategoryEntity> children;
 
   const CategoryEntity({
     required this.id,
@@ -18,8 +20,16 @@ class CategoryEntity {
     this.imageUrl,
     this.parentId,
     required this.isActive,
-    this.children,
+    this.sortOrder = 0,
+    this.icon,
+    this.children = const [],
   });
 
   String getName(String lang) => lang == 'ar' ? nameAr : nameEn;
+
+  String get displayName {
+    if (nameAr.isNotEmpty) return nameAr;
+    if (nameEn.isNotEmpty) return nameEn;
+    return id;
+  }
 }
