@@ -18,7 +18,16 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
     final response = await dio.get('/orders');
     if (response.statusCode == 200) {
       final List data = response.data;
-      return data.map((e) => OrderModel.fromJson(e)).toList();
+      final orders = <OrderModel>[];
+      for (var item in data) {
+        try {
+          orders.add(OrderModel.fromJson(item as Map<String, dynamic>));
+        } catch (e) {
+          print('X Error parsing order: $e');
+          print('  Corrupted data: $item');
+        }
+      }
+      return orders;
     }
     throw Exception('Failed to load orders');
   }

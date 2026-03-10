@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
-import 'package:stronger_muscles_dashboard/features/orders/data/models/order_model.dart';
-import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_payment_badge.dart';
+import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
+import 'build_payment_badge.dart';
 
 class OrderHeader extends StatelessWidget {
-  final OrderModel order;
+  final OrderEntity order;
   const OrderHeader({super.key, required this.order});
 
   @override

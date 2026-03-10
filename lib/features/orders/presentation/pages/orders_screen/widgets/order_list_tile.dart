@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/config/theme.dart';
+import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/screens/components/status_badge.dart';
-import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_enhanced_order_images.dart';
-import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_info_section.dart';
-import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_order_header.dart';
-import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_price_section.dart';
-import '../../../config/theme.dart';
-import '../../../data/models/index.dart';
+import 'build_enhanced_order_images.dart';
+import 'build_info_section.dart';
+import 'build_order_header.dart';
+import 'build_price_section.dart';
+
 
 class OrderListTile extends StatefulWidget {
-  final OrderModel order;
+  final OrderEntity order;
   final VoidCallback? onTap;
   final int index;
 

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
 import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_form_body.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_form_mixin.dart';
-import '../../../config/theme.dart';
 
 class ProductFormPage extends StatefulWidget {
   final ProductModel? product;
@@ -19,6 +19,7 @@ class _ProductFormPageState extends State<ProductFormPage>
   final _formKey = GlobalKey<FormState>();
 
   @override
+
   final ProductsController controller = Get.find<ProductsController>();
 
   @override

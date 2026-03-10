@@ -76,10 +76,6 @@ class ProductRepositoryImpl implements ProductRepository {
   ProductModel _toModel(ProductEntity product) {
     return ProductModel(
       id: product.id,
-      nameAr: product.nameAr,
-      nameEn: product.nameEn,
-      descriptionAr: product.descriptionAr,
-      descriptionEn: product.descriptionEn,
       price: product.price,
       discountPrice: product.discountPrice,
       imageUrls: product.imageUrls,
@@ -88,7 +84,9 @@ class ProductRepositoryImpl implements ProductRepository {
       brand: product.brand,
       isActive: product.isActive,
       productSizes: product.productSizes,
-      flavors: product.flavors,
+      flavor: product.flavors, 
+      name: TranslatableString(ar: product.nameAr, en: product.nameEn), 
+      description: TranslatableString(ar: product.descriptionAr, en: product.descriptionEn),
     );
   }
 }

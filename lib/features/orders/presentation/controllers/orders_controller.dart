@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/features/orders/data/models/order_model.dart';
-import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
-import 'package:stronger_muscles_dashboard/features/orders/domain/usecases/get_orders_usecase.dart';
+import '../../domain/entities/order_entity.dart';
+import '../../domain/usecases/get_orders_usecase.dart';
+import '../../domain/usecases/get_order_detail_usecase.dart';
+import '../../domain/usecases/update_order_status_usecase.dart';
 
 class OrdersController extends GetxController {
   final GetOrdersUseCase getOrdersUseCase;
+  final GetOrderDetailUseCase getOrderDetailUseCase;
+  final UpdateOrderStatusUseCase updateOrderStatusUseCase;
 
-  OrdersController({required this.getOrdersUseCase});
+  OrdersController({
+    required this.getOrdersUseCase,
+    required this.getOrderDetailUseCase,
+    required this.updateOrderStatusUseCase,
+  });
 
-  final RxList<OrderModel> _allOrders = <OrderModel>[].obs;
-  final RxList<OrderModel> filteredOrders = <OrderModel>[].obs;
+  final RxList<OrderEntity> _allOrders = <OrderEntity>[].obs;
+  final RxList<OrderEntity> filteredOrders = <OrderEntity>[].obs;
 
   final RxBool isLoading = false.obs;
   final RxString errorMessage = ''.obs;
@@ -20,7 +27,7 @@ class OrdersController extends GetxController {
   final RxInt currentPage = 1.obs;
   final RxInt itemsPerPage = 6.obs;
 
-  List<OrderModel> get paginatedOrders {
+  List<OrderEntity> get paginatedOrders {
     final start = (currentPage.value - 1) * itemsPerPage.value;
     if (start >= filteredOrders.length) return [];
     final end = (start + itemsPerPage.value).clamp(0, filteredOrders.length);
@@ -53,8 +60,8 @@ class OrdersController extends GetxController {
     try {
       isLoading.value = true;
       errorMessage.value = '';
-      final orders = await getOrdersUseCase(forceRefresh: forceRefresh);
-      _allOrders.assignAll(orders as List<OrderModel>);
+      final orders = await getOrdersUseCase();
+      _allOrders.assignAll(orders);
       _applyFilters();
     } catch (e) {
       errorMessage.value = 'فشل في تحميل الطلبات: $e';
@@ -119,6 +126,24 @@ class OrdersController extends GetxController {
     result.sort((a, b) => b.orderDate.compareTo(a.orderDate));
 
     filteredOrders.assignAll(result);
+  }
+
+  Future<void> updateStatus(String id, OrderStatus status) async {
+    try {
+      isLoading.value = true;
+      final updatedOrder = await updateOrderStatusUseCase(id, status);
+      
+      final index = _allOrders.indexWhere((o) => o.id == id);
+      if (index != -1) {
+        _allOrders[index] = updatedOrder;
+        _applyFilters();
+      }
+      Get.snackbar('نجاح', 'تم تحديث حالة الطلب بنجاح');
+    } catch (e) {
+      Get.snackbar('خطأ', 'فشل في تحديث الحالة: $e');
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   String getStatusText(OrderStatus status) {

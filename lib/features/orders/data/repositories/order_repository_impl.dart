@@ -27,15 +27,15 @@ class OrderRepositoryImpl implements OrderRepository {
         final cachedData = _cacheService.get<List<OrderModel>>(_cacheKeyOrders);
         if (cachedData != null) {
           debugPrint('✓ Retrieved orders from cache');
-          return cachedData;
+          return cachedData.map((e) => e.toEntity()).toList();
         }
       }
 
       debugPrint('↓ Fetching orders from remote...');
-      final orders = await remoteDataSource.getOrders();
+      final models = await remoteDataSource.getOrders();
       
-      _cacheService.set(_cacheKeyOrders, orders);
-      return orders;
+      _cacheService.set(_cacheKeyOrders, models);
+      return models.map((e) => e.toEntity()).toList();
     } catch (e) {
       debugPrint('X Error in OrderRepositoryImpl: $e');
       rethrow;
@@ -44,13 +44,14 @@ class OrderRepositoryImpl implements OrderRepository {
 
   @override
   Future<OrderEntity> getOrderById(String id) async {
-    return await remoteDataSource.getOrderById(id);
+    final model = await remoteDataSource.getOrderById(id);
+    return model.toEntity();
   }
 
   @override
   Future<OrderEntity> updateOrderStatus(String id, OrderStatus status) async {
-    final updatedOrder = await remoteDataSource.updateOrderStatus(id, status);
+    final model = await remoteDataSource.updateOrderStatus(id, status);
     _cacheService.remove(_cacheKeyOrders);
-    return updatedOrder;
+    return model.toEntity();
   }
 }

@@ -3,40 +3,14 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive/hive.dart';
 import 'package:stronger_muscles_dashboard/data/models/address_model.dart';
 import 'package:stronger_muscles_dashboard/features/users/data/models/user_model.dart';
+import '../../domain/entities/order_entity.dart';
 
 part 'order_model.freezed.dart';
 part 'order_model.g.dart';
 
-@HiveType(typeId: 9)
-enum OrderStatus {
-  @HiveField(0)
-  pending,
-  @HiveField(1)
-  processing,
-  @HiveField(2)
-  shipped,
-  @HiveField(3)
-  delivered,
-  @HiveField(4)
-  cancelled,
-}
-
-@HiveType(typeId: 10)
-enum PaymentStatus {
-  @HiveField(0)
-  pending,
-  @HiveField(1)
-  paid,
-  @HiveField(2)
-  failed,
-  @HiveField(3)
-  refunded,
-}
-
 @freezed
-@HiveType(typeId: 11) // إضافة HiveType للكلاس
+@HiveType(typeId: 11)
 class OrderModel with _$OrderModel {
-  // إضافة constructor خاص لتمكين إضافة methods أو getters
   const OrderModel._();
 
   const factory OrderModel({
@@ -63,29 +37,27 @@ class OrderModel with _$OrderModel {
   String get userEmail => user?.email ?? 'No email';
   String? get userPhoto => user?.photoUrl;
 
-  String? get firstItemImageUrl {
-    if (items != null && items!.isNotEmpty) {
-      return items!.first.imageUrl;
-    }
-    return null;
-  }
-
-  // String get formattedAddress {
-  //   if (shippingAddress == null) return 'العنوان غير متوفر';
-  //   if (shippingAddress is String) return shippingAddress as String;
-
-  //   if (shippingAddress is Map) {
-  //     final addr = shippingAddress['address'] ?? shippingAddress;
-  //     if (addr is String) return addr;
-
-  //     final city = addr['city'] ?? addr['City'] ?? '';
-  //     final street = addr['street'] ?? addr['Street'] ?? '';
-  //     final formatted = [city, street].where((s) => s.toString().isNotEmpty).join(', ');
-  //     return formatted.isEmpty ? 'العنوان غير محدد' : formatted;
-  //   }
-
-  //   return shippingAddress.toString();
-  // }
+  OrderEntity toEntity() => OrderEntity(
+        id: id,
+        userId: userId,
+        userName: userName,
+        userEmail: userEmail,
+        userPhoto: userPhoto,
+        phoneNumber: phoneNumber,
+        totalAmount: totalAmount,
+        subtotal: subtotal,
+        shippingCost: shippingCost,
+        discount: discount,
+        status: status,
+        paymentStatus: paymentStatus,
+        paymentMethod: paymentMethod,
+        addressId: addressId,
+        shippingAddress: shippingAddress,
+        trackingNumber: trackingNumber,
+        notes: notes,
+        orderDate: orderDate,
+        items: items?.map((e) => e.toEntity()).toList() ?? [],
+      );
 
   factory OrderModel.fromJson(Map<String, dynamic> json) =>
       _$OrderModelFromJson(_mapOrderJson(json));
@@ -110,12 +82,23 @@ class OrderItemModel with _$OrderItemModel {
     @HiveField(10) String? fullName,
   }) = _OrderItemModel;
 
+  OrderItemEntity toEntity() => OrderItemEntity(
+        id: id,
+        productId: productId,
+        productName: productName,
+        quantity: quantity,
+        unitPrice: unitPrice,
+        subtotal: subtotal,
+        imageUrl: imageUrl,
+        selectedFlavor: selectedFlavor,
+        selectedSize: selectedSize,
+      );
+
   factory OrderItemModel.fromJson(Map<String, dynamic> json) =>
       _$OrderItemModelFromJson(_mapItemJson(json));
 }
 
-// --- دالات معالجة البيانات (تأكد أنها خارج الكلاسات) ---
-
+// Data mapping helpers...
 Map<String, dynamic> _mapOrderJson(Map<String, dynamic> json) {
   String extractUserId() {
     if (json['userId'] != null) return json['userId'].toString();
@@ -148,7 +131,6 @@ Map<String, dynamic> _mapOrderJson(Map<String, dynamic> json) {
     ...json,
     'id': (json['id'] ?? '').toString(),
     'userId': extractUserId(),
-    'fullName': json['full_name'] ?? json['fullName'],
     'orderDate':
         json['order_date'] ??
         json['orderDate'] ??
@@ -175,7 +157,6 @@ Map<String, dynamic> _mapOrderJson(Map<String, dynamic> json) {
 Map<String, dynamic>? _mapUserJson(dynamic json) {
   if (json == null) return null;
   if (json is! Map) return null;
-
   return {...json, 'id': _parseInt(json['id'])};
 }
 

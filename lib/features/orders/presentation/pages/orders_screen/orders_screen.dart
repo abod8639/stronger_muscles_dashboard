@@ -4,9 +4,9 @@ import 'package:stronger_muscles_dashboard/config/app_colors.dart';
 import 'package:stronger_muscles_dashboard/screens/components/enhanced_loading_widget.dart';
 import 'package:stronger_muscles_dashboard/screens/components/base_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
-import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/build_stats_section.dart';
-import 'package:stronger_muscles_dashboard/screens/orders_screen/widgets/orders_table.dart';
-import 'package:stronger_muscles_dashboard/features/orders/presentation/controllers/orders_controller.dart';
+import 'widgets/build_stats_section.dart';
+import 'widgets/orders_table.dart';
+import '../../controllers/orders_controller.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 
