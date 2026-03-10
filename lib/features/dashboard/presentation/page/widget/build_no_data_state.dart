@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
-import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/no_data_screen.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/presentation/page/widget/no_data_screen.dart';
 
 Widget buildNoDataState(ResponsiveLayout res) {
   return Padding(

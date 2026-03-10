@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
-import 'package:stronger_muscles_dashboard/features/categories/data/models/category_model.dart';
+import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
 
 
 class CategoryCard extends StatefulWidget {
-  final CategoryModel category;
+  final CategoryEntity category;
   final VoidCallback? onTap;
   final int index;
 
@@ -149,11 +149,11 @@ class CategoryCardState extends State<CategoryCard>
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          if (widget.category.description != null &&
-                              widget.category.description!.ar.isNotEmpty) ...[
+                          if (widget.category.descriptionAr != null &&
+                              widget.category.descriptionAr!.isNotEmpty) ...[
                             const SizedBox(height: 4),
                             Text(
-                              widget.category.description!.ar,
+                              widget.category.descriptionAr!,
                               style: TextStyle(
                                 color: Colors.white.withValues(alpha: 0.8),
                                 fontSize: 11,

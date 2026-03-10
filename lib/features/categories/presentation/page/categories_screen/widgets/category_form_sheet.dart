@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/build_modern_text_field.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/confirm_dialog.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
-import 'package:stronger_muscles_dashboard/screens/components/confirm_dialog.dart';
 import 'package:stronger_muscles_dashboard/features/categories/presentation/controllers/categories_controller.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
-import 'package:stronger_muscles_dashboard/screens/components/build_modern_text_field.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/availability_switch.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/category_tree_selector.dart';
 

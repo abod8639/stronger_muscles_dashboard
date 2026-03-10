@@ -1,10 +1,9 @@
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/features/categories/data/models/category_model.dart';
+import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/repositories/category_repository.dart';
-import 'package:stronger_muscles_dashboard/features/orders/data/models/order_model.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/repositories/order_repository.dart';
-import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
+import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/repositories/product_repository.dart';
 import 'package:stronger_muscles_dashboard/features/users/domain/repositories/user_repository.dart';
 import 'package:stronger_muscles_dashboard/core/network/api_service.dart';
@@ -37,10 +36,10 @@ class DashboardController extends GetxController {
   final totalUsers = 0.obs;
   final totalProducts = 0.obs;
 
-  // Lists - using Models for now because UI might depend on fromJson/toJson etc. 
-  final orders = <OrderModel>[].obs;
-  final products = <ProductModel>[].obs;
-  final categories = <CategoryModel>[].obs;
+  // Lists - using Entities instead of Models for consistency with clean architecture
+  final orders = <OrderEntity>[].obs;
+  final products = <ProductEntity>[].obs;
+  final categories = <CategoryEntity>[].obs;
 
   // Order Status Counters
   final pendingOrders = 0.obs;
@@ -116,9 +115,9 @@ class DashboardController extends GetxController {
         _userRepository.getUsersStats(),
       ]);
 
-      orders.assignAll(results[0] as List<OrderModel>);
-      products.assignAll(results[1] as List<ProductModel>);
-      categories.assignAll(results[2] as List<CategoryModel>);
+      orders.assignAll(results[0] as List<OrderEntity>);
+      products.assignAll(results[1] as List<ProductEntity>);
+      categories.assignAll(results[2] as List<CategoryEntity>);
       
       final usersStats = results[3] as Map<String, dynamic>;
       _updateUsersCount(usersStats);

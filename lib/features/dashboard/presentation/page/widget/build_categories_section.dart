@@ -5,7 +5,7 @@ import 'package:stronger_muscles_dashboard/core/utils/components/base_data_view.
 import 'package:stronger_muscles_dashboard/core/utils/components/category_card.dart';
 import 'package:stronger_muscles_dashboard/features/categories/presentation/page/category_form_page/category_form_page.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_controller.dart';
-import 'package:stronger_muscles_dashboard/features/categories/data/models/category_model.dart';
+import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
 import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_controller.dart';
 
 Widget buildCategoriesSection(ResponsiveLayout res) {
@@ -25,7 +25,7 @@ Widget buildCategoriesSection(ResponsiveLayout res) {
   if (dashboardController.categories.isEmpty) return const SizedBox();
   return Builder(
     builder: (context) {
-      return BaseDataView<CategoryModel>(
+      return BaseDataView<CategoryEntity>(
         title: 'التصنيفات',
         crossAxisCount: getCrossAxisCount(res),
         items: dashboardController.categories,

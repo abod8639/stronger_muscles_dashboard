@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
-import 'package:stronger_muscles_dashboard/screens/components/chipItem.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/chipItem.dart';
 
 class HorizontalChipsSelector extends StatelessWidget {
   final List<dynamic> items;
