@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
-import 'package:stronger_muscles_dashboard/controllers/products_controller.dart';
+import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
 import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
 
 /// Mixin to handle common product form initialization logic

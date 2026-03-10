@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/app_colors.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
-import 'package:stronger_muscles_dashboard/controllers/products_controller.dart';
+import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
 import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
-import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_form_body.dart';
-import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_form_mixin.dart';
+import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_form_body.dart';
+import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_form_mixin.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 
 class ProductFormSheet extends StatefulWidget {

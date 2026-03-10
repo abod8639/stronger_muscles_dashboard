@@ -4,7 +4,7 @@ import 'package:stronger_muscles_dashboard/screens/components/enhanced_line_char
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/config/app_colors.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
-import 'package:stronger_muscles_dashboard/controllers/dashboard_controller.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/dashboard_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/build_section_title.dart';
 

@@ -19,7 +19,16 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
     final response = await dio.get('/products');
     if (response.statusCode == 200) {
       final List data = response.data;
-      return data.map((e) => ProductModel.fromJson(e)).toList();
+      final products = <ProductModel>[];
+      for (var item in data) {
+        try {
+          products.add(ProductModel.fromJson(item as Map<String, dynamic>));
+        } catch (e) {
+          print('X Error parsing product: $e');
+          print('  Corrupted data: $item');
+        }
+      }
+      return products;
     }
     throw Exception('Failed to load products');
   }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
-import 'package:stronger_muscles_dashboard/controllers/products_controller.dart';
+import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
 import 'package:stronger_muscles_dashboard/data/models/product_model.dart';
 import 'package:stronger_muscles_dashboard/screens/components/build_modern_text_field.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';

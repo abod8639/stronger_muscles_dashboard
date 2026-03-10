@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
-import 'package:stronger_muscles_dashboard/controllers/users_controller.dart';
+import 'package:stronger_muscles_dashboard/features/users/presentation/controllers/users_controller.dart';
 
 Widget buildStatsHeader() {
   final controller = Get.find<UsersController>();

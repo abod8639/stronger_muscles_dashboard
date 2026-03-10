@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:stronger_muscles_dashboard/controllers/products_controller.dart';
+import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
 import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
 import 'package:stronger_muscles_dashboard/screens/components/build_modern_text_field.dart';
 import 'package:stronger_muscles_dashboard/screens/components/image_gallery_editor.dart';
-import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/availability_switch.dart';
-import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/category_tree_selector.dart';
-import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/flavor_multi_select.dart';
-import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_size_selector.dart';
-import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_variant_manager.dart';
+import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/availability_switch.dart';
+import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/category_tree_selector.dart';
+import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/flavor_multi_select.dart';
+import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_size_selector.dart';
+import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_variant_manager.dart';
 
 class ProductFormBody extends StatefulWidget {
   final ProductsController controller;

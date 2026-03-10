@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
-import 'package:stronger_muscles_dashboard/controllers/dashboard_controller.dart';
-import 'package:stronger_muscles_dashboard/controllers/navigation_controller.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_controller.dart';
+import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_controller.dart';
 import 'package:stronger_muscles_dashboard/data/models/order_model.dart';
 import 'package:stronger_muscles_dashboard/screens/components/base_data_view.dart';
 import 'package:stronger_muscles_dashboard/screens/order_details_screen/order_details_screen.dart';

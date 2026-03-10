@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
-import 'package:stronger_muscles_dashboard/controllers/dashboard_controller.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:stronger_muscles_dashboard/features/categories/data/models/category_model.dart';
 import 'package:stronger_muscles_dashboard/screens/category_form_page/category_form_page.dart';
 import 'package:stronger_muscles_dashboard/screens/components/base_data_view.dart';
 import 'package:stronger_muscles_dashboard/screens/components/category_card.dart';
-import 'package:stronger_muscles_dashboard/controllers/navigation_controller.dart';
+import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_controller.dart';
 
 Widget buildCategoriesSection(ResponsiveLayout res) {
   final dashboardController = Get.find<DashboardController>();

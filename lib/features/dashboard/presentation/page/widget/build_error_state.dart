@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/controllers/dashboard_controller.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/widget/error_screen.dart';
 
 Widget buildErrorState() {

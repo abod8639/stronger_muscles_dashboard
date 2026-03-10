@@ -6,14 +6,12 @@ import 'package:stronger_muscles_dashboard/features/products/presentation/contro
 import 'package:stronger_muscles_dashboard/screens/components/enhanced_loading_widget.dart';
 import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
 import 'package:stronger_muscles_dashboard/screens/components/top_section.dart';
-import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_form_page.dart';
-import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_list_item.dart';
+import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_list_item.dart';
 import 'package:stronger_muscles_dashboard/screens/components/generic_empty_state.dart';
 import 'package:stronger_muscles_dashboard/screens/components/base_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/components/horizontal_chips_selector.dart';
 import 'package:stronger_muscles_dashboard/screens/components/custom_search_bar.dart';
-import '../../../orders/controllers/products_controller.dart';
-import '../../../orders/config/responsive.dart';
+import 'package:stronger_muscles_dashboard/config/responsive.dart';
 
 class ProductsScreen extends StatelessWidget {
   const ProductsScreen({super.key});

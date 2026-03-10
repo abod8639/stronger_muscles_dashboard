@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/app_colors.dart';
-import 'package:stronger_muscles_dashboard/controllers/dashboard_controller.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_controller.dart';
 
 PreferredSizeWidget buildAppBar() {
   final controller = Get.find<DashboardController>();

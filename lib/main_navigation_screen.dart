@@ -15,7 +15,7 @@ import 'package:stronger_muscles_dashboard/screens/components/my_bottomnavigatio
 import 'package:stronger_muscles_dashboard/screens/components/sidebar.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/dashboard_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/orders_screen/orders_screen.dart';
-import 'package:stronger_muscles_dashboard/screens/products_screen/products_screen.dart';
+import 'package:stronger_muscles_dashboard/features/products/presentation/pages/products_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/settings_screen/settings_screen.dart';
 import 'package:stronger_muscles_dashboard/screens/users_screen/users_screen.dart';
 

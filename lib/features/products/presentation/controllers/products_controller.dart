@@ -5,19 +5,29 @@ import 'package:stronger_muscles_dashboard/data/models/flavors_model.dart';
 import 'package:stronger_muscles_dashboard/features/categories/data/models/category_model.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/repositories/category_repository.dart';
 import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
-import 'package:stronger_muscles_dashboard/features/products/domain/repositories/product_repository.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/usecases/get_products_usecase.dart';
-import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/product_form_sheet.dart';
+import 'package:stronger_muscles_dashboard/features/products/domain/usecases/add_product_usecase.dart';
+import 'package:stronger_muscles_dashboard/features/products/domain/usecases/update_product_usecase.dart';
+import 'package:stronger_muscles_dashboard/features/products/domain/usecases/delete_product_usecase.dart';
+import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_form_sheet.dart';
 
 class ProductsController extends GetxController {
   final GetProductsUseCase getProductsUseCase;
-  late final ProductRepository _productRepository;
+  final AddProductUseCase addProductUseCase;
+  final UpdateProductUseCase updateProductUseCase;
+  final DeleteProductUseCase deleteProductUseCase;
+
   late final CategoryRepository _categoryRepository;
   late final ApiService _apiService;
   RxList<String> productFlavors = <String>[].obs;
   RxBool isFeatured = false.obs;
 
-  ProductsController({required this.getProductsUseCase});
+  ProductsController({
+    required this.getProductsUseCase,
+    required this.addProductUseCase,
+    required this.updateProductUseCase,
+    required this.deleteProductUseCase,
+  });
 
   // --- States ---
   final isLoading = true.obs;
@@ -131,7 +141,6 @@ class ProductsController extends GetxController {
 
   void _initializeDependencies() {
     _apiService = Get.find<ApiService>();
-    _productRepository = Get.find<ProductRepository>();
     _categoryRepository = Get.find<CategoryRepository>();
   }
 
@@ -154,8 +163,6 @@ class ProductsController extends GetxController {
       _showErrorSnackbar('فشل في تحميل البيانات', e.toString());
     }
   }
-
-  // --- Logic الفلترة ---
 
   void onSearchChanged(String query) {
     searchQuery.value = query;
@@ -186,14 +193,12 @@ class ProductsController extends GetxController {
       );
     }
 
-    // 2. التصفية حسب النكهة
     if (selectedFlavorId.value != 'all') {
       filtered = filtered.where(
         (p) => p.flavor?.contains(selectedFlavorId.value) ?? false,
       );
     }
 
-    // 3. التصفية حسب البحث (الاسم، الماركة، أو الكود)
     if (searchQuery.isNotEmpty) {
       final query = searchQuery.value.toLowerCase();
       filtered = filtered.where(
@@ -211,16 +216,8 @@ class ProductsController extends GetxController {
   Future<void> addProduct(ProductModel product) async {
     try {
       isLoading.value = true;
-
-      final String productId = product.id.isEmpty
-          ? 'PROD-${DateTime.now().millisecondsSinceEpoch}'
-          : product.id;
-
-      final productData = _buildApiJson(product);
-      productData['id'] = productId;
-
-      final newProduct = await _productRepository.addProduct(productData);
-      products.insert(0, newProduct);
+      final newProduct = await addProductUseCase(product);
+      products.insert(0, newProduct as ProductModel);
 
       _applyFiltering();
       Get.back();
@@ -235,14 +232,11 @@ class ProductsController extends GetxController {
   Future<void> updateProduct(ProductModel product) async {
     try {
       isLoading.value = true;
-      final updatedProduct = await _productRepository.updateProduct(
-        product.id,
-        _buildApiJson(product),
-      );
+      final updatedProduct = await updateProductUseCase(product);
 
       final index = products.indexWhere((p) => p.id == product.id);
       if (index != -1) {
-        products[index] = updatedProduct;
+        products[index] = updatedProduct as ProductModel;
         _applyFiltering();
       }
 
@@ -272,7 +266,7 @@ class ProductsController extends GetxController {
   Future<void> _executeDelete(String id) async {
     try {
       isLoading.value = true;
-      final success = await _productRepository.deleteProduct(id);
+      final success = await deleteProductUseCase(id);
       if (success) {
         products.removeWhere((p) => p.id == id);
         _applyFiltering();
@@ -289,8 +283,6 @@ class ProductsController extends GetxController {
       isLoading.value = false;
     }
   }
-
-  // --- Media Upload ---
 
   Future<String?> uploadImage(
     String filePath, {
@@ -309,8 +301,6 @@ class ProductsController extends GetxController {
       isUploadingImage.value = false;
     }
   }
-
-  // --- Helpers ---
 
   void _showErrorSnackbar(String title, String message) {
     Get.snackbar(
@@ -354,7 +344,6 @@ class ProductsController extends GetxController {
     try {
       isSaving.value = true;
 
-      // Update productSizes with values from individual controllers
       final updatedSizes = productSizes.map((ps) {
         final price =
             double.tryParse(sizePriceControllers[ps.size]?.text ?? '0') ?? 0;
@@ -363,15 +352,6 @@ class ProductsController extends GetxController {
         );
         return ps.copyWith(price: price, discountPrice: discount);
       }).toList();
-
-      debugPrint('-------- SAVE PRODUCT DEBUG --------');
-      debugPrint('Product Sizes Count: ${updatedSizes.length}');
-      for (var s in updatedSizes) {
-        debugPrint(
-          'Size: ${s.size}, Price: ${s.price}, Discount: ${s.discountPrice}',
-        );
-      }
-      debugPrint('------------------------------------');
 
       final productData = ProductModel(
         id:
@@ -412,66 +392,12 @@ class ProductsController extends GetxController {
         await updateProduct(productData);
       }
 
-      debugPrint("======== success ========");
       _showSuccess('تم بنجاح', 'تم حفظ بيانات المنتج بنجاح');
-      debugPrint(productData.toString());
     } catch (e) {
-      debugPrint("======== error ========");
-      debugPrint(e.toString());
       _showError('خطأ', 'حدث خطأ أثناء حفظ المنتج: $e');
     } finally {
       isSaving.value = false;
     }
-  }
-
-  Map<String, dynamic> _buildApiJson(ProductModel product) {
-    return {
-      'id': product.id,
-      'name': {'ar': product.name.ar, 'en': product.name.en},
-      'description': {
-        'ar': product.description.ar,
-        'en': product.description.en,
-      },
-      'price': product.price,
-      'discount_price': product.discountPrice,
-      'category_id': product.categoryId,
-      'stock_quantity': product.stockQuantity,
-      'brand': product.brand,
-      'is_active': product.isActive,
-      'is_background_white': product.isBackgroundWhite,
-      'serving_size': product.servingSize,
-      'servings_per_container': product.servingsPerContainer,
-      // الصور: إرسال قائمة روابط مباشرة
-      'image_urls': product.imageUrls.map((img) => img.original).toList(),
-      // النكهات
-      'flavors': product.flavor ?? [],
-      // الأحجام والأسعار
-      'product_sizes': (product.productSizes ?? [])
-          .map(
-            (s) => {
-              'size': s.size,
-              'price': s.price,
-              'discount_price': s.discountPrice,
-            },
-          )
-          .toList(),
-      'size': (product.size ?? []),
-      // المتغيرات
-      'variants': (product.variants)
-          .map(
-            (v) => {
-              'id': v.id,
-              'sku': v.sku,
-              'price': v.price,
-              'discount_price': v.discountPrice,
-              'effective_price': v.effectivePrice,
-              'stock_quantity': v.stockQuantity,
-              'attributes': v.attributes,
-              'is_active': v.isActive,
-            },
-          )
-          .toList(),
-    };
   }
 
   void _showWarning(String title, String msg) => Get.snackbar(

@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
-import 'package:stronger_muscles_dashboard/controllers/categories_controller.dart';
+import 'package:stronger_muscles_dashboard/features/categories/presentation/controllers/categories_controller.dart';
 import 'package:stronger_muscles_dashboard/features/categories/data/models/category_model.dart';
 import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
 import 'package:stronger_muscles_dashboard/screens/category_form_page/widget/gradient_background_painter.dart';
@@ -12,8 +12,8 @@ import 'package:stronger_muscles_dashboard/screens/components/base_app_bar.dart'
 import 'package:stronger_muscles_dashboard/screens/components/confirm_dialog.dart';
 import 'package:stronger_muscles_dashboard/screens/components/build_modern_text_field.dart';
 import 'package:stronger_muscles_dashboard/screens/components/glass_container.dart';
-import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/availability_switch.dart';
-import 'package:stronger_muscles_dashboard/screens/products_screen/widgets/category_tree_selector.dart';
+import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/availability_switch.dart';
+import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/category_tree_selector.dart';
 
 class CategoryFormPage extends StatefulWidget {
   final CategoryModel? category;

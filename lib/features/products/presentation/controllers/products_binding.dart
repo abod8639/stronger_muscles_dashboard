@@ -1,6 +1,9 @@
 import 'package:get/get.dart';
 import '../../domain/repositories/product_repository.dart';
 import '../../domain/usecases/get_products_usecase.dart';
+import '../../domain/usecases/add_product_usecase.dart';
+import '../../domain/usecases/update_product_usecase.dart';
+import '../../domain/usecases/delete_product_usecase.dart';
 import '../../data/datasources/product_remote_datasource.dart';
 import '../../data/repositories/product_repository_impl.dart';
 import 'products_controller.dart';
@@ -21,8 +24,16 @@ class ProductsBinding extends Bindings {
 
     // Use Cases
     Get.lazyPut(() => GetProductsUseCase(Get.find<ProductRepository>()));
+    Get.lazyPut(() => AddProductUseCase(Get.find<ProductRepository>()));
+    Get.lazyPut(() => UpdateProductUseCase(Get.find<ProductRepository>()));
+    Get.lazyPut(() => DeleteProductUseCase(Get.find<ProductRepository>()));
 
     // Controller
-    Get.put(ProductsController(getProductsUseCase: Get.find<GetProductsUseCase>()));
+    Get.put(ProductsController(
+      getProductsUseCase: Get.find<GetProductsUseCase>(),
+      addProductUseCase: Get.find<AddProductUseCase>(),
+      updateProductUseCase: Get.find<UpdateProductUseCase>(),
+      deleteProductUseCase: Get.find<DeleteProductUseCase>(),
+    ));
   }
 }

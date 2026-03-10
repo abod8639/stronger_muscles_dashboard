@@ -803,9 +803,8 @@ class __$$ProductVariantModelImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$ProductVariantModelImpl
-    with DiagnosticableTreeMixin
-    implements _ProductVariantModel {
+class _$ProductVariantModelImpl extends _ProductVariantModel
+    with DiagnosticableTreeMixin {
   const _$ProductVariantModelImpl(
       {@HiveField(0) required this.id,
       @HiveField(1) required this.sku,
@@ -823,7 +822,8 @@ class _$ProductVariantModelImpl
       @HiveField(8)
       this.discountStartDate,
       @JsonKey(name: 'discount_end_date') @HiveField(9) this.discountEndDate})
-      : _attributes = attributes;
+      : _attributes = attributes,
+        super._();
 
   factory _$ProductVariantModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$ProductVariantModelImplFromJson(json);
@@ -947,7 +947,7 @@ class _$ProductVariantModelImpl
   }
 }
 
-abstract class _ProductVariantModel implements ProductVariantModel {
+abstract class _ProductVariantModel extends ProductVariantModel {
   const factory _ProductVariantModel(
       {@HiveField(0) required final String id,
       @HiveField(1) required final String sku,
@@ -969,6 +969,7 @@ abstract class _ProductVariantModel implements ProductVariantModel {
       @JsonKey(name: 'discount_end_date')
       @HiveField(9)
       final DateTime? discountEndDate}) = _$ProductVariantModelImpl;
+  const _ProductVariantModel._() : super._();
 
   factory _ProductVariantModel.fromJson(Map<String, dynamic> json) =
       _$ProductVariantModelImpl.fromJson;
@@ -1129,11 +1130,12 @@ class __$$ProductSizeImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$ProductSizeImpl with DiagnosticableTreeMixin implements _ProductSize {
+class _$ProductSizeImpl extends _ProductSize with DiagnosticableTreeMixin {
   const _$ProductSizeImpl(
       {@HiveField(0) required this.size,
       @HiveField(1) required this.price,
-      @JsonKey(name: 'discount_price') @HiveField(2) this.discountPrice});
+      @JsonKey(name: 'discount_price') @HiveField(2) this.discountPrice})
+      : super._();
 
   factory _$ProductSizeImpl.fromJson(Map<String, dynamic> json) =>
       _$$ProductSizeImplFromJson(json);
@@ -1193,13 +1195,14 @@ class _$ProductSizeImpl with DiagnosticableTreeMixin implements _ProductSize {
   }
 }
 
-abstract class _ProductSize implements ProductSize {
+abstract class _ProductSize extends ProductSize {
   const factory _ProductSize(
       {@HiveField(0) required final String size,
       @HiveField(1) required final double price,
       @JsonKey(name: 'discount_price')
       @HiveField(2)
       final double? discountPrice}) = _$ProductSizeImpl;
+  const _ProductSize._() : super._();
 
   factory _ProductSize.fromJson(Map<String, dynamic> json) =
       _$ProductSizeImpl.fromJson;
@@ -1239,8 +1242,7 @@ mixin _$ProductModel {
   @HiveField(4)
   List<ProductImage> get imageUrls => throw _privateConstructorUsedError;
   @HiveField(5)
-  TranslatableString get description =>
-      throw _privateConstructorUsedError; // Category: new API returns object, legacy returns category_id string
+  TranslatableString get description => throw _privateConstructorUsedError;
   @HiveField(6)
   String get categoryId => throw _privateConstructorUsedError;
   @HiveField(27)
@@ -1296,12 +1298,10 @@ mixin _$ProductModel {
   bool get bestSeller => throw _privateConstructorUsedError;
   @JsonKey(name: 'total_sales')
   @HiveField(25)
-  int get totalSales =>
-      throw _privateConstructorUsedError; // Variants: new API uses 'product_variants', legacy uses 'variants'
+  int get totalSales => throw _privateConstructorUsedError;
   @JsonKey(name: 'product_variants')
   @HiveField(26)
-  List<ProductVariantModel> get variants =>
-      throw _privateConstructorUsedError; // has_variants flag from API
+  List<ProductVariantModel> get variants => throw _privateConstructorUsedError;
   @JsonKey(name: 'has_variants')
   @HiveField(28)
   bool get hasVariants => throw _privateConstructorUsedError;
@@ -1860,7 +1860,6 @@ class _$ProductModelImpl extends _ProductModel with DiagnosticableTreeMixin {
   @override
   @HiveField(5)
   final TranslatableString description;
-// Category: new API returns object, legacy returns category_id string
   @override
   @JsonKey()
   @HiveField(6)
@@ -1981,9 +1980,7 @@ class _$ProductModelImpl extends _ProductModel with DiagnosticableTreeMixin {
   @JsonKey(name: 'total_sales')
   @HiveField(25)
   final int totalSales;
-// Variants: new API uses 'product_variants', legacy uses 'variants'
   final List<ProductVariantModel> _variants;
-// Variants: new API uses 'product_variants', legacy uses 'variants'
   @override
   @JsonKey(name: 'product_variants')
   @HiveField(26)
@@ -1993,7 +1990,6 @@ class _$ProductModelImpl extends _ProductModel with DiagnosticableTreeMixin {
     return EqualUnmodifiableListView(_variants);
   }
 
-// has_variants flag from API
   @override
   @JsonKey(name: 'has_variants')
   @HiveField(28)
@@ -2216,7 +2212,7 @@ abstract class _ProductModel extends ProductModel {
   @override
   @HiveField(5)
   TranslatableString get description;
-  @override // Category: new API returns object, legacy returns category_id string
+  @override
   @HiveField(6)
   String get categoryId;
   @override
@@ -2292,11 +2288,11 @@ abstract class _ProductModel extends ProductModel {
   @JsonKey(name: 'total_sales')
   @HiveField(25)
   int get totalSales;
-  @override // Variants: new API uses 'product_variants', legacy uses 'variants'
+  @override
   @JsonKey(name: 'product_variants')
   @HiveField(26)
   List<ProductVariantModel> get variants;
-  @override // has_variants flag from API
+  @override
   @JsonKey(name: 'has_variants')
   @HiveField(28)
   bool get hasVariants;

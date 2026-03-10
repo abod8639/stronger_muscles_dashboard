@@ -6,7 +6,7 @@ import 'package:stronger_muscles_dashboard/screens/components/enhanced_loading_w
 import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
 import 'package:stronger_muscles_dashboard/screens/components/top_section.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
-import 'package:stronger_muscles_dashboard/controllers/users_controller.dart';
+import 'package:stronger_muscles_dashboard/features/users/presentation/controllers/users_controller.dart';
 import 'package:stronger_muscles_dashboard/screens/users_screen/widgets/buildUserCard.dart';
 import 'package:stronger_muscles_dashboard/screens/users_screen/widgets/build_stats_header.dart';
 import 'package:stronger_muscles_dashboard/screens/components/base_app_bar.dart';

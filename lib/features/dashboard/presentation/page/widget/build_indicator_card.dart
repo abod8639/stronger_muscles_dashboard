@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/screens/components/premium_indicator_card.dart';
 import 'package:stronger_muscles_dashboard/config/app_colors.dart';
-import 'package:stronger_muscles_dashboard/controllers/dashboard_controller.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:stronger_muscles_dashboard/data/models/indicators_model.dart';
 import 'package:stronger_muscles_dashboard/screens/dashboard_screen/dashboard_screen.dart';
 

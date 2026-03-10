@@ -1,3 +1,5 @@
+import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
+
 import '../../domain/entities/category_entity.dart';
 import '../../domain/repositories/category_repository.dart';
 import '../datasources/category_remote_datasource.dart';
@@ -111,6 +113,7 @@ class CategoryRepositoryImpl implements CategoryRepository {
       imageUrl: category.imageUrl,
       parentId: category.parentId,
       isActive: category.isActive,
+      name: TranslatableString(ar: category.nameAr, en: category.nameEn),
     );
   }
 }

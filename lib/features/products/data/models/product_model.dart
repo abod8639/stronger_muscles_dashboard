@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
+import '../../domain/entities/product_entity.dart';
 
 part 'product_model.freezed.dart';
 part 'product_model.g.dart';
@@ -19,7 +20,7 @@ class TranslatableString with _$TranslatableString {
   const TranslatableString._();
 
   String get(String lang) => lang == 'ar' ? ar : en;
-  String get current => ar; // Default to Arabic for this project
+  String get current => ar; 
 }
 
 @freezed
@@ -35,7 +36,6 @@ class ProductImage with _$ProductImage {
       _$ProductImageFromJson(json);
 }
 
-/// Category embedded object in product response
 @freezed
 @HiveType(typeId: 23)
 class ProductCategory with _$ProductCategory {
@@ -70,6 +70,19 @@ class ProductVariantModel with _$ProductVariantModel {
 
   factory ProductVariantModel.fromJson(Map<String, dynamic> json) =>
       _$ProductVariantModelFromJson(json);
+
+  const ProductVariantModel._();
+
+  ProductVariantEntity toEntity() => ProductVariantEntity(
+        id: id,
+        sku: sku,
+        price: price,
+        discountPrice: discountPrice,
+        effectivePrice: effectivePrice,
+        stockQuantity: stockQuantity,
+        attributes: attributes,
+        isActive: isActive,
+      );
 }
 
 @freezed
@@ -83,6 +96,14 @@ class ProductSize with _$ProductSize {
 
   factory ProductSize.fromJson(Map<String, dynamic> json) =>
       _$ProductSizeFromJson(json);
+
+  const ProductSize._();
+
+  ProductSizeEntity toEntity() => ProductSizeEntity(
+        size: size,
+        price: price,
+        discountPrice: discountPrice,
+      );
 }
 
 @freezed
@@ -98,11 +119,8 @@ class ProductModel with _$ProductModel {
     @Default([])
     List<ProductImage> imageUrls,
     @HiveField(5) required TranslatableString description,
-
-    // Category: new API returns object, legacy returns category_id string
     @HiveField(6) @Default('') String categoryId,
     @HiveField(27) ProductCategory? category,
-
     @JsonKey(name: 'stock_quantity')
     @HiveField(7)
     @Default(0)
@@ -122,7 +140,6 @@ class ProductModel with _$ProductModel {
     @HiveField(14)
     @Default(false)
     bool? isBackgroundWhite,
-
     @HiveField(15) String? sku,
     @HiveField(16) @Default([]) List<String>? tags,
     @HiveField(17) double? weight,
@@ -135,7 +152,6 @@ class ProductModel with _$ProductModel {
     @JsonKey(name: 'nutrition_facts')
     @HiveField(21)
     Map<String, dynamic>? nutritionFacts,
-
     @HiveField(22) @Default(false) bool featured,
     @JsonKey(name: 'new_arrival')
     @HiveField(23)
@@ -146,14 +162,10 @@ class ProductModel with _$ProductModel {
     @Default(false)
     bool bestSeller,
     @JsonKey(name: 'total_sales') @HiveField(25) @Default(0) int totalSales,
-
-    // Variants: new API uses 'product_variants', legacy uses 'variants'
     @JsonKey(name: 'product_variants')
     @HiveField(26)
     @Default([])
     List<ProductVariantModel> variants,
-
-    // has_variants flag from API
     @JsonKey(name: 'has_variants')
     @HiveField(28)
     @Default(false)
@@ -166,28 +178,43 @@ class ProductModel with _$ProductModel {
   factory ProductModel.fromJson(Map<String, dynamic> json) =>
       _$ProductModelFromJson(_mapProductJson(json));
 
-  // Getters
   double get finalPrice => discountPrice ?? price;
   bool get isInStock => stockQuantity > 0;
-
-  /// Effective category ID (from new 'category' object or legacy 'category_id')
   String get effectiveCategoryId => category?.id ?? categoryId;
+
+  ProductEntity toEntity() => ProductEntity(
+        id: id,
+        nameAr: name.ar,
+        nameEn: name.en,
+        descriptionAr: description.ar,
+        descriptionEn: description.en,
+        price: price,
+        discountPrice: discountPrice,
+        imageUrls: imageUrls.map((e) => e.original).toList(),
+        categoryId: effectiveCategoryId,
+        stockQuantity: stockQuantity,
+        brand: brand,
+        isActive: isActive,
+        isBackgroundWhite: isBackgroundWhite,
+        servingSize: servingSize,
+        servingsPerContainer: servingsPerContainer,
+        productSizes: productSizes?.map((e) => e.toEntity()).toList(),
+        flavors: flavor,
+        variants: variants.map((e) => e.toEntity()).toList(),
+      );
 }
 
 Map<String, dynamic> _mapProductJson(Map<String, dynamic> json) {
-  // Parse translatable strings (supports both object and plain string)
   dynamic parseTranslatable(dynamic val) {
     if (val is Map) return val;
     return {'ar': val?.toString() ?? '', 'en': ''};
   }
 
-  // Parse category: new API returns object, legacy returns category_id
   String categoryId = '';
   Map<String, dynamic>? categoryObj;
   if (json['category'] is Map) {
     categoryObj = Map<String, dynamic>.from(json['category'] as Map);
     categoryId = categoryObj['id']?.toString() ?? '';
-    // Ensure category name is translatable
     if (categoryObj['name'] is! Map) {
       categoryObj['name'] = {
         'ar': categoryObj['name']?.toString() ?? '',
@@ -198,7 +225,6 @@ Map<String, dynamic> _mapProductJson(Map<String, dynamic> json) {
     categoryId = (json['category_id'] ?? json['categoryId'] ?? '').toString();
   }
 
-  // Parse variants: support both 'product_variants' and legacy 'variants'
   final variantsRaw = json['product_variants'] ?? json['variants'] ?? [];
 
   return {

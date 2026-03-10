@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/app_colors.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
-import 'package:stronger_muscles_dashboard/controllers/auth_controller.dart';
-import 'package:stronger_muscles_dashboard/controllers/users_controller.dart';
+import 'package:stronger_muscles_dashboard/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:stronger_muscles_dashboard/features/users/presentation/controllers/users_controller.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});

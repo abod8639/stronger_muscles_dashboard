@@ -27,15 +27,15 @@ class ProductRepositoryImpl implements ProductRepository {
         final cachedData = _cacheService.get<List<ProductModel>>(_cacheKeyProducts);
         if (cachedData != null) {
           debugPrint('✓ Retrieved products from cache');
-          return cachedData;
+          return cachedData.map((e) => e.toEntity()).toList();
         }
       }
 
       debugPrint('↓ Fetching products from remote...');
-      final products = await remoteDataSource.getProducts();
+      final models = await remoteDataSource.getProducts();
       
-      _cacheService.set(_cacheKeyProducts, products);
-      return products;
+      _cacheService.set(_cacheKeyProducts, models);
+      return models.map((e) => e.toEntity()).toList();
     } catch (e) {
       debugPrint('X Error in ProductRepositoryImpl: $e');
       rethrow;
@@ -44,23 +44,24 @@ class ProductRepositoryImpl implements ProductRepository {
 
   @override
   Future<ProductEntity> getProductById(String id) async {
-    return await remoteDataSource.getProductById(id);
+    final model = await remoteDataSource.getProductById(id);
+    return model.toEntity();
   }
 
   @override
   Future<ProductEntity> addProduct(ProductEntity product) async {
     final model = _toModel(product);
-    final newProduct = await remoteDataSource.addProduct(model);
+    final newModel = await remoteDataSource.addProduct(model);
     _cacheService.remove(_cacheKeyProducts);
-    return newProduct;
+    return newModel.toEntity();
   }
 
   @override
   Future<ProductEntity> updateProduct(ProductEntity product) async {
     final model = _toModel(product);
-    final updatedProduct = await remoteDataSource.updateProduct(model);
+    final updatedModel = await remoteDataSource.updateProduct(model);
     _cacheService.remove(_cacheKeyProducts);
-    return updatedProduct;
+    return updatedModel.toEntity();
   }
 
   @override
