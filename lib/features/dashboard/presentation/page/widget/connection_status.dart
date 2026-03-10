@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../config/theme.dart';
+import 'package:stronger_muscles_dashboard/config/theme.dart';
 
 class ConnectionStatusBar extends StatelessWidget {
   final bool isConnected;

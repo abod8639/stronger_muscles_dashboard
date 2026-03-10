@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
-import 'package:stronger_muscles_dashboard/features/categories/page/categories_screen/categories_screen.dart';
+import 'package:stronger_muscles_dashboard/features/categories/presentation/page/categories_screen/categories_screen.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/presentation/page/dashboard_screen.dart';
 import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_controller.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/orders_screen/orders_screen.dart';

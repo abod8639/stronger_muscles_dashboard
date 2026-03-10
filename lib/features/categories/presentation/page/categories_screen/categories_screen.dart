@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/app_colors.dart';
+import 'package:stronger_muscles_dashboard/config/responsive.dart';
+import 'package:stronger_muscles_dashboard/features/categories/data/models/category_model.dart';
+import 'package:stronger_muscles_dashboard/features/categories/presentation/controllers/categories_controller.dart';
 import 'package:stronger_muscles_dashboard/screens/category_form_page/category_form_page.dart';
 import 'package:stronger_muscles_dashboard/screens/components/enhanced_loading_widget.dart';
 import 'package:stronger_muscles_dashboard/screens/components/my_refreshIndicator.dart';
@@ -12,9 +15,7 @@ import 'package:stronger_muscles_dashboard/screens/components/generic_list_card.
 import 'package:stronger_muscles_dashboard/screens/components/base_app_bar.dart';
 import 'package:stronger_muscles_dashboard/screens/components/custom_search_bar.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
-import '../../controllers/categories_controller.dart';
-import '../../data/models/index.dart';
-import '../../config/responsive.dart';
+
 
 class CategoriesScreen extends StatelessWidget {
   const CategoriesScreen({super.key});

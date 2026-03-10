@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/config/theme.dart';
+import 'package:stronger_muscles_dashboard/features/categories/data/models/category_model.dart';
 import '../../domain/usecases/get_categories_usecase.dart';
 import '../../domain/usecases/add_category_usecase.dart';
 import '../../domain/usecases/update_category_usecase.dart';
