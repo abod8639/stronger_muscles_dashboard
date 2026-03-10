@@ -2,44 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/core/network/api_service.dart';
 import 'package:stronger_muscles_dashboard/data/models/flavors_model.dart';
-import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
-import 'package:stronger_muscles_dashboard/features/categories/domain/repositories/category_repository.dart';
-// Unused Import removed
-import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
-import 'package:stronger_muscles_dashboard/features/products/domain/usecases/get_products_usecase.dart';
-import 'package:stronger_muscles_dashboard/features/products/domain/usecases/add_product_usecase.dart';
-import 'package:stronger_muscles_dashboard/features/products/domain/usecases/update_product_usecase.dart';
-import 'package:stronger_muscles_dashboard/features/products/domain/usecases/delete_product_usecase.dart';
+import 'package:stronger_muscles_dashboard/features/categories/data/models/category_model.dart';
+import 'package:stronger_muscles_dashboard/features/categories/data/repositories/category_repository.dart';
+import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
+import 'package:stronger_muscles_dashboard/features/products/domain/repositories/product_repository.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_form_sheet.dart';
 
+
 class ProductsController extends GetxController {
-  final GetProductsUseCase getProductsUseCase;
-  final AddProductUseCase addProductUseCase;
-  final UpdateProductUseCase updateProductUseCase;
-  final DeleteProductUseCase deleteProductUseCase;
-
+  late final ProductRepository _productRepository;
   late final CategoryRepository _categoryRepository;
-  late final ApiService _apiService;
   RxList<String> productFlavors = <String>[].obs;
+  late final ApiService _apiService;
   RxBool isFeatured = false.obs;
-
-  ProductsController({
-    required this.getProductsUseCase,
-    required this.addProductUseCase,
-    required this.updateProductUseCase,
-    required this.deleteProductUseCase,
-  });
 
   // --- States ---
   final isLoading = true.obs;
   final isUploadingImage = false.obs;
 
   // --- Data Lists ---
-  final products = <ProductEntity>[].obs;
-  final categories = <CategoryEntity>[].obs;
+  final products = <ProductModel>[].obs;
+  final categories = <CategoryModel>[].obs;
   final flavors = <FlavorsModel>[].obs;
-  final filteredProducts = <ProductEntity>[].obs;
-  final productSizes = <ProductSizeEntity>[].obs;
+  final filteredProducts = <ProductModel>[].obs;
+  final productSizes = <ProductSize>[].obs;
 
   // --- Filter Values ---
   final productWeight = 0.0.obs;
@@ -65,7 +51,7 @@ class ProductsController extends GetxController {
     'sessions': TextEditingController(),
   };
 
-  final variants = <ProductVariantEntity>[].obs;
+  final variants = <ProductVariantModel>[].obs;
 
   // Controllers for each size
   final Map<String, TextEditingController> sizePriceControllers = {};
@@ -74,7 +60,7 @@ class ProductsController extends GetxController {
   final selectedSizeIndex = (-1).obs;
 
   void addVariant() {
-    final newVariant = ProductVariantEntity(
+    final newVariant = ProductVariantModel(
       id: 'VAR-${DateTime.now().millisecondsSinceEpoch}',
       sku: '',
       price: double.tryParse(textcontrollers['price']?.text ?? '0') ?? 0,
@@ -94,7 +80,7 @@ class ProductsController extends GetxController {
     }
   }
 
-  void updateVariant(int index, ProductVariantEntity updated) {
+  void updateVariant(int index, ProductVariantModel updated) {
     if (index >= 0 && index < variants.length) {
       variants[index] = updated;
     }
@@ -134,28 +120,26 @@ class ProductsController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _initializeDependencies();
+    _apiService = ApiService();
+    _productRepository = ProductRepository(_apiService);
+    _categoryRepository = CategoryRepository(_apiService);
     fetchData();
 
     ever(productSizes, (_) => syncSizeControllers());
   }
 
-  void _initializeDependencies() {
-    _apiService = Get.find<ApiService>();
-    _categoryRepository = Get.find<CategoryRepository>();
-  }
-
-  Future<void> fetchData({bool forceRefresh = false}) async {
+  Future<void> fetchData() async {
     try {
       isLoading.value = true;
 
       final results = await Future.wait([
-        _categoryRepository.getCategories(tree: true, forceRefresh: forceRefresh),
-        getProductsUseCase(forceRefresh: forceRefresh),
+        _categoryRepository.getCategories(tree: true),
+        _productRepository.getProducts(),
       ]);
 
-      categories.assignAll(results[0] as List<CategoryEntity>);
-      products.assignAll(results[1] as List<ProductEntity>);
+      categories.assignAll(results[0] as List<CategoryModel>);
+      products.assignAll(results[1] as List<ProductModel>);
+      // flavors.assignAll(results[2] as List<FlavorsModel>);
 
       _applyFiltering();
       isLoading.value = false;
@@ -188,18 +172,18 @@ class ProductsController extends GetxController {
   }
 
   void _applyFiltering() {
-    Iterable<ProductEntity> filtered = products;
+    Iterable<ProductModel> filtered = products;
 
     if (selectedCategoryId.value != 'all') {
       filtered = filtered.where(
-        (p) => p.categoryId == selectedCategoryId.value,
+        (p) => p.effectiveCategoryId == selectedCategoryId.value,
       );
     }
 
     // 2. التصفية حسب النكهة
     if (selectedFlavorId.value != 'all') {
       filtered = filtered.where(
-        (p) => p.flavors?.contains(selectedFlavorId.value) ?? false,
+        (p) => p.flavor?.contains(selectedFlavorId.value) ?? false,
       );
     }
 
@@ -208,8 +192,8 @@ class ProductsController extends GetxController {
       final query = searchQuery.value.toLowerCase();
       filtered = filtered.where(
         (p) =>
-            p.nameAr.toLowerCase().contains(query) ||
-            p.nameEn.toLowerCase().contains(query) ||
+            p.name.ar.toLowerCase().contains(query) ||
+            p.name.en.toLowerCase().contains(query) ||
             (p.brand?.toLowerCase().contains(query) ?? false) ||
             p.id.contains(query),
       );
@@ -218,15 +202,23 @@ class ProductsController extends GetxController {
     filteredProducts.assignAll(filtered.toList());
   }
 
-  Future<void> addProduct(ProductEntity product) async {
+  Future<void> addProduct(ProductModel product) async {
     try {
       isLoading.value = true;
-      final newProduct = await addProductUseCase(product);
+
+      final String productId = product.id.isEmpty
+          ? 'PROD-${DateTime.now().millisecondsSinceEpoch}'
+          : product.id;
+
+      final productData = _buildApiJson(product);
+      productData['id'] = productId;
+
+      final newProduct = await _productRepository.addProduct(productData);
       products.insert(0, newProduct);
 
       _applyFiltering();
       Get.back();
-      Get.snackbar('نجاح', 'تم إضافة ${newProduct.nameAr} بنجاح');
+      Get.snackbar('نجاح', 'تم إضافة ${newProduct.name.ar} بنجاح');
     } catch (e) {
       _showErrorSnackbar('خطأ في الإضافة', e.toString());
     } finally {
@@ -234,10 +226,13 @@ class ProductsController extends GetxController {
     }
   }
 
-  Future<void> updateProduct(ProductEntity product) async {
+  Future<void> updateProduct(ProductModel product) async {
     try {
       isLoading.value = true;
-      final updatedProduct = await updateProductUseCase(product);
+      final updatedProduct = await _productRepository.updateProduct(
+        product.id,
+        _buildApiJson(product),
+      );
 
       final index = products.indexWhere((p) => p.id == product.id);
       if (index != -1) {
@@ -271,7 +266,7 @@ class ProductsController extends GetxController {
   Future<void> _executeDelete(String id) async {
     try {
       isLoading.value = true;
-      final success = await deleteProductUseCase(id);
+      final success = await _productRepository.deleteProduct(id);
       if (success) {
         products.removeWhere((p) => p.id == id);
         _applyFiltering();
@@ -323,7 +318,7 @@ class ProductsController extends GetxController {
     );
   }
 
-  void showProductForm(BuildContext context, {ProductEntity? product}) {
+  void showProductForm(BuildContext context, {ProductModel? product}) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -336,7 +331,7 @@ class ProductsController extends GetxController {
     required GlobalKey<FormState> formKey,
     required String categoryId,
     required List<String> productImages,
-    ProductEntity? existingProduct,
+    ProductModel? existingProduct,
   }) async {
     if (!formKey.currentState!.validate()) return;
 
@@ -360,20 +355,37 @@ class ProductsController extends GetxController {
         final discount = double.tryParse(
           sizeDiscountControllers[ps.size]?.text ?? '',
         );
-        return ProductSizeEntity(size: ps.size, price: price, discountPrice: discount);
+        return ps.copyWith(price: price, discountPrice: discount);
       }).toList();
 
-      final productData = ProductEntity(
+      debugPrint('-------- SAVE PRODUCT DEBUG --------');
+      debugPrint('Product Sizes Count: ${updatedSizes.length}');
+      for (var s in updatedSizes) {
+        debugPrint(
+          'Size: ${s.size}, Price: ${s.price}, Discount: ${s.discountPrice}',
+        );
+      }
+      debugPrint('------------------------------------');
+
+      final productData = ProductModel(
         id:
             existingProduct?.id ??
             'PROD-${DateTime.now().millisecondsSinceEpoch}',
-        nameAr: textcontrollers['name_ar']!.text.trim(),
-        nameEn: textcontrollers['name_en']!.text.trim(),
+        name: TranslatableString(
+          ar: textcontrollers['name_ar']!.text.trim(),
+          en: textcontrollers['name_en']!.text.trim(),
+        ),
         price: double.tryParse(textcontrollers['price']!.text) ?? 0,
         discountPrice: double.tryParse(textcontrollers['discount']!.text),
-        imageUrls: productImages,
-        descriptionAr: textcontrollers['desc_ar']!.text.trim(),
-        descriptionEn: textcontrollers['desc_en']!.text.trim(),
+        imageUrls: productImages
+            .map(
+              (url) => ProductImage(thumbnail: url, medium: url, original: url),
+            )
+            .toList(),
+        description: TranslatableString(
+          ar: textcontrollers['desc_ar']!.text.trim(),
+          en: textcontrollers['desc_en']!.text.trim(),
+        ),
         categoryId: categoryId,
         stockQuantity: int.tryParse(textcontrollers['stock']!.text) ?? 0,
         brand: textcontrollers['brand']!.text.trim(),
@@ -382,8 +394,9 @@ class ProductsController extends GetxController {
         servingSize: textcontrollers['serving']!.text,
         servingsPerContainer:
             int.tryParse(textcontrollers['sessions']!.text) ?? 0,
-        flavors: productFlavors.toList(),
+        flavor: productFlavors.toList(),
         productSizes: updatedSizes,
+        size: updatedSizes.map((e) => e.size).toList(),
         variants: variants.toList(),
       );
 
@@ -393,12 +406,66 @@ class ProductsController extends GetxController {
         await updateProduct(productData);
       }
 
+      debugPrint("======== success ========");
       _showSuccess('تم بنجاح', 'تم حفظ بيانات المنتج بنجاح');
+      debugPrint(productData.toString());
     } catch (e) {
+      debugPrint("======== error ========");
+      debugPrint(e.toString());
       _showError('خطأ', 'حدث خطأ أثناء حفظ المنتج: $e');
     } finally {
       isSaving.value = false;
     }
+  }
+
+  Map<String, dynamic> _buildApiJson(ProductModel product) {
+    return {
+      'id': product.id,
+      'name': {'ar': product.name.ar, 'en': product.name.en},
+      'description': {
+        'ar': product.description.ar,
+        'en': product.description.en,
+      },
+      'price': product.price,
+      'discount_price': product.discountPrice,
+      'category_id': product.categoryId,
+      'stock_quantity': product.stockQuantity,
+      'brand': product.brand,
+      'is_active': product.isActive,
+      'is_background_white': product.isBackgroundWhite,
+      'serving_size': product.servingSize,
+      'servings_per_container': product.servingsPerContainer,
+      // الصور: إرسال قائمة روابط مباشرة
+      'image_urls': product.imageUrls.map((img) => img.original).toList(),
+      // النكهات
+      'flavors': product.flavor ?? [],
+      // الأحجام والأسعار
+      'product_sizes': (product.productSizes ?? [])
+          .map(
+            (s) => {
+              'size': s.size,
+              'price': s.price,
+              'discount_price': s.discountPrice,
+            },
+          )
+          .toList(),
+      'size': (product.size ?? []),
+      // المتغيرات
+      'variants': (product.variants)
+          .map(
+            (v) => {
+              'id': v.id,
+              'sku': v.sku,
+              'price': v.price,
+              'discount_price': v.discountPrice,
+              'effective_price': v.effectivePrice,
+              'stock_quantity': v.stockQuantity,
+              'attributes': v.attributes,
+              'is_active': v.isActive,
+            },
+          )
+          .toList(),
+    };
   }
 
   void _showWarning(String title, String msg) => Get.snackbar(

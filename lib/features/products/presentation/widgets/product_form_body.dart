@@ -4,7 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/build_modern_text_field.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/image_gallery_editor.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
-import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
+import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/availability_switch.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/category_tree_selector.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/flavor_multi_select.dart';
@@ -228,7 +228,7 @@ class _ProductFormBodyState extends State<ProductFormBody> {
             defaultPrice:
                 double.tryParse(ctrl.textcontrollers['price']?.text ?? '0') ??
                 0.0,
-            onSelectionChanged: (List<ProductSizeEntity> newList) =>
+            onSelectionChanged: (List<ProductSize> newList) =>
                 ctrl.productSizes.assignAll(newList),
           ),
         ),

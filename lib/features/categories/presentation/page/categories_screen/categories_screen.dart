@@ -10,11 +10,12 @@ import 'package:stronger_muscles_dashboard/core/utils/components/generic_grid_ca
 import 'package:stronger_muscles_dashboard/core/utils/components/generic_list_card.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/my_refreshIndicator.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/top_section.dart';
+import 'package:stronger_muscles_dashboard/features/categories/data/models/category_model.dart';
+import 'package:stronger_muscles_dashboard/features/categories/presentation/page/categories_screen/widgets/category_form_sheet.dart';
+import 'package:stronger_muscles_dashboard/features/categories/presentation/page/category_form_page/category_form_page.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import '../../controllers/categories_controller.dart';
-import '../../../domain/entities/category_entity.dart';
-import '../category_form_page/category_form_page.dart';
-import 'widgets/category_form_sheet.dart';
+
 
 class CategoriesScreen extends StatelessWidget {
   const CategoriesScreen({super.key});
@@ -27,6 +28,8 @@ class CategoriesScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColorsExtended.backgroundColor,
+
+      //  Colors.transparent,
       appBar: BaseAppBar(
         title: 'إدارة التصنيفات',
         onPressed: () => showCategoryForm(context, controller),
@@ -36,6 +39,7 @@ class CategoriesScreen extends StatelessWidget {
         children: [
           TopSection(
             children: [
+              // شريط البحث المتطور
               CustomSearchBar(
                 hintText: 'ابحث عن تصنيف بالاسم أو الكود...',
                 padding: padding,
@@ -43,6 +47,8 @@ class CategoriesScreen extends StatelessWidget {
               ),
             ],
           ),
+
+          // قائمة التصنيفات
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value && controller.categories.isEmpty) {
@@ -74,7 +80,7 @@ class CategoriesScreen extends StatelessWidget {
                         itemCount: controller.filteredCategories.length,
                         itemBuilder: (context, index) {
                           final category = controller.filteredCategories[index];
-                          return GenericListCard<CategoryEntity>(
+                          return GenericListCard<CategoryModel>(
                             title: category.displayName,
                             metadata: 'ID: ${category.id}',
                             imageUrl: category.imageUrl,
@@ -137,9 +143,10 @@ class CategoriesScreen extends StatelessWidget {
                           childAspectRatio: 1.0,
                         ),
                         itemCount: controller.filteredCategories.length,
+
                         itemBuilder: (context, index) {
                           final category = controller.filteredCategories[index];
-                          return GenericGridCard<CategoryEntity>(
+                          return GenericGridCard<CategoryModel>(
                             title: category.displayName,
                             imageUrl: category.imageUrl,
                             icon: Icons.category_rounded,
@@ -200,7 +207,7 @@ class CategoriesScreen extends StatelessWidget {
 void showCategoryForm(
   BuildContext context,
   CategoriesController controller, {
-  CategoryEntity? category,
+  CategoryModel? category,
 }) {
   showModalBottomSheet(
     context: context,

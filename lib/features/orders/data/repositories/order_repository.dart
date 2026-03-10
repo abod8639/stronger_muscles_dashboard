@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/core/network/api_service.dart';
 import 'package:stronger_muscles_dashboard/core/storage/cache_service.dart';
-import 'package:stronger_muscles_dashboard/features/orders/data/models/order_model.dart';
+
+import '../models/order_model.dart';
 
 
 class OrderRepository {

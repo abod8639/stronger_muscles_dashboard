@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
-import '../../../domain/entities/user_entity.dart';
-import 'build_info_row.dart';
+import 'package:stronger_muscles_dashboard/data/models/dashboard_user_model.dart';
+import 'package:stronger_muscles_dashboard/features/users/presentation/page/widgets/build_info_row.dart';
 
-Widget buildUserCard(UserEntity user) {
+Widget buildUserCard(DashboardUser user) {
   return Builder(
     builder: (context) {
       final responsive = context.responsive;
@@ -102,8 +102,8 @@ Widget buildUserCard(UserEntity user) {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   buildInfoRow('الدور', user.role, isDark),
-                  if (user.phoneNumber != null)
-                    buildInfoRow('رقم الهاتف', user.phoneNumber ?? "00", isDark),
+                  if (user.phone != null)
+                    buildInfoRow('رقم الهاتف', user.phone ?? "00", isDark),
                   buildInfoRow(
                     'إجمالي المشتريات',
                     '${user.totalSpent} LE',

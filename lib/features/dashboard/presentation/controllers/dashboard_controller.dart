@@ -1,20 +1,24 @@
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
-import 'package:stronger_muscles_dashboard/features/categories/domain/repositories/category_repository.dart';
+import 'package:stronger_muscles_dashboard/core/network/api_service.dart';
+import 'package:stronger_muscles_dashboard/features/categories/data/models/category_model.dart';
+import 'package:stronger_muscles_dashboard/features/categories/data/repositories/category_repository.dart';
+import 'package:stronger_muscles_dashboard/features/orders/data/models/order_model.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/repositories/order_repository.dart';
-import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
+import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/repositories/product_repository.dart';
-import 'package:stronger_muscles_dashboard/features/users/domain/repositories/user_repository.dart';
-import 'package:stronger_muscles_dashboard/core/network/api_service.dart';
+import 'package:stronger_muscles_dashboard/features/users/data/repositories/user_repository.dart';
+// import 'package:stronger_muscles_dashboard/features/users/domain/repositories/user_repository.dart';
+
 
 class DashboardController extends GetxController {
   // --- Repositories ---
+  late final ApiService _apiService;
   late final OrderRepository _orderRepository;
   late final ProductRepository _productRepository;
   late final CategoryRepository _categoryRepository;
   late final UserRepository _userRepository;
-  late final ApiService _apiService; // Still used for connection check placeholder
 
   // --- UI States ---
   final isLoading = true.obs;
@@ -22,8 +26,10 @@ class DashboardController extends GetxController {
   final errorMessage = ''.obs;
 
   // --- Period Filter Configuration ---
+  // المعرف المختار حالياً للفترة الزمنية
   final selectPeriod = 'week'.obs;
 
+  // القائمة المتوافقة مع HorizontalChipsSelector
   final List<Map<String, String>> periodItems = const [
     {'id': 'week', 'name': 'هذا الأسبوع'},
     {'id': 'month', 'name': 'هذا الشهر'},
@@ -36,10 +42,10 @@ class DashboardController extends GetxController {
   final totalUsers = 0.obs;
   final totalProducts = 0.obs;
 
-  // Lists - using Entities instead of Models for consistency with clean architecture
-  final orders = <OrderEntity>[].obs;
-  final products = <ProductEntity>[].obs;
-  final categories = <CategoryEntity>[].obs;
+  // Lists
+  final orders = <OrderModel>[].obs;
+  final products = <ProductModel>[].obs;
+  final categories = <CategoryModel>[].obs;
 
   // Order Status Counters
   final pendingOrders = 0.obs;
@@ -60,17 +66,17 @@ class DashboardController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _initializeDependencies();
+    _initializeRepositories();
     ever(selectPeriod, (_) => fetchDashboardData());
     _checkInitialConnection();
   }
 
-  void _initializeDependencies() {
-    _orderRepository = Get.find<OrderRepository>();
-    _productRepository = Get.find<ProductRepository>();
-    _categoryRepository = Get.find<CategoryRepository>();
-    _userRepository = Get.find<UserRepository>();
-    _apiService = Get.find<ApiService>();
+  void _initializeRepositories() {
+    _apiService = ApiService();
+    _orderRepository = OrderRepository(_apiService);
+    _productRepository = ProductRepository(_apiService);
+    _categoryRepository = CategoryRepository(_apiService);
+    _userRepository = UserRepository(_apiService);
   }
 
   Future<void> _checkInitialConnection() async {
@@ -100,6 +106,7 @@ class DashboardController extends GetxController {
     final now = DateTime.now();
     if (_lastFetchTime != null &&
         now.difference(_lastFetchTime!) < _minFetchInterval) {
+      debugPrint('⏭ تم تجاهل الطلب المكرر (في انتظار debounce)');
       return;
     }
     _lastFetchTime = now;
@@ -112,15 +119,12 @@ class DashboardController extends GetxController {
         _orderRepository.getOrders(),
         _productRepository.getProducts(),
         _categoryRepository.getCategories(),
-        _userRepository.getUsersStats(),
+        _fetchUsersStats(),
       ]);
 
-      orders.assignAll(results[0] as List<OrderEntity>);
-      products.assignAll(results[1] as List<ProductEntity>);
-      categories.assignAll(results[2] as List<CategoryEntity>);
-      
-      final usersStats = results[3] as Map<String, dynamic>;
-      _updateUsersCount(usersStats);
+      orders.assignAll(results[0] as List<OrderModel>);
+      products.assignAll(results[1] as List<ProductModel>);
+      categories.assignAll(results[2] as List<CategoryModel>);
 
       _calculateStatistics();
     } catch (e) {
@@ -130,18 +134,25 @@ class DashboardController extends GetxController {
     }
   }
 
-  void _updateUsersCount(Map<String, dynamic> usersStats) {
-    if (usersStats.containsKey('total_users')) {
-      totalUsers.value =
-          int.tryParse(usersStats['total_users'].toString()) ?? 0;
-    } else if (usersStats['data'] != null) {
-      totalUsers.value =
-          int.tryParse(usersStats['data']['total_users'].toString()) ?? 0;
+  Future<dynamic> _fetchUsersStats() async {
+    try {
+      final usersStats = await _userRepository.getUsersStats();
+      if (usersStats.containsKey('total_users')) {
+        totalUsers.value =
+            int.tryParse(usersStats['total_users'].toString()) ?? 0;
+      } else if (usersStats['data'] != null) {
+        totalUsers.value =
+            int.tryParse(usersStats['data']['total_users'].toString()) ?? 0;
+      }
+      return usersStats;
+    } catch (e) {
+      print('خطأ في إحصائيات المستخدمين: $e');
+      return {};
     }
   }
 
   void _calculateStatistics() {
-    // 1. Order Stats
+    // 1. إحصائيات الطلبات
     pendingOrders.value = orders
         .where((o) => o.status == OrderStatus.pending)
         .length;
@@ -158,15 +169,17 @@ class DashboardController extends GetxController {
         .where((o) => o.status == OrderStatus.cancelled)
         .length;
 
-    // 2. Financials
+    // 2. الماليات
     totalRevenue.value = orders
-        .where((o) => o.status != OrderStatus.cancelled)
+        .where(
+          (o) => o.status != OrderStatus.cancelled,
+        ) // لا تحسب المبيعات الملغاة
         .fold(0.0, (sum, order) => sum + order.totalAmount);
 
     totalOrders.value = orders.length;
     totalProducts.value = products.length;
 
-    // 3. Stock Stats
+    // 3. إحصائيات المخزون
     productsInStock.value = products.where((p) => p.stockQuantity > 10).length;
     productsLowStock.value = products
         .where((p) => p.stockQuantity > 0 && p.stockQuantity <= 10)

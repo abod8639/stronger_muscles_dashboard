@@ -1,23 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../domain/entities/order_entity.dart';
-import '../../domain/usecases/get_orders_usecase.dart';
-import '../../domain/usecases/get_order_detail_usecase.dart';
-import '../../domain/usecases/update_order_status_usecase.dart';
+import 'package:stronger_muscles_dashboard/core/network/api_service.dart';
+import 'package:stronger_muscles_dashboard/features/orders/data/models/order_model.dart';
+import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
+import 'package:stronger_muscles_dashboard/features/orders/domain/repositories/order_repository.dart';
+
 
 class OrdersController extends GetxController {
-  final GetOrdersUseCase getOrdersUseCase;
-  final GetOrderDetailUseCase getOrderDetailUseCase;
-  final UpdateOrderStatusUseCase updateOrderStatusUseCase;
+  final OrderRepository _repository = OrderRepository(ApiService());
 
-  OrdersController({
-    required this.getOrdersUseCase,
-    required this.getOrderDetailUseCase,
-    required this.updateOrderStatusUseCase,
-  });
-
-  final RxList<OrderEntity> _allOrders = <OrderEntity>[].obs;
-  final RxList<OrderEntity> filteredOrders = <OrderEntity>[].obs;
+  final RxList<OrderModel> _allOrders = <OrderModel>[].obs;
+  final RxList<OrderModel> filteredOrders = <OrderModel>[].obs;
 
   final RxBool isLoading = false.obs;
   final RxString errorMessage = ''.obs;
@@ -26,8 +19,9 @@ class OrdersController extends GetxController {
   // Pagination
   final RxInt currentPage = 1.obs;
   final RxInt itemsPerPage = 6.obs;
+  final RxBool selectedStatus = false.obs;
 
-  List<OrderEntity> get paginatedOrders {
+  List<OrderModel> get paginatedOrders {
     final start = (currentPage.value - 1) * itemsPerPage.value;
     if (start >= filteredOrders.length) return [];
     final end = (start + itemsPerPage.value).clamp(0, filteredOrders.length);
@@ -39,46 +33,34 @@ class OrdersController extends GetxController {
   // Statistics Getters
   int get totalOrders => _allOrders.length;
   double get totalRevenue =>
-      _allOrders.fold(0.0, (sum, order) => sum + order.totalAmount);
+      _allOrders.fold(0, (sum, order) => sum + order.totalAmount);
   int get pendingOrders =>
       _allOrders.where((o) => o.status == OrderStatus.pending).length;
   int get deliveredOrders =>
       _allOrders.where((o) => o.status == OrderStatus.delivered).length;
 
+  // نستخدم String ليتوافق مع الـ 'all' ومع الـ IDs الخاصة بالحالات
   final RxString selectedStatusId = 'all'.obs;
 
   @override
   void onInit() {
     super.onInit();
+    // مراقبة التغيرات وتحديث الفلترة تلقائياً (Worker)
     debounce(searchQuery, (_) => _applyFilters(), time: 300.milliseconds);
     ever(selectedStatusId, (_) => _applyFilters());
 
     fetchOrders();
   }
 
-  Future<void> fetchOrders({bool forceRefresh = false}) async {
-    try {
-      isLoading.value = true;
-      errorMessage.value = '';
-      final orders = await getOrdersUseCase();
-      _allOrders.assignAll(orders);
-      _applyFilters();
-    } catch (e) {
-      errorMessage.value = 'فشل في تحميل الطلبات: $e';
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
   void onSearchChanged(String query) {
     searchQuery.value = query;
-    currentPage.value = 1;
+    currentPage.value = 1; // Reset to first page on search
     _applyFilters();
   }
 
   void onStatusChanged(String statusId) {
     selectedStatusId.value = statusId;
-    currentPage.value = 1;
+    currentPage.value = 1; // Reset to first page on filter
   }
 
   void nextPage() {
@@ -105,6 +87,25 @@ class OrdersController extends GetxController {
     }).toList();
   }
 
+  Future<void> fetchOrders() async {
+    try {
+      isLoading.value = true;
+      errorMessage.value = '';
+      final orders = await _repository.getOrders();
+      _allOrders.assignAll(orders);
+      _applyFilters();
+    } catch (e) {
+      errorMessage.value = 'فشل في تحميل الطلبات: $e';
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  void changeStatus(String status) {
+    selectedStatusId.value = status;
+    currentPage.value = 1;
+  }
+
   void _applyFilters() {
     var result = _allOrders.where((order) {
       final bool matchesStatus =
@@ -128,23 +129,7 @@ class OrdersController extends GetxController {
     filteredOrders.assignAll(result);
   }
 
-  Future<void> updateStatus(String id, OrderStatus status) async {
-    try {
-      isLoading.value = true;
-      final updatedOrder = await updateOrderStatusUseCase(id, status);
-      
-      final index = _allOrders.indexWhere((o) => o.id == id);
-      if (index != -1) {
-        _allOrders[index] = updatedOrder;
-        _applyFilters();
-      }
-      Get.snackbar('نجاح', 'تم تحديث حالة الطلب بنجاح');
-    } catch (e) {
-      Get.snackbar('خطأ', 'فشل في تحديث الحالة: $e');
-    } finally {
-      isLoading.value = false;
-    }
-  }
+  // --- Helpers ---
 
   String getStatusText(OrderStatus status) {
     switch (status) {

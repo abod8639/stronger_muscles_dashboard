@@ -1,4 +1,3 @@
-import '../entities/product_entity.dart';
 import '../repositories/product_repository.dart';
 
 class GetProductsUseCase {
@@ -6,7 +5,7 @@ class GetProductsUseCase {
 
   const GetProductsUseCase(this.repository);
 
-  Future<List<ProductEntity>> call({bool forceRefresh = false}) async {
-    return await repository.getProducts(forceRefresh: forceRefresh);
-  }
+  // Future<List<ProductEntity>> call({bool forceRefresh = false}) async {
+  //   return await repository.getProducts(forceRefresh: forceRefresh);
+  // }
 }

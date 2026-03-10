@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import '../../domain/entities/category_entity.dart';
-import '../../domain/usecases/get_categories_usecase.dart';
-import '../../domain/usecases/add_category_usecase.dart';
-import '../../domain/usecases/update_category_usecase.dart';
-import '../../domain/usecases/delete_category_usecase.dart';
+import 'package:stronger_muscles_dashboard/config/theme.dart';
+import 'package:stronger_muscles_dashboard/core/network/api_service.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/confirm_dialog.dart';
+import 'package:stronger_muscles_dashboard/features/categories/data/models/category_model.dart';
+import 'package:stronger_muscles_dashboard/features/categories/data/repositories/category_repository.dart';
+
 
 class CategoriesController extends GetxController {
-  final GetCategoriesUseCase getCategoriesUseCase;
-  final AddCategoryUseCase addCategoryUseCase;
-  final UpdateCategoryUseCase updateCategoryUseCase;
-  final DeleteCategoryUseCase deleteCategoryUseCase;
-
   late final TextEditingController idController;
   late final TextEditingController nameArController;
   late final TextEditingController nameEnController;
@@ -20,20 +17,14 @@ class CategoriesController extends GetxController {
   late final TextEditingController descEnController;
   late final TextEditingController iconController;
 
+  late final CategoryRepository _categoryRepository;
   final RxBool isLoading = true.obs;
   final RxBool isProcessing = false.obs;
-  final categories = <CategoryEntity>[].obs;
-  final filteredCategories = <CategoryEntity>[].obs;
+  final categories = <CategoryModel>[].obs;
+  final filteredCategories = <CategoryModel>[].obs;
   final searchQuery = ''.obs;
   final RxString parentId = ''.obs;
   final RxBool isActive = true.obs;
-
-  CategoriesController({
-    required this.getCategoriesUseCase,
-    required this.addCategoryUseCase,
-    required this.updateCategoryUseCase,
-    required this.deleteCategoryUseCase,
-  });
 
   @override
   void onInit() {
@@ -46,6 +37,8 @@ class CategoriesController extends GetxController {
     iconController = TextEditingController();
 
     super.onInit();
+    final apiService = Get.put(ApiService());
+    _categoryRepository = CategoryRepository(apiService);
 
     debounce(
       searchQuery,
@@ -68,10 +61,10 @@ class CategoriesController extends GetxController {
     super.onClose();
   }
 
-  Future<void> fetchCategories({bool forceRefresh = false}) async {
+  Future<void> fetchCategories() async {
     try {
       isLoading.value = true;
-      final data = await getCategoriesUseCase(tree: true, forceRefresh: forceRefresh);
+      final data = await _categoryRepository.getCategories(tree: true);
       categories.assignAll(data);
       _applySearch();
     } catch (e) {
@@ -92,18 +85,26 @@ class CategoriesController extends GetxController {
       final query = searchQuery.value.toLowerCase();
       filteredCategories.assignAll(
         categories.where((c) {
-          return c.nameAr.toLowerCase().contains(query) ||
-              c.nameEn.toLowerCase().contains(query) ||
+          return c.name.ar.toLowerCase().contains(query) ||
+              c.name.en.toLowerCase().contains(query) ||
               c.id.toLowerCase().contains(query);
         }).toList(),
       );
     }
   }
 
-  Future<bool> addCategory(CategoryEntity category) async {
+  Future<bool> addCategory(CategoryModel category) async {
     try {
       isLoading.value = true;
-      final newCategory = await addCategoryUseCase(category);
+      final newCategory = await _categoryRepository.addCategory({
+        'id': category.id,
+        'name': category.name.toJson(),
+        'image_url': category.imageUrl,
+        'description': category.description?.toJson(),
+        'sort_order': 0,
+        'is_active': isActive.value,
+        'parent_id': parentId.value.isEmpty ? null : parentId.value,
+      });
 
       categories.add(newCategory);
       _applySearch();
@@ -118,10 +119,18 @@ class CategoriesController extends GetxController {
     }
   }
 
-  Future<bool> updateCategory(CategoryEntity category) async {
+  Future<bool> updateCategory(CategoryModel category) async {
     try {
       isLoading.value = true;
-      final updatedCategory = await updateCategoryUseCase(category);
+      final updatedCategory = await _categoryRepository
+          .updateCategory(category.id, {
+            'name': category.name.toJson(),
+            'image_url': category.imageUrl,
+            'description': category.description?.toJson(),
+            'sort_order': 0,
+            'is_active': isActive.value,
+            'parent_id': parentId.value.isEmpty ? null : parentId.value,
+          });
 
       final index = categories.indexWhere((c) => c.id == category.id);
       if (index != -1) {
@@ -140,23 +149,25 @@ class CategoriesController extends GetxController {
   }
 
   Future<void> deleteCategory(String id) async {
-    Get.defaultDialog(
-      title: 'حذف التصنيف',
-      middleText: 'هل أنت متأكد من رغبتك في حذف هذا التصنيف؟ لا يمكن التراجع عن هذا الإجراء.',
-      textConfirm: 'حذف',
-      textCancel: 'إلغاء',
-      confirmTextColor: Colors.white,
-      onConfirm: () async {
-        Get.back();
-        _performDelete(id);
-      },
+    Get.dialog(
+      ConfirmDialog(
+        title: 'حذف التصنيف',
+        message:
+            'هل أنت متأكد من رغبتك في حذف هذا التصنيف؟ لا يمكن التراجع عن هذا الإجراء.',
+        confirmText: 'حذف',
+        confirmColor: AppColors.error,
+        onConfirm: () async {
+          Get.back();
+          _performDelete(id);
+        },
+      ),
     );
   }
 
   Future<void> _performDelete(String id) async {
     try {
       isProcessing.value = true;
-      final success = await deleteCategoryUseCase(id);
+      final success = await _categoryRepository.deleteCategory(id);
       if (success) {
         categories.removeWhere((c) => c.id == id);
         _applySearch();
@@ -183,13 +194,13 @@ class CategoriesController extends GetxController {
     isActive.value = true;
   }
 
-  void prepareFormForEdit(CategoryEntity category) {
+  void prepareFormForEdit(CategoryModel category) {
     idController.text = category.id;
-    nameArController.text = category.nameAr;
-    nameEnController.text = category.nameEn;
+    nameArController.text = category.name.ar;
+    nameEnController.text = category.name.en;
     imageController.text = category.imageUrl ?? '';
-    descArController.text = category.descriptionAr ?? '';
-    descEnController.text = category.descriptionEn ?? '';
+    descArController.text = category.description?.ar ?? '';
+    descEnController.text = category.description?.en ?? '';
     iconController.text = category.icon?.toString() ?? '';
     parentId.value = category.parentId ?? '';
     isActive.value = category.isActive;

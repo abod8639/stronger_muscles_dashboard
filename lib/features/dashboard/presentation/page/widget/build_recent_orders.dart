@@ -4,7 +4,7 @@ import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/base_data_view.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_controller.dart';
-import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
+import 'package:stronger_muscles_dashboard/features/orders/data/models/order_model.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/order_details_screen/order_details_screen.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/orders_screen/widgets/order_list_tile.dart';
 
@@ -22,7 +22,7 @@ Widget buildRecentOrders(ResponsiveLayout res) {
 
   return Builder(
     builder: (context) {
-      return BaseDataView<OrderEntity>(
+      return BaseDataView<OrderModel>(
         title: 'الطلبات الأخيرة',
         crossAxisCount: getCrossAxisCount(res),
         items: dashboardController.orders,

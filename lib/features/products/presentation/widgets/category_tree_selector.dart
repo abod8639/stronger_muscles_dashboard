@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
-import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
+import 'package:stronger_muscles_dashboard/features/categories/data/models/category_model.dart';
 
 class CategoryTreeSelector extends StatefulWidget {
-  final List<CategoryEntity> categories;
+  final List<CategoryModel> categories;
   final String? selectedId;
   final Function(String) onSelected;
 
@@ -51,7 +51,7 @@ class _CategoryTreeSelectorState extends State<CategoryTreeSelector> {
     );
   }
 
-  Widget _buildCategoryItem(CategoryEntity category, int level) {
+  Widget _buildCategoryItem(CategoryModel category, int level) {
     final bool isSelected = widget.selectedId == category.id;
     final bool hasChildren = category.children.isNotEmpty;
 

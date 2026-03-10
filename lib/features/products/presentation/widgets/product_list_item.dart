@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
+import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_card.dart';
 
 class ProductListItem extends StatefulWidget {
-  final ProductEntity product;
+  final ProductModel product;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
   final int index;

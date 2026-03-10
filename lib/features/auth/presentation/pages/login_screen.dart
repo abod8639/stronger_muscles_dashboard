@@ -15,7 +15,10 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<AuthController>();
-    // final controller = Get.find<AuthController>();
+    // final controller = Get.put(AuthController(
+    //   loginUseCase: null, 
+    //   signupUseCase: null, 
+    //   logoutUseCase: null));
     final size = MediaQuery.of(context).size;
     final isDesktop = size.width >= 900;
 

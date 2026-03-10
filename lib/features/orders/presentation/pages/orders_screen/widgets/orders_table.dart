@@ -5,9 +5,10 @@ import 'package:stronger_muscles_dashboard/core/utils/components/custom_search_b
 import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/status_badge.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/presentation/page/widget/build_recent_orders.dart';
-import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
+import 'package:stronger_muscles_dashboard/features/orders/data/models/order_model.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/controllers/orders_controller.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/order_details_screen/order_details_screen.dart';
+
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 
@@ -225,7 +226,7 @@ class OrdersTable extends StatelessWidget {
     );
   }
 
-  Widget _buildOrderRow(OrderEntity order, {bool isLast = false}) {
+  Widget _buildOrderRow(OrderModel order, {bool isLast = false}) {
     final dateFormat = DateFormat('MMM dd, yyyy');
     return Builder(
       builder: (context) {
@@ -257,7 +258,7 @@ class OrdersTable extends StatelessWidget {
   }
 
   // --- تصميم شاشات الكمبيوتر (الجدول الأصلي المحسن) ---
-  Widget _buildDesktopLayout(OrderEntity order, DateFormat dateFormat) {
+  Widget _buildDesktopLayout(OrderModel order, DateFormat dateFormat) {
     return Row(
       children: [
         Expanded(flex: 3, child: _buildOrderId(order)),
@@ -270,7 +271,7 @@ class OrdersTable extends StatelessWidget {
     );
   }
 
-  Widget _buildMobileLayout(OrderEntity order, DateFormat dateFormat) {
+  Widget _buildMobileLayout(OrderModel order, DateFormat dateFormat) {
     return Column(
       children: [
         Row(
@@ -301,7 +302,7 @@ class OrdersTable extends StatelessWidget {
     );
   }
 
-  Widget _buildOrderId(OrderEntity order) {
+  Widget _buildOrderId(OrderModel order) {
     return Text(
       '#ORD-${order.id.toString().padLeft(4, '0')}',
       style: const TextStyle(
@@ -312,7 +313,7 @@ class OrdersTable extends StatelessWidget {
     );
   }
 
-  Widget _buildCustomerInfo(OrderEntity order) {
+  Widget _buildCustomerInfo(OrderModel order) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -348,7 +349,7 @@ class OrdersTable extends StatelessWidget {
     );
   }
 
-  Widget _buildDate(OrderEntity order, DateFormat dateFormat) {
+  Widget _buildDate(OrderModel order, DateFormat dateFormat) {
     return Text(
       dateFormat.format(order.orderDate),
       style: TextStyle(
@@ -358,7 +359,7 @@ class OrdersTable extends StatelessWidget {
     );
   }
 
-  Widget _buildPrice(OrderEntity order) {
+  Widget _buildPrice(OrderModel order) {
     return Text(
       '${order.totalAmount.toStringAsFixed(2)} L.E ',
       style: const TextStyle(
@@ -369,14 +370,14 @@ class OrdersTable extends StatelessWidget {
     );
   }
 
-  Widget _buildActionBtn(OrderEntity order) {
+  Widget _buildActionBtn(OrderModel order) {
     return const Align(
       alignment: Alignment.centerRight,
       child: Icon(Icons.chevron_right_rounded, size: 20, color: Colors.white24),
     );
   }
 
-  Widget _buildAvatar(OrderEntity order) {
+  Widget _buildAvatar(OrderModel order) {
     return Container(
       width: 32,
       height: 32,

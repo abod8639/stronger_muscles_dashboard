@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:stronger_muscles_dashboard/config/api_config.dart';
 import '../models/order_model.dart';
 import '../../domain/entities/order_entity.dart';
 
@@ -15,7 +16,7 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
 
   @override
   Future<List<OrderModel>> getOrders() async {
-    final response = await dio.get('/orders');
+    final response = await dio.get(ApiConfig.adminOrders );
     if (response.statusCode == 200) {
       final List data = response.data;
       final orders = <OrderModel>[];
@@ -34,7 +35,7 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
 
   @override
   Future<OrderModel> getOrderById(String id) async {
-    final response = await dio.get('/orders/$id');
+    final response = await dio.get('${ApiConfig.adminOrders}/$id');
     if (response.statusCode == 200) {
       return OrderModel.fromJson(response.data);
     }
@@ -43,7 +44,7 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
 
   @override
   Future<OrderModel> updateOrderStatus(String id, OrderStatus status) async {
-    final response = await dio.patch('/orders/$id/status', data: {
+    final response = await dio.patch('${ApiConfig.adminOrders}/$id/status', data: {
       'status': status.name,
     });
     if (response.statusCode == 200) {

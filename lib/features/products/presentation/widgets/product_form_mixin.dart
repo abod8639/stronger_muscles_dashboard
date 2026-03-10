@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
-import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
+import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
 
 /// Mixin to handle common product form initialization logic
 /// Eliminates code duplication between ProductFormPage and ProductFormSheet
 mixin ProductFormMixin<T extends StatefulWidget> on State<T> {
   ProductsController get controller;
-  ProductEntity? get product;
+  ProductModel? get product;
 
   /// Initialize all text controllers and form state
   void initializeProductFields() {
     // Initialize text controllers
     controller.textcontrollers['name_ar'] = TextEditingController(
-      text: product?.nameAr,
+      text: product?.name.ar,
     );
     controller.textcontrollers['name_en'] = TextEditingController(
-      text: product?.nameEn,
+      text: product?.name.en,
     );
     controller.textcontrollers['price'] = TextEditingController(
       text: product?.price.toString(),
@@ -28,10 +28,10 @@ mixin ProductFormMixin<T extends StatefulWidget> on State<T> {
       text: product?.stockQuantity.toString(),
     );
     controller.textcontrollers['desc_ar'] = TextEditingController(
-      text: product?.descriptionAr,
+      text: product?.description.ar,
     );
     controller.textcontrollers['desc_en'] = TextEditingController(
-      text: product?.descriptionEn,
+      text: product?.description.en,
     );
     controller.textcontrollers['brand'] = TextEditingController(
       text: product?.brand,
@@ -44,20 +44,20 @@ mixin ProductFormMixin<T extends StatefulWidget> on State<T> {
     );
 
     // Initialize GetX reactive values
-    controller.productFlavors.assignAll(product?.flavors ?? <String>[]);
+    controller.productFlavors.assignAll(product?.flavor ?? <String>[]);
 
     // Clear old size controllers to ensure fresh start for this product
     controller.clearSizeControllers();
 
-    controller.productSizes.assignAll(product?.productSizes ?? <ProductSizeEntity>[]);
-    controller.variants.assignAll(product?.variants ?? <ProductVariantEntity>[]);
+    controller.productSizes.assignAll(product?.productSizes ?? <ProductSize>[]);
+    controller.variants.assignAll(product?.variants ?? <ProductVariantModel>[]);
     controller.isFeatured.value = product?.isActive ?? true;
     controller.isBackgroundWhite.value = product?.isBackgroundWhite ?? false;
   }
 
   /// Get the initial category ID
   String? getInitialCategoryId() {
-    final id = product?.categoryId;
+    final id = product?.effectiveCategoryId;
     if (id != null && id.isNotEmpty) return id;
 
     return controller.categories.isNotEmpty
@@ -67,7 +67,7 @@ mixin ProductFormMixin<T extends StatefulWidget> on State<T> {
 
   /// Get the initial image URLs
   List<String> getInitialImageUrls() {
-    return product?.imageUrls ?? [];
+    return product?.imageUrls.map((e) => e.original).toList() ?? [];
   }
 
   /// Dispose all text controllers

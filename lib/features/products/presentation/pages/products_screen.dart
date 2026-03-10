@@ -96,7 +96,7 @@ class ProductsScreen extends StatelessWidget {
                       onEdit: () =>
                           controller.showProductForm(context, product: product),
                       onDelete: () =>
-                          controller.confirmDelete(product.id, product.nameAr ),
+                          controller.confirmDelete(product.id, product.displayName ),
                     );
                   },
                 ),

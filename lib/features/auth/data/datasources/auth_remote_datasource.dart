@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:stronger_muscles_dashboard/config/api_config.dart';
 import '../models/auth_model.dart';
 
 abstract class AuthRemoteDataSource {
@@ -13,7 +14,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<AuthModel> login(String email, String password) async {
-    final response = await dio.post('/auth/login', data: {
+    final response = await dio.post(ApiConfig.adminLogin, data: {
       'email': email,
       'password': password,
     });

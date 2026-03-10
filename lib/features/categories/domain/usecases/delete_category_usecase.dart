@@ -1,3 +1,5 @@
+import 'package:stronger_muscles_dashboard/features/categories/data/repositories/category_repository.dart';
+
 import '../repositories/category_repository.dart';
 
 class DeleteCategoryUseCase {

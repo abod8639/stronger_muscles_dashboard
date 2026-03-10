@@ -7,10 +7,10 @@ import 'package:stronger_muscles_dashboard/core/utils/components/enhanced_error_
 import 'package:stronger_muscles_dashboard/core/utils/components/enhanced_loading_widget.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/my_refreshIndicator.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/top_section.dart';
+import 'package:stronger_muscles_dashboard/features/users/presentation/controllers/users_controller.dart';
+import 'package:stronger_muscles_dashboard/features/users/presentation/page/widgets/buildUserCard.dart';
+import 'package:stronger_muscles_dashboard/features/users/presentation/page/widgets/build_stats_header.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
-import '../controllers/users_controller.dart';
-import 'widgets/buildUserCard.dart';
-import 'widgets/build_stats_header.dart';
 
 class UsersScreen extends StatelessWidget {
   const UsersScreen({super.key});
@@ -22,9 +22,11 @@ class UsersScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColorsExtended.backgroundColor,
+
+      //  Colors.transparent,
       appBar: BaseAppBar(
         title: 'المستخدمون',
-        onPressed: controller.fetchUsersData,
+        onPressed: controller.fetchUsersStats,
         icon: Icons.refresh_rounded,
       ),
       body: Obx(() {
@@ -36,6 +38,7 @@ class UsersScreen extends StatelessWidget {
 
         return Column(
           children: [
+            // Search Bar
             TopSection(
               children: [
                 CustomSearchBar(
@@ -43,9 +46,11 @@ class UsersScreen extends StatelessWidget {
                   padding: responsive.defaultPadding,
                   onSearch: (value) => controller.onSearchChanged(value),
                 ),
+                // stats header
                 buildStatsHeader(),
               ],
             ),
+            // users list
             Expanded(
               child: controller.filteredUsers.isEmpty
                   ? EnhancedErrorWidget(
@@ -54,10 +59,10 @@ class UsersScreen extends StatelessWidget {
                           ? 'لم يتم العثور على أي مستخدمين مسجلين'
                           : 'لا توجد نتائج لبحثك: "${controller.searchQuery.value}"',
                       icon: Icons.people_outline,
-                      onRetry: controller.fetchUsersData,
+                      onRetry: controller.fetchUsersStats,
                     )
                   : MyRefreshIndicator(
-                      onRefresh: controller.fetchUsersData,
+                      onRefresh: controller.fetchUsersStats,
                       child: ListView.builder(
                         padding: responsive.defaultPadding,
                         itemCount: controller.filteredUsers.length,

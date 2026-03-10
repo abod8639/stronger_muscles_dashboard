@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
-import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
+import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_form_body.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_form_mixin.dart';
 
+
 class ProductFormPage extends StatefulWidget {
-  final ProductEntity? product;
+  final ProductModel? product;
   const ProductFormPage({super.key, this.product});
 
   @override
@@ -22,7 +23,7 @@ class _ProductFormPageState extends State<ProductFormPage>
   final ProductsController controller = Get.find<ProductsController>();
 
   @override
-  ProductEntity? get product => widget.product;
+  ProductModel? get product => widget.product;
 
   String? _selectedCategoryId;
 

@@ -1,12 +1,12 @@
-import '../entities/category_entity.dart';
-import '../repositories/category_repository.dart';
+// import '../entities/category_entity.dart';
+// import '../repositories/category_repository.dart';
 
-class AddCategoryUseCase {
-  final CategoryRepository repository;
+// class AddCategoryUseCase {
+//   final CategoryRepository repository;
 
-  AddCategoryUseCase(this.repository);
+//   AddCategoryUseCase(this.repository);
 
-  Future<CategoryEntity> call(CategoryEntity category) async {
-    return await repository.addCategory(category);
-  }
-}
+//   Future<CategoryEntity> call(CategoryEntity category) async {
+//     return await repository.addCategory(category);
+//   }
+// }

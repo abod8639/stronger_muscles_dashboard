@@ -1,28 +1,23 @@
 import 'package:get/get.dart';
-import '../../domain/entities/user_entity.dart';
-import '../../domain/usecases/get_users_stats_usecase.dart';
-import '../../domain/usecases/get_users_usecase.dart';
+import 'package:stronger_muscles_dashboard/core/network/api_service.dart';
+import 'package:stronger_muscles_dashboard/data/models/dashboard_user_model.dart';
 
 class UsersController extends GetxController {
-  final GetUsersStatsUseCase getUsersStatsUseCase;
-  final GetUsersUseCase getUsersUseCase;
-
-  UsersController({
-    required this.getUsersStatsUseCase,
-    required this.getUsersUseCase,
-  });
+  final ApiService _apiService = ApiService();
 
   final isLoading = true.obs;
   final totalUsers = 0.obs;
 
-  final _allUsers = <UserEntity>[].obs;
-  final filteredUsers = <UserEntity>[].obs;
+  final _allUsers = <DashboardUser>[].obs;
+
+  final filteredUsers = <DashboardUser>[].obs;
+
   final searchQuery = ''.obs;
 
   @override
   void onInit() {
     super.onInit();
-    fetchUsersData();
+    fetchUsersStats();
     ever(searchQuery, (_) => _applyFilter());
   }
 
@@ -37,33 +32,23 @@ class UsersController extends GetxController {
         _allUsers.where((user) {
           final nameMatch = user.name.toLowerCase().contains(query);
           final emailMatch = user.email?.toLowerCase().contains(query) ?? false;
-          final phoneMatch = user.phoneNumber?.contains(query) ?? false;
+          final phoneMatch = user.phone?.contains(query) ?? false;
           return nameMatch || emailMatch || phoneMatch;
         }).toList(),
       );
     }
   }
 
-  Future<void> fetchUsersData() async {
+  Future<void> fetchUsersStats() async {
     try {
       isLoading.value = true;
 
-      // Fetch stats and users list in parallel
-      final results = await Future.wait([
-        getUsersStatsUseCase(),
-        getUsersUseCase(),
-      ]);
+      final data = await _apiService.fetchUsersStats();
+      final response = DashboardResponse.fromJson(data);
 
-      final stats = results[0] as Map<String, dynamic>;
-      final userList = results[1] as List<UserEntity>;
+      totalUsers.value = response.totalUsers;
 
-      if (stats.containsKey('total_users')) {
-        totalUsers.value = int.tryParse(stats['total_users'].toString()) ?? 0;
-      } else if (stats['data'] != null && stats['data']['total_users'] != null) {
-        totalUsers.value = int.tryParse(stats['data']['total_users'].toString()) ?? 0;
-      }
-
-      _allUsers.assignAll(userList);
+      _allUsers.assignAll(response.users);
       _applyFilter();
     } catch (e) {
       _showErrorSnackbar('فشل تحميل بيانات المستخدمين: ${e.toString()}');
@@ -82,7 +67,7 @@ class UsersController extends GetxController {
     );
   }
 
-  void updateUserInfo(UserEntity updatedUser) {
+  void updateUserInfo(DashboardUser updatedUser) {
     final index = _allUsers.indexWhere((u) => u.id == updatedUser.id);
     if (index != -1) {
       _allUsers[index] = updatedUser;

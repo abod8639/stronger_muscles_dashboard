@@ -25,8 +25,8 @@ class UsersBinding extends Bindings {
 
     // Controller
     Get.put(UsersController(
-      getUsersStatsUseCase: Get.find<GetUsersStatsUseCase>(),
-      getUsersUseCase: Get.find<GetUsersUseCase>(),
+      // getUsersStatsUseCase: Get.find<GetUsersStatsUseCase>(),
+      // getUsersUseCase: Get.find<GetUsersUseCase>(),
     ));
   }
 }
