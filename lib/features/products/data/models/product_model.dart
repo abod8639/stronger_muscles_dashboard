@@ -195,6 +195,7 @@ class ProductModel with _$ProductModel {
         stockQuantity: stockQuantity,
         brand: brand,
         isActive: isActive,
+        isFeatured: featured,
         isBackgroundWhite: isBackgroundWhite,
         servingSize: servingSize,
         servingsPerContainer: servingsPerContainer,

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/core/storage/cache_service.dart';
 import '../../domain/entities/product_entity.dart';
@@ -19,9 +20,20 @@ class ProductRepositoryImpl implements ProductRepository {
   Future<List<ProductEntity>> getProducts({bool forceRefresh = false}) async {
     try {
       if (!forceRefresh) {
-        final cachedData = _cacheService.get<List<ProductModel>>(_cacheKeyProducts);
-        if (cachedData != null) {
-          return cachedData.map((m) => m.toEntity()).toList();
+        try {
+          final cachedData = _cacheService.get<dynamic>(_cacheKeyProducts);
+          if (cachedData != null && cachedData is List) {
+            // Check if it's a list of ProductModel
+            if (cachedData.isEmpty || cachedData.first is ProductModel) {
+              return (cachedData as List<ProductModel>).map((m) => m.toEntity()).toList();
+            } else {
+              // Cache is poisoned with wrong type (e.g. ProductEntity), clear it
+              _cacheService.remove(_cacheKeyProducts);
+            }
+          }
+        } catch (e) {
+          debugPrint('Product Cache Type Error: $e');
+          _cacheService.remove(_cacheKeyProducts);
         }
       }
 

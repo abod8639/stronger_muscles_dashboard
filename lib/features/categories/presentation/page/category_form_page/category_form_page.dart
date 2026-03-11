@@ -8,15 +8,14 @@ import 'package:stronger_muscles_dashboard/core/utils/components/base_app_bar.da
 import 'package:stronger_muscles_dashboard/core/utils/components/build_modern_text_field.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/confirm_dialog.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
-import 'package:stronger_muscles_dashboard/features/categories/data/models/category_model.dart';
+import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
 import 'package:stronger_muscles_dashboard/features/categories/presentation/controllers/categories_controller.dart';
 import 'package:stronger_muscles_dashboard/features/categories/presentation/page/category_form_page/widget/gradient_background_painter.dart';
-import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/availability_switch.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/category_tree_selector.dart';
 
 class CategoryFormPage extends StatefulWidget {
-  final CategoryModel? category;
+  final CategoryEntity? category;
 
   const CategoryFormPage({super.key, this.category});
 
@@ -29,6 +28,31 @@ class _CategoryFormPageState extends State<CategoryFormPage>
   final controller = Get.find<CategoriesController>();
   final _formKey = GlobalKey<FormState>();
   bool _isIdFieldEnabled = false;
+
+  void _submitForm() async {
+    // Validate required fields
+    if (controller.idController.text.trim().isEmpty) {
+      _showErrorSnackbar('المعرف الفريد مطلوب');
+      return;
+    }
+
+    if (controller.nameArController.text.trim().isEmpty &&
+        controller.nameEnController.text.trim().isEmpty) {
+      _showErrorSnackbar('اسم التصنيف مطلوب (عربي أو إنجليزي)');
+      return;
+    }
+
+    HapticFeedback.mediumImpact();
+
+    bool success = await controller.saveCategory(
+      existingId: widget.category?.id,
+    );
+
+    if (success) {
+      HapticFeedback.heavyImpact();
+      Get.back();
+    }
+  }
 
   @override
   void initState() {
@@ -850,66 +874,6 @@ class _CategoryFormPageState extends State<CategoryFormPage>
     }
   }
 
-  void _submitForm() async {
-    // Validate required fields
-    if (controller.idController.text.trim().isEmpty) {
-      _showErrorSnackbar('المعرف الفريد مطلوب');
-      return;
-    }
-
-    if (controller.nameArController.text.trim().isEmpty &&
-        controller.nameEnController.text.trim().isEmpty) {
-      _showErrorSnackbar('اسم التصنيف مطلوب (عربي أو إنجليزي)');
-      return;
-    }
-
-    // Validate ID format (alphanumeric and underscores only)
-    // final idRegex = RegExp(r'^[a-zA-Z0-9_]+$');
-    // if (!idRegex.hasMatch(controller.idController.text.trim())) {
-    //   _showErrorSnackbar('المعرف يجب أن يحتوي على أحرف وأرقام فقط');
-    //   return;
-    // }
-
-    HapticFeedback.mediumImpact();
-
-    final categoryData = CategoryModel(
-      id: controller.idController.text.trim(),
-      name: TranslatableString(
-        ar: controller.nameArController.text.trim(),
-        en: controller.nameEnController.text.trim(),
-      ),
-      imageUrl: controller.imageController.text.trim(),
-      description: TranslatableString(
-        ar: controller.descArController.text.trim(),
-        en: controller.descEnController.text.trim(),
-      ),
-      isActive: controller.isActive.value,
-      icon: controller.iconController.text.trim(),
-      parentId: controller.parentId.value,
-    );
-
-    bool success = widget.category == null
-        ? await controller.addCategory(categoryData)
-        : await controller.updateCategory(categoryData);
-
-    if (success) {
-      HapticFeedback.heavyImpact();
-      Get.back();
-      Get.snackbar(
-        'نجح',
-        widget.category == null
-            ? 'تم إضافة التصنيف بنجاح'
-            : 'تم تحديث التصنيف بنجاح',
-        backgroundColor: Colors.greenAccent[400],
-        colorText: Colors.black,
-        icon: const Icon(Icons.check_circle_rounded, color: Colors.black),
-        snackPosition: SnackPosition.BOTTOM,
-        margin: const EdgeInsets.all(16),
-        borderRadius: 16,
-        duration: const Duration(seconds: 3),
-      );
-    }
-  }
 
   void _showErrorSnackbar(String message) {
     HapticFeedback.vibrate();

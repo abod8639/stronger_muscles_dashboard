@@ -4,9 +4,8 @@ import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/core/network/api_service.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/confirm_dialog.dart';
-import 'package:stronger_muscles_dashboard/features/categories/data/models/category_model.dart';
+import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
 import 'package:stronger_muscles_dashboard/features/categories/data/repositories/category_repository.dart';
-
 
 class CategoriesController extends GetxController {
   late final TextEditingController idController;
@@ -20,8 +19,8 @@ class CategoriesController extends GetxController {
   late final CategoryRepository _categoryRepository;
   final RxBool isLoading = true.obs;
   final RxBool isProcessing = false.obs;
-  final categories = <CategoryModel>[].obs;
-  final filteredCategories = <CategoryModel>[].obs;
+  final categories = <CategoryEntity>[].obs;
+  final filteredCategories = <CategoryEntity>[].obs;
   final searchQuery = ''.obs;
   final RxString parentId = ''.obs;
   final RxBool isActive = true.obs;
@@ -37,7 +36,7 @@ class CategoriesController extends GetxController {
     iconController = TextEditingController();
 
     super.onInit();
-    final apiService = Get.put(ApiService());
+    final apiService = Get.find<ApiService>();
     _categoryRepository = CategoryRepository(apiService);
 
     debounce(
@@ -85,63 +84,43 @@ class CategoriesController extends GetxController {
       final query = searchQuery.value.toLowerCase();
       filteredCategories.assignAll(
         categories.where((c) {
-          return c.name.ar.toLowerCase().contains(query) ||
-              c.name.en.toLowerCase().contains(query) ||
+          return c.nameAr.toLowerCase().contains(query) ||
+              c.nameEn.toLowerCase().contains(query) ||
               c.id.toLowerCase().contains(query);
         }).toList(),
       );
     }
   }
 
-  Future<bool> addCategory(CategoryModel category) async {
+  Future<bool> saveCategory({String? existingId}) async {
     try {
       isLoading.value = true;
-      final newCategory = await _categoryRepository.addCategory({
-        'id': category.id,
-        'name': category.name.toJson(),
-        'image_url': category.imageUrl,
-        'description': category.description?.toJson(),
+      final categoryData = {
+        'id': idController.text.trim(),
+        'name': {'ar': nameArController.text.trim(), 'en': nameEnController.text.trim()},
+        'image_url': imageController.text.trim(),
+        'description': {'ar': descArController.text.trim(), 'en': descEnController.text.trim()},
         'sort_order': 0,
         'is_active': isActive.value,
         'parent_id': parentId.value.isEmpty ? null : parentId.value,
-      });
+      };
 
-      categories.add(newCategory);
-      _applySearch();
-
-      Get.snackbar('نجاح', 'تم إضافة التصنيف بنجاح');
-      return true;
-    } catch (e) {
-      Get.snackbar('خطأ', 'فشل في إضافة التصنيف: $e');
-      return false;
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
-  Future<bool> updateCategory(CategoryModel category) async {
-    try {
-      isLoading.value = true;
-      final updatedCategory = await _categoryRepository
-          .updateCategory(category.id, {
-            'name': category.name.toJson(),
-            'image_url': category.imageUrl,
-            'description': category.description?.toJson(),
-            'sort_order': 0,
-            'is_active': isActive.value,
-            'parent_id': parentId.value.isEmpty ? null : parentId.value,
-          });
-
-      final index = categories.indexWhere((c) => c.id == category.id);
-      if (index != -1) {
-        categories[index] = updatedCategory;
-        _applySearch();
+      if (existingId == null) {
+        final newCategory = await _categoryRepository.addCategory(categoryData);
+        categories.add(newCategory);
+      } else {
+        final updatedCategory = await _categoryRepository.updateCategory(existingId, categoryData);
+        final index = categories.indexWhere((c) => c.id == existingId);
+        if (index != -1) {
+          categories[index] = updatedCategory;
+        }
       }
-
-      Get.snackbar('نجاح', 'تم تحديث التصنيف بنجاح');
+      
+      _applySearch();
+      Get.snackbar('نجاح', 'تم حفظ التصنيف بنجاح');
       return true;
     } catch (e) {
-      Get.snackbar('خطأ', 'فشل في تحديث التصنيف: ${e.toString()}');
+      Get.snackbar('خطأ', 'فشل في حفظ التصنيف: $e');
       return false;
     } finally {
       isLoading.value = false;
@@ -194,13 +173,13 @@ class CategoriesController extends GetxController {
     isActive.value = true;
   }
 
-  void prepareFormForEdit(CategoryModel category) {
+  void prepareFormForEdit(CategoryEntity category) {
     idController.text = category.id;
-    nameArController.text = category.name.ar;
-    nameEnController.text = category.name.en;
+    nameArController.text = category.nameAr;
+    nameEnController.text = category.nameEn;
     imageController.text = category.imageUrl ?? '';
-    descArController.text = category.description?.ar ?? '';
-    descEnController.text = category.description?.en ?? '';
+    descArController.text = category.descriptionAr ?? '';
+    descEnController.text = category.descriptionEn ?? '';
     iconController.text = category.icon?.toString() ?? '';
     parentId.value = category.parentId ?? '';
     isActive.value = category.isActive;

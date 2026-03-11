@@ -45,13 +45,13 @@ class OrdersPage extends GetView<OrdersController> {
             padding: EdgeInsets.symmetric(
               horizontal: responsive.defaultPadding.left,
             ),
-            child: const Column(
+            child:  Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 180, child: OrdersStatsSection()),
-                SizedBox(height: 10),
-                OrdersTable(),
-                SizedBox(height: 10),
+                SizedBox(height:responsive.isDesktop ? 180 : 320, child: OrdersStatsSection()),
+            const    SizedBox(height: 10),
+            const    OrdersTable(),
+            const    SizedBox(height: 10),
               ],
             ),
           ),

@@ -11,6 +11,7 @@ class ProductEntity {
   final int stockQuantity;
   final String? brand;
   final bool isActive;
+  final bool isFeatured;
   final bool? isBackgroundWhite;
   final String? servingSize;
   final int? servingsPerContainer;
@@ -33,6 +34,7 @@ class ProductEntity {
     required this.stockQuantity,
     this.brand,
     required this.isActive,
+    required this.isFeatured,
     this.isBackgroundWhite,
     this.servingSize,
     this.servingsPerContainer,

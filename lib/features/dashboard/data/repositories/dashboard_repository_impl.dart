@@ -1,4 +1,3 @@
-import 'package:stronger_muscles_dashboard/features/categories/data/models/category_model.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
 import 'package:stronger_muscles_dashboard/features/categories/data/repositories/category_repository.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/entities/dashboard_stats_entity.dart';
@@ -41,9 +40,8 @@ class DashboardRepositoryImpl implements DashboardRepository {
     // results[1] is Future<List<ProductEntity>>
     final List<ProductEntity> products = results[1] as List<ProductEntity>;
     
-    // results[2] is Future<List<CategoryModel>>
-    final List<CategoryModel> categoryModels = results[2] as List<CategoryModel>;
-    final List<CategoryEntity> categories = categoryModels.map((m) => m.toEntity()).toList();
+    // results[2] is Future<List<CategoryEntity>>
+    final List<CategoryEntity> categories = results[2] as List<CategoryEntity>;
     
     // results[3] is Future<UsersStatsEntity>
     final UsersStatsEntity usersStats = results[3] as UsersStatsEntity;

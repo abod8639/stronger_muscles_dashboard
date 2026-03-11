@@ -12,6 +12,7 @@ class HorizontalChipsSelector extends StatelessWidget {
   final String allLabel;
 
   final String Function(dynamic item)? labelBuilder;
+  final String Function(dynamic item)? idBuilder;
 
   const HorizontalChipsSelector({
     super.key,
@@ -23,6 +24,7 @@ class HorizontalChipsSelector extends StatelessWidget {
     this.showAllOption = true,
     this.allLabel = 'الكل',
     this.labelBuilder,
+    this.idBuilder,
   });
 
   @override
@@ -48,6 +50,8 @@ class HorizontalChipsSelector extends StatelessWidget {
 
           final String itemId = isAllItem
               ? 'all'
+              : idBuilder != null
+              ? idBuilder!(items[showAllOption ? index - 1 : index])
               : _getValue(items[showAllOption ? index - 1 : index], idKey);
 
           final bool isSelected = selectedId == itemId;
@@ -64,10 +68,26 @@ class HorizontalChipsSelector extends StatelessWidget {
   }
 
   String _getValue(dynamic item, String key) {
+    if (item == null) return '';
+    
+    // 1. Try Map access
+    if (item is Map) return item[key]?.toString() ?? '';
+
+    // 2. Try common entity properties directly if key is known
+    if (key == 'id') {
+      try { return item.id.toString(); } catch (_) {}
+    }
+
+    // 3. Try toJson logic
     try {
       return item.toJson()[key]?.toString() ?? '';
     } catch (_) {
-      return item[key]?.toString() ?? '';
+      // 4. Final fallback to dynamic access (might fail on classes)
+      try {
+        return item[key]?.toString() ?? '';
+      } catch (_) {
+        return '';
+      }
     }
   }
 }

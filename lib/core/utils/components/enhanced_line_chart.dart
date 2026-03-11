@@ -52,7 +52,7 @@ class EnhancedLineChartWidget extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               SizedBox(
-                height: 300,
+                height: 230,
                 child: LineChart(
                   LineChartData(
                     gridData: FlGridData(

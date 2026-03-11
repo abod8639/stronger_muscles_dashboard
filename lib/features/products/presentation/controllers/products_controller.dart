@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/features/categories/data/models/category_model.dart';
+import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
 import 'package:stronger_muscles_dashboard/features/categories/data/repositories/category_repository.dart';
 import '../../domain/entities/product_entity.dart';
 import '../../domain/usecases/add_product_usecase.dart';
@@ -39,7 +39,7 @@ class ProductsController extends GetxController {
 
   // --- Data Lists ---
   final products = <ProductEntity>[].obs;
-  final categories = <CategoryModel>[].obs;
+  final categories = <CategoryEntity>[].obs;
   final filteredProducts = <ProductEntity>[].obs;
   
   // Form specific state
@@ -47,6 +47,7 @@ class ProductsController extends GetxController {
   final productFlavors = <String>[].obs;
   final imageUrls = <String>[].obs;
   final isFeatured = false.obs;
+  final isActive = true.obs; // Added isActive
   final isBackgroundWhite = false.obs;
   final selectedSizeIndex = (-1).obs;
   final variants = <ProductVariantEntity>[].obs;
@@ -87,7 +88,7 @@ class ProductsController extends GetxController {
         _categoryRepository.getCategories(tree: true),
         _getProductsUseCase(),
       ]);
-      categories.assignAll(results[0] as List<CategoryModel>);
+      categories.assignAll(results[0] as List<CategoryEntity>);
       products.assignAll(results[1] as List<ProductEntity>);
       _applyFiltering();
     } catch (e) {
@@ -204,32 +205,56 @@ class ProductsController extends GetxController {
         return ProductSizeEntity(size: ps.size, price: price, discountPrice: discount);
       }).toList();
 
+      double mainPrice = double.tryParse(textcontrollers['price']!.text) ?? 0.0;
+      double? discountPrice = double.tryParse(textcontrollers['discount']!.text);
+
+      // If main price is 0 but we have sizes, use the first size price as default
+      if (mainPrice == 0 && updatedSizes.isNotEmpty) {
+        mainPrice = updatedSizes.first.price;
+        discountPrice = updatedSizes.first.discountPrice;
+      }
+
+      final String generatedId = existingProduct?.id ?? 
+          '${textcontrollers['name_en']!.text.trim().toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '-')}-${DateTime.now().millisecondsSinceEpoch.toString().substring(10)}';
+      
+      debugPrint('--- Generating Product with ID: $generatedId ---');
+
       final productData = {
+        'id': generatedId,
         'name': {'ar': textcontrollers['name_ar']!.text.trim(), 'en': textcontrollers['name_en']!.text.trim()},
         'description': {'ar': textcontrollers['desc_ar']!.text.trim(), 'en': textcontrollers['desc_en']!.text.trim()},
-        'price': double.tryParse(textcontrollers['price']!.text) ?? 0.0,
-        'discount_price': double.tryParse(textcontrollers['discount']!.text),
+        'price': mainPrice,
+        'discount_price': discountPrice,
         'image_urls': productImages,
         'category_id': categoryId,
         'stock_quantity': int.tryParse(textcontrollers['stock']!.text) ?? 0,
         'brand': textcontrollers['brand']!.text.trim(),
-        'is_active': isFeatured.value,
+        'is_active': isActive.value,
+        'featured': isFeatured.value,
         'is_background_white': isBackgroundWhite.value,
-        'serving_size': textcontrollers['serving']!.text,
+        'serving_size': textcontrollers['serving']!.text.trim(),
         'servings_per_container': int.tryParse(textcontrollers['sessions']!.text) ?? 0,
         'flavors': productFlavors.toList(),
         'product_sizes': updatedSizes.map((s) => {'size': s.size, 'price': s.price, 'discount_price': s.discountPrice}).toList(),
-        'variants': variants.map((v) => {
-          'id': v.id, 'sku': v.sku, 'price': v.price, 'discount_price': v.discountPrice,
-          'effective_price': v.effectivePrice, 'stock_quantity': v.stockQuantity,
-          'attributes': v.attributes, 'is_active': v.isActive,
+        'product_variants': variants.map((v) => {
+          'id': v.id,
+          'sku': v.sku,
+          'price': v.price,
+          'discount_price': v.discountPrice,
+          'effective_price': v.effectivePrice,
+          'stock_quantity': v.stockQuantity,
+          'attributes': v.attributes,
+          'is_active': v.isActive,
         }).toList(),
       };
+
+      debugPrint('Saving Product Payload: ${productData.toString()}');
 
       if (existingProduct == null) {
         final newProduct = await _addProductUseCase(productData);
         products.insert(0, newProduct);
         _showSuccess('تم بنجاح', 'تم إضافة المنتج بنجاح');
+
       } else {
         final updatedProduct = await _updateProductUseCase(existingProduct.id, productData);
         final index = products.indexWhere((p) => p.id == existingProduct.id);
@@ -240,6 +265,7 @@ class ProductsController extends GetxController {
       Get.back();
     } catch (e) {
       _showErrorSnackbar('خطأ في الحفظ', e.toString());
+      print(e);
     } finally {
       isSaving.value = false;
     }

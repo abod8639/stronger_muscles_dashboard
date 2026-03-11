@@ -23,7 +23,8 @@ mixin ProductFormMixin {
           product!.servingsPerContainer?.toString() ?? '';
 
       controller.productFlavors.assignAll(product!.flavors ?? []);
-      controller.isFeatured.value = product!.isActive;
+      controller.isActive.value = product!.isActive;
+      controller.isFeatured.value = product!.isFeatured;
       controller.isBackgroundWhite.value = product!.isBackgroundWhite ?? false;
       controller.productSizes.assignAll(product!.productSizes ?? []);
       controller.variants.assignAll(product!.variants ?? []);
@@ -36,7 +37,8 @@ mixin ProductFormMixin {
     controller.textcontrollers.forEach((_, c) => c.clear());
     controller.productFlavors.clear();
     controller.imageUrls.clear();
-    controller.isFeatured.value = true;
+    controller.isActive.value = true;
+    controller.isFeatured.value = false;
     controller.isBackgroundWhite.value = false;
     controller.productSizes.clear();
     controller.variants.clear();

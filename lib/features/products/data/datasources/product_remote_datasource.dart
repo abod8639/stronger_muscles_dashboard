@@ -78,26 +78,58 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
 
   @override
   Future<ProductModel> addProduct(Map<String, dynamic> data) async {
-    final response = await dio.post(ApiConfig.adminProducts, data: data);
-    if (response.statusCode == 201 || response.statusCode == 200) {
-      final responseData = (response.data is Map && response.data.containsKey('data'))
-          ? response.data['data']
-          : response.data;
-      return ProductModel.fromJson(responseData as Map<String, dynamic>);
+    try {
+      final response = await dio.post(ApiConfig.adminProducts, data: data);
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        final responseData = (response.data is Map && response.data.containsKey('data'))
+            ? response.data['data']
+            : response.data;
+        return ProductModel.fromJson(responseData as Map<String, dynamic>);
+      }
+      throw Exception('Failed to add product');
+    } on DioException catch (e) {
+      final errorMessage = _parseDioError(e, 'إضافة منتج');
+      throw Exception(errorMessage);
     }
-    throw Exception('Failed to add product');
   }
 
   @override
   Future<ProductModel> updateProduct(String id, Map<String, dynamic> data) async {
-    final response = await dio.put('${ApiConfig.adminProducts}/$id', data: data);
-    if (response.statusCode == 200) {
-      final responseData = (response.data is Map && response.data.containsKey('data'))
-          ? response.data['data']
-          : response.data;
-      return ProductModel.fromJson(responseData as Map<String, dynamic>);
+    try {
+      final response = await dio.put('${ApiConfig.adminProducts}/$id', data: data);
+      if (response.statusCode == 200) {
+        final responseData = (response.data is Map && response.data.containsKey('data'))
+            ? response.data['data']
+            : response.data;
+        return ProductModel.fromJson(responseData as Map<String, dynamic>);
+      }
+      throw Exception('Failed to update product');
+    } on DioException catch (e) {
+      final errorMessage = _parseDioError(e, 'تحديث منتج');
+      throw Exception(errorMessage);
     }
-    throw Exception('Failed to update product');
+  }
+
+  String _parseDioError(DioException e, String action) {
+    if (e.response != null) {
+      final data = e.response?.data;
+      if (data is Map) {
+        if (data.containsKey('errors')) {
+          final errors = data['errors'] as Map;
+          String details = errors.entries.map((entry) {
+            final field = entry.key;
+            final message = (entry.value is List) ? (entry.value as List).join(', ') : entry.value.toString();
+            return '$field: $message';
+          }).join(' | ');
+          return 'فشل في $action: $details';
+        }
+        if (data.containsKey('message')) {
+          return 'فشل في $action: ${data['message']}';
+        }
+      }
+      return 'فشل في $action: كود الحالة ${e.response?.statusCode}';
+    }
+    return 'فشل في $action: ${e.message}';
   }
 
   @override

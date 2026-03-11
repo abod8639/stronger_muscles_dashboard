@@ -3,17 +3,16 @@ import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/build_modern_text_field.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/confirm_dialog.dart';
-import 'package:stronger_muscles_dashboard/features/categories/data/models/category_model.dart';
+import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
+
 import 'package:stronger_muscles_dashboard/features/categories/presentation/controllers/categories_controller.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
-import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/availability_switch.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/category_tree_selector.dart';
-// For TranslatableString
 
 class CategoryFormSheet extends StatefulWidget {
-  final CategoryModel? category;
+  final CategoryEntity? category;
 
   const CategoryFormSheet({super.key, this.category});
 
@@ -331,41 +330,21 @@ class _CategoryFormSheetState extends State<CategoryFormSheet> {
   }
 
   void _submitForm() async {
-    if (controller.nameArController.text.trim().isEmpty) {
+    if (controller.nameArController.text.trim().isEmpty &&
+        controller.nameEnController.text.trim().isEmpty) {
       Get.snackbar(
         'تنبيه',
         'يجب ملء حقل الاسم على الأقل',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: AppColors.error.withValues(alpha: 0.8),
+        backgroundColor: Colors.redAccent,
         colorText: Colors.white,
       );
       return;
     }
 
-    final categoryData = CategoryModel(
-      id: controller.idController.text.trim(),
-      name: TranslatableString(
-        ar: controller.nameArController.text.trim(),
-        en: controller.nameEnController.text.trim(),
-      ),
-      description: TranslatableString(
-        ar: controller.descArController.text.trim(),
-        en: controller.descEnController.text.trim(),
-      ),
-      imageUrl: controller.imageController.text.trim(),
-      isActive: controller.isActive.value,
-      parentId: controller.parentId.value.isEmpty
-          ? null
-          : controller.parentId.value,
-      icon: controller.iconController.text.trim(),
+    bool success = await controller.saveCategory(
+      existingId: widget.category?.id,
     );
-
-    bool success;
-    if (widget.category == null) {
-      success = await controller.addCategory(categoryData);
-    } else {
-      success = await controller.updateCategory(categoryData);
-    }
 
     if (success) Get.back();
   }

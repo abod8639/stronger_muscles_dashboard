@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/premium_indicator_card.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/controllers/orders_controller.dart';
 
@@ -12,12 +13,15 @@ class OrdersStatsSection extends GetView<OrdersController> {
       if (controller.isLoading.value && controller.totalOrders == 0) {
         return const SizedBox.shrink();
       }
+      final res = context.responsive ;
       return GridView.count(
+        
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        crossAxisCount: 4,
+        crossAxisCount: res.isDesktop ? 4 : 2,
         crossAxisSpacing: 10,
         childAspectRatio: 1.9,
+        
         children: [
           PremiumIndicatorCard(
             title: 'إجمالي الطلبات',
@@ -49,7 +53,7 @@ class OrdersStatsSection extends GetView<OrdersController> {
           PremiumIndicatorCard(
             title: 'الإيرادات',
             value: controller.totalRevenue.toStringAsFixed(0),
-            subtitle: 'SAR',
+            // subtitle: 'SAR',
             trend: '+18%',
             trendUp: true,
             accentColor: Colors.purple,

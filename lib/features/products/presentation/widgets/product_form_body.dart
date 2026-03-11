@@ -305,6 +305,12 @@ class _ProductFormBodyState extends State<ProductFormBody> {
     return Column(
       children: [
         AvailabilitySwitch(
+          title: 'تفعيل المنتج (Active)',
+          isAvailable: ctrl.isActive,
+          onChanged: (val) => ctrl.isActive.value = val,
+        ),
+        const SizedBox(height: 8),
+        AvailabilitySwitch(
           title: 'منتج مميز (Featured)',
           isAvailable: ctrl.isFeatured,
           onChanged: (val) => ctrl.isFeatured.value = val,
