@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
-import 'package:stronger_muscles_dashboard/features/orders/data/models/order_model.dart';
-import 'build_info_item.dart';
+import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
+import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/orders_screen/widgets/build_info_item.dart';
 
-Widget buildInfoSection(OrderModel order) {
-  final itemCount = order.items?.length ?? 0;
+Widget buildInfoSection(OrderEntity order) {
+  final itemCount = order.items.length;
 
   return Builder(
     builder: (context) {

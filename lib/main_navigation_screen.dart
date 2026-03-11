@@ -8,7 +8,7 @@ import 'package:stronger_muscles_dashboard/core/utils/components/sidebar.dart';
 import 'package:stronger_muscles_dashboard/features/adds/presentation/page/add_screen.dart';
 import 'package:stronger_muscles_dashboard/features/categories/presentation/page/categories_screen/categories_screen.dart';
 import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_controller.dart';
-import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/orders_screen/orders_screen.dart';
+import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/orders_page.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/pages/products_screen.dart';
 import 'package:stronger_muscles_dashboard/features/settings/presentation/page/settings_screen.dart';
 import 'package:stronger_muscles_dashboard/features/users/presentation/pages/users_page.dart';
@@ -55,7 +55,7 @@ class MainNavigationScreen extends StatelessWidget {
                               CategoriesScreen(),
                               ProductsScreen(),
                               AddScreen(),
-                              OrdersScreen(),
+                              OrdersPage(),
                               UsersPage(),
                               SettingsScreen(),
                             ],

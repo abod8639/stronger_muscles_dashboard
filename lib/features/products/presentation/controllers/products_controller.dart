@@ -5,7 +5,7 @@ import 'package:stronger_muscles_dashboard/data/models/flavors_model.dart';
 import 'package:stronger_muscles_dashboard/features/categories/data/models/category_model.dart';
 import 'package:stronger_muscles_dashboard/features/categories/data/repositories/category_repository.dart';
 import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
-import 'package:stronger_muscles_dashboard/features/products/domain/repositories/product_repository.dart';
+import 'package:stronger_muscles_dashboard/features/products/data/repositories/product_repository.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_form_sheet.dart';
 
 

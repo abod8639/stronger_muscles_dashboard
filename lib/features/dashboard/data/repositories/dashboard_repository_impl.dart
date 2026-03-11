@@ -1,12 +1,15 @@
-import 'package:stronger_muscles_dashboard/features/categories/data/repositories/category_repository.dart';
+import 'package:stronger_muscles_dashboard/features/categories/data/models/category_model.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
+import 'package:stronger_muscles_dashboard/features/categories/data/repositories/category_repository.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/entities/dashboard_stats_entity.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/repositories/dashboard_repository.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/repositories/order_repository.dart';
+import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
-import 'package:stronger_muscles_dashboard/features/products/domain/repositories/product_repository.dart';
+import 'package:stronger_muscles_dashboard/features/products/data/repositories/product_repository.dart';
 import 'package:stronger_muscles_dashboard/features/users/domain/repositories/user_repository.dart';
+import 'package:stronger_muscles_dashboard/features/users/domain/entities/users_stats_entity.dart';
 
 class DashboardRepositoryImpl implements DashboardRepository {
   final OrderRepository _orderRepository;
@@ -33,14 +36,19 @@ class DashboardRepositoryImpl implements DashboardRepository {
       _userRepository.getUsersStats(),
     ]);
 
-    final orderModels = results[0] as List;
-    final productModels = results[1] as List;
-    final categoryModels = results[2] as List;
-    final usersStats = results[3]; // UsersStatsEntity
-
-    final List<dynamic>  orders = orderModels.map((m) => m.toEntity()).toList();
-    final List<dynamic> products = productModels.map((m) => m.toEntity()).toList();
-    final List<dynamic> categories = categoryModels.map((m) => m.toEntity()).toList();
+    // results[0] is Future<List<OrderEntity>>
+    final List<OrderEntity> orders = results[0] as List<OrderEntity>;
+    
+    // results[1] is Future<List<ProductModel>>
+    final List<ProductModel> productModels = results[1] as List<ProductModel>;
+    final List<ProductEntity> products = productModels.map((m) => m.toEntity()).toList();
+    
+    // results[2] is Future<List<CategoryModel>>
+    final List<CategoryModel> categoryModels = results[2] as List<CategoryModel>;
+    final List<CategoryEntity> categories = categoryModels.map((m) => m.toEntity()).toList();
+    
+    // results[3] is Future<UsersStatsEntity>
+    final UsersStatsEntity usersStats = results[3] as UsersStatsEntity;
 
     // 1. Order Status Counts
     int pending = 0;
@@ -95,11 +103,11 @@ class DashboardRepositoryImpl implements DashboardRepository {
     return DashboardStatsEntity(
       totalRevenue: revenue,
       totalOrders: orders.length,
-      totalUsers: usersStats.totalUsers , // From UsersStatsEntity
+      totalUsers: usersStats.totalUsers, 
       totalProducts: products.length,
-      orders: orders as List<OrderEntity>,
-      products: products as List<ProductEntity>,
-      categories: categories as List<CategoryEntity>,
+      orders: orders,
+      products: products,
+      categories: categories,
       pendingOrders: pending,
       processingOrders: processing,
       shippedOrders: shipped,

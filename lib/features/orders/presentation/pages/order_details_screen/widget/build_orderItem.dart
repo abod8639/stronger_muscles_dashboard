@@ -1,10 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
-import 'package:stronger_muscles_dashboard/features/orders/data/models/order_model.dart';
+import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 import 'package:stronger_muscles_dashboard/functions/cache_manager.dart';
 
-Widget buildOrderItem(OrderItemModel item, bool isDark) {
+Widget buildOrderItem(OrderItemEntity item, bool isDark) {
   return GlassContainer(
     margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
     padding: const EdgeInsets.all(12),

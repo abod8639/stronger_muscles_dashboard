@@ -1,17 +1,13 @@
 import 'package:get/get.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/usecases/get_users_stats_usecase.dart';
-import '../../domain/usecases/get_users_usecase.dart';
 
 class UsersController extends GetxController {
-  final GetUsersUseCase _getUsersUseCase;
   final GetUsersStatsUseCase _getUsersStatsUseCase;
 
   UsersController({
-    required GetUsersUseCase getUsersUseCase,
     required GetUsersStatsUseCase getUsersStatsUseCase,
-  })  : _getUsersUseCase = getUsersUseCase,
-        _getUsersStatsUseCase = getUsersStatsUseCase;
+  })  : _getUsersStatsUseCase = getUsersStatsUseCase;
 
   final isLoading = true.obs;
   final totalUsers = 0.obs;

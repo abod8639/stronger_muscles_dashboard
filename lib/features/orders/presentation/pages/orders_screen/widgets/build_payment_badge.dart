@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/features/orders/data/models/order_model.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 
-Widget buildPaymentBadge(OrderModel order) {
+Widget buildPaymentBadge(OrderEntity order) {
   final isPaid = order.paymentStatus == PaymentStatus.paid;
   final color = isPaid ? Colors.greenAccent : Colors.orangeAccent;
 

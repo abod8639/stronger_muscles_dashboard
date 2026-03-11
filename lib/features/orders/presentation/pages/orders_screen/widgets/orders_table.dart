@@ -4,13 +4,13 @@ import 'package:intl/intl.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/custom_search_bar.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/status_badge.dart';
-import 'package:stronger_muscles_dashboard/features/dashboard/presentation/page/widget/build_recent_orders.dart';
-import 'package:stronger_muscles_dashboard/features/orders/data/models/order_model.dart';
+import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/controllers/orders_controller.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/order_details_screen/order_details_screen.dart';
 
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
+import 'package:stronger_muscles_dashboard/features/orders/presentation/widgets/build_recent_orders.dart';
 
 class OrdersTable extends StatelessWidget {
   const OrdersTable({super.key});
@@ -29,7 +29,7 @@ class OrdersTable extends StatelessWidget {
 
           responsive.isDesktop
               ? _buildTableContent(controller, responsive)
-              : buildRecentOrders(responsive),
+              : buildRecentOrders(responsive,controller.paginatedOrders),
 
           _buildTableFooter(controller, responsive),
         ],
@@ -175,10 +175,7 @@ class OrdersTable extends StatelessWidget {
 
           // Rows
           ...List.generate(orders.length, (index) {
-            return _buildOrderRow(
-              orders[index],
-              isLast: index == orders.length - 1,
-            );
+            return _buildOrderRow( orders[index], isLast: index == orders.length - 1);
           }),
 
           if (orders.isEmpty)
@@ -226,7 +223,7 @@ class OrdersTable extends StatelessWidget {
     );
   }
 
-  Widget _buildOrderRow(OrderModel order, {bool isLast = false}) {
+  Widget _buildOrderRow(OrderEntity order, {bool isLast = false}) {
     final dateFormat = DateFormat('MMM dd, yyyy');
     return Builder(
       builder: (context) {
@@ -258,7 +255,7 @@ class OrdersTable extends StatelessWidget {
   }
 
   // --- تصميم شاشات الكمبيوتر (الجدول الأصلي المحسن) ---
-  Widget _buildDesktopLayout(OrderModel order, DateFormat dateFormat) {
+  Widget _buildDesktopLayout(OrderEntity order, DateFormat dateFormat) {
     return Row(
       children: [
         Expanded(flex: 3, child: _buildOrderId(order)),
@@ -271,7 +268,7 @@ class OrdersTable extends StatelessWidget {
     );
   }
 
-  Widget _buildMobileLayout(OrderModel order, DateFormat dateFormat) {
+  Widget _buildMobileLayout(OrderEntity order, DateFormat dateFormat) {
     return Column(
       children: [
         Row(
@@ -302,7 +299,7 @@ class OrdersTable extends StatelessWidget {
     );
   }
 
-  Widget _buildOrderId(OrderModel order) {
+  Widget _buildOrderId(OrderEntity order) {
     return Text(
       '#ORD-${order.id.toString().padLeft(4, '0')}',
       style: const TextStyle(
@@ -313,7 +310,7 @@ class OrdersTable extends StatelessWidget {
     );
   }
 
-  Widget _buildCustomerInfo(OrderModel order) {
+  Widget _buildCustomerInfo(OrderEntity order) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -349,7 +346,7 @@ class OrdersTable extends StatelessWidget {
     );
   }
 
-  Widget _buildDate(OrderModel order, DateFormat dateFormat) {
+  Widget _buildDate(OrderEntity order, DateFormat dateFormat) {
     return Text(
       dateFormat.format(order.orderDate),
       style: TextStyle(
@@ -359,7 +356,7 @@ class OrdersTable extends StatelessWidget {
     );
   }
 
-  Widget _buildPrice(OrderModel order) {
+  Widget _buildPrice(OrderEntity order) {
     return Text(
       '${order.totalAmount.toStringAsFixed(2)} L.E ',
       style: const TextStyle(
@@ -370,14 +367,14 @@ class OrdersTable extends StatelessWidget {
     );
   }
 
-  Widget _buildActionBtn(OrderModel order) {
+  Widget _buildActionBtn(OrderEntity order) {
     return const Align(
       alignment: Alignment.centerRight,
       child: Icon(Icons.chevron_right_rounded, size: 20, color: Colors.white24),
     );
   }
 
-  Widget _buildAvatar(OrderModel order) {
+  Widget _buildAvatar(OrderEntity order) {
     return Container(
       width: 32,
       height: 32,

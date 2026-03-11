@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import '../../domain/repositories/product_repository.dart';
+import 'package:stronger_muscles_dashboard/features/products/data/repositories/product_repository.dart';
 import '../../domain/usecases/get_products_usecase.dart';
 import '../../domain/usecases/add_product_usecase.dart';
 import '../../domain/usecases/update_product_usecase.dart';

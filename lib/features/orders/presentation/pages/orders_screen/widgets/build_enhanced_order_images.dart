@@ -1,11 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
-import 'package:stronger_muscles_dashboard/features/orders/data/models/order_model.dart';
+import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/orders_screen/widgets/build_image_shimmer.dart';
 
-Widget buildEnhancedOrderImages(OrderModel order, bool isHovered) {
-  final items = order.items ?? [];
+Widget buildEnhancedOrderImages(OrderEntity order, bool isHovered) {
+  final items = order.items;
   if (items.isEmpty) return const SizedBox.shrink();
 
   final displayCount = items.length > 3 ? 3 : items.length;
