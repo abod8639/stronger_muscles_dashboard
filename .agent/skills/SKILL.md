@@ -272,3 +272,15 @@ features/product/
 | Page / Screen | `*_page.dart` | `products_page.dart` |
 | Widget | descriptive name | `product_card.dart` |
 | Service | `*_service.dart` | `product_service.dart` |
+
+### 7 pakges
+
+dartz
+hive
+feezd
+dio
+cached_network_image
+freezed
+
+
+قم باستخدام flutter analyze لكي تتاكد من ان الكود يعمل بدون مشاكل

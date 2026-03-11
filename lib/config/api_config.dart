@@ -56,6 +56,11 @@ class ApiConfig {
   static const String adminUploadProductImage = '/admin/upload/product-image';
   static const String adminUploadCategoryImage = '/admin/upload/category-image';
 
+  // Promos Management
+  static const String adminPromos = '/admin/promos';
+  static String adminPromoDetail(String id) => '/admin/promos/$id';
+  static const String shopPromos = '/shop/promos';
+
   // ==================== Customer Endpoints (Protected) ====================
   static const String customerProfile = '/customer/profile';
   static const String customerCart = '/customer/cart';
