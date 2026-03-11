@@ -1,192 +1,54 @@
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/core/network/api_service.dart';
-import 'package:stronger_muscles_dashboard/features/categories/data/models/category_model.dart';
-import 'package:stronger_muscles_dashboard/features/categories/data/repositories/category_repository.dart';
-import 'package:stronger_muscles_dashboard/features/orders/data/models/order_model.dart';
-import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
-import 'package:stronger_muscles_dashboard/features/orders/domain/repositories/order_repository.dart';
-import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
-import 'package:stronger_muscles_dashboard/features/products/domain/repositories/product_repository.dart';
-import 'package:stronger_muscles_dashboard/features/users/domain/repositories/user_repository.dart';
-// import 'package:stronger_muscles_dashboard/features/users/domain/repositories/user_repository.dart';
-
+import 'package:stronger_muscles_dashboard/features/dashboard/domain/entities/dashboard_stats_entity.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/domain/usecases/get_dashboard_data_usecase.dart';
 
 class DashboardController extends GetxController {
-  // --- Repositories ---
-  late final ApiService _apiService;
-  late final OrderRepository _orderRepository;
-  late final ProductRepository _productRepository;
-  late final CategoryRepository _categoryRepository;
-  late final UserRepository _userRepository;
+  final GetDashboardDataUseCase _getDashboardDataUseCase;
+
+  DashboardController({
+    required GetDashboardDataUseCase getDashboardDataUseCase,
+  }) : _getDashboardDataUseCase = getDashboardDataUseCase;
 
   // --- UI States ---
   final isLoading = true.obs;
-  final isConnected = false.obs;
+  final isConnected = true.obs; // Defaults to true if we're calling fetch
   final errorMessage = ''.obs;
 
+  // --- Dashboard Data ---
+  final stats = DashboardStatsEntity.initial().obs;
+
   // --- Period Filter Configuration ---
-  // المعرف المختار حالياً للفترة الزمنية
   final selectPeriod = 'week'.obs;
 
-  // القائمة المتوافقة مع HorizontalChipsSelector
   final List<Map<String, String>> periodItems = const [
     {'id': 'week', 'name': 'هذا الأسبوع'},
     {'id': 'month', 'name': 'هذا الشهر'},
     {'id': 'year', 'name': 'هذا العام'},
   ];
 
-  // --- Dashboard Data Counters ---
-  final totalRevenue = 0.0.obs;
-  final totalOrders = 0.obs;
-  final totalUsers = 0.obs;
-  final totalProducts = 0.obs;
-
-  // Lists
-  final orders = <OrderModel>[].obs;
-  final products = <ProductModel>[].obs;
-  final categories = <CategoryModel>[].obs;
-
-  // Order Status Counters
-  final pendingOrders = 0.obs;
-  final processingOrders = 0.obs;
-  final shippedOrders = 0.obs;
-  final deliveredOrders = 0.obs;
-  final cancelledOrders = 0.obs;
-
-  // Stock Status Counters
-  final productsInStock = 0.obs;
-  final productsLowStock = 0.obs;
-  final productsOutOfStock = 0.obs;
-
-  // --- Debounce Mechanism ---
-  DateTime? _lastFetchTime;
-  static const Duration _minFetchInterval = Duration(seconds: 2);
-
   @override
   void onInit() {
     super.onInit();
-    _initializeRepositories();
     ever(selectPeriod, (_) => fetchDashboardData());
-    _checkInitialConnection();
-  }
-
-  void _initializeRepositories() {
-    _apiService = ApiService();
-    _orderRepository = OrderRepository(_apiService);
-    _productRepository = ProductRepository(_apiService);
-    _categoryRepository = CategoryRepository(_apiService);
-    _userRepository = UserRepository(_apiService);
-  }
-
-  Future<void> _checkInitialConnection() async {
-    try {
-      isLoading.value = true;
-      errorMessage.value = '';
-
-      final connected = await _apiService.checkConnection();
-      isConnected.value = connected;
-
-      if (!connected) {
-        errorMessage.value =
-            'لا يمكن الاتصال بالخادم. يرجى التحقق من الإنترنت.';
-        isLoading.value = false;
-        return;
-      }
-
-      await fetchDashboardData();
-    } catch (e) {
-      errorMessage.value = 'حدث خطأ أثناء الاتصال: $e';
-    } finally {
-      isLoading.value = false;
-    }
+    fetchDashboardData();
   }
 
   Future<void> fetchDashboardData() async {
-    final now = DateTime.now();
-    if (_lastFetchTime != null &&
-        now.difference(_lastFetchTime!) < _minFetchInterval) {
-      debugPrint('⏭ تم تجاهل الطلب المكرر (في انتظار debounce)');
-      return;
-    }
-    _lastFetchTime = now;
-
     try {
       isLoading.value = true;
       errorMessage.value = '';
 
-      final results = await Future.wait([
-        _orderRepository.getOrders(),
-        _productRepository.getProducts(),
-        _categoryRepository.getCategories(),
-        _fetchUsersStats(),
-      ]);
-
-      orders.assignAll(results[0] as List<OrderModel>);
-      products.assignAll(results[1] as List<ProductModel>);
-      categories.assignAll(results[2] as List<CategoryModel>);
-
-      _calculateStatistics();
+      final result = await _getDashboardDataUseCase();
+      stats.value = result;
+      isConnected.value = true;
     } catch (e) {
       errorMessage.value = 'فشل في تحديث البيانات: $e';
+      isConnected.value = false;
+      debugPrint('Dashboard Error: $e');
     } finally {
       isLoading.value = false;
     }
-  }
-
-  Future<dynamic> _fetchUsersStats() async {
-    try {
-      final usersStats = await _userRepository.getUsersStats();
-      if (usersStats.containsKey('total_users')) {
-        totalUsers.value =
-            int.tryParse(usersStats['total_users'].toString()) ?? 0;
-      } else if (usersStats['data'] != null) {
-        totalUsers.value =
-            int.tryParse(usersStats['data']['total_users'].toString()) ?? 0;
-      }
-      return usersStats;
-    } catch (e) {
-      print('خطأ في إحصائيات المستخدمين: $e');
-      return {};
-    }
-  }
-
-  void _calculateStatistics() {
-    // 1. إحصائيات الطلبات
-    pendingOrders.value = orders
-        .where((o) => o.status == OrderStatus.pending)
-        .length;
-    processingOrders.value = orders
-        .where((o) => o.status == OrderStatus.processing)
-        .length;
-    shippedOrders.value = orders
-        .where((o) => o.status == OrderStatus.shipped)
-        .length;
-    deliveredOrders.value = orders
-        .where((o) => o.status == OrderStatus.delivered)
-        .length;
-    cancelledOrders.value = orders
-        .where((o) => o.status == OrderStatus.cancelled)
-        .length;
-
-    // 2. الماليات
-    totalRevenue.value = orders
-        .where(
-          (o) => o.status != OrderStatus.cancelled,
-        ) // لا تحسب المبيعات الملغاة
-        .fold(0.0, (sum, order) => sum + order.totalAmount);
-
-    totalOrders.value = orders.length;
-    totalProducts.value = products.length;
-
-    // 3. إحصائيات المخزون
-    productsInStock.value = products.where((p) => p.stockQuantity > 10).length;
-    productsLowStock.value = products
-        .where((p) => p.stockQuantity > 0 && p.stockQuantity <= 10)
-        .length;
-    productsOutOfStock.value = products
-        .where((p) => p.stockQuantity == 0)
-        .length;
   }
 
   void updatePeriod(String periodId) {
@@ -194,6 +56,6 @@ class DashboardController extends GetxController {
   }
 
   Future<void> retryConnection() async {
-    await _checkInitialConnection();
+    await fetchDashboardData();
   }
 }

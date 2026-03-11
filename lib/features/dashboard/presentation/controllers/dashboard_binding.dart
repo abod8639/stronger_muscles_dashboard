@@ -1,72 +1,49 @@
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/core/network/api_service.dart';
 import 'package:stronger_muscles_dashboard/features/categories/data/repositories/category_repository.dart';
-import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_controller.dart';
-import '../../../../core/network/api_base.dart';
-import '../../../categories/data/datasources/category_remote_datasource.dart';
-// import '../../../categories/domain/repositories/category_repository.dart';
-// import '../../../categories/domain/usecases/add_category_usecase.dart';
-import '../../../categories/domain/usecases/delete_category_usecase.dart';
-// import '../../../categories/domain/usecases/get_categories_usecase.dart';
-// import '../../../categories/domain/usecases/update_category_usecase.dart';
-// import '../../../categories/presentation/controllers/categories_controller.dart';
-import '../../../orders/data/datasources/order_remote_datasource.dart';
-// import '../../../orders/data/repositories/order_repository_impl.dart';
-// import '../../../orders/domain/repositories/order_repository.dart';
-// import '../../../orders/domain/usecases/get_order_detail_usecase.dart';
-// import '../../../orders/domain/usecases/get_orders_usecase.dart';
-// import '../../../orders/domain/usecases/update_order_status_usecase.dart';
-import '../../../orders/presentation/controllers/orders_controller.dart';
-import '../../../products/data/datasources/product_remote_datasource.dart';
-// import '../../../products/domain/repositories/product_repository.dart';
-import '../../../users/data/datasources/user_remote_datasource.dart';
-import '../../../users/data/repositories/user_repository_impl.dart';
-import '../../../users/domain/repositories/user_repository.dart';
+import 'package:stronger_muscles_dashboard/features/orders/domain/repositories/order_repository.dart';
+import 'package:stronger_muscles_dashboard/features/products/domain/repositories/product_repository.dart';
+import 'package:stronger_muscles_dashboard/features/users/domain/repositories/user_repository.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/data/repositories/dashboard_repository_impl.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/domain/repositories/dashboard_repository.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/domain/usecases/get_dashboard_data_usecase.dart';
 import 'dashboard_controller.dart';
 
 class DashboardBinding extends Bindings {
   @override
   void dependencies() {
-    final apiBase = Get.find<ApiBase>();
-    final dio = apiBase.dio;
+    final apiService = Get.find<ApiService>();
 
-    // Data Sources
-    Get.lazyPut<CategoryRemoteDataSource>(() => CategoryRemoteDataSourceImpl(dio), fenix: true);
-    Get.lazyPut<ProductRemoteDataSource>(() => ProductRemoteDataSourceImpl(dio), fenix: true);
-    Get.lazyPut<OrderRemoteDataSource>(() => OrderRemoteDataSourceImpl(dio), fenix: true);
-    Get.lazyPut<UserRemoteDataSource>(() => UserRemoteDataSourceImpl(dio), fenix: true);
-
-    // Repositories
-    // Get.lazyPut<CategoryRepository>(() => CategoryRepositoryImpl(Get.find<CategoryRemoteDataSource>()), fenix: true);
-    // Get.lazyPut<ProductRepository>(() => ProductRepositoryImpl(Get.find<ProductRemoteDataSource>()), fenix: true);
-    // Get.lazyPut<OrderRepository>(() => OrderRepositoryImpl(Get.find<OrderRemoteDataSource>()), fenix: true);
-    Get.lazyPut<UserRepository>(() => UserRepositoryImpl(Get.find<UserRemoteDataSource>()), fenix: true);
+    // Repositories needed for Dashboard (Fallback if not provided by other bindings)
+    if (!Get.isRegistered<OrderRepository>()) {
+      Get.lazyPut(() => OrderRepository(apiService), fenix: true);
+    }
+    if (!Get.isRegistered<ProductRepository>()) {
+      Get.lazyPut(() => ProductRepository(apiService), fenix: true);
+    }
+    if (!Get.isRegistered<CategoryRepository>()) {
+      Get.lazyPut(() => CategoryRepository(apiService), fenix: true);
+    }
     
-    // Categories UseCases
-    // Get.lazyPut(() => GetCategoriesUseCase(Get.find<CategoryRepository>()), fenix: true);
-    // Get.lazyPut(() => AddCategoryUseCase(Get.find<CategoryRepository>()), fenix: true);
-    // Get.lazyPut(() => UpdateCategoryUseCase(Get.find<CategoryRepository>()), fenix: true);
-    Get.lazyPut(() => DeleteCategoryUseCase(Get.find<CategoryRepository>()), fenix: true);
+    // UserRepository is already provided by UsersBinding
+    // Note: Ensuring DashboardRepository is registered after its dependencies
+    Get.lazyPut<DashboardRepository>(
+      () => DashboardRepositoryImpl(
+        orderRepository: Get.find<OrderRepository>(),
+        productRepository: Get.find<ProductRepository>(),
+        categoryRepository: Get.find<CategoryRepository>(),
+        userRepository: Get.find<UserRepository>(),
+      ),
+      fenix: true,
+    );
 
-    // Orders UseCases
-    // Get.lazyPut(() => GetOrdersUseCase(Get.find<OrderRepository>()), fenix: true);
-    // Get.lazyPut(() => GetOrderDetailUseCase(Get.find<OrderRepository>()), fenix: true);
-    // Get.lazyPut(() => UpdateOrderStatusUseCase(Get.find<OrderRepository>()), fenix: true);
+    Get.lazyPut(() => GetDashboardDataUseCase(Get.find<DashboardRepository>()), fenix: true);
 
-    // Controllers
-    // Get.lazyPut(() => CategoriesController(
-    //   // getCategoriesUseCase: Get.find<GetCategoriesUseCase>(),
-    //   // addCategoryUseCase: Get.find<AddCategoryUseCase>(),
-    //   // updateCategoryUseCase: Get.find<UpdateCategoryUseCase>(),
-    //   deleteCategoryUseCase: Get.find<DeleteCategoryUseCase>(),
-    // ), fenix: true);
-
-    Get.lazyPut(() => OrdersController(
-      // getOrdersUseCase: Get.find<GetOrdersUseCase>(),
-      // getOrderDetailUseCase: Get.find<GetOrderDetailUseCase>(),
-      // updateOrderStatusUseCase: Get.find<UpdateOrderStatusUseCase>(),
-    ), fenix: true);
-
-    Get.put(DashboardController());
-    Get.put(NavigationController());
+    Get.lazyPut(
+      () => DashboardController(
+        getDashboardDataUseCase: Get.find<GetDashboardDataUseCase>(),
+      ),
+      fenix: true,
+    );
   }
 }
