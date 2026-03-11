@@ -10,11 +10,11 @@ import '../../../../core/network/api_base.dart';
 class UsersBinding extends Bindings {
   @override
   void dependencies() {
-    final apiBase = Get.find<ApiBase>();
-    final dio = apiBase.dio;
+    // Service
+    Get.lazyPut(() => UserService());
 
     // Data Sources
-    Get.lazyPut<UserRemoteDataSource>(() => UserRemoteDataSourceImpl(dio));
+    Get.lazyPut<UserRemoteDataSource>(() => UserRemoteDataSourceImpl(Get.find<UserService>()));
 
     // Repository
     Get.lazyPut<UserRepository>(() => UserRepositoryImpl(Get.find<UserRemoteDataSource>()));
@@ -25,8 +25,8 @@ class UsersBinding extends Bindings {
 
     // Controller
     Get.put(UsersController(
-      // getUsersStatsUseCase: Get.find<GetUsersStatsUseCase>(),
-      // getUsersUseCase: Get.find<GetUsersUseCase>(),
+      getUsersStatsUseCase: Get.find<GetUsersStatsUseCase>(),
+      getUsersUseCase: Get.find<GetUsersUseCase>(),
     ));
   }
 }

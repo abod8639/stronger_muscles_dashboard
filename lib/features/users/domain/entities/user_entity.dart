@@ -1,4 +1,4 @@
-import '../../data/models/user_address.dart';
+import 'user_address_entity.dart';
 
 class UserEntity {
   final int id;
@@ -12,7 +12,7 @@ class UserEntity {
   final DateTime? lastLogin;
   final double totalSpent;
   final int ordersCount;
-  final List<UserAddress> addresses;
+  final List<UserAddressEntity> addresses;
 
   const UserEntity({
     required this.id,

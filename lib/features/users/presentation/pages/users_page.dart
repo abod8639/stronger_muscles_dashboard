@@ -1,29 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/config/app_colors.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/base_app_bar.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/custom_search_bar.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/enhanced_error_widget.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/enhanced_loading_widget.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/my_refreshIndicator.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/top_section.dart';
-import 'package:stronger_muscles_dashboard/features/users/presentation/controllers/users_controller.dart';
-import 'package:stronger_muscles_dashboard/features/users/presentation/page/widgets/buildUserCard.dart';
-import 'package:stronger_muscles_dashboard/features/users/presentation/page/widgets/build_stats_header.dart';
-import 'package:stronger_muscles_dashboard/config/responsive.dart';
+import '../../../../config/app_colors.dart';
+import '../../../../core/utils/components/base_app_bar.dart';
+import '../../../../core/utils/components/custom_search_bar.dart';
+import '../../../../core/utils/components/enhanced_error_widget.dart';
+import '../../../../core/utils/components/enhanced_loading_widget.dart';
+import '../../../../core/utils/components/my_refreshIndicator.dart';
+import '../../../../core/utils/components/top_section.dart';
+import '../controllers/users_controller.dart';
+import '../widgets/user_card.dart';
+import '../widgets/users_stats_header.dart';
+import '../../../../config/responsive.dart';
 
-class UsersScreen extends StatelessWidget {
-  const UsersScreen({super.key});
+class UsersPage extends GetView<UsersController> {
+  const UsersPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<UsersController>();
     final responsive = context.responsive;
 
     return Scaffold(
       backgroundColor: AppColorsExtended.backgroundColor,
-
-      //  Colors.transparent,
       appBar: BaseAppBar(
         title: 'المستخدمون',
         onPressed: controller.fetchUsersStats,
@@ -38,7 +35,7 @@ class UsersScreen extends StatelessWidget {
 
         return Column(
           children: [
-            // Search Bar
+            // Search Bar & Stats
             TopSection(
               children: [
                 CustomSearchBar(
@@ -46,8 +43,7 @@ class UsersScreen extends StatelessWidget {
                   padding: responsive.defaultPadding,
                   onSearch: (value) => controller.onSearchChanged(value),
                 ),
-                // stats header
-                buildStatsHeader(),
+                const UsersStatsHeader(),
               ],
             ),
             // users list
@@ -68,7 +64,7 @@ class UsersScreen extends StatelessWidget {
                         itemCount: controller.filteredUsers.length,
                         itemBuilder: (context, index) {
                           final user = controller.filteredUsers[index];
-                          return buildUserCard(user);
+                          return UserCard(user: user);
                         },
                       ),
                     ),

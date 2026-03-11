@@ -1,32 +1,26 @@
-import 'package:dio/dio.dart';
+import '../../../../core/network/api/user_service.dart';
 import '../models/user_model.dart';
+import '../models/users_stats_model.dart';
 
 abstract class UserRemoteDataSource {
-  Future<Map<String, dynamic>> getUsersStats();
+  Future<UsersStatsModel> getUsersStats();
   Future<List<UserModel>> getUsers();
 }
 
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
-  final Dio dio;
+  final UserService _userService;
 
-  UserRemoteDataSourceImpl(this.dio);
+  UserRemoteDataSourceImpl(this._userService);
 
   @override
-  Future<Map<String, dynamic>> getUsersStats() async {
-    final response = await dio.get('/users/stats');
-    if (response.statusCode == 200) {
-      return response.data;
-    }
-    throw Exception('Failed to load user stats');
+  Future<UsersStatsModel> getUsersStats() async {
+    final data = await _userService.fetchUsersStats();
+    return UsersStatsModel.fromJson(data);
   }
 
   @override
   Future<List<UserModel>> getUsers() async {
-    final response = await dio.get('/users');
-    if (response.statusCode == 200) {
-      final List data = response.data;
-      return data.map((e) => UserModel.fromJson(e)).toList();
-    }
-    throw Exception('Failed to load users');
+    final data = await _userService.fetchUsers();
+    return data.map((e) => UserModel.fromJson(e)).toList();
   }
 }

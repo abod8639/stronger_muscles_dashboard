@@ -12,8 +12,8 @@ Future<void> hiveInit() async {
   Hive.registerAdapter(ProductModelAdapter());
   Hive.registerAdapter(OrderModelAdapter());
   Hive.registerAdapter(OrderItemModelAdapter());
-  Hive.registerAdapter(OrderStatusAdapter());
-  Hive.registerAdapter(PaymentStatusAdapter());
+  // Hive.registerAdapter(OrderStatusAdapter());
+  // Hive.registerAdapter(PaymentStatusAdapter());
   Hive.registerAdapter(CategoryModelAdapter());
   Hive.registerAdapter(DashboardUserAdapter());
   Hive.registerAdapter(UserAddressAdapter());

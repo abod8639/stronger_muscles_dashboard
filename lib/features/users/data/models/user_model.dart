@@ -43,7 +43,7 @@ class UserModel with _$UserModel {
         lastLogin: lastLogin,
         totalSpent: totalSpent,
         ordersCount: ordersCount,
-        addresses: addresses,
+        addresses: addresses.map((e) => e.toEntity()).toList(),
       );
 }
 

@@ -1,6 +1,7 @@
-import '../../domain/entities/user_entity.dart';
+import '../entities/user_entity.dart';
+import '../entities/users_stats_entity.dart';
 
 abstract class UserRepository {
-  Future<Map<String, dynamic>> getUsersStats();
+  Future<UsersStatsEntity> getUsersStats();
   Future<List<UserEntity>> getUsers();
 }

@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive/hive.dart';
+import '../../domain/entities/user_address_entity.dart';
 
 part 'user_address.freezed.dart';
 part 'user_address.g.dart';
@@ -26,6 +27,21 @@ class UserAddress with _$UserAddress {
 
   factory UserAddress.fromJson(Map<String, dynamic> json) =>
       _$UserAddressFromJson(_mapAddressJson(json));
+
+  UserAddressEntity toEntity() => UserAddressEntity(
+        id: id,
+        label: label,
+        fullName: fullName,
+        phone: phone,
+        street: street,
+        city: city,
+        state: state,
+        postalCode: postalCode,
+        country: country,
+        isDefault: isDefault,
+        latitude: latitude,
+        longitude: longitude,
+      );
 
   String get fullAddress {
     final parts = [street, city, state, country].where((s) => s.isNotEmpty);

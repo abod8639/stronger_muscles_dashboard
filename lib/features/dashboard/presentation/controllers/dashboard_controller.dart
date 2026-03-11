@@ -8,7 +8,7 @@ import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order
 import 'package:stronger_muscles_dashboard/features/orders/domain/repositories/order_repository.dart';
 import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/repositories/product_repository.dart';
-import 'package:stronger_muscles_dashboard/features/users/data/repositories/user_repository.dart';
+import 'package:stronger_muscles_dashboard/features/users/domain/repositories/user_repository.dart';
 // import 'package:stronger_muscles_dashboard/features/users/domain/repositories/user_repository.dart';
 
 

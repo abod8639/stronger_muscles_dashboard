@@ -1,3 +1,4 @@
+import '../entities/users_stats_entity.dart';
 import '../repositories/user_repository.dart';
 
 class GetUsersStatsUseCase {
@@ -5,7 +6,7 @@ class GetUsersStatsUseCase {
 
   GetUsersStatsUseCase(this.repository);
 
-  Future<Map<String, dynamic>> call() async {
+  Future<UsersStatsEntity> call() async {
     return await repository.getUsersStats();
   }
 }

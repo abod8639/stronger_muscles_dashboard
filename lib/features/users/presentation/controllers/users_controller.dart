@@ -1,17 +1,25 @@
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/core/network/api_service.dart';
-import 'package:stronger_muscles_dashboard/data/models/dashboard_user_model.dart';
+import '../../domain/entities/user_entity.dart';
+import '../../domain/usecases/get_users_stats_usecase.dart';
+import '../../domain/usecases/get_users_usecase.dart';
 
 class UsersController extends GetxController {
-  final ApiService _apiService = ApiService();
+  final GetUsersUseCase _getUsersUseCase;
+  final GetUsersStatsUseCase _getUsersStatsUseCase;
+
+  UsersController({
+    required GetUsersUseCase getUsersUseCase,
+    required GetUsersStatsUseCase getUsersStatsUseCase,
+  })  : _getUsersUseCase = getUsersUseCase,
+        _getUsersStatsUseCase = getUsersStatsUseCase;
 
   final isLoading = true.obs;
   final totalUsers = 0.obs;
+  final activeUsers = 0.obs;
+  final inactiveUsers = 0.obs;
 
-  final _allUsers = <DashboardUser>[].obs;
-
-  final filteredUsers = <DashboardUser>[].obs;
-
+  final _allUsers = <UserEntity>[].obs;
+  final filteredUsers = <UserEntity>[].obs;
   final searchQuery = ''.obs;
 
   @override
@@ -32,7 +40,7 @@ class UsersController extends GetxController {
         _allUsers.where((user) {
           final nameMatch = user.name.toLowerCase().contains(query);
           final emailMatch = user.email?.toLowerCase().contains(query) ?? false;
-          final phoneMatch = user.phone?.contains(query) ?? false;
+          final phoneMatch = user.phoneNumber?.contains(query) ?? false;
           return nameMatch || emailMatch || phoneMatch;
         }).toList(),
       );
@@ -42,13 +50,13 @@ class UsersController extends GetxController {
   Future<void> fetchUsersStats() async {
     try {
       isLoading.value = true;
+      final stats = await _getUsersStatsUseCase();
 
-      final data = await _apiService.fetchUsersStats();
-      final response = DashboardResponse.fromJson(data);
+      totalUsers.value = stats.totalUsers;
+      activeUsers.value = stats.activeUsers;
+      inactiveUsers.value = stats.inactiveUsers;
 
-      totalUsers.value = response.totalUsers;
-
-      _allUsers.assignAll(response.users);
+      _allUsers.assignAll(stats.users);
       _applyFilter();
     } catch (e) {
       _showErrorSnackbar('فشل تحميل بيانات المستخدمين: ${e.toString()}');
@@ -67,7 +75,7 @@ class UsersController extends GetxController {
     );
   }
 
-  void updateUserInfo(DashboardUser updatedUser) {
+  void updateUserInfo(UserEntity updatedUser) {
     final index = _allUsers.indexWhere((u) => u.id == updatedUser.id);
     if (index != -1) {
       _allUsers[index] = updatedUser;
