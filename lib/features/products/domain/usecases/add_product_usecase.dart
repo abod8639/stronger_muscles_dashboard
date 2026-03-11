@@ -1,11 +1,12 @@
-import '../../data/repositories/product_repository.dart';
+import '../entities/product_entity.dart';
+import '../repositories/product_repository.dart';
 
 class AddProductUseCase {
   final ProductRepository repository;
 
   AddProductUseCase(this.repository);
 
-  // Future<ProductEntity> call(ProductEntity product) async {
-  //   return await repository.addProduct(product);
-  // }
+  Future<ProductEntity> call(Map<String, dynamic> productData) async {
+    return await repository.addProduct(productData);
+  }
 }

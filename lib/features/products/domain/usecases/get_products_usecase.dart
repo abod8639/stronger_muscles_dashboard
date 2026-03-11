@@ -1,11 +1,12 @@
-import '../../data/repositories/product_repository.dart';
+import '../entities/product_entity.dart';
+import '../repositories/product_repository.dart';
 
 class GetProductsUseCase {
   final ProductRepository repository;
 
   const GetProductsUseCase(this.repository);
 
-  // Future<List<ProductEntity>> call({bool forceRefresh = false}) async {
-  //   return await repository.getProducts(forceRefresh: forceRefresh);
-  // }
+  Future<List<ProductEntity>> call({bool forceRefresh = false}) async {
+    return await repository.getProducts(forceRefresh: forceRefresh);
+  }
 }

@@ -18,6 +18,8 @@ class ProductEntity {
   final List<String>? flavors;
   final List<ProductVariantEntity>? variants;
 
+  String get displayName => nameAr;
+
   const ProductEntity({
     required this.id,
     required this.nameAr,

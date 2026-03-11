@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/build_modern_text_field.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
-import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
+import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
 
 class ProductVariantManager extends StatelessWidget {
@@ -103,8 +103,8 @@ class ProductVariantManager extends StatelessWidget {
 
 class _VariantItemEditor extends StatefulWidget {
   final int index;
-  final ProductVariantModel variant;
-  final Function(ProductVariantModel) onUpdate;
+  final ProductVariantEntity variant;
+  final Function(ProductVariantEntity) onUpdate;
   final VoidCallback onDelete;
   final List<String> availableSizes;
   final List<String> availableFlavors;
@@ -151,11 +151,15 @@ class _VariantItemEditorState extends State<_VariantItemEditor> {
   }
 
   void _triggerUpdate() {
-    final updated = widget.variant.copyWith(
+    final updated = ProductVariantEntity(
+      id: widget.variant.id,
       sku: skuCtrl.text,
       price: double.tryParse(priceCtrl.text) ?? 0.0,
       discountPrice: double.tryParse(discountCtrl.text),
+      effectivePrice: double.tryParse(priceCtrl.text) ?? 0.0,
       stockQuantity: int.tryParse(stockCtrl.text) ?? 0,
+      attributes: widget.variant.attributes,
+      isActive: widget.variant.isActive,
     );
     widget.onUpdate(updated);
   }
@@ -291,7 +295,16 @@ class _VariantItemEditorState extends State<_VariantItemEditor> {
       onSelected: (val) {
         final newAttrs = Map<String, dynamic>.from(widget.variant.attributes);
         newAttrs[key] = val;
-        widget.onUpdate(widget.variant.copyWith(attributes: newAttrs));
+        widget.onUpdate(ProductVariantEntity(
+          id: widget.variant.id,
+          sku: widget.variant.sku,
+          price: widget.variant.price,
+          discountPrice: widget.variant.discountPrice,
+          effectivePrice: widget.variant.effectivePrice,
+          stockQuantity: widget.variant.stockQuantity,
+          attributes: newAttrs,
+          isActive: widget.variant.isActive,
+        ));
       },
       itemBuilder: (context) => options
           .map((opt) => PopupMenuItem(value: opt, child: Text(opt)))

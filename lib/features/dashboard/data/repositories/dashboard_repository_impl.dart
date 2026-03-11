@@ -5,9 +5,8 @@ import 'package:stronger_muscles_dashboard/features/dashboard/domain/entities/da
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/repositories/dashboard_repository.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/repositories/order_repository.dart';
-import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
-import 'package:stronger_muscles_dashboard/features/products/data/repositories/product_repository.dart';
+import 'package:stronger_muscles_dashboard/features/products/domain/repositories/product_repository.dart';
 import 'package:stronger_muscles_dashboard/features/users/domain/repositories/user_repository.dart';
 import 'package:stronger_muscles_dashboard/features/users/domain/entities/users_stats_entity.dart';
 
@@ -39,9 +38,8 @@ class DashboardRepositoryImpl implements DashboardRepository {
     // results[0] is Future<List<OrderEntity>>
     final List<OrderEntity> orders = results[0] as List<OrderEntity>;
     
-    // results[1] is Future<List<ProductModel>>
-    final List<ProductModel> productModels = results[1] as List<ProductModel>;
-    final List<ProductEntity> products = productModels.map((m) => m.toEntity()).toList();
+    // results[1] is Future<List<ProductEntity>>
+    final List<ProductEntity> products = results[1] as List<ProductEntity>;
     
     // results[2] is Future<List<CategoryModel>>
     final List<CategoryModel> categoryModels = results[2] as List<CategoryModel>;

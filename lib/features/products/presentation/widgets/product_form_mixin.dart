@@ -1,78 +1,53 @@
-import 'package:flutter/material.dart';
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
-import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
-import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
+import 'package:get/get.dart';
+import '../controllers/products_controller.dart';
+import '../../domain/entities/product_entity.dart';
 
-/// Mixin to handle common product form initialization logic
-/// Eliminates code duplication between ProductFormPage and ProductFormSheet
-mixin ProductFormMixin<T extends StatefulWidget> on State<T> {
+mixin ProductFormMixin {
   ProductsController get controller;
-  ProductModel? get product;
+  ProductEntity? get product;
 
-  /// Initialize all text controllers and form state
   void initializeProductFields() {
-    // Initialize text controllers
-    controller.textcontrollers['name_ar'] = TextEditingController(
-      text: product?.name.ar,
-    );
-    controller.textcontrollers['name_en'] = TextEditingController(
-      text: product?.name.en,
-    );
-    controller.textcontrollers['price'] = TextEditingController(
-      text: product?.price.toString(),
-    );
-    controller.textcontrollers['discount'] = TextEditingController(
-      text: product?.discountPrice?.toString(),
-    );
-    controller.textcontrollers['stock'] = TextEditingController(
-      text: product?.stockQuantity.toString(),
-    );
-    controller.textcontrollers['desc_ar'] = TextEditingController(
-      text: product?.description.ar,
-    );
-    controller.textcontrollers['desc_en'] = TextEditingController(
-      text: product?.description.en,
-    );
-    controller.textcontrollers['brand'] = TextEditingController(
-      text: product?.brand,
-    );
-    controller.textcontrollers['serving'] = TextEditingController(
-      text: product?.servingSize,
-    );
-    controller.textcontrollers['sessions'] = TextEditingController(
-      text: product?.servingsPerContainer.toString(),
-    );
+    if (product != null) {
+      controller.textcontrollers['name_ar']?.text = product!.nameAr;
+      controller.textcontrollers['name_en']?.text = product!.nameEn;
+      controller.textcontrollers['desc_ar']?.text = product!.descriptionAr;
+      controller.textcontrollers['desc_en']?.text = product!.descriptionEn;
+      controller.textcontrollers['price']?.text = product!.price.toString();
+      controller.textcontrollers['discount']?.text =
+          product!.discountPrice?.toString() ?? '';
+      controller.textcontrollers['stock']?.text =
+          product!.stockQuantity.toString();
+      controller.textcontrollers['brand']?.text = product!.brand ?? '';
+      controller.textcontrollers['serving']?.text = product!.servingSize ?? '';
+      controller.textcontrollers['sessions']?.text =
+          product!.servingsPerContainer?.toString() ?? '';
 
-    // Initialize GetX reactive values
-    controller.productFlavors.assignAll(product?.flavor ?? <String>[]);
+      controller.productFlavors.assignAll(product!.flavors ?? []);
+      controller.isFeatured.value = product!.isActive;
+      controller.isBackgroundWhite.value = product!.isBackgroundWhite ?? false;
+      controller.productSizes.assignAll(product!.productSizes ?? []);
+      controller.variants.assignAll(product!.variants ?? []);
+    } else {
+      _clearFields();
+    }
+  }
 
-    // Clear old size controllers to ensure fresh start for this product
+  void _clearFields() {
+    controller.textcontrollers.forEach((_, c) => c.clear());
+    controller.productFlavors.clear();
+    controller.imageUrls.clear();
+    controller.isFeatured.value = true;
+    controller.isBackgroundWhite.value = false;
+    controller.productSizes.clear();
+    controller.variants.clear();
     controller.clearSizeControllers();
-
-    controller.productSizes.assignAll(product?.productSizes ?? <ProductSize>[]);
-    controller.variants.assignAll(product?.variants ?? <ProductVariantModel>[]);
-    controller.isFeatured.value = product?.isActive ?? true;
-    controller.isBackgroundWhite.value = product?.isBackgroundWhite ?? false;
   }
 
-  /// Get the initial category ID
-  String? getInitialCategoryId() {
-    final id = product?.effectiveCategoryId;
-    if (id != null && id.isNotEmpty) return id;
+  List<String> getInitialImageUrls() => product?.imageUrls ?? [];
+  String? getInitialCategoryId() => product?.categoryId;
 
-    return controller.categories.isNotEmpty
-        ? controller.categories.first.id
-        : null;
-  }
-
-  /// Get the initial image URLs
-  List<String> getInitialImageUrls() {
-    return product?.imageUrls.map((e) => e.original).toList() ?? [];
-  }
-
-  /// Dispose all text controllers
   void disposeProductControllers() {
-    controller.textcontrollers.forEach((_, c) => c.dispose());
-    controller.clearSizeControllers();
+    // We don't necessarily want to dispose here if they are managed by the controller
+    // but we can clear them if needed.
   }
 }

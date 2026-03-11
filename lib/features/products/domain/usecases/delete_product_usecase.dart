@@ -1,4 +1,4 @@
-import '../../data/repositories/product_repository.dart';
+import '../repositories/product_repository.dart';
 
 class DeleteProductUseCase {
   final ProductRepository repository;
@@ -9,4 +9,3 @@ class DeleteProductUseCase {
     return await repository.deleteProduct(id);
   }
 }
-  

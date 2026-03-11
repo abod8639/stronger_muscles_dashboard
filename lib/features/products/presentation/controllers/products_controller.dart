@@ -1,42 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/core/network/api_service.dart';
-import 'package:stronger_muscles_dashboard/data/models/flavors_model.dart';
 import 'package:stronger_muscles_dashboard/features/categories/data/models/category_model.dart';
 import 'package:stronger_muscles_dashboard/features/categories/data/repositories/category_repository.dart';
-import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
-import 'package:stronger_muscles_dashboard/features/products/data/repositories/product_repository.dart';
-import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_form_sheet.dart';
-
+import '../../domain/entities/product_entity.dart';
+import '../../domain/usecases/add_product_usecase.dart';
+import '../../domain/usecases/delete_product_usecase.dart';
+import '../../domain/usecases/get_products_usecase.dart';
+import '../../domain/usecases/update_product_usecase.dart';
+import '../../domain/usecases/upload_product_image_usecase.dart';
+import '../widgets/product_form_sheet.dart';
 
 class ProductsController extends GetxController {
-  late final ProductRepository _productRepository;
-  late final CategoryRepository _categoryRepository;
-  RxList<String> productFlavors = <String>[].obs;
-  late final ApiService _apiService;
-  RxBool isFeatured = false.obs;
+  final GetProductsUseCase _getProductsUseCase;
+  final AddProductUseCase _addProductUseCase;
+  final UpdateProductUseCase _updateProductUseCase;
+  final DeleteProductUseCase _deleteProductUseCase;
+  final UploadProductImageUseCase _uploadProductImageUseCase;
+  final CategoryRepository _categoryRepository;
+
+  ProductsController({
+    required GetProductsUseCase getProductsUseCase,
+    required AddProductUseCase addProductUseCase,
+    required UpdateProductUseCase updateProductUseCase,
+    required DeleteProductUseCase deleteProductUseCase,
+    required UploadProductImageUseCase uploadProductImageUseCase,
+    required CategoryRepository categoryRepository,
+  })  : _getProductsUseCase = getProductsUseCase,
+        _addProductUseCase = addProductUseCase,
+        _updateProductUseCase = updateProductUseCase,
+        _deleteProductUseCase = deleteProductUseCase,
+        _uploadProductImageUseCase = uploadProductImageUseCase,
+        _categoryRepository = categoryRepository;
 
   // --- States ---
   final isLoading = true.obs;
   final isUploadingImage = false.obs;
+  final isSaving = false.obs;
 
   // --- Data Lists ---
-  final products = <ProductModel>[].obs;
+  final products = <ProductEntity>[].obs;
   final categories = <CategoryModel>[].obs;
-  final flavors = <FlavorsModel>[].obs;
-  final filteredProducts = <ProductModel>[].obs;
-  final productSizes = <ProductSize>[].obs;
+  final filteredProducts = <ProductEntity>[].obs;
+  
+  // Form specific state
+  final productSizes = <ProductSizeEntity>[].obs;
+  final productFlavors = <String>[].obs;
+  final imageUrls = <String>[].obs;
+  final isFeatured = false.obs;
+  final isBackgroundWhite = false.obs;
+  final selectedSizeIndex = (-1).obs;
+  final variants = <ProductVariantEntity>[].obs;
 
   // --- Filter Values ---
-  final productWeight = 0.0.obs;
   final searchQuery = ''.obs;
   final selectedCategoryId = 'all'.obs;
   final selectedFlavorId = 'all'.obs;
-  final isAvailable = false.obs;
-  final isBackgroundWhite = false.obs;
-
-  RxBool isSaving = false.obs;
-  RxList<String> imageUrls = <String>[].obs;
 
   final Map<String, TextEditingController> textcontrollers = {
     'name_ar': TextEditingController(),
@@ -51,52 +69,75 @@ class ProductsController extends GetxController {
     'sessions': TextEditingController(),
   };
 
-  final variants = <ProductVariantModel>[].obs;
-
   // Controllers for each size
   final Map<String, TextEditingController> sizePriceControllers = {};
   final Map<String, TextEditingController> sizeDiscountControllers = {};
 
-  final selectedSizeIndex = (-1).obs;
-
-  void addVariant() {
-    final newVariant = ProductVariantModel(
-      id: 'VAR-${DateTime.now().millisecondsSinceEpoch}',
-      sku: '',
-      price: double.tryParse(textcontrollers['price']?.text ?? '0') ?? 0,
-      discountPrice: double.tryParse(textcontrollers['discount']?.text ?? ''),
-      effectivePrice:
-          double.tryParse(textcontrollers['price']?.text ?? '0') ?? 0,
-      stockQuantity: int.tryParse(textcontrollers['stock']?.text ?? '0') ?? 0,
-      attributes: {},
-      isActive: true,
-    );
-    variants.add(newVariant);
+  @override
+  void onInit() {
+    super.onInit();
+    fetchData();
+    ever(productSizes, (_) => syncSizeControllers());
   }
 
-  void removeVariant(int index) {
-    if (index >= 0 && index < variants.length) {
-      variants.removeAt(index);
+  Future<void> fetchData() async {
+    try {
+      isLoading.value = true;
+      final results = await Future.wait([
+        _categoryRepository.getCategories(tree: true),
+        _getProductsUseCase(),
+      ]);
+      categories.assignAll(results[0] as List<CategoryModel>);
+      products.assignAll(results[1] as List<ProductEntity>);
+      _applyFiltering();
+    } catch (e) {
+      _showErrorSnackbar('فشل في تحميل البيانات', e.toString());
+    } finally {
+      isLoading.value = false;
     }
   }
 
-  void updateVariant(int index, ProductVariantModel updated) {
-    if (index >= 0 && index < variants.length) {
-      variants[index] = updated;
+  void onSearchChanged(String query) {
+    searchQuery.value = query;
+    _applyFiltering();
+  }
+
+  void setCategory(String categoryId) {
+    selectedCategoryId.value = categoryId;
+    _applyFiltering();
+  }
+
+  void setFlavor(String flavorId) {
+    selectedFlavorId.value = flavorId;
+    _applyFiltering();
+  }
+
+  void _applyFiltering() {
+    Iterable<ProductEntity> filtered = products;
+    if (selectedCategoryId.value != 'all') {
+      filtered = filtered.where((p) => p.categoryId == selectedCategoryId.value);
     }
+    if (selectedFlavorId.value != 'all') {
+      filtered = filtered.where((p) => p.flavors?.contains(selectedFlavorId.value) ?? false);
+    }
+    if (searchQuery.isNotEmpty) {
+      final query = searchQuery.value.toLowerCase();
+      filtered = filtered.where((p) =>
+          p.nameAr.toLowerCase().contains(query) ||
+          p.nameEn.toLowerCase().contains(query) ||
+          (p.brand?.toLowerCase().contains(query) ?? false) ||
+          p.id.contains(query));
+    }
+    filteredProducts.assignAll(filtered.toList());
   }
 
   void syncSizeControllers() {
     for (var size in productSizes) {
       if (!sizePriceControllers.containsKey(size.size)) {
-        sizePriceControllers[size.size] = TextEditingController(
-          text: size.price.toString(),
-        );
+        sizePriceControllers[size.size] = TextEditingController(text: size.price.toString());
       }
       if (!sizeDiscountControllers.containsKey(size.size)) {
-        sizeDiscountControllers[size.size] = TextEditingController(
-          text: size.discountPrice?.toString() ?? '',
-        );
+        sizeDiscountControllers[size.size] = TextEditingController(text: size.discountPrice?.toString() ?? '');
       }
     }
   }
@@ -117,135 +158,90 @@ class ProductsController extends GetxController {
     }
   }
 
-  @override
-  void onInit() {
-    super.onInit();
-    _apiService = ApiService();
-    _productRepository = ProductRepository(_apiService);
-    _categoryRepository = CategoryRepository(_apiService);
-    fetchData();
-
-    ever(productSizes, (_) => syncSizeControllers());
+  void addVariant() {
+    final newVariant = ProductVariantEntity(
+      id: 'VAR-${DateTime.now().millisecondsSinceEpoch}',
+      sku: '',
+      price: double.tryParse(textcontrollers['price']?.text ?? '0') ?? 0.0,
+      discountPrice: double.tryParse(textcontrollers['discount']?.text ?? ''),
+      effectivePrice: double.tryParse(textcontrollers['price']?.text ?? '0') ?? 0.0,
+      stockQuantity: int.tryParse(textcontrollers['stock']?.text ?? '0') ?? 0,
+      attributes: {},
+      isActive: true,
+    );
+    variants.add(newVariant);
   }
 
-  Future<void> fetchData() async {
+  void removeVariant(int index) {
+    if (index >= 0 && index < variants.length) variants.removeAt(index);
+  }
+
+  void updateVariant(int index, ProductVariantEntity updated) {
+    if (index >= 0 && index < variants.length) variants[index] = updated;
+  }
+
+  Future<void> saveProduct({
+    required GlobalKey<FormState> formKey,
+    required String categoryId,
+    required List<String> productImages,
+    ProductEntity? existingProduct,
+  }) async {
+    if (!formKey.currentState!.validate()) return;
+    if (productImages.isEmpty) {
+      _showWarning('تنبيه', 'يجب إضافة صورة واحدة على الأقل');
+      return;
+    }
+    if (categoryId.isEmpty || categoryId == 'all') {
+      _showWarning('تنبيه', 'يرجى اختيار القسم');
+      return;
+    }
+
     try {
-      isLoading.value = true;
+      isSaving.value = true;
+      final updatedSizes = productSizes.map((ps) {
+        final price = double.tryParse(sizePriceControllers[ps.size]?.text ?? '0') ?? 0.0;
+        final discount = double.tryParse(sizeDiscountControllers[ps.size]?.text ?? '');
+        return ProductSizeEntity(size: ps.size, price: price, discountPrice: discount);
+      }).toList();
 
-      final results = await Future.wait([
-        _categoryRepository.getCategories(tree: true),
-        _productRepository.getProducts(),
-      ]);
+      final productData = {
+        'name': {'ar': textcontrollers['name_ar']!.text.trim(), 'en': textcontrollers['name_en']!.text.trim()},
+        'description': {'ar': textcontrollers['desc_ar']!.text.trim(), 'en': textcontrollers['desc_en']!.text.trim()},
+        'price': double.tryParse(textcontrollers['price']!.text) ?? 0.0,
+        'discount_price': double.tryParse(textcontrollers['discount']!.text),
+        'image_urls': productImages,
+        'category_id': categoryId,
+        'stock_quantity': int.tryParse(textcontrollers['stock']!.text) ?? 0,
+        'brand': textcontrollers['brand']!.text.trim(),
+        'is_active': isFeatured.value,
+        'is_background_white': isBackgroundWhite.value,
+        'serving_size': textcontrollers['serving']!.text,
+        'servings_per_container': int.tryParse(textcontrollers['sessions']!.text) ?? 0,
+        'flavors': productFlavors.toList(),
+        'product_sizes': updatedSizes.map((s) => {'size': s.size, 'price': s.price, 'discount_price': s.discountPrice}).toList(),
+        'variants': variants.map((v) => {
+          'id': v.id, 'sku': v.sku, 'price': v.price, 'discount_price': v.discountPrice,
+          'effective_price': v.effectivePrice, 'stock_quantity': v.stockQuantity,
+          'attributes': v.attributes, 'is_active': v.isActive,
+        }).toList(),
+      };
 
-      categories.assignAll(results[0] as List<CategoryModel>);
-      products.assignAll(results[1] as List<ProductModel>);
-      // flavors.assignAll(results[2] as List<FlavorsModel>);
-
-      _applyFiltering();
-      isLoading.value = false;
-    } catch (e) {
-      isLoading.value = false;
-      _showErrorSnackbar('فشل في تحميل البيانات', e.toString());
-    }
-  }
-
-  // --- Logic الفلترة ---
-
-  void onSearchChanged(String query) {
-    searchQuery.value = query;
-    _applyFiltering();
-  }
-
-  void setCategory(String categoryId) {
-    selectedCategoryId.value = categoryId;
-    _applyFiltering();
-  }
-
-  void setFlavor(String flavorId) {
-    selectedFlavorId.value = flavorId;
-    _applyFiltering();
-  }
-
-  void setAvailability(bool isFeatured) {
-    isAvailable.value = isFeatured;
-    _applyFiltering();
-  }
-
-  void _applyFiltering() {
-    Iterable<ProductModel> filtered = products;
-
-    if (selectedCategoryId.value != 'all') {
-      filtered = filtered.where(
-        (p) => p.effectiveCategoryId == selectedCategoryId.value,
-      );
-    }
-
-    // 2. التصفية حسب النكهة
-    if (selectedFlavorId.value != 'all') {
-      filtered = filtered.where(
-        (p) => p.flavor?.contains(selectedFlavorId.value) ?? false,
-      );
-    }
-
-    // 3. التصفية حسب البحث (الاسم، الماركة، أو الكود)
-    if (searchQuery.isNotEmpty) {
-      final query = searchQuery.value.toLowerCase();
-      filtered = filtered.where(
-        (p) =>
-            p.name.ar.toLowerCase().contains(query) ||
-            p.name.en.toLowerCase().contains(query) ||
-            (p.brand?.toLowerCase().contains(query) ?? false) ||
-            p.id.contains(query),
-      );
-    }
-
-    filteredProducts.assignAll(filtered.toList());
-  }
-
-  Future<void> addProduct(ProductModel product) async {
-    try {
-      isLoading.value = true;
-
-      final String productId = product.id.isEmpty
-          ? 'PROD-${DateTime.now().millisecondsSinceEpoch}'
-          : product.id;
-
-      final productData = _buildApiJson(product);
-      productData['id'] = productId;
-
-      final newProduct = await _productRepository.addProduct(productData);
-      products.insert(0, newProduct);
-
-      _applyFiltering();
-      Get.back();
-      Get.snackbar('نجاح', 'تم إضافة ${newProduct.name.ar} بنجاح');
-    } catch (e) {
-      _showErrorSnackbar('خطأ في الإضافة', e.toString());
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
-  Future<void> updateProduct(ProductModel product) async {
-    try {
-      isLoading.value = true;
-      final updatedProduct = await _productRepository.updateProduct(
-        product.id,
-        _buildApiJson(product),
-      );
-
-      final index = products.indexWhere((p) => p.id == product.id);
-      if (index != -1) {
-        products[index] = updatedProduct;
-        _applyFiltering();
+      if (existingProduct == null) {
+        final newProduct = await _addProductUseCase(productData);
+        products.insert(0, newProduct);
+        _showSuccess('تم بنجاح', 'تم إضافة المنتج بنجاح');
+      } else {
+        final updatedProduct = await _updateProductUseCase(existingProduct.id, productData);
+        final index = products.indexWhere((p) => p.id == existingProduct.id);
+        if (index != -1) products[index] = updatedProduct;
+        _showSuccess('تم بنجاح', 'تم تحديث المنتج بنجاح');
       }
-
+      _applyFiltering();
       Get.back();
-      Get.snackbar('نجاح', 'تم تحديث البيانات بنجاح');
     } catch (e) {
-      _showErrorSnackbar('خطأ في التحديث', e.toString());
+      _showErrorSnackbar('خطأ في الحفظ', e.toString());
     } finally {
-      isLoading.value = false;
+      isSaving.value = false;
     }
   }
 
@@ -266,16 +262,11 @@ class ProductsController extends GetxController {
   Future<void> _executeDelete(String id) async {
     try {
       isLoading.value = true;
-      final success = await _productRepository.deleteProduct(id);
+      final success = await _deleteProductUseCase(id);
       if (success) {
         products.removeWhere((p) => p.id == id);
         _applyFiltering();
-        Get.snackbar(
-          'نجاح',
-          'تم حذف المنتج بنجاح',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green.withValues(alpha: 0.1),
-        );
+        _showSuccess('نجاح', 'تم حذف المنتج بنجاح');
       }
     } catch (e) {
       _showErrorSnackbar('خطأ في الحذف', e.toString());
@@ -284,18 +275,10 @@ class ProductsController extends GetxController {
     }
   }
 
-  // --- Media Upload ---
-
-  Future<String?> uploadImage(
-    String filePath, {
-    bool isCategory = false,
-  }) async {
+  Future<String?> uploadImage(String filePath) async {
     try {
       isUploadingImage.value = true;
-      final imageUrl = isCategory
-          ? await _apiService.uploadCategoryImage(filePath)
-          : await _apiService.uploadProductImage(filePath);
-      return imageUrl;
+      return await _uploadProductImageUseCase(filePath);
     } catch (e) {
       _showErrorSnackbar('خطأ في الرفع', e.toString());
       return null;
@@ -304,21 +287,7 @@ class ProductsController extends GetxController {
     }
   }
 
-  // --- Helpers ---
-
-  void _showErrorSnackbar(String title, String message) {
-    Get.snackbar(
-      title,
-      message.replaceAll('Exception: ', ''),
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.redAccent,
-      colorText: Colors.white,
-      margin: const EdgeInsets.all(12),
-      icon: const Icon(Icons.error_outline, color: Colors.white),
-    );
-  }
-
-  void showProductForm(BuildContext context, {ProductModel? product}) {
+  void showProductForm(BuildContext context, {ProductEntity? product}) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -327,166 +296,26 @@ class ProductsController extends GetxController {
     );
   }
 
-  Future<void> saveProduct({
-    required GlobalKey<FormState> formKey,
-    required String categoryId,
-    required List<String> productImages,
-    ProductModel? existingProduct,
-  }) async {
-    if (!formKey.currentState!.validate()) return;
-
-    if (productImages.isEmpty) {
-      _showWarning('تنبيه', 'يجب إضافة صورة واحدة على الأقل');
-      return;
-    }
-
-    if (categoryId.isEmpty || categoryId == 'all') {
-      _showWarning('تنبيه', 'يرجى اختيار القسم');
-      return;
-    }
-
-    try {
-      isSaving.value = true;
-
-      // Update productSizes with values from individual controllers
-      final updatedSizes = productSizes.map((ps) {
-        final price =
-            double.tryParse(sizePriceControllers[ps.size]?.text ?? '0') ?? 0;
-        final discount = double.tryParse(
-          sizeDiscountControllers[ps.size]?.text ?? '',
-        );
-        return ps.copyWith(price: price, discountPrice: discount);
-      }).toList();
-
-      debugPrint('-------- SAVE PRODUCT DEBUG --------');
-      debugPrint('Product Sizes Count: ${updatedSizes.length}');
-      for (var s in updatedSizes) {
-        debugPrint(
-          'Size: ${s.size}, Price: ${s.price}, Discount: ${s.discountPrice}',
-        );
-      }
-      debugPrint('------------------------------------');
-
-      final productData = ProductModel(
-        id:
-            existingProduct?.id ??
-            'PROD-${DateTime.now().millisecondsSinceEpoch}',
-        name: TranslatableString(
-          ar: textcontrollers['name_ar']!.text.trim(),
-          en: textcontrollers['name_en']!.text.trim(),
-        ),
-        price: double.tryParse(textcontrollers['price']!.text) ?? 0,
-        discountPrice: double.tryParse(textcontrollers['discount']!.text),
-        imageUrls: productImages
-            .map(
-              (url) => ProductImage(thumbnail: url, medium: url, original: url),
-            )
-            .toList(),
-        description: TranslatableString(
-          ar: textcontrollers['desc_ar']!.text.trim(),
-          en: textcontrollers['desc_en']!.text.trim(),
-        ),
-        categoryId: categoryId,
-        stockQuantity: int.tryParse(textcontrollers['stock']!.text) ?? 0,
-        brand: textcontrollers['brand']!.text.trim(),
-        isActive: isFeatured.value,
-        isBackgroundWhite: isBackgroundWhite.value,
-        servingSize: textcontrollers['serving']!.text,
-        servingsPerContainer:
-            int.tryParse(textcontrollers['sessions']!.text) ?? 0,
-        flavor: productFlavors.toList(),
-        productSizes: updatedSizes,
-        size: updatedSizes.map((e) => e.size).toList(),
-        variants: variants.toList(),
-      );
-
-      if (existingProduct == null) {
-        await addProduct(productData);
-      } else {
-        await updateProduct(productData);
-      }
-
-      debugPrint("======== success ========");
-      _showSuccess('تم بنجاح', 'تم حفظ بيانات المنتج بنجاح');
-      debugPrint(productData.toString());
-    } catch (e) {
-      debugPrint("======== error ========");
-      debugPrint(e.toString());
-      _showError('خطأ', 'حدث خطأ أثناء حفظ المنتج: $e');
-    } finally {
-      isSaving.value = false;
-    }
-  }
-
-  Map<String, dynamic> _buildApiJson(ProductModel product) {
-    return {
-      'id': product.id,
-      'name': {'ar': product.name.ar, 'en': product.name.en},
-      'description': {
-        'ar': product.description.ar,
-        'en': product.description.en,
-      },
-      'price': product.price,
-      'discount_price': product.discountPrice,
-      'category_id': product.categoryId,
-      'stock_quantity': product.stockQuantity,
-      'brand': product.brand,
-      'is_active': product.isActive,
-      'is_background_white': product.isBackgroundWhite,
-      'serving_size': product.servingSize,
-      'servings_per_container': product.servingsPerContainer,
-      // الصور: إرسال قائمة روابط مباشرة
-      'image_urls': product.imageUrls.map((img) => img.original).toList(),
-      // النكهات
-      'flavors': product.flavor ?? [],
-      // الأحجام والأسعار
-      'product_sizes': (product.productSizes ?? [])
-          .map(
-            (s) => {
-              'size': s.size,
-              'price': s.price,
-              'discount_price': s.discountPrice,
-            },
-          )
-          .toList(),
-      'size': (product.size ?? []),
-      // المتغيرات
-      'variants': (product.variants)
-          .map(
-            (v) => {
-              'id': v.id,
-              'sku': v.sku,
-              'price': v.price,
-              'discount_price': v.discountPrice,
-              'effective_price': v.effectivePrice,
-              'stock_quantity': v.stockQuantity,
-              'attributes': v.attributes,
-              'is_active': v.isActive,
-            },
-          )
-          .toList(),
-    };
+  void _showErrorSnackbar(String title, String message) {
+    Get.snackbar(
+      title, message.replaceAll('Exception: ', ''),
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.redAccent,
+      colorText: Colors.white,
+      margin: const EdgeInsets.all(12),
+      icon: const Icon(Icons.error_outline, color: Colors.white),
+    );
   }
 
   void _showWarning(String title, String msg) => Get.snackbar(
-    title,
-    msg,
+    title, msg,
     snackPosition: SnackPosition.BOTTOM,
     backgroundColor: Colors.orange,
     colorText: Colors.white,
   );
 
-  void _showError(String title, String msg) => Get.snackbar(
-    title,
-    msg,
-    snackPosition: SnackPosition.BOTTOM,
-    backgroundColor: Colors.red,
-    colorText: Colors.white,
-  );
-
   void _showSuccess(String title, String msg) => Get.snackbar(
-    title,
-    msg,
+    title, msg,
     snackPosition: SnackPosition.BOTTOM,
     backgroundColor: Colors.green,
     colorText: Colors.white,

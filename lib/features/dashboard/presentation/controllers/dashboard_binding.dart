@@ -5,7 +5,9 @@ import 'package:stronger_muscles_dashboard/features/categories/data/repositories
 import 'package:stronger_muscles_dashboard/features/orders/data/datasources/order_remote_datasource.dart';
 import 'package:stronger_muscles_dashboard/features/orders/data/repositories/order_repository_impl.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/repositories/order_repository.dart';
-import 'package:stronger_muscles_dashboard/features/products/data/repositories/product_repository.dart';
+import 'package:stronger_muscles_dashboard/features/products/data/datasources/product_remote_datasource.dart';
+import 'package:stronger_muscles_dashboard/features/products/data/repositories/product_repository_impl.dart';
+import 'package:stronger_muscles_dashboard/features/products/domain/repositories/product_repository.dart';
 import 'package:stronger_muscles_dashboard/features/users/data/datasources/user_remote_datasource.dart';
 import 'package:stronger_muscles_dashboard/features/users/data/repositories/user_repository_impl.dart';
 import 'package:stronger_muscles_dashboard/features/users/domain/repositories/user_repository.dart';
@@ -32,9 +34,12 @@ class DashboardBinding extends Bindings {
       Get.lazyPut<OrderRepository>(() => OrderRepositoryImpl(Get.find<OrderRemoteDataSource>()), fenix: true);
     }
 
-    // Products (Already concrete, just ensure it's registered)
+    // Products
+    if (!Get.isRegistered<ProductRemoteDataSource>()) {
+      Get.lazyPut<ProductRemoteDataSource>(() => ProductRemoteDataSourceImpl(dio), fenix: true);
+    }
     if (!Get.isRegistered<ProductRepository>()) {
-      Get.lazyPut<ProductRepository>(() => ProductRepository(apiService), fenix: true);
+      Get.lazyPut<ProductRepository>(() => ProductRepositoryImpl(Get.find<ProductRemoteDataSource>()), fenix: true);
     }
 
     // Categories (Already concrete, just ensure it's registered)

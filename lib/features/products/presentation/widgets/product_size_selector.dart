@@ -1,33 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
-
-import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
+import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
 
 class ProductSizeSelector extends StatelessWidget {
-  final List<ProductSize> selectedSizes;
-  final void Function(List<ProductSize>) onSelectionChanged;
+  final List<ProductSizeEntity> selectedSizes;
+  final void Function(List<ProductSizeEntity>) onSelectionChanged;
   final Function(int) onSelectSize;
   final int selectedIndex;
   final double defaultPrice;
 
   final List<String> availableSizes = [
-    '500g',
-    '1kg',
-    '2kg',
-    '4kg',
-    '3kg',
-    '5kg',
-    '2lb',
-    '5lb',
-    '10lb',
-    '30 Servings',
-    '60 Servings',
-    '100 Servings',
-    '120 Caps',
-    'Medium',
-    'Large',
-    'Small',
+    '500g', '1kg', '2kg', '4kg', '3kg', '5kg',
+    '2lb', '5lb', '10lb',
+    '30 Servings', '60 Servings', '100 Servings',
+    '120 Caps', 'Medium', 'Large', 'Small',
   ];
 
   ProductSizeSelector({
@@ -62,11 +49,11 @@ class ProductSizeSelector extends StatelessWidget {
                 tooltip: "إضافة من القائمة",
                 onSelected: (String sizeName) {
                   if (!selectedSizes.any((s) => s.size == sizeName)) {
-                    List<ProductSize> updatedList = List<ProductSize>.from(
+                    List<ProductSizeEntity> updatedList = List<ProductSizeEntity>.from(
                       selectedSizes,
                     );
                     updatedList.add(
-                      ProductSize(size: sizeName, price: defaultPrice),
+                      ProductSizeEntity(size: sizeName, price: defaultPrice),
                     );
                     onSelectionChanged(updatedList);
                     onSelectSize(updatedList.length - 1);
@@ -96,7 +83,6 @@ class ProductSizeSelector extends StatelessWidget {
               spacing: 8,
               runSpacing: 8,
               children: [
-                // عرض الأحجام المختارة فقط
                 ...selectedSizes.asMap().entries.map((entry) {
                   final index = entry.key;
                   final sizeObj = entry.value;
@@ -116,7 +102,7 @@ class ProductSizeSelector extends StatelessWidget {
                       onSelectSize(index);
                     },
                     onDeleted: () {
-                      List<ProductSize> updatedList = List<ProductSize>.from(
+                      List<ProductSizeEntity> updatedList = List<ProductSizeEntity>.from(
                         selectedSizes,
                       );
                       updatedList.removeAt(index);
@@ -147,7 +133,6 @@ class ProductSizeSelector extends StatelessWidget {
                   );
                 }),
 
-                // زر إضافة حجم مخصص (ActionChip)
                 ActionChip(
                   avatar: const Icon(
                     Icons.edit_note,
@@ -169,7 +154,6 @@ class ProductSizeSelector extends StatelessWidget {
     );
   }
 
-  // نافذة إضافة حجم جديد
   void _showAddSizeDialog(BuildContext context) {
     final TextEditingController sizeController = TextEditingController();
     showDialog(
@@ -197,7 +181,7 @@ class ProductSizeSelector extends StatelessWidget {
                   !selectedSizes.any((s) => s.size == newSize)) {
                 final updatedList = [
                   ...selectedSizes,
-                  ProductSize(size: newSize, price: defaultPrice),
+                  ProductSizeEntity(size: newSize, price: defaultPrice),
                 ];
                 onSelectionChanged(updatedList);
                 onSelectSize(updatedList.length - 1);
