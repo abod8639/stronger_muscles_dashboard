@@ -26,7 +26,7 @@ class RecentOrdersSection extends GetView<DashboardController> {
         onSeeAll: () => navigationController.changeIndex(4), // Orders index
         useListView: res.isTablet,
         showCount: 4,
-        mainAxisExtent: 140, // Adjusted for new design
+        mainAxisExtent: 200, // Adjusted for new design
         itemBuilder: (context, order, index) {
           return OrderListTile(
             order: order,
