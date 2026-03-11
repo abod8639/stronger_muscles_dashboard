@@ -148,7 +148,7 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard>
                 ],
               ),
 
-              const Spacer(),
+              const SizedBox(height: 12),
 
               // Mini Chart with Area Glow
               if (widget.chartSpots != null && widget.chartSpots!.isNotEmpty)

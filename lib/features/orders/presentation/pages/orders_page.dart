@@ -48,7 +48,7 @@ class OrdersPage extends GetView<OrdersController> {
             child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 160, child: OrdersStatsSection()),
+                SizedBox(height: 180, child: OrdersStatsSection()),
                 SizedBox(height: 10),
                 OrdersTable(),
                 SizedBox(height: 10),

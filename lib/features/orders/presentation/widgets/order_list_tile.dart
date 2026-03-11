@@ -1,94 +1,123 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:stronger_muscles_dashboard/config/theme.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/status_badge.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
+import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/orders_screen/widgets/build_enhanced_order_images.dart';
+import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/orders_screen/widgets/build_info_section.dart';
+import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/orders_screen/widgets/build_order_header.dart';
+import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/orders_screen/widgets/build_price_section.dart';
 
-class OrderListTile extends StatelessWidget {
+class OrderListTile extends StatefulWidget {
   final OrderEntity order;
+  final VoidCallback? onTap;
   final int index;
-  final VoidCallback onTap;
 
   const OrderListTile({
     super.key,
     required this.order,
+    this.onTap,
     required this.index,
-    required this.onTap,
   });
 
   @override
+  State<OrderListTile> createState() => _OrderListTileState();
+}
+
+class _OrderListTileState extends State<OrderListTile>
+    with SingleTickerProviderStateMixin {
+  bool _isHovered = false;
+  late AnimationController _scaleController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scaleController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+    );
+  }
+
+  @override
+  void dispose() {
+    _scaleController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final dateFormat = DateFormat('yyyy/MM/dd HH:mm');
-    
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.03),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
+    return MouseRegion(
+      onEnter: (_) {
+        setState(() => _isHovered = true);
+        _scaleController.forward();
+      },
+      onExit: (_) {
+        setState(() => _isHovered = false);
+        _scaleController.reverse();
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        height: 200,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: _isHovered
+                  ? AppColors.primary.withValues(alpha: 0.15)
+                  : Colors.black.withValues(alpha: 0.04),
+              blurRadius: _isHovered ? 20 : 8,
+              offset: Offset(0, _isHovered ? 8 : 2),
+            ),
+          ],
+        ),
+        child: GlassContainer(
+          padding: EdgeInsets.zero,
+          opacity: _isHovered ? 0.12 : 0.08,
+          // Blur is disabled by default in GlassContainer now
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: _isHovered
+                ? AppColors.primary.withValues(alpha: 0.3)
+                : Colors.white.withValues(alpha: 0.08),
+            width: _isHovered ? 1.5 : 1,
+          ),
+          child: InkWell(
+            onTap: widget.onTap,
+            borderRadius: BorderRadius.circular(24),
+            child: Stack(
               children: [
-                // Icon or Avatar
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFF1744).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Center(
-                    child: Icon(Icons.shopping_bag_outlined, color: Color(0xFFFF1744)),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                
-                // Info
-                Expanded(
+                // Content
+                Padding(
+                  padding: const EdgeInsets.all(10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Header Row
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            'طلب #${order.id}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                          Text(
-                            '${order.totalAmount.toStringAsFixed(2)} ر.س',
-                            style: const TextStyle(
-                              color: Color(0xFFFF1744),
-                              fontWeight: FontWeight.w900,
-                              fontSize: 14,
-                            ),
-                          ),
+                          Expanded(child: OrderHeader(order: widget.order)),
+                          const SizedBox(width: 12),
+                          OrderStatusBadge(status: widget.order.status),
                         ],
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        order.userName,
-                        style: const TextStyle(color: Colors.white70, fontSize: 12),
-                      ),
-                      const SizedBox(height: 8),
+
+                      const SizedBox(height: 12),
+
+                      // Info Section
+                      buildInfoSection(widget.order),
+
+                      const Spacer(),
+
+                      // Bottom Row
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Text(
-                            dateFormat.format(order.orderDate),
-                            style: const TextStyle(color: Colors.white30, fontSize: 10),
-                          ),
-                          OrderStatusBadge(status: order.status),
+                          Expanded(child: buildPriceSection(widget.order)),
+                          const SizedBox(width: 1),
+                          buildEnhancedOrderImages(widget.order, _isHovered),
                         ],
                       ),
                     ],

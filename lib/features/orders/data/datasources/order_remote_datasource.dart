@@ -16,16 +16,32 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
 
   @override
   Future<List<OrderModel>> getOrders() async {
-    final response = await dio.get(ApiConfig.adminOrders );
+    final response = await dio.get(ApiConfig.adminOrders);
+    
     if (response.statusCode == 200) {
-      final List data = response.data;
+      dynamic data;
+      // Handle Laravel wrapping (data: { data: [...] })
+      if (response.data is Map && response.data.containsKey('data')) {
+        final innerData = response.data['data'];
+        if (innerData is Map && innerData.containsKey('data')) {
+          data = innerData['data'];
+        } else {
+          data = innerData;
+        }
+      } else {
+        data = response.data;
+      }
+
+      if (data is! List) {
+        return [];
+      }
+
       final orders = <OrderModel>[];
       for (var item in data) {
         try {
           orders.add(OrderModel.fromJson(item as Map<String, dynamic>));
         } catch (e) {
           print('X Error parsing order: $e');
-          print('  Corrupted data: $item');
         }
       }
       return orders;
@@ -37,7 +53,10 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
   Future<OrderModel> getOrderById(String id) async {
     final response = await dio.get('${ApiConfig.adminOrders}/$id');
     if (response.statusCode == 200) {
-      return OrderModel.fromJson(response.data);
+      final data = (response.data is Map && response.data.containsKey('data'))
+          ? response.data['data']
+          : response.data;
+      return OrderModel.fromJson(data as Map<String, dynamic>);
     }
     throw Exception('Failed to load order detail');
   }
