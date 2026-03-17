@@ -67,12 +67,13 @@ class PromoFormSheet extends StatelessWidget {
                   const SizedBox(height: 32),
                   Obx(() => TextButton(
                     
-                     child: Text( isEditing ? 'تحديث الإعلان' : 'حفظ الإعلان'),
-                        onPressed: controller.isLoading.value
+                     onPressed: controller.isLoading.value
                             ? null
                             : () => controller.savePromo(existingPromo: promo),
+                     child: Text( isEditing ? 'تحديث الإعلان' : 'حفظ الإعلان'),
                         // isLoading: controller.isLoading.value,
-                      )),
+                      )
+                      ),
                 ],
               ),
             ),

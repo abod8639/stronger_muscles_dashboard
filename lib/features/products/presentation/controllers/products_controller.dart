@@ -214,8 +214,7 @@ class ProductsController extends GetxController {
         discountPrice = updatedSizes.first.discountPrice;
       }
 
-      final String generatedId = existingProduct?.id ?? 
-          '${textcontrollers['name_en']!.text.trim().toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '-')}-${DateTime.now().millisecondsSinceEpoch.toString().substring(10)}';
+      final String generatedId = existingProduct?.id ?? 'PROD-${DateTime.now().millisecondsSinceEpoch}';
       
       debugPrint('--- Generating Product with ID: $generatedId ---');
 
