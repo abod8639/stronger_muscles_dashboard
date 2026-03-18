@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
@@ -39,7 +41,7 @@ class ImageGalleryEditor extends StatelessWidget {
               ),
             ),
             TextButton.icon(
-              onPressed: () => _showAddUrlDialog(context),
+              onPressed: () => showAddUrlDialog(context,onAddUrl),
               icon: const Icon(color: AppColors.info, Icons.link, size: 18),
               label: const Text(
                 style: TextStyle(color: AppColors.info),
@@ -123,22 +125,27 @@ class ImageGalleryEditor extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              CachedNetworkImage(
-                imageUrl: url,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => const Center(
-                  child: SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.blueAccent,
+              !url.startsWith('http')
+                  ? Image.file(
+                      File(url),
+                      fit: BoxFit.cover,
+                    )
+                  : CachedNetworkImage(
+                      imageUrl: url,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => const Center(
+                        child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.blueAccent,
+                          ),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.broken_image, color: Colors.grey),
                     ),
-                  ),
-                ),
-                errorWidget: (context, url, error) =>
-                    const Icon(Icons.broken_image, color: Colors.grey),
-              ),
 
               Container(color: Colors.black.withValues(alpha: 0.25)),
 
@@ -199,37 +206,37 @@ class ImageGalleryEditor extends StatelessWidget {
       ),
     );
   }
+}
 
-  void _showAddUrlDialog(BuildContext context) {
-    final controller = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('إضافة رابط صورة'),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(
-            hintText: 'https://example.com/image.jpg',
-            border: OutlineInputBorder(),
-          ),
-          autofocus: true,
+void showAddUrlDialog(BuildContext context,Function(String) onAddUrl) {
+  final controller = TextEditingController();
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('إضافة رابط صورة'),
+      content: TextField(
+        controller: controller,
+        decoration: const InputDecoration(
+          hintText: 'https://example.com/image.jpg',
+          border: OutlineInputBorder(),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('إلغاء'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (controller.text.isNotEmpty) {
-                onAddUrl(controller.text);
-                Navigator.pop(context);
-              }
-            },
-            child: const Text('إضافة'),
-          ),
-        ],
+        autofocus: true,
       ),
-    );
-  }
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('إلغاء'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            if (controller.text.isNotEmpty) {
+              onAddUrl(controller.text);
+              Navigator.pop(context);
+            }
+          },
+          child: const Text('إضافة'),
+        ),
+      ],
+    ),
+  );
 }

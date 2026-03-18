@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/app_colors.dart';
+import 'package:stronger_muscles_dashboard/config/theme.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/image_gallery_editor.dart';
 import 'package:stronger_muscles_dashboard/features/auth/presentation/widgets/build_text_field.dart';
 import 'package:stronger_muscles_dashboard/features/promos/domain/entities/promo_entity.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/controllers/promos_controller.dart';
@@ -36,7 +38,29 @@ class PromoFormSheet extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _buildImageSection(controller),
+                  // _buildImageSection(controller),
+                  Obx(() {
+                    final imageUrls = <String>[];
+                    if (controller.selectedImage.value != null) {
+                      imageUrls.add(controller.selectedImage.value!.path);
+                    } else if (controller.existingImageUrl.value.isNotEmpty) {
+                      imageUrls.add(controller.existingImageUrl.value);
+                    }
+                    
+                    return ImageGalleryEditor(
+                      imageUrls: imageUrls,
+                      onAddUrl: (url) {
+                        controller.existingImageUrl.value = url;
+                        controller.selectedImage.value = null;
+                      },
+                      onRemove: (index) {
+                        controller.existingImageUrl.value = '';
+                        controller.selectedImage.value = null;
+                      },
+                      onPickImage: () => controller.pickImage(),
+                      onReorder: (oldIndex, newIndex) {},
+                    );
+                  }),
                   const SizedBox(height: 24),
                   _buildLanguageTabs(controller),
                   const SizedBox(height: 24),
@@ -95,65 +119,13 @@ class PromoFormSheet extends StatelessWidget {
     );
   }
 
-  // ─────────────────────────────  Image  ───────────────────────────────────
 
-  Widget _buildImageSection(PromosController controller) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildSectionTitle('صورة الإعلان'),
-        GestureDetector(
-          onTap: () => controller.pickImage(),
-          child: Obx(() => Container(
-                height: 160,
-                decoration: BoxDecoration(
-                  color: AppColorsExtended.greenLight,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColorsExtended.greenAccent),
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: _imageContent(controller),
-                ),
-              )),
-        ),
-      ],
-    );
-  }
-
-  Widget _imageContent(PromosController controller) {
-    if (controller.selectedImage.value != null) {
-      return Stack(fit: StackFit.expand, children: [
-        Image.file(controller.selectedImage.value!, fit: BoxFit.cover),
-        _imageOverlay(),
-      ]);
-    } else if (controller.existingImageUrl.value.isNotEmpty) {
-      return Stack(fit: StackFit.expand, children: [
-        CachedNetworkImage(imageUrl: controller.existingImageUrl.value, fit: BoxFit.cover),
-        _imageOverlay(),
-      ]);
-    }
-    return const Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(Icons.add_photo_alternate, size: 48, color: AppColorsExtended.textSecondary),
-        SizedBox(height: 8),
-        Text('اضغط لاختيار صورة الإعلان',
-            style: TextStyle(color: AppColorsExtended.textSecondary)),
-      ],
-    );
-  }
-
-  Widget _imageOverlay() => Container(
-        color: Colors.black.withOpacity(0.3),
-        child: const Center(child: Icon(Icons.edit, color: Colors.white, size: 32)),
-      );
 
   // ─────────────────────────────  Language Tabs  ───────────────────────────
 
   Widget _buildLanguageTabs(PromosController controller) {
     return DefaultTabController(
+      
       length: 2,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -161,14 +133,14 @@ class PromoFormSheet extends StatelessWidget {
           _buildSectionTitle('المحتوى النصي'),
           Container(
             decoration: BoxDecoration(
-              color: AppColorsExtended.greenLight,
+              color: AppColorsExtended.purpleAccent,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: AppColorsExtended.greenAccent),
             ),
             child: const TabBar(
               indicatorColor: AppColorsExtended.cardBgLight,
               labelColor: AppColorsExtended.cardBgLight,
-              unselectedLabelColor: AppColorsExtended.textSecondary,
+              unselectedLabelColor: AppColorsExtended.borderColor,
               tabs: [Tab(text: 'العربية'), Tab(text: 'English')],
             ),
           ),
@@ -294,10 +266,10 @@ class PromoFormSheet extends StatelessWidget {
           decoration: BoxDecoration(
             color: isSelected
                 ? AppColorsExtended.purpleAccent.withOpacity(0.15)
-                : AppColorsExtended.greenLight,
+                : AppColorsExtended.purpleAccent,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: isSelected ? AppColorsExtended.purpleAccent : AppColorsExtended.borderColor,
+              color: isSelected ? AppColorsExtended.purpleAccent : AppColorsExtended.backgroundColor,
               width: isSelected ? 2 : 1,
             ),
           ),
@@ -307,7 +279,7 @@ class PromoFormSheet extends StatelessWidget {
                   size: 20,
                   color: isSelected
                       ? AppColorsExtended.purpleAccent
-                      : AppColorsExtended.textSecondary),
+                      : AppColorsExtended.backgroundColor),
               const SizedBox(height: 4),
               Text(
                 label,
@@ -316,7 +288,7 @@ class PromoFormSheet extends StatelessWidget {
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                   color: isSelected
                       ? AppColorsExtended.purpleAccent
-                      : AppColorsExtended.textSecondary,
+                      : AppColorsExtended.backgroundColor,
                 ),
               ),
             ],
@@ -333,7 +305,7 @@ class PromoFormSheet extends StatelessWidget {
 
       return Container(
         decoration: BoxDecoration(
-          color: AppColorsExtended.greenLight,
+          color: AppColorsExtended.purpleAccent,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: AppColorsExtended.borderColor),
         ),
@@ -344,7 +316,7 @@ class PromoFormSheet extends StatelessWidget {
             value: controller.selectedTargetId.value,
             hint: const Text(
               'اختر منتجًا...',
-              style: TextStyle(color: AppColorsExtended.textSecondary),
+              style: TextStyle(color: AppColorsExtended.backgroundColor),
             ),
             dropdownColor: AppColorsExtended.cardBg,
             icon: const Icon(Icons.keyboard_arrow_down_rounded,
