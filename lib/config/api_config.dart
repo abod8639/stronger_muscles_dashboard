@@ -1,8 +1,9 @@
 import 'package:get/get.dart';
 
 class ApiConfigController extends GetxController {
-  // final String ip = "localhost";
-  final String ip = "192.168.1.17";
+  final String ip = "localhost";
+  // final String ip = "192.168.1.17";
+  // final String ip = "192.168.1.17";
 
   final String port = "8080";
 

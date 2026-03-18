@@ -16,6 +16,7 @@ class PromosController extends GetxController {
   final UpdatePromoUseCase updatePromoUseCase;
   final DeletePromoUseCase deletePromoUseCase;
   final GetProductsUseCase getProductsUseCase;
+  final UploadPromoImageUseCase uploadPromoImageUseCase;
 
   PromosController({
     required this.getPromosUseCase,
@@ -23,6 +24,7 @@ class PromosController extends GetxController {
     required this.updatePromoUseCase,
     required this.deletePromoUseCase,
     required this.getProductsUseCase,
+    required this.uploadPromoImageUseCase,
   });
 
   final promos = <PromoEntity>[].obs;
@@ -193,10 +195,22 @@ class PromosController extends GetxController {
       return;
     }
 
-    // TODO: Handle actual image upload if a new file is selected.
+    isLoading.value = true;
+
     String finalImageUrl = existingImageUrl.value;
-    if (selectedImage.value != null) {
-      finalImageUrl = selectedImage.value!.path;
+    try {
+      if (selectedImage.value != null) {
+        finalImageUrl = await uploadPromoImageUseCase.call(selectedImage.value!.path);
+      }
+    } catch (e) {
+      isLoading.value = false;
+      Get.snackbar(
+        'خطأ', 'فشل في رفع الصورة: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withOpacity(0.8),
+        colorText: Colors.white,
+      );
+      return;
     }
 
     final targetId = selectedTargetType.value == 'none' ? null : selectedTargetId.value;
@@ -213,7 +227,7 @@ class PromosController extends GetxController {
       isActive: isActive.value,
     );
 
-    isLoading.value = true;
+    // isLoading.value is already true from before the image upload
 
     try {
       if (existingPromo != null) {
@@ -223,6 +237,7 @@ class PromosController extends GetxController {
           promos[index] = updated;
           _applyFilters();
         }
+        print(promos);
         Get.back();
         Get.snackbar(
           'نجاح', 'تم تحديث الإعلان بنجاح',

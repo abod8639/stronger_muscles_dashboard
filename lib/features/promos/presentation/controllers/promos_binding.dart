@@ -41,7 +41,7 @@ class PromosBinding extends Bindings {
           updatePromoUseCase: Get.find(),
           deletePromoUseCase: Get.find(),
           getProductsUseCase: Get.find(),
-          // uploadPromoImageUseCase: Get.find(),
+          uploadPromoImageUseCase: Get.find(),
         ));
   }
 }
