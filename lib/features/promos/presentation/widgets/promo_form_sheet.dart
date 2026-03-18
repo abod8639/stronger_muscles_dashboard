@@ -1,12 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/app_colors.dart';
-import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/image_gallery_editor.dart';
 import 'package:stronger_muscles_dashboard/features/auth/presentation/widgets/build_text_field.dart';
 import 'package:stronger_muscles_dashboard/features/promos/domain/entities/promo_entity.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/controllers/promos_controller.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 class PromoFormSheet extends StatelessWidget {
   final PromoEntity? promo;
@@ -324,10 +323,16 @@ class PromoFormSheet extends StatelessWidget {
             items: products.map((p) {
               return DropdownMenuItem<String>(
                 value: p.id,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
+                child: Row(
                   children: [
+                    CachedNetworkImage(
+                      imageUrl: p.imageUrls.first,
+                      width: 45,
+                      // height: 20,
+                      errorWidget: (context, url, error) => const Icon(Icons.category,color: AppColorsExtended.textSecondary,),
+                      placeholder: (context, url) => const Icon(Icons.category,color: AppColorsExtended.textSecondary,),
+                    ),
+                    const SizedBox(width: 8),
                     Text(
                       p.nameAr,
                       style: const TextStyle(
@@ -336,13 +341,6 @@ class PromoFormSheet extends StatelessWidget {
                         fontSize: 14,
                       ),
                       overflow: TextOverflow.ellipsis,
-                    ),
-                    Text(
-                      p.id,
-                      style: const TextStyle(
-                        color: AppColorsExtended.textSecondary,
-                        fontSize: 11,
-                      ),
                     ),
                   ],
                 ),
@@ -381,25 +379,36 @@ class PromoFormSheet extends StatelessWidget {
             items: categories.map((c) {
               return DropdownMenuItem<String>(
                 value: c.id,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
+                child: Row(
                   children: [
-                    Text(
-                      c.displayName,
-                      style: const TextStyle(
-                        color: AppColorsExtended.textPrimary,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                      overflow: TextOverflow.ellipsis,
+                    CachedNetworkImage(
+                      imageUrl: c.imageUrl!,
+                      width: 45,
+                      errorWidget: (context, url, error) => const Icon(Icons.category,color: AppColorsExtended.textSecondary,),
+                      placeholder: (context, url) => const Icon(Icons.category,color: AppColorsExtended.textSecondary,),
                     ),
-                    Text(
-                      c.id,
-                      style: const TextStyle(
-                        color: AppColorsExtended.textSecondary,
-                        fontSize: 11,
-                      ),
+                    const SizedBox(width: 8),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          c.displayName,
+                          style: const TextStyle(
+                            color: AppColorsExtended.textPrimary,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          c.id,
+                          style: const TextStyle(
+                            color: AppColorsExtended.textSecondary,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -422,6 +431,7 @@ class PromoFormSheet extends StatelessWidget {
       ),
       child: Row(
         children: [
+          
           const SizedBox(
             width: 16,
             height: 16,
