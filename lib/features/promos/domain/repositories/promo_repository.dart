@@ -5,5 +5,6 @@ abstract class PromoRepository {
   Future<PromoEntity> addPromo(PromoEntity promo);
   Future<PromoEntity> updatePromo(PromoEntity promo);
   Future<void> deletePromo(String id);
+  Future<String> uploadImage(String filePath);
 }
 

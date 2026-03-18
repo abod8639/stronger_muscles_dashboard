@@ -7,6 +7,7 @@ abstract class PromoRemoteDataSource {
   Future<PromoModel> addPromo(Map<String, dynamic> promoData);
   Future<PromoModel> updatePromo(String id, Map<String, dynamic> promoData);
   Future<void> deletePromo(String id);
+  Future<String> uploadImage(String filePath);
 }
 
 class PromoRemoteDataSourceImpl implements PromoRemoteDataSource {
@@ -68,6 +69,32 @@ class PromoRemoteDataSourceImpl implements PromoRemoteDataSource {
       }
     } catch (e) {
       throw Exception(e.toString());
+    }
+  }
+
+  @override
+  Future<String> uploadImage(String filePath) async {
+    try {
+      final formData = FormData.fromMap({
+        'image': await MultipartFile.fromFile(
+          filePath,
+          filename: filePath.split('/').last,
+        ),
+      });
+
+      final response = await dio.post(
+        ApiConfig.adminUploadProductImage, // Generic upload
+        data: formData,
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        final imageUrl = data['url'] ?? data['data']?['url'] ?? data['imageUrl'] ?? data['path'];
+        if (imageUrl != null) return imageUrl.toString();
+      }
+      throw Exception('فشل في رفع الصورة');
+    } catch (e) {
+      throw Exception('خطأ في الرفع: $e');
     }
   }
 }

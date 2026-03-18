@@ -41,3 +41,13 @@ class DeletePromoUseCase {
   }
 }
 
+class UploadPromoImageUseCase {
+  final PromoRepository repository;
+
+  UploadPromoImageUseCase(this.repository);
+
+  Future<String> call(String filePath) async {
+    return await repository.uploadImage(filePath);
+  }
+}
+

@@ -7,7 +7,8 @@ class PromoModel {
   final Map<String, dynamic>? buttonText;
   final String imageUrl;
   final String backgroundColor;
-  final String? targetUrl;
+  final String targetType;
+  final String? targetId;
   final bool isActive;
   final DateTime? createdAt;
 
@@ -18,7 +19,8 @@ class PromoModel {
     this.buttonText,
     required this.imageUrl,
     required this.backgroundColor,
-    this.targetUrl,
+    this.targetType = 'none',
+    this.targetId,
     required this.isActive,
     this.createdAt,
   });
@@ -31,7 +33,8 @@ class PromoModel {
       buttonText: json['button_text'] is Map ? Map<String, dynamic>.from(json['button_text']) : null,
       imageUrl: json['image_url'] ?? '',
       backgroundColor: json['background_color'] ?? '#FFFFFF',
-      targetUrl: json['target_url'],
+      targetType: json['target_type'] ?? 'none',
+      targetId: json['target_id']?.toString(),
       isActive: json['is_active'] == 1 || json['is_active'] == true,
       createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at']) : null,
     );
@@ -45,7 +48,8 @@ class PromoModel {
       'button_text': buttonText,
       'image_url': imageUrl,
       'background_color': backgroundColor,
-      'target_url': targetUrl,
+      'target_type': targetType,
+      'target_id': targetId,
       'is_active': isActive,
       'created_at': createdAt?.toIso8601String(),
     };
@@ -59,7 +63,8 @@ class PromoModel {
       buttonText: buttonText,
       imageUrl: imageUrl,
       backgroundColor: backgroundColor,
-      targetUrl: targetUrl,
+      targetType: targetType,
+      targetId: targetId,
       isActive: isActive,
       createdAt: createdAt,
     );
@@ -73,7 +78,8 @@ class PromoModel {
       buttonText: entity.buttonText,
       imageUrl: entity.imageUrl,
       backgroundColor: entity.backgroundColor,
-      targetUrl: entity.targetUrl,
+      targetType: entity.targetType,
+      targetId: entity.targetId,
       isActive: entity.isActive,
       createdAt: entity.createdAt,
     );

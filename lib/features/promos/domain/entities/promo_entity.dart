@@ -5,7 +5,10 @@ class PromoEntity {
   final Map<String, dynamic>? buttonText;
   final String imageUrl;
   final String backgroundColor; // Hex color string
-  final String? targetUrl;
+  /// 'none' | 'product' | 'category'
+  final String targetType;
+  /// The ID of the target (product ID or category ID)
+  final String? targetId;
   final bool isActive;
   final DateTime? createdAt;
 
@@ -16,7 +19,8 @@ class PromoEntity {
     this.buttonText,
     required this.imageUrl,
     required this.backgroundColor,
-    this.targetUrl,
+    this.targetType = 'none',
+    this.targetId,
     required this.isActive,
     this.createdAt,
   });
@@ -25,9 +29,17 @@ class PromoEntity {
   String get displaySubtitle => _getLocalizedText(subtitle);
   String get displayButtonText => _getLocalizedText(buttonText);
 
+  String get displayTarget {
+    if (targetType == 'none' || targetId == null || targetId!.isEmpty) {
+      return 'بدون توجيه';
+    }
+    if (targetType == 'product') return 'منتج: $targetId';
+    if (targetType == 'category') return 'فئة: $targetId';
+    return targetId!;
+  }
+
   String _getLocalizedText(Map<String, dynamic>? textMap) {
     if (textMap == null) return '';
-    // Assuming Arabic is primary, then fallback to English
     if (textMap.containsKey('ar') && textMap['ar'] != null && textMap['ar'].toString().isNotEmpty) {
       return textMap['ar'].toString();
     }
@@ -37,4 +49,3 @@ class PromoEntity {
     return '';
   }
 }
-

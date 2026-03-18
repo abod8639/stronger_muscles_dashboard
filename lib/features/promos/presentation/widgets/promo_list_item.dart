@@ -29,113 +29,170 @@ class PromoListItem extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       child: Row(
         children: [
-          // Image / Color preview
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: Color(int.parse(promo.backgroundColor.replaceFirst('#', '0xff'))),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColorsExtended.borderColor),
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: promo.imageUrl.isNotEmpty
-                ? CachedNetworkImage(
-                    imageUrl: promo.imageUrl,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => const Icon(Icons.image, color: Colors.white54),
-                    errorWidget: (context, url, error) => const Icon(Icons.broken_image, color: Colors.white54),
-                  )
-                : const Icon(Icons.campaign, color: Colors.white),
-          ),
+          // Image / color preview
+          _buildImagePreview(),
           const SizedBox(width: 16),
           // Info
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        promo.displayTitle.isNotEmpty ? promo.displayTitle : 'بدون عنوان',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppColorsExtended.textPrimary,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: promo.isActive ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        promo.isActive ? 'نشط' : 'غير نشط',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: promo.isActive ? Colors.green : Colors.red,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                if (promo.displaySubtitle.isNotEmpty) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    promo.displaySubtitle,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColorsExtended.textSecondary,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Icon(Icons.link, size: 16, color: AppColorsExtended.purpleAccent),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        promo.targetUrl ?? 'بدون رابط توجيه',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColorsExtended.textSecondary,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
+          Expanded(child: _buildInfo()),
           // Actions
-          Column(
-            children: [
-              IconButton(
-                icon: Icon(Icons.edit_rounded, color: AppColorsExtended.purpleAccent),
-                onPressed: onEdit,
-                tooltip: 'تعديل',
+          _buildActions(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildImagePreview() {
+    Color bgColor = Colors.white;
+    try {
+      final hex = promo.backgroundColor.replaceFirst('#', '0xff');
+      bgColor = Color(int.parse(hex));
+    } catch (_) {}
+
+    return Container(
+      width: 80,
+      height: 80,
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColorsExtended.borderColor),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: promo.imageUrl.isNotEmpty
+          ? CachedNetworkImage(
+              imageUrl: promo.imageUrl,
+              fit: BoxFit.cover,
+              placeholder: (_, _) => const Icon(Icons.image, color: Colors.white54),
+              errorWidget: (_, _, _) => const Icon(Icons.broken_image, color: Colors.white54),
+            )
+          : const Icon(Icons.campaign, color: Colors.white),
+    );
+  }
+
+  Widget _buildInfo() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Title row
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Text(
+                promo.displayTitle.isNotEmpty ? promo.displayTitle : 'بدون عنوان',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: AppColorsExtended.textPrimary,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-              IconButton(
-                icon: const Icon(Icons.delete_outline_rounded, color: Colors.red),
-                onPressed: onDelete,
-                tooltip: 'حذف',
-              ),
-            ],
+            ),
+            _buildStatusBadge(),
+          ],
+        ),
+        // Subtitle
+        if (promo.displaySubtitle.isNotEmpty) ...[
+          const SizedBox(height: 4),
+          Text(
+            promo.displaySubtitle,
+            style: const TextStyle(
+              fontSize: 13,
+              color: AppColorsExtended.textSecondary,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+        const SizedBox(height: 8),
+        // Target chip
+        _buildTargetChip(),
+      ],
+    );
+  }
+
+  Widget _buildStatusBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: (promo.isActive ? Colors.green : Colors.red).withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        promo.isActive ? 'نشط' : 'غير نشط',
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+          color: promo.isActive ? Colors.green : Colors.red,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTargetChip() {
+    IconData icon;
+    Color chipColor;
+    String label;
+
+    switch (promo.targetType) {
+      case 'product':
+        icon = Icons.inventory_2_rounded;
+        chipColor = AppColorsExtended.purpleAccent;
+        label = promo.targetId != null && promo.targetId!.isNotEmpty
+            ? 'منتج: ${promo.targetId}'
+            : 'منتج: غير محدد';
+        break;
+      case 'category':
+        icon = Icons.category_rounded;
+        chipColor = Colors.orange;
+        label = promo.targetId != null && promo.targetId!.isNotEmpty
+            ? 'فئة: ${promo.targetId}'
+            : 'فئة: غير محددة';
+        break;
+      default:
+        icon = Icons.block;
+        chipColor = AppColorsExtended.textSecondary;
+        label = 'بدون توجيه';
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: chipColor.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: chipColor.withOpacity(0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: chipColor),
+          const SizedBox(width: 4),
+          Flexible(
+            child: Text(
+              label,
+              style: TextStyle(fontSize: 11, color: chipColor, fontWeight: FontWeight.w600),
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildActions() {
+    return Column(
+      children: [
+        IconButton(
+          icon: Icon(Icons.edit_rounded, color: AppColorsExtended.purpleAccent),
+          onPressed: onEdit,
+          tooltip: 'تعديل',
+        ),
+        IconButton(
+          icon: const Icon(Icons.delete_outline_rounded, color: Colors.red),
+          onPressed: onDelete,
+          tooltip: 'حذف',
+        ),
+      ],
     );
   }
 }

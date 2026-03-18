@@ -32,5 +32,10 @@ class PromoRepositoryImpl implements PromoRepository {
   Future<void> deletePromo(String id) async {
     await remoteDataSource.deletePromo(id);
   }
+
+  @override
+  Future<String> uploadImage(String filePath) async {
+    return await remoteDataSource.uploadImage(filePath);
+  }
 }
 
