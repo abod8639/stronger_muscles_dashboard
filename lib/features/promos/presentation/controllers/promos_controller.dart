@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/features/brands/domain/entities/brand_entity.dart';
-import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
+import 'package:stronger_muscles_dashboard/features/brands/domain/repositories/brand_repository.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/usecases/get_products_usecase.dart';
 import 'package:stronger_muscles_dashboard/features/promos/domain/entities/promo_entity.dart';
@@ -32,6 +32,7 @@ class PromosController extends GetxController {
   final products = <ProductEntity>[].obs;
   final brands = <BrandEntity>[].obs;
   final isLoading = true.obs;
+  final isBrandsLoading = false.obs;
   final searchQuery = ''.obs;
 
   // Form state — text fields
@@ -68,6 +69,12 @@ class PromosController extends GetxController {
     });
   }
 
+  String getBrandName(String? id) {
+    if (id == null || id.isEmpty) return 'غير محدد';
+    final brand = brands.firstWhereOrNull((b) => b.id == id);
+    return brand?.displayName ?? 'ماركة #$id';
+  }
+
   Future<void> fetchPromos() async {
     isLoading.value = true;
     try {
@@ -94,15 +101,21 @@ class PromosController extends GetxController {
   }
 
   Future<void> fetchBrands() async {
+    isBrandsLoading.value = true;
     try {
-      // Mocked for now, until BrandRepository is implemented or fetched from somewhere
-      // When you have a repository/service, replace this with:
-      // final data = await Get.find<BrandRepository>().getBrands();
-      // brands.assignAll(data);
-      
-      // Let's at least keep categories for reference or use categories as Brands if they map
-      // But the user specifically wanted to decouple it.
-    } catch (_) {}
+      print('🔍 [PromosController] Fetching brands...');
+      if (Get.isRegistered<BrandRepository>()) {
+         final data = await Get.find<BrandRepository>().getBrands();
+         print('✅ [PromosController] Fetched ${data.length} brands');
+         brands.assignAll(data);
+      } else {
+        print('⚠️ [PromosController] BrandRepository is not registered!');
+      }
+    } catch (e) {
+      print('❌ [PromosController] Error fetching brands: $e');
+    } finally {
+      isBrandsLoading.value = false;
+    }
   }
 
   void onSearchChanged(String query) {
@@ -158,7 +171,7 @@ class PromosController extends GetxController {
     backgroundColorHex.value = promo.backgroundColor;
 
     selectedTargetType.value = promo.targetType;
-    selectedTargetId.value = promo.targetId;
+    selectedTargetId.value = promo.targetId ?? '';
     isActive.value = promo.isActive;
     existingImageUrl.value = promo.imageUrl;
     selectedImage.value = null;

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/app_colors.dart';
 import 'package:stronger_muscles_dashboard/features/promos/domain/entities/promo_entity.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/features/promos/presentation/controllers/promos_controller.dart';
 
 class PromoListItem extends StatelessWidget {
   final PromoEntity promo;
@@ -145,8 +147,11 @@ class PromoListItem extends StatelessWidget {
       case 'brand':
         icon = Icons.category_rounded;
         chipColor = Colors.orange;
+        final brandName = Get.isRegistered<PromosController>() 
+            ? Get.find<PromosController>().getBrandName(promo.targetId)
+            : promo.targetId;
         label = promo.targetId != null && promo.targetId!.isNotEmpty
-            ? 'ماركة: ${promo.targetId}'
+            ? 'ماركة: $brandName'
             : 'ماركة: غير محددة';
         break;
       default:

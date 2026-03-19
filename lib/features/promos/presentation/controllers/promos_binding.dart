@@ -2,6 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/core/network/api_base.dart';
 import 'package:stronger_muscles_dashboard/features/products/data/datasources/product_remote_datasource.dart';
+import 'package:stronger_muscles_dashboard/features/brands/data/repositories/brand_repository_impl.dart';
+import 'package:stronger_muscles_dashboard/features/brands/domain/repositories/brand_repository.dart';
+import 'package:stronger_muscles_dashboard/core/network/api/brand_service.dart';
 import 'package:stronger_muscles_dashboard/features/products/data/repositories/product_repository_impl.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/repositories/product_repository.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/usecases/get_products_usecase.dart';
@@ -33,6 +36,12 @@ class PromosBinding extends Bindings {
     }
     if (!Get.isRegistered<GetProductsUseCase>()) {
       Get.lazyPut(() => GetProductsUseCase(Get.find<ProductRepository>()));
+    }
+
+    // Brand data layer
+    if (!Get.isRegistered<BrandRepository>()) {
+      Get.lazyPut<BrandService>(() => BrandService());
+      Get.lazyPut<BrandRepository>(() => BrandRepositoryImpl(brandService: Get.find<BrandService>()));
     }
 
     Get.lazyPut(() => PromosController(

@@ -45,7 +45,7 @@ class PromoFormSheet extends StatelessWidget {
                     } else if (controller.existingImageUrl.value.isNotEmpty) {
                       imageUrls.add(controller.existingImageUrl.value);
                     }
-                    
+
                     return ImageGalleryEditor(
                       imageUrls: imageUrls,
                       onAddUrl: (url) {
@@ -68,16 +68,18 @@ class PromoFormSheet extends StatelessWidget {
                   const SizedBox(height: 20),
                   _buildTargetSection(controller),
                   const SizedBox(height: 20),
-                  Obx(() => SwitchListTile(
-                        title: const Text(
-                          'تفعيل الإعلان',
-                          style: TextStyle(color: AppColorsExtended.textPrimary),
-                        ),
-                        value: controller.isActive.value,
-                        onChanged: (val) => controller.isActive.value = val,
-                        activeThumbColor: AppColorsExtended.purpleAccent,
-                        contentPadding: EdgeInsets.zero,
-                      )),
+                  Obx(
+                    () => SwitchListTile(
+                      title: const Text(
+                        'تفعيل الإعلان',
+                        style: TextStyle(color: AppColorsExtended.textPrimary),
+                      ),
+                      value: controller.isActive.value,
+                      onChanged: (val) => controller.isActive.value = val,
+                      activeThumbColor: AppColorsExtended.purpleAccent,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
                   const SizedBox(height: 32),
                   Obx(() => _buildSaveButton(controller, isEditing)),
                 ],
@@ -118,13 +120,10 @@ class PromoFormSheet extends StatelessWidget {
     );
   }
 
-
-
   // ─────────────────────────────  Language Tabs  ───────────────────────────
 
   Widget _buildLanguageTabs(PromosController controller) {
     return DefaultTabController(
-      
       length: 2,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -140,7 +139,10 @@ class PromoFormSheet extends StatelessWidget {
               indicatorColor: AppColorsExtended.cardBgLight,
               labelColor: AppColorsExtended.cardBgLight,
               unselectedLabelColor: AppColorsExtended.borderColor,
-              tabs: [Tab(text: 'العربية'), Tab(text: 'English')],
+              tabs: [
+                Tab(text: 'العربية'),
+                Tab(text: 'English'),
+              ],
             ),
           ),
           const SizedBox(height: 16),
@@ -174,11 +176,23 @@ class PromoFormSheet extends StatelessWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
-          buildTextField(icon: Icons.title, label: 'العنوان', controller: titleCtrl),
+          buildTextField(
+            icon: Icons.title,
+            label: 'العنوان',
+            controller: titleCtrl,
+          ),
           const SizedBox(height: 16),
-          buildTextField(icon: Icons.subtitles, label: 'العنوان الفرعي', controller: subtitleCtrl),
+          buildTextField(
+            icon: Icons.subtitles,
+            label: 'العنوان الفرعي',
+            controller: subtitleCtrl,
+          ),
           const SizedBox(height: 16),
-          buildTextField(icon: Icons.smart_button, label: 'نص الزر', controller: buttonCtrl),
+          buildTextField(
+            icon: Icons.smart_button,
+            label: 'نص الزر',
+            controller: buttonCtrl,
+          ),
         ],
       ),
     );
@@ -195,12 +209,13 @@ class PromoFormSheet extends StatelessWidget {
           try {
             final hex = controller.backgroundColorHex.value.replaceAll('#', '');
             if (hex.length == 6) parsed = Color(int.parse('FF$hex', radix: 16));
-          } 
-          catch (_) {}
+          } catch (_) {}
           return Container(
             width: 44,
             height: 44,
-            margin: const EdgeInsets.only(top: 8), // Align with text field input area
+            margin: const EdgeInsets.only(
+              top: 8,
+            ), // Align with text field input area
             decoration: BoxDecoration(
               color: parsed,
               borderRadius: BorderRadius.circular(10),
@@ -228,22 +243,29 @@ class PromoFormSheet extends StatelessWidget {
       children: [
         _buildSectionTitle('توجيه الإعلان'),
         // Type selector
-        Obx(() => Row(
-              children: [
-                _typeChip(controller, 'none', 'لا يوجد', Icons.block),
-                const SizedBox(width: 8),
-                _typeChip(controller, 'product', 'منتج', Icons.inventory_2_rounded),
-                const SizedBox(width: 8),
-                _typeChip(controller, 'category', 'فئة', Icons.category_rounded),
-              ],
-            )),
+        Obx(
+          () => Row(
+            children: [
+              _typeChip(controller, 'none', 'لا يوجد', Icons.block),
+              const SizedBox(width: 8),
+              _typeChip(
+                controller,
+                'product',
+                'منتج',
+                Icons.inventory_2_rounded,
+              ),
+              const SizedBox(width: 8),
+              _typeChip(controller, 'brand', 'ماركة', Icons.category_rounded),
+            ],
+          ),
+        ),
         const SizedBox(height: 16),
         // Product dropdown — shown only when type = product
         Obx(() {
           if (controller.selectedTargetType.value == 'product') {
             return _buildProductDropdown(controller);
-          } else if (controller.selectedTargetType.value == 'category') {
-            return _buildCategoryDropdown(controller);
+          } else if (controller.selectedTargetType.value == 'brand') {
+            return _buildBrandDropdown(controller);
           }
           return const SizedBox.shrink();
         }),
@@ -251,7 +273,12 @@ class PromoFormSheet extends StatelessWidget {
     );
   }
 
-  Widget _typeChip(PromosController c, String type, String label, IconData icon) {
+  Widget _typeChip(
+    PromosController c,
+    String type,
+    String label,
+    IconData icon,
+  ) {
     final isSelected = c.selectedTargetType.value == type;
     return Expanded(
       child: GestureDetector(
@@ -268,17 +295,21 @@ class PromoFormSheet extends StatelessWidget {
                 : AppColorsExtended.purpleAccent,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: isSelected ? AppColorsExtended.purpleAccent : AppColorsExtended.backgroundColor,
+              color: isSelected
+                  ? AppColorsExtended.purpleAccent
+                  : AppColorsExtended.backgroundColor,
               width: isSelected ? 2 : 1,
             ),
           ),
           child: Column(
             children: [
-              Icon(icon,
-                  size: 20,
-                  color: isSelected
-                      ? AppColorsExtended.purpleAccent
-                      : AppColorsExtended.backgroundColor),
+              Icon(
+                icon,
+                size: 20,
+                color: isSelected
+                    ? AppColorsExtended.purpleAccent
+                    : AppColorsExtended.backgroundColor,
+              ),
               const SizedBox(height: 4),
               Text(
                 label,
@@ -318,8 +349,10 @@ class PromoFormSheet extends StatelessWidget {
               style: TextStyle(color: AppColorsExtended.backgroundColor),
             ),
             dropdownColor: AppColorsExtended.cardBg,
-            icon: const Icon(Icons.keyboard_arrow_down_rounded,
-                color: AppColorsExtended.purpleAccent),
+            icon: const Icon(
+              Icons.keyboard_arrow_down_rounded,
+              color: AppColorsExtended.purpleAccent,
+            ),
             items: products.map((p) {
               return DropdownMenuItem<String>(
                 value: p.id,
@@ -329,8 +362,14 @@ class PromoFormSheet extends StatelessWidget {
                       imageUrl: p.imageUrls.first,
                       width: 45,
                       // height: 20,
-                      errorWidget: (context, url, error) => const Icon(Icons.category,color: AppColorsExtended.textSecondary,),
-                      placeholder: (context, url) => const Icon(Icons.category,color: AppColorsExtended.textSecondary,),
+                      errorWidget: (context, url, error) => const Icon(
+                        Icons.category,
+                        color: AppColorsExtended.textSecondary,
+                      ),
+                      placeholder: (context, url) => const Icon(
+                        Icons.category,
+                        color: AppColorsExtended.textSecondary,
+                      ),
                     ),
                     const SizedBox(width: 8),
                     Text(
@@ -353,10 +392,19 @@ class PromoFormSheet extends StatelessWidget {
     });
   }
 
-  Widget _buildCategoryDropdown(PromosController controller) {
+  Widget _buildBrandDropdown(PromosController controller) {
     return Obx(() {
-      final categories = controller.categories;
-      if (categories.isEmpty) return _loadingDropdown('جاري تحميل الأقسام...');
+      final brands = controller.brands;
+      final isFetching = controller.isBrandsLoading.value;
+
+      if (isFetching && brands.isEmpty) {
+        return _loadingDropdown('جاري تحميل الماركات...');
+      }
+
+      if (brands.isEmpty) {
+        return _emptyState('لا توجد ماركات متاحة');
+        // return _loadingDropdown('لا توجد ماركات');
+      }
 
       return Container(
         decoration: BoxDecoration(
@@ -368,32 +416,50 @@ class PromoFormSheet extends StatelessWidget {
         child: DropdownButtonHideUnderline(
           child: DropdownButton<String>(
             isExpanded: true,
-            value: controller.selectedTargetId.value,
+            value: controller.selectedTargetId.value.isEmpty || 
+                    !brands.any((b) => b.id == controller.selectedTargetId.value)
+                ? null 
+                : controller.selectedTargetId.value,
             hint: const Text(
-              'اختر قسمًا...',
+              'اختر ماركة...',
               style: TextStyle(color: AppColorsExtended.textSecondary),
             ),
             dropdownColor: AppColorsExtended.cardBg,
-            icon: const Icon(Icons.keyboard_arrow_down_rounded,
-                color: Colors.orange),
-            items: categories.map((c) {
+            icon: const Icon(
+              Icons.keyboard_arrow_down_rounded,
+              color: Colors.orange,
+            ),
+            items: brands.map((b) {
               return DropdownMenuItem<String>(
-                value: c.id,
+                value: b.id,
                 child: Row(
                   children: [
-                    CachedNetworkImage(
-                      imageUrl: c.imageUrl!,
-                      width: 45,
-                      errorWidget: (context, url, error) => const Icon(Icons.category,color: AppColorsExtended.textSecondary,),
-                      placeholder: (context, url) => const Icon(Icons.category,color: AppColorsExtended.textSecondary,),
-                    ),
-                    const SizedBox(width: 8),
+                    if (b.imageUrl != null)
+                      CachedNetworkImage(
+                        imageUrl: b.imageUrl!,
+                        width: 45,
+                        errorWidget: (context, url, error) => const Icon(
+                          Icons.category,
+                          color: AppColorsExtended.textSecondary,
+                        ),
+                        placeholder: (context, url) => const Icon(
+                          Icons.category,
+                          color: AppColorsExtended.textSecondary,
+                        ),
+                      )
+                    else
+                      const Icon(
+                        Icons.category,
+                        color: AppColorsExtended.textSecondary,
+                        size: 45,
+                      ),
+                    const SizedBox(width: 12),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          c.displayName,
+                          b.displayName,
                           style: const TextStyle(
                             color: AppColorsExtended.textPrimary,
                             fontWeight: FontWeight.bold,
@@ -402,7 +468,7 @@ class PromoFormSheet extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                         Text(
-                          c.id,
+                          b.id,
                           style: const TextStyle(
                             color: AppColorsExtended.textSecondary,
                             fontSize: 11,
@@ -431,7 +497,6 @@ class PromoFormSheet extends StatelessWidget {
       ),
       child: Row(
         children: [
-          
           const SizedBox(
             width: 16,
             height: 16,
@@ -456,13 +521,18 @@ class PromoFormSheet extends StatelessWidget {
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(vertical: 16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        disabledBackgroundColor: AppColorsExtended.purpleAccent.withOpacity(0.4),
+        disabledBackgroundColor: AppColorsExtended.purpleAccent.withOpacity(
+          0.4,
+        ),
       ),
       icon: controller.isLoading.value
           ? const SizedBox(
               width: 18,
               height: 18,
-              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Colors.white,
+              ),
             )
           : Icon(isEditing ? Icons.save_rounded : Icons.add_circle_rounded),
       label: Text(
@@ -487,4 +557,31 @@ class PromoFormSheet extends StatelessWidget {
       ),
     );
   }
-}
+  
+  Widget _emptyState(String message) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: AppColorsExtended.greenLight,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColorsExtended.borderColor),
+        ),
+        child: Row(
+          children: [
+            const Icon(
+              Icons.info_outline,
+              color: AppColorsExtended.textSecondary,
+              size: 20,
+            ),
+            const SizedBox(width: 10),
+            Text(
+              message,
+              style: const TextStyle(color: AppColorsExtended.textSecondary),
+            ),
+          ],
+        ),
+      );
+    }
+  
+  }
+

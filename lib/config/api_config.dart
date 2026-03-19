@@ -46,6 +46,10 @@ class ApiConfig {
   static const String adminCategories = '/admin/categories';
   static String adminCategoryDetail(String id) => '/admin/categories/$id';
 
+  // Brand Management
+  static const String adminBrands = '/admin/brands';
+  static String adminBrandDetail(String id) => '/admin/brands/$id';
+
   // Orders Management
   static const String adminOrders = '/admin/orders';
   static String adminOrderDetail(String id) => '/admin/orders/$id';
