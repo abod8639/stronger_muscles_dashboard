@@ -142,12 +142,12 @@ class PromoListItem extends StatelessWidget {
             ? 'منتج: ${promo.targetId}'
             : 'منتج: غير محدد';
         break;
-      case 'category':
+      case 'brand':
         icon = Icons.category_rounded;
         chipColor = Colors.orange;
         label = promo.targetId != null && promo.targetId!.isNotEmpty
-            ? 'فئة: ${promo.targetId}'
-            : 'فئة: غير محددة';
+            ? 'ماركة: ${promo.targetId}'
+            : 'ماركة: غير محددة';
         break;
       default:
         icon = Icons.block;
@@ -177,6 +177,7 @@ class PromoListItem extends StatelessWidget {
         ],
       ),
     );
+
   }
 
   Widget _buildActions() {
@@ -195,4 +196,5 @@ class PromoListItem extends StatelessWidget {
       ],
     );
   }
+
 }

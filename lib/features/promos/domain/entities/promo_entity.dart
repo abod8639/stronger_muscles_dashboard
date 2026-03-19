@@ -5,9 +5,9 @@ class PromoEntity {
   final Map<String, dynamic>? buttonText;
   final String imageUrl;
   final String backgroundColor; // Hex color string
-  /// 'none' | 'product' | 'category'
+  /// 'none' | 'product' | 'brand'
   final String targetType;
-  /// The ID of the target (product ID or category ID)
+  /// The ID of the target (product ID or brand ID)
   final String? targetId;
   final bool isActive;
   final DateTime? createdAt;
@@ -34,7 +34,7 @@ class PromoEntity {
       return 'بدون توجيه';
     }
     if (targetType == 'product') return 'منتج: $targetId';
-    if (targetType == 'category') return 'فئة: $targetId';
+    if (targetType == 'brand') return 'ماركة: $targetId';
     return targetId!;
   }
 

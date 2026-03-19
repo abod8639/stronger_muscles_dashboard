@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/features/categories/data/repositories/category_repository.dart';
+import 'package:stronger_muscles_dashboard/features/brands/domain/entities/brand_entity.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/usecases/get_products_usecase.dart';
@@ -30,7 +30,7 @@ class PromosController extends GetxController {
   final promos = <PromoEntity>[].obs;
   final filteredPromos = <PromoEntity>[].obs;
   final products = <ProductEntity>[].obs;
-  final categories = <CategoryEntity>[].obs;
+  final brands = <BrandEntity>[].obs;
   final isLoading = true.obs;
   final searchQuery = ''.obs;
 
@@ -60,7 +60,7 @@ class PromosController extends GetxController {
     super.onInit();
     fetchPromos();
     fetchProducts();
-    fetchCategories();
+    fetchBrands();
     
     // Listen to color hex changes for UI preview
     backgroundColorController.addListener(() {
@@ -93,15 +93,15 @@ class PromosController extends GetxController {
     } catch (_) {}
   }
 
-  Future<void> fetchCategories() async {
+  Future<void> fetchBrands() async {
     try {
-      // We can use categories from anywhere if we had GetCategoriesUseCase,
-      // but if not registered we might skip.
-      // For now let's see if we can get them.
-      if (Get.isRegistered<CategoryRepository>()) {
-         final data = await Get.find<CategoryRepository>().getCategories();
-         categories.assignAll(data);
-      }
+      // Mocked for now, until BrandRepository is implemented or fetched from somewhere
+      // When you have a repository/service, replace this with:
+      // final data = await Get.find<BrandRepository>().getBrands();
+      // brands.assignAll(data);
+      
+      // Let's at least keep categories for reference or use categories as Brands if they map
+      // But the user specifically wanted to decouple it.
     } catch (_) {}
   }
 
@@ -185,9 +185,9 @@ class PromosController extends GetxController {
       );
       return;
     }
-    if (selectedTargetType.value == 'category' && (selectedTargetId.value == null || selectedTargetId.value!.isEmpty)) {
+    if (selectedTargetType.value == 'brand' && (selectedTargetId.value == null || selectedTargetId.value!.isEmpty)) {
       Get.snackbar(
-        'خطأ', 'يجب اختيار فئة للإعلان',
+        'خطأ', 'يجب اختيار ماركة للإعلان',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.withOpacity(0.8),
         colorText: Colors.white,
