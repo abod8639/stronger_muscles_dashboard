@@ -41,8 +41,8 @@ class ChipItem extends StatelessWidget {
               label,
               style: TextStyle(
                 color: isSelected ? Colors.white : Colors.grey,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                fontSize: 13,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                fontSize: 16,
               ),
             ),
           ),
