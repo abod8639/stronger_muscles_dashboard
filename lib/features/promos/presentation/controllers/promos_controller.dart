@@ -85,7 +85,7 @@ class PromosController extends GetxController {
       Get.snackbar(
         'خطأ', e.toString().replaceAll('Exception: ', ''),
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
     } finally {
@@ -103,16 +103,16 @@ class PromosController extends GetxController {
   Future<void> fetchBrands() async {
     isBrandsLoading.value = true;
     try {
-      print('🔍 [PromosController] Fetching brands...');
+      debugPrint('🔍 [PromosController] Fetching brands...');
       if (Get.isRegistered<BrandRepository>()) {
          final data = await Get.find<BrandRepository>().getBrands();
-         print('✅ [PromosController] Fetched ${data.length} brands');
+         debugPrint('✅ [PromosController] Fetched ${data.length} brands');
          brands.assignAll(data);
       } else {
-        print('⚠️ [PromosController] BrandRepository is not registered!');
+        debugPrint('⚠️ [PromosController] BrandRepository is not registered!');
       }
     } catch (e) {
-      print('❌ [PromosController] Error fetching brands: $e');
+      debugPrint('❌ [PromosController] Error fetching brands: $e');
     } finally {
       isBrandsLoading.value = false;
     }
@@ -182,7 +182,7 @@ class PromosController extends GetxController {
       Get.snackbar(
         'خطأ', 'يجب اختيار صورة للإعلان',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
       return;
@@ -193,7 +193,7 @@ class PromosController extends GetxController {
       Get.snackbar(
         'خطأ', 'يجب اختيار منتج للإعلان',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
       return;
@@ -202,7 +202,7 @@ class PromosController extends GetxController {
       Get.snackbar(
         'خطأ', 'يجب اختيار ماركة للإعلان',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
       return;
@@ -220,7 +220,7 @@ class PromosController extends GetxController {
       Get.snackbar(
         'خطأ', 'فشل في رفع الصورة: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
       return;
@@ -250,12 +250,11 @@ class PromosController extends GetxController {
           promos[index] = updated;
           _applyFilters();
         }
-        print(promos);
         Get.back();
         Get.snackbar(
           'نجاح', 'تم تحديث الإعلان بنجاح',
           snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green.withOpacity(0.8),
+          backgroundColor: Colors.green.withValues(alpha: 0.8),
           colorText: Colors.white,
         );
       } else {
@@ -266,7 +265,7 @@ class PromosController extends GetxController {
         Get.snackbar(
           'نجاح', 'تمت إضافة الإعلان بنجاح',
           snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green.withOpacity(0.8),
+          backgroundColor: Colors.green.withValues(alpha: 0.8),
           colorText: Colors.white,
         );
       }
@@ -274,7 +273,7 @@ class PromosController extends GetxController {
       Get.snackbar(
         'خطأ', e.toString().replaceAll('Exception: ', ''),
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
     } finally {
@@ -305,14 +304,14 @@ class PromosController extends GetxController {
       Get.snackbar(
         'نجاح', 'تم حذف الإعلان بنجاح',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.withOpacity(0.8),
+        backgroundColor: Colors.green.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
     } catch (e) {
       Get.snackbar(
         'خطأ', e.toString().replaceAll('Exception: ', ''),
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withOpacity(0.8),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
     }
