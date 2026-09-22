@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:stronger_muscles_dashboard/config/api_config.dart';
 import 'package:stronger_muscles_dashboard/core/network/api_base.dart';
@@ -119,7 +120,7 @@ class CategoryService extends ApiBase {
   }
 
   void _logError(DioException e, String task) {
-    print(
+    debugPrint(
       '⚠️ [CategoryService] Error in $task: ${e.response?.statusCode} - ${e.message}',
     );
   }
