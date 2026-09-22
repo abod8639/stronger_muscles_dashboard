@@ -135,10 +135,64 @@ class _ProductFormBodyState extends State<ProductFormBody> {
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: buildModernTextField(
-            ctrl.textcontrollers['brand']!,
-            'العلامة التجارية',
-            Icons.verified_outlined,
+          child: Autocomplete<String>(
+            optionsBuilder: (TextEditingValue textEditingValue) {
+              if (textEditingValue.text.isEmpty) {
+                return const Iterable<String>.empty();
+              }
+              return ctrl.brands
+                  .where((b) => b.displayName
+                      .toLowerCase()
+                      .contains(textEditingValue.text.toLowerCase()))
+                  .map((b) => b.displayName);
+            },
+            onSelected: (String selection) {
+              ctrl.textcontrollers['brand']!.text = selection;
+            },
+            fieldViewBuilder:
+                (context, textEditingController, focusNode, onFieldSubmitted) {
+              // Sync initial value if empty
+              if (textEditingController.text.isEmpty &&
+                  ctrl.textcontrollers['brand']!.text.isNotEmpty) {
+                textEditingController.text = ctrl.textcontrollers['brand']!.text;
+              }
+
+              return buildModernTextField(
+                textEditingController,
+                'العلامة التجارية',
+                Icons.verified_outlined,
+                focusNode: focusNode,
+                onSubmitted: onFieldSubmitted,
+                onChanged: (val) {
+                  ctrl.textcontrollers['brand']!.text = val;
+                },
+              );
+            },
+            optionsViewBuilder: (context, onSelected, options) {
+              return Align(
+                alignment: Alignment.topRight,
+                child: Material(
+                  elevation: 4.0,
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.4, // Match approx width
+                    constraints: const BoxConstraints(maxHeight: 200),
+                    child: ListView.builder(
+                      padding: EdgeInsets.zero,
+                      shrinkWrap: true,
+                      itemCount: options.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final String option = options.elementAt(index);
+                        return ListTile(
+                          title: Text(option),
+                          onTap: () => onSelected(option),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
         ),
       ],
