@@ -8,6 +8,8 @@ import '../../domain/usecases/delete_product_usecase.dart';
 import '../../domain/usecases/get_products_usecase.dart';
 import '../../domain/usecases/update_product_usecase.dart';
 import '../../domain/usecases/upload_product_image_usecase.dart';
+import 'package:stronger_muscles_dashboard/features/brands/domain/entities/brand_entity.dart';
+import 'package:stronger_muscles_dashboard/features/brands/domain/repositories/brand_repository.dart';
 import '../widgets/product_form_sheet.dart';
 
 class ProductsController extends GetxController {
@@ -17,6 +19,7 @@ class ProductsController extends GetxController {
   final DeleteProductUseCase _deleteProductUseCase;
   final UploadProductImageUseCase _uploadProductImageUseCase;
   final CategoryRepository _categoryRepository;
+  final BrandRepository _brandRepository;
 
   ProductsController({
     required GetProductsUseCase getProductsUseCase,
@@ -25,12 +28,14 @@ class ProductsController extends GetxController {
     required DeleteProductUseCase deleteProductUseCase,
     required UploadProductImageUseCase uploadProductImageUseCase,
     required CategoryRepository categoryRepository,
+    required BrandRepository brandRepository,
   })  : _getProductsUseCase = getProductsUseCase,
         _addProductUseCase = addProductUseCase,
         _updateProductUseCase = updateProductUseCase,
         _deleteProductUseCase = deleteProductUseCase,
         _uploadProductImageUseCase = uploadProductImageUseCase,
-        _categoryRepository = categoryRepository;
+        _categoryRepository = categoryRepository,
+        _brandRepository = brandRepository;
 
   // --- States ---
   final isLoading = true.obs;
@@ -40,6 +45,7 @@ class ProductsController extends GetxController {
   // --- Data Lists ---
   final products = <ProductEntity>[].obs;
   final categories = <CategoryEntity>[].obs;
+  final brands = <BrandEntity>[].obs;
   final filteredProducts = <ProductEntity>[].obs;
   
   // Form specific state
@@ -87,9 +93,11 @@ class ProductsController extends GetxController {
       final results = await Future.wait([
         _categoryRepository.getCategories(tree: true),
         _getProductsUseCase(),
+        _brandRepository.getBrands(),
       ]);
       categories.assignAll(results[0] as List<CategoryEntity>);
       products.assignAll(results[1] as List<ProductEntity>);
+      brands.assignAll(results[2] as List<BrandEntity>);
       _applyFiltering();
     } catch (e) {
       _showErrorSnackbar('فشل في تحميل البيانات', e.toString());
