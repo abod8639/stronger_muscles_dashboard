@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive/hive.dart';
+import 'package:stronger_muscles_dashboard/features/orders/domain/entities/address_entity.dart';
 
 part 'address_model.freezed.dart';
 part 'address_model.g.dart';
@@ -44,6 +45,24 @@ class AddressModel with _$AddressModel {
   ].where((e) => e != null && e.isNotEmpty).join(', ');
   String get shortAddress => '$city, $country';
   bool get hasCoordinates => latitude != null && longitude != null;
+
+  AddressEntity toEntity() => AddressEntity(
+    id: id,
+    userId: userId,
+    label: label,
+    fullName: fullName,
+    phone: phone,
+    street: street,
+    city: city,
+    state: state,
+    postalCode: postalCode,
+    country: country,
+    isDefault: isDefault,
+    latitude: latitude,
+    longitude: longitude,
+    createdAt: createdAt,
+    updatedAt: updatedAt,
+  );
 }
 
 int _parseInt(dynamic value) {
