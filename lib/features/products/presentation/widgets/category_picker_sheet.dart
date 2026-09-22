@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/config/app_colors.dart';
-import 'package:stronger_muscles_dashboard/config/theme.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
 
 class CategoryPickerField extends StatelessWidget {
@@ -33,6 +30,8 @@ class CategoryPickerField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final breadcrumbs = selectedId != null && selectedId!.isNotEmpty
         ? _findBreadcrumbs(categories, selectedId!)
         : <String>[];
@@ -47,125 +46,111 @@ class CategoryPickerField extends StatelessWidget {
             Icon(
               Icons.category_outlined,
               size: 16,
-              color: AppColors.primary.withValues(alpha: 0.9),
+              color: colorScheme.primary,
             ),
             const SizedBox(width: 6),
-            const Text(
+            Text(
               'القسم / التصنيف',
-              style: TextStyle(
-                color: Colors.white70,
-                fontSize: 13,
+              style: theme.textTheme.labelLarge?.copyWith(
                 fontWeight: FontWeight.w600,
               ),
             ),
-            const Text(
+            Text(
               ' *',
-              style: TextStyle(color: Colors.redAccent, fontSize: 14),
+              style: TextStyle(color: colorScheme.error, fontSize: 14),
             ),
           ],
         ),
         const SizedBox(height: 8),
-        InkWell(
-          borderRadius: BorderRadius.circular(14),
-          onTap: () => _openPickerSheet(context),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.04),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: hasSelection
-                    ? AppColors.primary.withValues(alpha: 0.4)
-                    : Colors.white.withValues(alpha: 0.12),
-                width: 1.2,
-              ),
+        Card.outlined(
+          margin: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+            side: BorderSide(
+              color: hasSelection
+                  ? colorScheme.primary.withValues(alpha: 0.5)
+                  : colorScheme.outlineVariant,
+              width: hasSelection ? 1.5 : 1,
             ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: hasSelection
-                        ? AppColors.primary.withValues(alpha: 0.15)
-                        : Colors.white.withValues(alpha: 0.05),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(
-                    hasSelection
-                        ? Icons.folder_special_rounded
-                        : Icons.folder_open_rounded,
-                    color: hasSelection ? AppColors.primary : Colors.white54,
-                    size: 18,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: hasSelection
-                      ? Wrap(
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          spacing: 4,
-                          children: [
-                            for (int i = 0; i < breadcrumbs.length; i++) ...[
-                              Text(
-                                breadcrumbs[i],
-                                style: TextStyle(
-                                  color: i == breadcrumbs.length - 1
-                                      ? Colors.white
-                                      : Colors.white60,
-                                  fontSize: 13,
-                                  fontWeight: i == breadcrumbs.length - 1
-                                      ? FontWeight.bold
-                                      : FontWeight.normal,
-                                ),
-                              ),
-                              if (i < breadcrumbs.length - 1)
-                                const Icon(
-                                  Icons.chevron_left_rounded,
-                                  size: 16,
-                                  color: Colors.white38,
-                                ),
-                            ],
-                          ],
-                        )
-                      : const Text(
-                          'اختر قسم المنتج من القائمة...',
-                          style: TextStyle(
-                            color: Colors.white38,
-                            fontSize: 13,
-                          ),
-                        ),
-                ),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: AppColors.primary.withValues(alpha: 0.2),
+          ),
+          color: colorScheme.surfaceContainerHigh.withValues(alpha: 0.3),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(14),
+            onTap: () => _openPickerSheet(context),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: hasSelection
+                          ? colorScheme.primaryContainer
+                          : colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      hasSelection
+                          ? Icons.folder_special_rounded
+                          : Icons.folder_open_rounded,
+                      color: hasSelection
+                          ? colorScheme.onPrimaryContainer
+                          : colorScheme.onSurfaceVariant,
+                      size: 20,
                     ),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        hasSelection ? 'تغيير' : 'اختيار',
-                        style: const TextStyle(
-                          color: AppColors.primary,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      const Icon(
-                        Icons.unfold_more_rounded,
-                        size: 16,
-                        color: AppColors.primary,
-                      ),
-                    ],
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: hasSelection
+                        ? Wrap(
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            spacing: 4,
+                            children: [
+                              for (int i = 0; i < breadcrumbs.length; i++) ...[
+                                Text(
+                                  breadcrumbs[i],
+                                  style: TextStyle(
+                                    color: i == breadcrumbs.length - 1
+                                        ? colorScheme.onSurface
+                                        : colorScheme.onSurfaceVariant,
+                                    fontSize: 13,
+                                    fontWeight: i == breadcrumbs.length - 1
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                  ),
+                                ),
+                                if (i < breadcrumbs.length - 1)
+                                  Icon(
+                                    Icons.chevron_left_rounded,
+                                    size: 16,
+                                    color: colorScheme.outline,
+                                  ),
+                              ],
+                            ],
+                          )
+                        : Text(
+                            'اختر قسم المنتج من القائمة...',
+                            style: TextStyle(
+                              color: colorScheme.onSurface.withValues(alpha: 0.4),
+                              fontSize: 13,
+                            ),
+                          ),
                   ),
-                ),
-              ],
+                  FilledButton.tonalIcon(
+                    onPressed: () => _openPickerSheet(context),
+                    icon: const Icon(Icons.unfold_more_rounded, size: 16),
+                    label: Text(hasSelection ? 'تغيير' : 'اختيار'),
+                    style: FilledButton.styleFrom(
+                      visualDensity: VisualDensity.compact,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -177,7 +162,7 @@ class CategoryPickerField extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      showDragHandle: true,
       builder: (_) => CategoryPickerSheet(
         categories: categories,
         selectedId: selectedId,
@@ -241,6 +226,8 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
   @override
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final isSearching = _searchQuery.trim().isNotEmpty;
     final flatList = isSearching ? _flatten(widget.categories) : [];
     final searchResults = isSearching
@@ -250,87 +237,62 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
             .toList()
         : [];
 
-    return Container(
+    return SizedBox(
       height: media.size.height * 0.85,
-      decoration: const BoxDecoration(
-        color: AppColorsExtended.backgroundColor,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
       child: Column(
         children: [
-          // Drag handle
-          Center(
-            child: Container(
-              margin: const EdgeInsets.only(top: 12),
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.white24,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-
           // Header
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
             child: Row(
               children: [
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.15),
+                    color: colorScheme.primaryContainer,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.account_tree_rounded,
-                    color: AppColors.primary,
+                    color: colorScheme.onPrimaryContainer,
                     size: 20,
                   ),
                 ),
                 const SizedBox(width: 12),
-                const Text(
+                Text(
                   'اختيار تصنيف المنتج',
-                  style: TextStyle(
-                    fontSize: 17,
+                  style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
                   ),
                 ),
                 const Spacer(),
                 IconButton(
                   onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close_rounded, color: Colors.white70),
+                  icon: const Icon(Icons.close_rounded),
                 ),
               ],
             ),
           ),
 
-          // Search Field
+          // M3 SearchBar
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.05),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+            child: SearchBar(
+              hintText: 'ابحث عن قسم بالاسم...',
+              leading: const Icon(Icons.search_rounded),
+              elevation: const WidgetStatePropertyAll(0),
+              backgroundColor: WidgetStatePropertyAll(
+                colorScheme.surfaceContainerHigh.withValues(alpha: 0.5),
               ),
-              child: TextField(
-                style: const TextStyle(color: Colors.white),
-                onChanged: (val) => setState(() => _searchQuery = val),
-                decoration: const InputDecoration(
-                  hintText: 'ابحث عن قسم بالاسم...',
-                  hintStyle: TextStyle(color: Colors.white38, fontSize: 14),
-                  prefixIcon: Icon(Icons.search_rounded, color: Colors.white54),
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(vertical: 14),
-                ),
+              side: WidgetStatePropertyAll(
+                BorderSide(color: colorScheme.outlineVariant),
               ),
+              onChanged: (val) => setState(() => _searchQuery = val),
             ),
           ),
 
           const SizedBox(height: 12),
-          const Divider(height: 1, color: Colors.white10),
+          const Divider(height: 1),
 
           // Category List
           Expanded(
@@ -349,11 +311,14 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
   }
 
   Widget _buildSearchResults(List<dynamic> results) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     if (results.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
           'لا توجد أقسام تطابق البحث',
-          style: TextStyle(color: Colors.white54, fontSize: 14),
+          style: TextStyle(color: colorScheme.onSurfaceVariant),
         ),
       );
     }
@@ -370,29 +335,30 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
             widget.onSelected(cat.id);
             Navigator.pop(context);
           },
+          selected: isSelected,
+          selectedTileColor: colorScheme.primaryContainer.withValues(alpha: 0.25),
           leading: Icon(
             isSelected ? Icons.check_circle_rounded : Icons.folder_outlined,
-            color: isSelected ? AppColors.primary : Colors.white54,
+            color: isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant,
           ),
           title: Text(
             cat.displayName,
             style: TextStyle(
-              color: isSelected ? AppColors.primary : Colors.white,
+              color: isSelected ? colorScheme.primary : colorScheme.onSurface,
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             ),
           ),
           trailing: isSelected
               ? Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.15),
+                    color: colorScheme.primaryContainer,
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: const Text(
+                  child: Text(
                     'محدد',
                     style: TextStyle(
-                      color: AppColors.primary,
+                      color: colorScheme.onPrimaryContainer,
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
                     ),
@@ -405,6 +371,8 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
   }
 
   Widget _buildTreeNode(CategoryEntity cat, int depth) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final hasChildren = cat.children.isNotEmpty;
     final isSelected = widget.selectedId == cat.id;
     final isExpanded = _expandedIds.contains(cat.id);
@@ -424,7 +392,7 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
               bottom: 10,
             ),
             color: isSelected
-                ? AppColors.primary.withValues(alpha: 0.12)
+                ? colorScheme.primaryContainer.withValues(alpha: 0.2)
                 : Colors.transparent,
             child: Row(
               children: [
@@ -447,7 +415,7 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
                             ? Icons.keyboard_arrow_down_rounded
                             : Icons.chevron_left_rounded,
                         size: 20,
-                        color: Colors.white54,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                   )
@@ -459,15 +427,15 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
                       : (hasChildren
                           ? Icons.folder_rounded
                           : Icons.bookmark_border_rounded),
-                  size: 18,
-                  color: isSelected ? AppColors.primary : Colors.white54,
+                  size: 20,
+                  color: isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant,
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     cat.displayName,
                     style: TextStyle(
-                      color: isSelected ? AppColors.primary : Colors.white,
+                      color: isSelected ? colorScheme.primary : colorScheme.onSurface,
                       fontSize: 14,
                       fontWeight:
                           isSelected ? FontWeight.bold : FontWeight.w500,
@@ -475,10 +443,10 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
                   ),
                 ),
                 if (isSelected)
-                  const Text(
+                  Text(
                     'محدد',
                     style: TextStyle(
-                      color: AppColors.primary,
+                      color: colorScheme.primary,
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
