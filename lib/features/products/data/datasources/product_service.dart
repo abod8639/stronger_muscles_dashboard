@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:stronger_muscles_dashboard/config/api_config.dart';
 import 'package:stronger_muscles_dashboard/core/network/api_base.dart';
@@ -139,6 +140,6 @@ class ProductService extends ApiBase {
   }
 
   void _logError(DioException e, String task) {
-    print('⚠️ [ProductService] Error in $task: ${e.message}');
+    debugPrint('⚠️ [ProductService] Error in $task: ${e.message}');
   }
 }
