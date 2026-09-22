@@ -29,7 +29,7 @@ class OrdersTable extends StatelessWidget {
 
           responsive.isDesktop
               ? _buildTableContent(controller, responsive)
-              : buildRecentOrders(responsive,controller.paginatedOrders),
+              : Obx(() => buildRecentOrders(responsive, controller.paginatedOrders)),
 
           _buildTableFooter(controller, responsive),
         ],
