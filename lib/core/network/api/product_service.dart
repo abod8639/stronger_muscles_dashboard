@@ -1,7 +1,8 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import '../../../config/api_config.dart';
-import 'api_base.dart';
+import '../api_base.dart';
 
 class ProductService extends ApiBase {
   Future<List<dynamic>> fetchProducts() async {
@@ -138,6 +139,6 @@ class ProductService extends ApiBase {
   }
 
   void _logError(DioException e, String task) {
-    print('⚠️ [ProductService] Error in $task: ${e.message}');
+    debugPrint('⚠️ [ProductService] Error in $task: ${e.message}');
   }
 }
