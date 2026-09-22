@@ -8,7 +8,7 @@ import 'package:stronger_muscles_dashboard/core/utils/components/enhanced_error_
 import 'package:stronger_muscles_dashboard/core/utils/components/enhanced_loading_widget.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/generic_grid_card.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/generic_list_card.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/my_refreshIndicator.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/my_refresh_indicator.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/top_section.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
 import 'package:stronger_muscles_dashboard/features/categories/presentation/page/categories_screen/widgets/category_form_sheet.dart';
