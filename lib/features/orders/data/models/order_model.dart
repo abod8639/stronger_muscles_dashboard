@@ -4,6 +4,7 @@ import 'package:hive/hive.dart';
 import 'package:stronger_muscles_dashboard/data/models/address_model.dart';
 import 'package:stronger_muscles_dashboard/features/users/data/models/user_model.dart';
 import '../../domain/entities/order_entity.dart';
+import '../../domain/entities/address_entity.dart';
 
 part 'order_model.freezed.dart';
 part 'order_model.g.dart';
@@ -52,7 +53,7 @@ class OrderModel with _$OrderModel {
         paymentStatus: paymentStatus,
         paymentMethod: paymentMethod,
         addressId: addressId,
-        shippingAddress: shippingAddress,
+        shippingAddress: shippingAddress?.toEntity(),
         trackingNumber: trackingNumber,
         notes: notes,
         orderDate: orderDate,
