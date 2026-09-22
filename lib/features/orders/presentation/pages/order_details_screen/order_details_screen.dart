@@ -7,7 +7,7 @@ import 'package:stronger_muscles_dashboard/core/utils/components/base_app_bar.da
 import 'package:stronger_muscles_dashboard/core/utils/components/status_badge.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/order_details_screen/widget/build_detail_row.dart';
-import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/order_details_screen/widget/build_orderItem.dart';
+import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/order_details_screen/widget/build_order_item.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/order_details_screen/widget/build_section.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/order_details_screen/widget/build_summary_row.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/widgets/build_section_title.dart';
