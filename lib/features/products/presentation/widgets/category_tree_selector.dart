@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/config/theme.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
 
 class CategoryTreeSelector extends StatefulWidget {
   final List<CategoryEntity> categories;
   final String? selectedId;
   final Function(String) onSelected;
-
   final String? label;
 
   const CategoryTreeSelector({
@@ -25,26 +22,33 @@ class CategoryTreeSelector extends StatefulWidget {
 class _CategoryTreeSelectorState extends State<CategoryTreeSelector> {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           widget.label ?? "اختر القسم (التصنيف الشجري)",
-          style: const TextStyle(
-            color: Colors.white70,
-            fontSize: 13,
+          style: theme.textTheme.labelLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),
         ),
         const SizedBox(height: 10),
-        GlassContainer(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
-          child: Column(
-            children: widget.categories
-                .map((cat) => _buildCategoryItem(cat, 0))
-                .toList(),
+        Card.outlined(
+          margin: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(color: colorScheme.outlineVariant),
+          ),
+          color: colorScheme.surfaceContainerHigh.withValues(alpha: 0.35),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Column(
+              children: widget.categories
+                  .map((cat) => _buildCategoryItem(cat, 0))
+                  .toList(),
+            ),
           ),
         ),
       ],
@@ -52,6 +56,8 @@ class _CategoryTreeSelectorState extends State<CategoryTreeSelector> {
   }
 
   Widget _buildCategoryItem(CategoryEntity category, int level) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final bool isSelected = widget.selectedId == category.id;
     final bool hasChildren = category.children.isNotEmpty;
 
@@ -62,7 +68,7 @@ class _CategoryTreeSelectorState extends State<CategoryTreeSelector> {
           child: Container(
             padding: EdgeInsets.fromLTRB(16, 12, 16 + (level * 20.0), 12),
             color: isSelected
-                ? AppColors.primary.withValues(alpha: 0.1)
+                ? colorScheme.primaryContainer.withValues(alpha: 0.25)
                 : Colors.transparent,
             child: Row(
               children: [
@@ -70,7 +76,7 @@ class _CategoryTreeSelectorState extends State<CategoryTreeSelector> {
                   Icon(
                     Icons.subdirectory_arrow_left_rounded,
                     size: 16,
-                    color: Colors.white.withValues(alpha: 0.3),
+                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                   )
                 else
                   const SizedBox(width: 16),
@@ -80,8 +86,8 @@ class _CategoryTreeSelectorState extends State<CategoryTreeSelector> {
                     category.displayName,
                     style: TextStyle(
                       color: isSelected
-                          ? AppColors.primary
-                          : Colors.white.withValues(alpha: 0.8),
+                          ? colorScheme.primary
+                          : colorScheme.onSurface,
                       fontWeight: isSelected
                           ? FontWeight.bold
                           : FontWeight.normal,
@@ -90,9 +96,9 @@ class _CategoryTreeSelectorState extends State<CategoryTreeSelector> {
                   ),
                 ),
                 if (isSelected)
-                  const Icon(
+                  Icon(
                     Icons.check_circle_rounded,
-                    color: AppColors.primary,
+                    color: colorScheme.primary,
                     size: 18,
                   ),
               ],
