@@ -25,7 +25,7 @@ class OrdersTable extends StatelessWidget {
       borderRadius: BorderRadius.circular(20),
       child: Column(
         children: [
-          _buildTableHeader(controller, responsive),
+          _buildTableHeader(context, controller, responsive),
 
           responsive.isDesktop
               ? _buildTableContent(controller, responsive)
@@ -38,17 +38,20 @@ class OrdersTable extends StatelessWidget {
   }
 
   Widget _buildTableHeader(
+    BuildContext context,
     OrdersController controller,
     ResponsiveLayout responsive,
   ) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.015),
+        color: colorScheme.surfaceContainerHigh.withValues(alpha: 0.25),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         border: Border(
           bottom: BorderSide(
-            color: Colors.white.withValues(alpha: 0.05),
+            color: colorScheme.outlineVariant,
             width: 1,
           ),
         ),
@@ -59,13 +62,12 @@ class OrdersTable extends StatelessWidget {
           Row(
             children: [
               if (!responsive.isMobile) ...[
-                const Text(
+                Text(
                   "Orders Management",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
+                  style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
+                    color: colorScheme.onSurface,
+                    letterSpacing: 0.3,
                   ),
                 ),
                 if (responsive.isDesktop) const Spacer(),
@@ -88,12 +90,12 @@ class OrdersTable extends StatelessWidget {
               child: Obx(
                 () => Row(
                   children: [
-                    _buildTab(controller, 'all', 'All Orders'),
-                    _buildTab(controller, 'pending', 'Pending'),
-                    _buildTab(controller, 'processing', 'Processing'),
-                    _buildTab(controller, 'shipped', 'Shipped'),
-                    _buildTab(controller, 'delivered', 'Delivered'),
-                    _buildTab(controller, 'cancelled', 'Cancelled'),
+                    _buildTab(context, controller, 'all', 'All Orders'),
+                    _buildTab(context, controller, 'pending', 'Pending'),
+                    _buildTab(context, controller, 'processing', 'Processing'),
+                    _buildTab(context, controller, 'shipped', 'Shipped'),
+                    _buildTab(context, controller, 'delivered', 'Delivered'),
+                    _buildTab(context, controller, 'cancelled', 'Cancelled'),
                   ],
                 ),
               ),
@@ -104,47 +106,36 @@ class OrdersTable extends StatelessWidget {
     );
   }
 
-  Widget _buildTab(OrdersController controller, String id, String label) {
+  Widget _buildTab(BuildContext context, OrdersController controller, String id, String label) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final isSelected = controller.selectedStatusId.value == id;
-    return GestureDetector(
-      onTap: () => controller.onStatusChanged(id),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-        margin: const EdgeInsets.only(right: 10),
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-        decoration: BoxDecoration(
+
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: FilterChip(
+        selected: isSelected,
+        onSelected: (_) => controller.onStatusChanged(id),
+        label: Text(label),
+        labelStyle: theme.textTheme.labelMedium?.copyWith(
           color: isSelected
-              ? AppColors.primary.withValues(alpha: 0.15)
-              : Colors.white.withValues(alpha: 0.03),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected
-                ? AppColors.primary
-                : Colors.white.withValues(alpha: 0.05),
-            width: 1.2,
-          ),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.2),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ]
-              : [],
+              ? colorScheme.onPrimary
+              : colorScheme.onSurfaceVariant,
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
         ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isSelected
-                ? Colors.white
-                : Colors.white60,
-            fontSize: 13,
-            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-            letterSpacing: 0.3,
-          ),
+        backgroundColor: colorScheme.surfaceContainerLow,
+        selectedColor: colorScheme.primary,
+        showCheckmark: false,
+        side: BorderSide(
+          color: isSelected
+              ? colorScheme.primary
+              : colorScheme.outlineVariant,
+          width: 1.0,
         ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       ),
     );
   }
