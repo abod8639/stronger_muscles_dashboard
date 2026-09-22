@@ -29,7 +29,9 @@ class StrongerMusclesDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authService = Get.put(AuthService());
+    final authService = Get.isRegistered<AuthService>()
+        ? Get.find<AuthService>()
+        : Get.put(AuthService(), permanent: true);
     final isLoggedIn = authService.isLoggedIn();
 
     return GetMaterialApp(
