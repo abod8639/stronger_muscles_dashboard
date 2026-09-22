@@ -5,7 +5,7 @@ import 'package:stronger_muscles_dashboard/core/utils/components/base_app_bar.da
 import 'package:stronger_muscles_dashboard/core/utils/components/custom_search_bar.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/enhanced_loading_widget.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/generic_empty_state.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/my_refreshIndicator.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/my_refresh_indicator.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/top_section.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/controllers/promos_controller.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/widgets/promo_form_sheet.dart';
