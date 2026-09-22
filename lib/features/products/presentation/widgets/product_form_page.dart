@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/config/app_colors.dart';
-import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_form_mixin.dart';
@@ -27,9 +25,9 @@ class _ProductFormPageState extends State<ProductFormPage>
 
   String? _selectedCategoryId;
 
-  // GlobalKeys for Smooth Section Jumping
-  final _mediaKey = GlobalKey();
+  // GlobalKeys for Section Navigation
   final _basicInfoKey = GlobalKey();
+  final _mediaKey = GlobalKey();
   final _pricingKey = GlobalKey();
   final _variantsKey = GlobalKey();
   final _settingsKey = GlobalKey();
@@ -56,9 +54,9 @@ class _ProductFormPageState extends State<ProductFormPage>
     if (context != null) {
       Scrollable.ensureVisible(
         context,
-        duration: const Duration(milliseconds: 400),
+        duration: const Duration(milliseconds: 350),
         curve: Curves.easeInOutCubic,
-        alignment: 0.1,
+        alignment: 0.05,
       );
     }
   }
@@ -74,17 +72,17 @@ class _ProductFormPageState extends State<ProductFormPage>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final screenWidth = MediaQuery.of(context).size.width;
     final isWide = screenWidth >= 950;
     final isEditing = widget.product != null;
 
     return Scaffold(
-      backgroundColor: AppColorsExtended.backgroundColor,
       appBar: AppBar(
-        backgroundColor: AppColorsExtended.surfaceDark,
-        elevation: 0,
+        scrolledUnderElevation: 2,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded),
           onPressed: () => Get.back(),
         ),
         title: Column(
@@ -92,19 +90,16 @@ class _ProductFormPageState extends State<ProductFormPage>
           children: [
             Text(
               isEditing ? 'تعديل بيانات المنتج' : 'إضافة منتج جديد',
-              style: const TextStyle(
-                fontSize: 18,
+              style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
               ),
             ),
             if (isEditing)
               Text(
                 widget.product!.displayName,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w500,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.primary,
+                  fontWeight: FontWeight.w600,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -112,8 +107,8 @@ class _ProductFormPageState extends State<ProductFormPage>
           ],
         ),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(54),
-          child: _buildSectionNavChips(isWide),
+          preferredSize: const Size.fromHeight(56),
+          child: _buildSectionNavChips(theme),
         ),
       ),
       bottomNavigationBar: ProductStickyBottomBar(
@@ -128,16 +123,15 @@ class _ProductFormPageState extends State<ProductFormPage>
             horizontal: isWide ? 32 : 16,
             vertical: 24,
           ),
-          child: isWide
-              ? _buildWideLayout()
-              : _buildMobileLayout(),
+          child: isWide ? _buildWideLayout() : _buildMobileLayout(),
         ),
       ),
     );
   }
 
-  // ── شريط التبويب السريع للتنقل بين الأقسام ───────────────────────────────────
-  Widget _buildSectionNavChips(bool isWide) {
+  // ── شريط التنقل السريع وفق معايير Material 3 (FilterChip) ─────────────────────
+  Widget _buildSectionNavChips(ThemeData theme) {
+    final colorScheme = theme.colorScheme;
     final navItems = [
       {'label': 'البيانات الأساسية', 'icon': Icons.edit_note_rounded, 'key': _basicInfoKey},
       {'label': 'الوسائط والصور', 'icon': Icons.photo_library_outlined, 'key': _mediaKey},
@@ -150,9 +144,9 @@ class _ProductFormPageState extends State<ProductFormPage>
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       decoration: BoxDecoration(
-        color: AppColorsExtended.surfaceDark.withValues(alpha: 0.95),
+        color: colorScheme.surfaceContainer,
         border: Border(
-          bottom: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
+          bottom: BorderSide(color: colorScheme.outlineVariant),
         ),
       ),
       child: SingleChildScrollView(
@@ -165,42 +159,14 @@ class _ProductFormPageState extends State<ProductFormPage>
 
             return Padding(
               padding: const EdgeInsets.only(left: 8),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(20),
-                onTap: () => _scrollToSection(key, index),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-                  decoration: BoxDecoration(
-                    color: isActive
-                        ? AppColors.primary.withValues(alpha: 0.2)
-                        : Colors.white.withValues(alpha: 0.04),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: isActive
-                          ? AppColors.primary
-                          : Colors.white.withValues(alpha: 0.08),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        item['icon'] as IconData,
-                        size: 16,
-                        color: isActive ? AppColors.primary : Colors.white60,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        item['label'] as String,
-                        style: TextStyle(
-                          color: isActive ? Colors.white : Colors.white60,
-                          fontSize: 12,
-                          fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-                        ),
-                      ),
-                    ],
-                  ),
+              child: FilterChip(
+                selected: isActive,
+                avatar: Icon(
+                  item['icon'] as IconData,
+                  size: 16,
                 ),
+                label: Text(item['label'] as String),
+                onSelected: (_) => _scrollToSection(key, index),
               ),
             );
           }),
@@ -209,12 +175,12 @@ class _ProductFormPageState extends State<ProductFormPage>
     );
   }
 
-  // ── تخطيط الشاشات الكبيرة (Desktop / Tablet): عمودين ────────────────────────
+  // ── تخطيط الشاشات الكبيرة (Desktop / Tablet) ──────────────────────────────
   Widget _buildWideLayout() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // العمود الأيمن (الرئيسي): بيانات أساسية + تسعير + تنويعات
+        // العمود الرئيسي (بيانات أساسية + تسعير + تنويعات)
         Expanded(
           flex: 3,
           child: Column(
@@ -244,7 +210,7 @@ class _ProductFormPageState extends State<ProductFormPage>
         ),
         const SizedBox(width: 24),
 
-        // العمود الأيسر (الجانبي): الوسائط + إعدادات النشر
+        // العمود الجانبي (معرض الصور + إعدادات النشر)
         SizedBox(
           width: 380,
           child: Column(
@@ -277,11 +243,10 @@ class _ProductFormPageState extends State<ProductFormPage>
     );
   }
 
-  // ── تخطيط الشاشات الصغيرة (Mobile): عمود واحد مرتب ─────────────────────────
+  // ── تخطيط الشاشات الصغيرة (Mobile) ─────────────────────────────────────────
   Widget _buildMobileLayout() {
     return Column(
       children: [
-        // 1. الوسائط والصور أولاً لسهولة المعاينة
         Container(
           key: _mediaKey,
           child: Obx(
@@ -298,8 +263,6 @@ class _ProductFormPageState extends State<ProductFormPage>
           ),
         ),
         const SizedBox(height: 20),
-
-        // 2. البيانات الأساسية
         Container(
           key: _basicInfoKey,
           child: ProductBasicInfoSection(
@@ -310,22 +273,16 @@ class _ProductFormPageState extends State<ProductFormPage>
           ),
         ),
         const SizedBox(height: 20),
-
-        // 3. التسعير والمخزون
         Container(
           key: _pricingKey,
           child: ProductPricingStockSection(controller: controller),
         ),
         const SizedBox(height: 20),
-
-        // 4. الأحجام والتنويعات
         Container(
           key: _variantsKey,
           child: ProductVariantsSection(controller: controller),
         ),
         const SizedBox(height: 20),
-
-        // 5. إعدادات النشر والعرض
         Container(
           key: _settingsKey,
           child: ProductSettingsSection(controller: controller),
