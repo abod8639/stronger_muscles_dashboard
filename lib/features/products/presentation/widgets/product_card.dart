@@ -12,6 +12,10 @@ class ProductCard extends StatelessWidget {
   final Function() onDelete;
   final bool isHovered;
   final ProductEntity product;
+  final bool isSelectionMode;
+  final bool isSelected;
+  final VoidCallback? onToggleSelect;
+  final VoidCallback? onLongPress;
 
   const ProductCard({
     super.key,
@@ -19,6 +23,10 @@ class ProductCard extends StatelessWidget {
     required this.isHovered,
     required this.onEdit,
     required this.onDelete,
+    this.isSelectionMode = false,
+    this.isSelected = false,
+    this.onToggleSelect,
+    this.onLongPress,
   });
 
   @override
@@ -31,59 +39,121 @@ class ProductCard extends StatelessWidget {
         horizontal: padding.left,
         vertical: responsive.itemSpacing / 2,
       ),
-      child: GlassContainer(
-        onTap: onEdit,
-        opacity: isHovered ? 0.12 : 0.06,
-        blur: isHovered ? 20 : 15,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: isHovered
-              ? AppColors.primary.withValues(alpha: 0.4)
-              : Colors.white.withValues(alpha: 0.08),
-          width: isHovered ? 1.5 : 1,
-        ),
-        child: Stack(
-          children: [
-            Padding(
-              padding: EdgeInsets.all(responsive.isMobile ? 12 : 16),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // 1. الصورة بتصميم محسن
-                  _buildProductImage(responsive),
+      child: GestureDetector(
+        onLongPress: onLongPress,
+        child: GlassContainer(
+          onTap: isSelectionMode ? onToggleSelect : onEdit,
+          opacity: isSelected
+              ? 0.16
+              : (isHovered ? 0.12 : 0.06),
+          blur: isHovered ? 20 : 15,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: isSelected
+                ? AppColors.primary
+                : (isHovered
+                    ? AppColors.primary.withValues(alpha: 0.4)
+                    : Colors.white.withValues(alpha: 0.08)),
+            width: isSelected ? 1.8 : (isHovered ? 1.5 : 1),
+          ),
+          child: Stack(
+            children: [
+              Padding(
+                padding: EdgeInsets.all(responsive.isMobile ? 12 : 16),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // خانة الاختيار عند تفعيل وضع التحديد
+                    if (isSelectionMode) ...[
+                      _buildSelectionCheckbox(),
+                      SizedBox(width: responsive.isMobile ? 10 : 16),
+                    ],
 
-                  SizedBox(width: responsive.isMobile ? 16 : 24),
+                    // 1. الصورة بتصميم محسن
+                    _buildProductImage(responsive),
 
-                  // 2. تفاصيل المنتج
-                  Expanded(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildBrandInfo(),
-                        const SizedBox(height: 6),
-                        _buildProductName(responsive),
+                    SizedBox(width: responsive.isMobile ? 16 : 24),
 
-                        if (product.flavors != null &&
-                            product.flavors!.isNotEmpty) ...[
-                          const SizedBox(height: 10),
-                          _buildFlavorTags(responsive),
+                    // 2. تفاصيل المنتج
+                    Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              _buildBrandInfo(),
+                              const SizedBox(width: 8),
+                              _buildStatusBadge(),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          _buildProductName(responsive),
+
+                          if (product.flavors != null &&
+                              product.flavors!.isNotEmpty) ...[
+                            const SizedBox(height: 10),
+                            _buildFlavorTags(responsive),
+                          ],
+
+                          const SizedBox(height: 14),
+                          _buildPriceAndStock(responsive),
                         ],
-
-                        const SizedBox(height: 14),
-                        _buildPriceAndStock(responsive),
-                      ],
+                      ),
                     ),
-                  ),
 
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16),
-                    child: _buildDesktopActions(),
-                  ),
-                ],
+                    if (!isSelectionMode)
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16),
+                        child: _buildDesktopActions(),
+                      ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSelectionCheckbox() {
+    return SizedBox(
+      width: 24,
+      height: 24,
+      child: Checkbox(
+        value: isSelected,
+        onChanged: (_) => onToggleSelect?.call(),
+        activeColor: AppColors.primary,
+        checkColor: Colors.black,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(6),
+        ),
+        side: BorderSide(
+          color: isSelected ? AppColors.primary : Colors.white.withValues(alpha: 0.4),
+          width: 1.5,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusBadge() {
+    final isActive = product.isActive;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: (isActive ? AppColors.success : AppColors.error).withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: (isActive ? AppColors.success : AppColors.error).withValues(alpha: 0.25),
+        ),
+      ),
+      child: Text(
+        isActive ? 'نشط' : 'معطل',
+        style: TextStyle(
+          color: isActive ? AppColors.success : AppColors.error,
+          fontSize: 9,
+          fontWeight: FontWeight.bold,
         ),
       ),
     );
