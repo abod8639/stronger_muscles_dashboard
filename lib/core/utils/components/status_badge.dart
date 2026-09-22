@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 
-
+/// شارة حالة الطلب المتوافقة مع معايير Material Design 3
 class OrderStatusBadge extends StatelessWidget {
   final OrderStatus status;
 
@@ -11,7 +11,6 @@ class OrderStatusBadge extends StatelessWidget {
   Color _getStatusColor() {
     switch (status) {
       case OrderStatus.pending:
-        return AppColors.warning;
       case OrderStatus.processing:
         return AppColors.warning;
       case OrderStatus.shipped:
@@ -41,11 +40,17 @@ class OrderStatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = _getStatusColor();
+    final theme = Theme.of(context);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(20),
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: color.withValues(alpha: 0.25),
+          width: 0.8,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -53,15 +58,19 @@ class OrderStatusBadge extends StatelessWidget {
           Container(
             width: 6,
             height: 6,
-            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 8),
           Text(
             _getStatusLabel(),
-            style: TextStyle(
+            style: theme.textTheme.labelSmall?.copyWith(
               color: color,
               fontSize: 11,
               fontWeight: FontWeight.bold,
+              letterSpacing: 0.2,
             ),
           ),
         ],
@@ -70,6 +79,7 @@ class OrderStatusBadge extends StatelessWidget {
   }
 }
 
+/// شارة حالة الدفع المتوافقة مع معايير Material Design 3
 class PaymentStatusBadge extends StatelessWidget {
   final PaymentStatus status;
 
@@ -104,11 +114,17 @@ class PaymentStatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = _getPaymentStatusColor();
+    final theme = Theme.of(context);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(20),
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: color.withValues(alpha: 0.25),
+          width: 0.8,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -116,15 +132,19 @@ class PaymentStatusBadge extends StatelessWidget {
           Container(
             width: 6,
             height: 6,
-            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
           ),
-          const SizedBox(width: 6),
+          const SizedBox(width: 8),
           Text(
             _getPaymentStatusLabel(),
-            style: TextStyle(
+            style: theme.textTheme.labelSmall?.copyWith(
               color: color,
               fontSize: 11,
               fontWeight: FontWeight.bold,
+              letterSpacing: 0.2,
             ),
           ),
         ],
