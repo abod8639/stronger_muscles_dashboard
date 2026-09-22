@@ -1,14 +1,12 @@
-// import 'package:stronger_muscles_dashboard/features/categories/data/repositories/category_repository.dart';
+import '../entities/category_entity.dart';
+import '../repositories/category_repository.dart';
 
-// import '../entities/category_entity.dart';
-// import '../repositories/category_repository.dart';
+class UpdateCategoryUseCase {
+  final CategoryRepository repository;
 
-// class UpdateCategoryUseCase {
-//   final CategoryRepository repository;
+  UpdateCategoryUseCase(this.repository);
 
-//   UpdateCategoryUseCase(this.repository);
-
-//   Future<CategoryEntity> call(CategoryEntity category) async {
-//     return await repository.updateCategory(category);
-//   }
-// }
+  Future<CategoryEntity> call(String id, Map<String, dynamic> categoryData) async {
+    return await repository.updateCategory(id, categoryData);
+  }
+}
