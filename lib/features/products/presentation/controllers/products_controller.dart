@@ -272,7 +272,7 @@ class ProductsController extends GetxController {
       Get.back();
     } catch (e) {
       _showErrorSnackbar('خطأ في الحفظ', e.toString());
-      print(e);
+      debugPrint(e.toString());
     } finally {
       isSaving.value = false;
     }
