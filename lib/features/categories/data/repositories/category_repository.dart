@@ -20,6 +20,7 @@ class CategoryRepositoryImpl implements CategoryRepository {
     _cacheService = Get.find<CacheService>();
   }
 
+  @override
   Future<List<CategoryEntity>> getCategories({
     bool tree = false,
     bool forceRefresh = false,
@@ -69,6 +70,7 @@ class CategoryRepositoryImpl implements CategoryRepository {
     }
   }
 
+  @override
   Future<CategoryEntity> addCategory(Map<String, dynamic> categoryJson) async {
     try {
       final data = await _apiService.addCategory(categoryJson);
@@ -81,6 +83,7 @@ class CategoryRepositoryImpl implements CategoryRepository {
     }
   }
 
+  @override
   Future<CategoryEntity> updateCategory(
     String id,
     Map<String, dynamic> categoryJson,
@@ -96,6 +99,7 @@ class CategoryRepositoryImpl implements CategoryRepository {
     }
   }
 
+  @override
   Future<bool> deleteCategory(String id) async {
     try {
       final result = await _apiService.deleteCategory(id);
