@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/core/network/api_base.dart';
+import 'package:stronger_muscles_dashboard/core/network/api_service.dart';
 import 'package:stronger_muscles_dashboard/features/categories/data/repositories/category_repository.dart';
+import 'package:stronger_muscles_dashboard/features/categories/domain/repositories/category_repository.dart';
 import '../../data/datasources/product_remote_datasource.dart';
 import '../../data/repositories/product_repository_impl.dart';
 import '../../domain/repositories/product_repository.dart';
@@ -20,26 +22,28 @@ class ProductsBinding extends Bindings {
     final dio = Get.find<ApiBase>().dio;
 
     // Data Sources
-    Get.lazyPut<ProductRemoteDataSource>(() => ProductRemoteDataSourceImpl(dio));
+    Get.lazyPut<ProductRemoteDataSource>(() => ProductRemoteDataSourceImpl(dio), fenix: true);
 
     // Repositories
-    Get.lazyPut<ProductRepository>(() => ProductRepositoryImpl(Get.find<ProductRemoteDataSource>()));
-    Get.lazyPut(() => CategoryRepository(Get.find()));
+    Get.lazyPut<ProductRepository>(() => ProductRepositoryImpl(Get.find<ProductRemoteDataSource>()), fenix: true);
+    if (!Get.isRegistered<CategoryRepository>()) {
+      Get.lazyPut<CategoryRepository>(() => CategoryRepositoryImpl(Get.find<ApiService>()), fenix: true);
+    }
     
     if (!Get.isRegistered<BrandRepository>()) {
-      Get.lazyPut<BrandService>(() => BrandService());
-      Get.lazyPut<BrandRepository>(() => BrandRepositoryImpl(brandService: Get.find<BrandService>()));
+      Get.lazyPut<BrandService>(() => BrandService(), fenix: true);
+      Get.lazyPut<BrandRepository>(() => BrandRepositoryImpl(brandService: Get.find<BrandService>()), fenix: true);
     }
 
     // Use Cases
-    Get.lazyPut(() => GetProductsUseCase(Get.find<ProductRepository>()));
-    Get.lazyPut(() => AddProductUseCase(Get.find<ProductRepository>()));
-    Get.lazyPut(() => UpdateProductUseCase(Get.find<ProductRepository>()));
-    Get.lazyPut(() => DeleteProductUseCase(Get.find<ProductRepository>()));
-    Get.lazyPut(() => UploadProductImageUseCase(Get.find<ProductRepository>()));
+    Get.lazyPut(() => GetProductsUseCase(Get.find<ProductRepository>()), fenix: true);
+    Get.lazyPut(() => AddProductUseCase(Get.find<ProductRepository>()), fenix: true);
+    Get.lazyPut(() => UpdateProductUseCase(Get.find<ProductRepository>()), fenix: true);
+    Get.lazyPut(() => DeleteProductUseCase(Get.find<ProductRepository>()), fenix: true);
+    Get.lazyPut(() => UploadProductImageUseCase(Get.find<ProductRepository>()), fenix: true);
 
     // Controller
-    Get.put(ProductsController(
+    Get.lazyPut<ProductsController>(() => ProductsController(
       getProductsUseCase: Get.find<GetProductsUseCase>(),
       addProductUseCase: Get.find<AddProductUseCase>(),
       updateProductUseCase: Get.find<UpdateProductUseCase>(),
@@ -47,6 +51,6 @@ class ProductsBinding extends Bindings {
       uploadProductImageUseCase: Get.find<UploadProductImageUseCase>(),
       categoryRepository: Get.find<CategoryRepository>(),
       brandRepository: Get.find<BrandRepository>(),
-    ));
+    ), fenix: true);
   }
 }
