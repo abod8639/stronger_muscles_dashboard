@@ -43,6 +43,24 @@ class ApiBase {
     if (e.response?.statusCode == 401) {
       _authService.logout();
       Get.snackbar('انتهت الجلسة', 'يرجى تسجيل الدخول مرة أخرى');
+    } else if (e.response?.statusCode == 403) {
+      Get.snackbar(
+        'خطأ',
+        'ليس لديك صلاحية للوصول إلى هذا المورد',
+        snackPosition: SnackPosition.TOP,
+      );
+    }
+  }
+
+  Future<bool> checkConnection() async {
+    try {
+      final response = await dio.get(
+        ApiConfig.adminCategories,
+        options: Options(receiveTimeout: const Duration(seconds: 5)),
+      );
+      return response.statusCode == 200;
+    } catch (_) {
+      return false;
     }
   }
 }
