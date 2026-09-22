@@ -1,6 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import '../../../config/api_config.dart';
-import 'api_base.dart';
+import '../api_base.dart';
 
 class UserService extends ApiBase {
   Future<Map<String, dynamic>> fetchUsersStats() async {
@@ -36,7 +37,7 @@ class UserService extends ApiBase {
   }
 
   void _logError(DioException e, String task) {
-    print(
+    debugPrint(
       '⚠️ [UserService] Error in $task: ${e.response?.statusCode} - ${e.message}',
     );
   }
