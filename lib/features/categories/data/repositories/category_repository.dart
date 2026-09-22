@@ -7,15 +7,17 @@ import 'package:stronger_muscles_dashboard/features/categories/domain/entities/c
 
 
 
-class CategoryRepository {
+import 'package:stronger_muscles_dashboard/features/categories/domain/repositories/category_repository.dart';
+
+class CategoryRepositoryImpl implements CategoryRepository {
   final ApiService _apiService;
   late final CacheService _cacheService;
 
   static const String _cacheKeyCategories = 'categories_list';
   static const String _cacheKeyCategoriesTree = 'categories_tree';
 
-  CategoryRepository(this._apiService) {
-    _cacheService = Get.put(CacheService(), permanent: true);
+  CategoryRepositoryImpl(this._apiService) {
+    _cacheService = Get.find<CacheService>();
   }
 
   Future<List<CategoryEntity>> getCategories({
@@ -74,7 +76,7 @@ class CategoryRepository {
       _cacheService.remove(_cacheKeyCategoriesTree);
       return CategoryModel.fromJson(data).toEntity();
     } catch (e) {
-      print('خطأ في إضافة التصنيف: $e');
+      debugPrint('خطأ في إضافة التصنيف: $e');
       rethrow;
     }
   }
@@ -89,7 +91,7 @@ class CategoryRepository {
       _cacheService.remove(_cacheKeyCategoriesTree);
       return CategoryModel.fromJson(data).toEntity();
     } catch (e) {
-      print('خطأ في تحديث التصنيف: $e');
+      debugPrint('خطأ في تحديث التصنيف: $e');
       rethrow;
     }
   }
@@ -103,7 +105,7 @@ class CategoryRepository {
       }
       return result;
     } catch (e) {
-      print('خطأ في حذف التصنيف في المستودع: $e');
+      debugPrint('خطأ في حذف التصنيف في المستودع: $e');
       return false;
     }
   }
