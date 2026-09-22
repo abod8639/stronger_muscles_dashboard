@@ -10,6 +10,7 @@ import '../../domain/usecases/update_product_usecase.dart';
 import '../../domain/usecases/upload_product_image_usecase.dart';
 import 'package:stronger_muscles_dashboard/features/brands/domain/entities/brand_entity.dart';
 import 'package:stronger_muscles_dashboard/features/brands/domain/repositories/brand_repository.dart';
+import '../widgets/product_form_page.dart';
 import '../widgets/product_form_sheet.dart';
 
 class ProductsController extends GetxController {
@@ -321,12 +322,7 @@ class ProductsController extends GetxController {
   }
 
   void showProductForm(BuildContext context, {ProductEntity? product}) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => ProductFormSheet(product: product),
-    );
+    Get.to(() => ProductFormPage(product: product));
   }
 
   void _showErrorSnackbar(String title, String message) {
