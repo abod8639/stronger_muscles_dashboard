@@ -49,6 +49,18 @@ class ProductsController extends GetxController {
   final brands = <BrandEntity>[].obs;
   final filteredProducts = <ProductEntity>[].obs;
   
+  // --- Selection & Bulk Actions State ---
+  final isSelectionMode = false.obs;
+  final selectedProductIds = <String>{}.obs;
+  final isBulkOperating = false.obs;
+
+  bool get isAllSelected =>
+      filteredProducts.isNotEmpty &&
+      selectedProductIds.length >= filteredProducts.length &&
+      filteredProducts.every((p) => selectedProductIds.contains(p.id));
+
+  int get selectedCount => selectedProductIds.length;
+
   // Form specific state
   final productSizes = <ProductSizeEntity>[].obs;
   final productFlavors = <String>[].obs;
