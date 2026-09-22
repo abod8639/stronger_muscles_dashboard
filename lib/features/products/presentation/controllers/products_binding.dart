@@ -9,6 +9,9 @@ import '../../domain/usecases/delete_product_usecase.dart';
 import '../../domain/usecases/get_products_usecase.dart';
 import '../../domain/usecases/update_product_usecase.dart';
 import '../../domain/usecases/upload_product_image_usecase.dart';
+import '../../../../core/network/api/brand_service.dart';
+import '../../../brands/domain/repositories/brand_repository.dart';
+import '../../../brands/data/repositories/brand_repository_impl.dart';
 import 'products_controller.dart';
 
 class ProductsBinding extends Bindings {
@@ -21,9 +24,12 @@ class ProductsBinding extends Bindings {
 
     // Repositories
     Get.lazyPut<ProductRepository>(() => ProductRepositoryImpl(Get.find<ProductRemoteDataSource>()));
-    // Note: CategoryRepository still used via ApiService internally in some places, 
-    // but here we provide it to the controller.
-    Get.lazyPut(() => CategoryRepository(Get.find())); 
+    Get.lazyPut(() => CategoryRepository(Get.find()));
+    
+    if (!Get.isRegistered<BrandRepository>()) {
+      Get.lazyPut<BrandService>(() => BrandService());
+      Get.lazyPut<BrandRepository>(() => BrandRepositoryImpl(brandService: Get.find<BrandService>()));
+    }
 
     // Use Cases
     Get.lazyPut(() => GetProductsUseCase(Get.find<ProductRepository>()));
@@ -40,6 +46,7 @@ class ProductsBinding extends Bindings {
       deleteProductUseCase: Get.find<DeleteProductUseCase>(),
       uploadProductImageUseCase: Get.find<UploadProductImageUseCase>(),
       categoryRepository: Get.find<CategoryRepository>(),
+      brandRepository: Get.find<BrandRepository>(),
     ));
   }
 }
