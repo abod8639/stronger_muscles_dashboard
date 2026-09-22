@@ -48,6 +48,50 @@ class ProductEntity {
   
   double get finalPrice => discountPrice ?? price;
   bool get isInStock => stockQuantity > 0;
+
+  ProductEntity copyWith({
+    String? id,
+    String? nameAr,
+    String? nameEn,
+    String? descriptionAr,
+    String? descriptionEn,
+    double? price,
+    double? discountPrice,
+    List<String>? imageUrls,
+    String? categoryId,
+    int? stockQuantity,
+    String? brand,
+    bool? isActive,
+    bool? isFeatured,
+    bool? isBackgroundWhite,
+    String? servingSize,
+    int? servingsPerContainer,
+    List<ProductSizeEntity>? productSizes,
+    List<String>? flavors,
+    List<ProductVariantEntity>? variants,
+  }) {
+    return ProductEntity(
+      id: id ?? this.id,
+      nameAr: nameAr ?? this.nameAr,
+      nameEn: nameEn ?? this.nameEn,
+      descriptionAr: descriptionAr ?? this.descriptionAr,
+      descriptionEn: descriptionEn ?? this.descriptionEn,
+      price: price ?? this.price,
+      discountPrice: discountPrice ?? this.discountPrice,
+      imageUrls: imageUrls ?? this.imageUrls,
+      categoryId: categoryId ?? this.categoryId,
+      stockQuantity: stockQuantity ?? this.stockQuantity,
+      brand: brand ?? this.brand,
+      isActive: isActive ?? this.isActive,
+      isFeatured: isFeatured ?? this.isFeatured,
+      isBackgroundWhite: isBackgroundWhite ?? this.isBackgroundWhite,
+      servingSize: servingSize ?? this.servingSize,
+      servingsPerContainer: servingsPerContainer ?? this.servingsPerContainer,
+      productSizes: productSizes ?? this.productSizes,
+      flavors: flavors ?? this.flavors,
+      variants: variants ?? this.variants,
+    );
+  }
 }
 
 class ProductSizeEntity {
