@@ -24,7 +24,7 @@ class OrderDetailsScreen extends StatelessWidget {
     final isWide = screenWidth >= 960;
 
     return Scaffold(
-      backgroundColor: AppColorsExtended.backgroundColor,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: BaseAppBar(
         title: 'تفاصيل الطلب #${order.id}',
         centerTitle: true,
@@ -111,9 +111,9 @@ class OrderDetailsScreen extends StatelessWidget {
       margin: EdgeInsets.zero,
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
         side: BorderSide(
-          color: colorScheme.outlineVariant.withValues(alpha: 0.6),
+          color: colorScheme.outlineVariant,
         ),
       ),
       color: colorScheme.surfaceContainerLow,
@@ -149,9 +149,13 @@ class OrderDetailsScreen extends StatelessWidget {
                             onPressed: () {
                               Clipboard.setData(ClipboardData(text: order.id));
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('تم نسخ رقم الطلب إلى الحافظة'),
-                                  duration: Duration(seconds: 2),
+                                SnackBar(
+                                  content: const Text('تم نسخ رقم الطلب إلى الحافظة'),
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  duration: const Duration(seconds: 2),
                                 ),
                               );
                             },
@@ -250,9 +254,8 @@ class OrderDetailsScreen extends StatelessWidget {
                 thickness: 1,
                 color: colorScheme.outlineVariant.withValues(alpha: 0.35),
               ),
-              itemBuilder: (context, index) => buildOrderItem(
-                order.items[index],
-                isDark,
+              itemBuilder: (context, index) => OrderItemTile(
+                item: order.items[index],
               ),
             ),
     );
@@ -267,24 +270,24 @@ class OrderDetailsScreen extends StatelessWidget {
       icon: Icons.receipt_long_outlined,
       child: Column(
         children: [
-          buildSummaryRow(
-            'المجموع الفرعي',
-            '${order.subtotal.toStringAsFixed(2)} ر.س',
+          OrderSummaryRow(
+            label: 'المجموع الفرعي',
+            value: '${order.subtotal.toStringAsFixed(2)} ر.س',
           ),
-          buildSummaryRow(
-            'تكلفة الشحن',
-            '${order.shippingCost.toStringAsFixed(2)} ر.س',
+          OrderSummaryRow(
+            label: 'تكلفة الشحن',
+            value: '${order.shippingCost.toStringAsFixed(2)} ر.س',
           ),
           if (order.discount > 0)
-            buildSummaryRow(
-              'الخصم',
-              '-${order.discount.toStringAsFixed(2)} ر.س',
+            OrderSummaryRow(
+              label: 'الخصم',
+              value: '-${order.discount.toStringAsFixed(2)} ر.س',
               color: colorScheme.error,
             ),
           const SizedBox(height: 4),
-          buildSummaryRow(
-            'الإجمالي',
-            '${order.totalAmount.toStringAsFixed(2)} ر.س',
+          OrderSummaryRow(
+            label: 'الإجمالي',
+            value: '${order.totalAmount.toStringAsFixed(2)} ر.س',
             isTotal: true,
             color: colorScheme.primary,
           ),
@@ -311,48 +314,48 @@ class OrderDetailsScreen extends StatelessWidget {
       icon: Icons.person_outline_rounded,
       child: Column(
         children: [
-          buildDetailRow(
-            Icons.person_outline,
-            'اسم العميل',
-            customerName,
+          OrderDetailRow(
+            icon: Icons.person_outline,
+            label: 'اسم العميل',
+            value: customerName,
           ),
           if (order.userEmail.isNotEmpty) ...[
             Divider(
               height: 1,
               color: colorScheme.outlineVariant.withValues(alpha: 0.35),
             ),
-            buildDetailRow(
-              Icons.alternate_email_rounded,
-              'البريد الإلكتروني',
-              order.userEmail,
+            OrderDetailRow(
+              icon: Icons.alternate_email_rounded,
+              label: 'البريد الإلكتروني',
+              value: order.userEmail,
             ),
           ],
           Divider(
             height: 1,
             color: colorScheme.outlineVariant.withValues(alpha: 0.35),
           ),
-          buildDetailRow(
-            Icons.phone_outlined,
-            'رقم الهاتف',
-            phone,
+          OrderDetailRow(
+            icon: Icons.phone_outlined,
+            label: 'رقم الهاتف',
+            value: phone,
           ),
           Divider(
             height: 1,
             color: colorScheme.outlineVariant.withValues(alpha: 0.35),
           ),
-          buildDetailRow(
-            Icons.credit_card_outlined,
-            'طريقة الدفع',
-            order.paymentMethod.isNotEmpty ? order.paymentMethod : 'غير محدد',
+          OrderDetailRow(
+            icon: Icons.credit_card_outlined,
+            label: 'طريقة الدفع',
+            value: order.paymentMethod.isNotEmpty ? order.paymentMethod : 'غير محدد',
           ),
           Divider(
             height: 1,
             color: colorScheme.outlineVariant.withValues(alpha: 0.35),
           ),
-          buildDetailRow(
-            Icons.verified_outlined,
-            'حالة الدفع',
-            '',
+          OrderDetailRow(
+            icon: Icons.verified_outlined,
+            label: 'حالة الدفع',
+            value: '',
             trailing: PaymentStatusBadge(status: order.paymentStatus),
           ),
         ],
@@ -373,10 +376,10 @@ class OrderDetailsScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          buildDetailRow(
-            Icons.location_on_outlined,
-            'العنوان الكامل',
-            address?.fullAddress ?? "غير متوفر",
+          OrderDetailRow(
+            icon: Icons.location_on_outlined,
+            label: 'العنوان الكامل',
+            value: address?.fullAddress ?? "غير متوفر",
             trailing: hasAddress
                 ? InkWell(
                     onTap: () => _openGoogleMaps(context, address),
@@ -419,10 +422,10 @@ class OrderDetailsScreen extends StatelessWidget {
               height: 1,
               color: colorScheme.outlineVariant.withValues(alpha: 0.35),
             ),
-            buildDetailRow(
-              Icons.location_city_outlined,
-              'المدينة',
-              address!.city,
+            OrderDetailRow(
+              icon: Icons.location_city_outlined,
+              label: 'المدينة',
+              value: address!.city,
             ),
           ],
           if (address?.state?.isNotEmpty == true) ...[
@@ -430,10 +433,10 @@ class OrderDetailsScreen extends StatelessWidget {
               height: 1,
               color: colorScheme.outlineVariant.withValues(alpha: 0.35),
             ),
-            buildDetailRow(
-              Icons.map_outlined,
-              'المنطقة / الولاية',
-              address!.state!,
+            OrderDetailRow(
+              icon: Icons.map_outlined,
+              label: 'المنطقة / الولاية',
+              value: address!.state!,
             ),
           ],
           if (address?.postalCode?.isNotEmpty == true) ...[
@@ -441,10 +444,10 @@ class OrderDetailsScreen extends StatelessWidget {
               height: 1,
               color: colorScheme.outlineVariant.withValues(alpha: 0.35),
             ),
-            buildDetailRow(
-              Icons.markunread_mailbox_outlined,
-              'الرمز البريدي',
-              address!.postalCode!,
+            OrderDetailRow(
+              icon: Icons.markunread_mailbox_outlined,
+              label: 'الرمز البريدي',
+              value: address!.postalCode!,
             ),
           ],
           if (address?.country?.isNotEmpty == true) ...[
@@ -452,10 +455,10 @@ class OrderDetailsScreen extends StatelessWidget {
               height: 1,
               color: colorScheme.outlineVariant.withValues(alpha: 0.35),
             ),
-            buildDetailRow(
-              Icons.public_outlined,
-              'الدولة',
-              address!.country!,
+            OrderDetailRow(
+              icon: Icons.public_outlined,
+              label: 'الدولة',
+              value: address!.country!,
             ),
           ],
           if (hasAddress) ...[
