@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:stronger_muscles_dashboard/config/api_config.dart';
 import '../models/category_model.dart';
@@ -24,8 +25,8 @@ class CategoryRemoteDataSourceImpl implements CategoryRemoteDataSource {
         try {
           categories.add(CategoryModel.fromJson(item as Map<String, dynamic>));
         } catch (e) {
-          print('X Error parsing category: $e');
-          print('  Corrupted data: $item');
+          debugPrint('X Error parsing category: $e');
+          debugPrint('  Corrupted data: $item');
         }
       }
       return categories;
