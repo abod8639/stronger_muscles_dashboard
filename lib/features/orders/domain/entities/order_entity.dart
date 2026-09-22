@@ -1,4 +1,4 @@
-import 'package:stronger_muscles_dashboard/data/models/address_model.dart';
+import 'address_entity.dart';
 
 enum OrderStatus {
   pending,
@@ -30,7 +30,7 @@ class OrderEntity {
   final PaymentStatus paymentStatus;
   final String paymentMethod;
   final String addressId;
-  final AddressModel? shippingAddress;
+  final AddressEntity? shippingAddress;
   final String? trackingNumber;
   final String? notes;
   final DateTime orderDate;
