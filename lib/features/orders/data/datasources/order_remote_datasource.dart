@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:stronger_muscles_dashboard/config/api_config.dart';
 import '../models/order_model.dart';
@@ -17,7 +18,6 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
   @override
   Future<List<OrderModel>> getOrders() async {
     final response = await dio.get(ApiConfig.adminOrders);
-    
     if (response.statusCode == 200) {
       dynamic data;
       // Handle Laravel wrapping (data: { data: [...] })
@@ -41,7 +41,7 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
         try {
           orders.add(OrderModel.fromJson(item as Map<String, dynamic>));
         } catch (e) {
-          print('X Error parsing order: $e');
+          debugPrint('X Error parsing order: $e');
         }
       }
       return orders;
