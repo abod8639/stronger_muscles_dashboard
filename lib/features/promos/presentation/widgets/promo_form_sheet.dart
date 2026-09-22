@@ -375,7 +375,7 @@ class PromoFormSheet extends StatelessWidget {
                     Text(
                       p.nameAr,
                       style: const TextStyle(
-                        color: AppColorsExtended.textPrimary,
+                        color: Colors.black,
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                       ),
@@ -533,10 +533,12 @@ class PromoFormSheet extends StatelessWidget {
                 color: Colors.white,
               ),
             )
-          : Icon(isEditing ? Icons.save_rounded : Icons.add_circle_rounded),
+          : Icon(isEditing ? Icons.save_rounded : Icons.add_circle_rounded, color: Colors.black,),
       label: Text(
         isEditing ? 'تحديث الإعلان' : 'حفظ الإعلان',
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        style: const TextStyle(
+          color: Colors.black,
+          fontSize: 16, fontWeight: FontWeight.bold),
       ),
     );
   }
