@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/build_modern_text_field.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
 
 class ProductVariantManager extends StatelessWidget {
   final ProductsController controller;
@@ -13,6 +11,9 @@ class ProductVariantManager extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Obx(
       () => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -20,58 +21,48 @@ class ProductVariantManager extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'تنويعات المنتج (SKUs)',
-                style: TextStyle(
-                  fontSize: 18,
+                style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
                 ),
               ),
-              ElevatedButton.icon(
+              FilledButton.icon(
                 onPressed: controller.addVariant,
                 icon: const Icon(Icons.add, size: 18),
                 label: const Text('إضافة تنويع'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
               ),
             ],
           ),
           const SizedBox(height: 12),
           if (controller.variants.isEmpty)
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.03),
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+            Card.outlined(
+              margin: EdgeInsets.zero,
+              color: colorScheme.surfaceContainerHigh.withValues(alpha: 0.3),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: BorderSide(color: colorScheme.outlineVariant),
               ),
-              child: Column(
-                children: [
-                  Icon(
-                    Icons.inventory_2_outlined,
-                    color: Colors.white.withValues(alpha: 0.2),
-                    size: 40,
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Center(
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.inventory_2_outlined,
+                        color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                        size: 36,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'لا توجد تنويعات بعد. أضف واحداً لإدارة مخزون SKU.',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'لا توجد تنويعات بعد. أضف واحداً لإدارة مخزون SKU.',
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.4),
-                      fontSize: 13,
-                    ),
-                  ),
-                ],
+                ),
               ),
             )
           else
@@ -79,7 +70,7 @@ class ProductVariantManager extends StatelessWidget {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: controller.variants.length,
-              separatorBuilder: (_, _) => const SizedBox(height: 16),
+              separatorBuilder: (_, _) => const SizedBox(height: 14),
               itemBuilder: (context, index) {
                 final variant = controller.variants[index];
                 return _VariantItemEditor(
@@ -166,123 +157,126 @@ class _VariantItemEditorState extends State<_VariantItemEditor> {
 
   @override
   Widget build(BuildContext context) {
-    return GlassContainer(
-      padding: const EdgeInsets.all(16),
-      borderRadius: BorderRadius.circular(18),
-      border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 14,
-                backgroundColor: AppColors.primary.withValues(alpha: 0.2),
-                child: Text(
-                  '${widget.index + 1}',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.primary,
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Card.outlined(
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: colorScheme.outlineVariant),
+      ),
+      color: colorScheme.surfaceContainerHigh.withValues(alpha: 0.35),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 14,
+                  backgroundColor: colorScheme.primaryContainer,
+                  child: Text(
+                    '${widget.index + 1}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: colorScheme.onPrimaryContainer,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  'تنويع ${widget.index + 1}',
+                  style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-              const SizedBox(width: 10),
-              const Text(
-                'تنويع جديد',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+                const Spacer(),
+                IconButton(
+                  onPressed: widget.onDelete,
+                  icon: Icon(
+                    Icons.delete_outline,
+                    color: colorScheme.error,
+                    size: 20,
+                  ),
+                  tooltip: 'حذف التنويع',
                 ),
-              ),
-              const Spacer(),
-              IconButton(
-                onPressed: widget.onDelete,
-                icon: const Icon(
-                  Icons.delete_outline,
-                  color: Colors.redAccent,
-                  size: 20,
-                ),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: buildModernTextField(
-                  skuCtrl,
-                  'رقم SKU',
-                  Icons.qr_code_scanner,
-                  onChanged: (_) => _triggerUpdate(),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: buildModernTextField(
-                  stockCtrl,
-                  'المخزون',
-                  Icons.inventory_2_outlined,
-                  isNumber: true,
-                  onChanged: (_) => _triggerUpdate(),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: buildModernTextField(
-                  priceCtrl,
-                  'السعر',
-                  Icons.payments_outlined,
-                  isNumber: true,
-                  onChanged: (_) => _triggerUpdate(),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: buildModernTextField(
-                  discountCtrl,
-                  'الخصم',
-                  Icons.sell_outlined,
-                  isNumber: true,
-                  onChanged: (_) => _triggerUpdate(),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'السمات (Attributes)',
-            style: TextStyle(
-              color: Colors.white70,
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
+              ],
             ),
-          ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            children: [
-              _buildAttributeSelector('المقاس', widget.availableSizes, 'size'),
-              _buildAttributeSelector(
-                'النكهة',
-                widget.availableFlavors,
-                'flavor',
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: buildModernTextField(
+                    skuCtrl,
+                    'رقم SKU',
+                    Icons.qr_code_scanner,
+                    onChanged: (_) => _triggerUpdate(),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: buildModernTextField(
+                    stockCtrl,
+                    'المخزون',
+                    Icons.inventory_2_outlined,
+                    isNumber: true,
+                    onChanged: (_) => _triggerUpdate(),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: buildModernTextField(
+                    priceCtrl,
+                    'السعر',
+                    Icons.payments_outlined,
+                    isNumber: true,
+                    onChanged: (_) => _triggerUpdate(),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: buildModernTextField(
+                    discountCtrl,
+                    'الخصم',
+                    Icons.sell_outlined,
+                    isNumber: true,
+                    onChanged: (_) => _triggerUpdate(),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            Text(
+              'السمات (Attributes)',
+              style: theme.textTheme.labelMedium?.copyWith(
+                fontWeight: FontWeight.bold,
               ),
-            ],
-          ),
-        ],
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                _buildAttributeSelector(context, 'المقاس', widget.availableSizes, 'size'),
+                _buildAttributeSelector(context, 'النكهة', widget.availableFlavors, 'flavor'),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildAttributeSelector(
+    BuildContext context,
     String label,
     List<String> options,
     String key,
@@ -309,31 +303,10 @@ class _VariantItemEditorState extends State<_VariantItemEditor> {
       itemBuilder: (context) => options
           .map((opt) => PopupMenuItem(value: opt, child: Text(opt)))
           .toList(),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: AppColors.primary.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              currentVal ?? '$label: اختر',
-              style: const TextStyle(
-                color: AppColors.primary,
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const Icon(
-              Icons.arrow_drop_down,
-              color: AppColors.primary,
-              size: 18,
-            ),
-          ],
-        ),
+      child: ActionChip(
+        avatar: const Icon(Icons.arrow_drop_down, size: 18),
+        label: Text(currentVal ?? '$label: اختر'),
+        onPressed: null, //handled by PopupMenuButton child
       ),
     );
   }
