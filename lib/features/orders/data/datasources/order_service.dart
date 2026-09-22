@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:stronger_muscles_dashboard/config/api_config.dart';
 import 'package:stronger_muscles_dashboard/core/network/api_base.dart';
@@ -40,6 +41,6 @@ class OrderService extends ApiBase {
   void _logError(DioException e, String task) {
     final String errorMsg =
         e.response?.data?['message'] ?? e.message ?? 'Unknown Error';
-    print('⚠️ [OrderService] خطأ في $task: $errorMsg');
+    debugPrint('⚠️ [OrderService] خطأ في $task: $errorMsg');
   }
 }
