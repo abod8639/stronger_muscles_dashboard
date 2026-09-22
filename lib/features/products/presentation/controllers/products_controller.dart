@@ -11,7 +11,6 @@ import '../../domain/usecases/upload_product_image_usecase.dart';
 import 'package:stronger_muscles_dashboard/features/brands/domain/entities/brand_entity.dart';
 import 'package:stronger_muscles_dashboard/features/brands/domain/repositories/brand_repository.dart';
 import '../widgets/product_form_page.dart';
-import '../widgets/product_form_sheet.dart';
 
 class ProductsController extends GetxController {
   final GetProductsUseCase _getProductsUseCase;
@@ -318,6 +317,186 @@ class ProductsController extends GetxController {
       _showErrorSnackbar('خطأ في الحذف', e.toString());
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  // --- Selection Methods ---
+  void toggleSelectionMode([bool? enable]) {
+    if (enable != null) {
+      isSelectionMode.value = enable;
+    } else {
+      isSelectionMode.value = !isSelectionMode.value;
+    }
+    if (!isSelectionMode.value) {
+      selectedProductIds.clear();
+    }
+  }
+
+  void toggleProductSelection(String id) {
+    if (selectedProductIds.contains(id)) {
+      selectedProductIds.remove(id);
+    } else {
+      selectedProductIds.add(id);
+      if (!isSelectionMode.value) {
+        isSelectionMode.value = true;
+      }
+    }
+  }
+
+  bool isProductSelected(String id) => selectedProductIds.contains(id);
+
+  void selectAll() {
+    selectedProductIds.addAll(filteredProducts.map((p) => p.id));
+    if (!isSelectionMode.value) isSelectionMode.value = true;
+  }
+
+  void deselectAll() {
+    selectedProductIds.clear();
+  }
+
+  void toggleSelectAll() {
+    if (isAllSelected) {
+      deselectAll();
+    } else {
+      selectAll();
+    }
+  }
+
+  // --- Bulk Action Methods ---
+  void confirmBulkDelete() {
+    final count = selectedCount;
+    if (count == 0) return;
+
+    Get.defaultDialog(
+      title: 'تأكيد الحذف الجماعي',
+      titleStyle: const TextStyle(fontWeight: FontWeight.bold),
+      middleText: 'هل أنت متأكد من حذف $count منتج(ات) محدد بشكل نهائي؟ لا يمكن التراجع عن هذا الإجراء.',
+      textConfirm: 'حذف المحدد',
+      textCancel: 'إلغاء',
+      buttonColor: Colors.redAccent,
+      confirmTextColor: Colors.white,
+      cancelTextColor: Colors.white70,
+      onConfirm: () {
+        Get.back();
+        _executeBulkDelete();
+      },
+    );
+  }
+
+  Future<void> _executeBulkDelete() async {
+    final idsToDelete = selectedProductIds.toList();
+    if (idsToDelete.isEmpty) return;
+
+    try {
+      isBulkOperating.value = true;
+      int successCount = 0;
+      int failCount = 0;
+
+      for (final id in idsToDelete) {
+        try {
+          final success = await _deleteProductUseCase(id);
+          if (success) {
+            products.removeWhere((p) => p.id == id);
+            selectedProductIds.remove(id);
+            successCount++;
+          } else {
+            failCount++;
+          }
+        } catch (_) {
+          failCount++;
+        }
+      }
+
+      _applyFiltering();
+
+      if (selectedProductIds.isEmpty) {
+        isSelectionMode.value = false;
+      }
+
+      if (failCount == 0) {
+        _showSuccess('تم بنجاح', 'تم حذف $successCount منتج(ات) بنجاح');
+      } else {
+        _showWarning('اكتملت العملية مع بعض التنبيهات', 'تم حذف $successCount وفشل حذف $failCount منتج');
+      }
+    } catch (e) {
+      _showErrorSnackbar('خطأ في الحذف الجماعي', e.toString());
+    } finally {
+      isBulkOperating.value = false;
+    }
+  }
+
+  Future<void> bulkToggleStatus({required bool activate}) async {
+    final idsToUpdate = selectedProductIds.toList();
+    if (idsToUpdate.isEmpty) return;
+
+    final actionName = activate ? 'تفعيل' : 'تعطيل';
+
+    try {
+      isBulkOperating.value = true;
+      int successCount = 0;
+      int failCount = 0;
+
+      for (final id in idsToUpdate) {
+        try {
+          final updatedProduct = await _updateProductUseCase(id, {'is_active': activate});
+          final index = products.indexWhere((p) => p.id == id);
+          if (index != -1) {
+            products[index] = updatedProduct;
+          }
+          successCount++;
+        } catch (_) {
+          failCount++;
+        }
+      }
+
+      _applyFiltering();
+
+      if (failCount == 0) {
+        _showSuccess('تم بنجاح', 'تم $actionName $successCount منتج(ات) بنجاح');
+      } else {
+        _showWarning('اكتملت العملية جزئياً', 'تم $actionName $successCount وفشل $failCount منتج');
+      }
+    } catch (e) {
+      _showErrorSnackbar('خطأ في الـ $actionName الجماعي', e.toString());
+    } finally {
+      isBulkOperating.value = false;
+    }
+  }
+
+  Future<void> bulkChangeCategory(String newCategoryId) async {
+    final idsToUpdate = selectedProductIds.toList();
+    if (idsToUpdate.isEmpty) return;
+
+    try {
+      isBulkOperating.value = true;
+      int successCount = 0;
+      int failCount = 0;
+
+      for (final id in idsToUpdate) {
+        try {
+          final updatedProduct = await _updateProductUseCase(id, {'category_id': newCategoryId});
+          final index = products.indexWhere((p) => p.id == id);
+          if (index != -1) {
+            products[index] = updatedProduct;
+          }
+          successCount++;
+        } catch (_) {
+          failCount++;
+        }
+      }
+
+      _applyFiltering();
+      Get.back(); // Close modal/dialog
+
+      if (failCount == 0) {
+        _showSuccess('تم بنجاح', 'تم نقل $successCount منتج(ات) إلى القسم بنجاح');
+      } else {
+        _showWarning('اكتمل النقل جزئياً', 'تم نقل $successCount وفشل نقل $failCount منتج');
+      }
+    } catch (e) {
+      _showErrorSnackbar('خطأ في نقل المنتجات', e.toString());
+    } finally {
+      isBulkOperating.value = false;
     }
   }
 
