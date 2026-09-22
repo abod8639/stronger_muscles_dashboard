@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
-import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
 
 class ProductSizeSelector extends StatelessWidget {
@@ -13,7 +11,7 @@ class ProductSizeSelector extends StatelessWidget {
   final List<String> availableSizes = [
     '500g', '1kg', '2kg', '4kg', '3kg', '5kg',
     '2lb', '5lb', '10lb',
-    '30 Servings', '60 Servings', '100 Servings','120 Servings',
+    '30 Servings', '60 Servings', '100 Servings', '120 Servings',
     '120 Caps', 'Medium', 'Large', 'Small',
   ];
 
@@ -28,58 +26,74 @@ class ProductSizeSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
-    return GlassContainer(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                "الأحجام / الأوزان المختارة",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-              ),
-              PopupMenuButton<String>(
-                icon: const Icon(
-                  Icons.add_circle_outline,
-                  color: AppColors.primary,
+    return Card.outlined(
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: colorScheme.outlineVariant),
+      ),
+      color: colorScheme.surfaceContainerHigh.withValues(alpha: 0.35),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.straighten_rounded,
+                      size: 18,
+                      color: colorScheme.primary,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      "الأحجام / الأوزان المتوفرة",
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
-                tooltip: "إضافة من القائمة",
-                onSelected: (String sizeName) {
-                  if (!selectedSizes.any((s) => s.size == sizeName)) {
-                    List<ProductSizeEntity> updatedList = List<ProductSizeEntity>.from(
-                      selectedSizes,
-                    );
-                    updatedList.add(
-                      ProductSizeEntity(size: sizeName, price: defaultPrice),
-                    );
-                    onSelectionChanged(updatedList);
-                    onSelectSize(updatedList.length - 1);
-                  }
-                },
-                itemBuilder: (BuildContext context) {
-                  return availableSizes
-                      .where(
-                        (size) => !selectedSizes.any((s) => s.size == size),
-                      )
-                      .map((String size) {
-                        return PopupMenuItem<String>(
-                          value: size,
-                          child: Text(size),
-                        );
-                      })
-                      .toList();
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          GlassContainer(
-            width: double.infinity,
-            padding: const EdgeInsets.all(12),
-            child: Wrap(
+                PopupMenuButton<String>(
+                  icon: Icon(
+                    Icons.add_circle_outline_rounded,
+                    color: colorScheme.primary,
+                  ),
+                  tooltip: "إضافة من القائمة",
+                  onSelected: (String sizeName) {
+                    if (!selectedSizes.any((s) => s.size == sizeName)) {
+                      final updatedList = List<ProductSizeEntity>.from(selectedSizes);
+                      updatedList.add(
+                        ProductSizeEntity(size: sizeName, price: defaultPrice),
+                      );
+                      onSelectionChanged(updatedList);
+                      onSelectSize(updatedList.length - 1);
+                    }
+                  },
+                  itemBuilder: (BuildContext context) {
+                    return availableSizes
+                        .where(
+                          (size) => !selectedSizes.any((s) => s.size == size),
+                        )
+                        .map((String size) {
+                          return PopupMenuItem<String>(
+                            value: size,
+                            child: Text(size),
+                          );
+                        })
+                        .toList();
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Wrap(
               spacing: 8,
               runSpacing: 8,
               children: [
@@ -90,10 +104,10 @@ class ProductSizeSelector extends StatelessWidget {
 
                   return InputChip(
                     avatar: isActive
-                        ? const Icon(
-                            Icons.check_circle,
+                        ? Icon(
+                            Icons.check_circle_rounded,
                             size: 16,
-                            color: AppColors.primary,
+                            color: colorScheme.primary,
                           )
                         : null,
                     label: Text(sizeObj.size),
@@ -102,54 +116,28 @@ class ProductSizeSelector extends StatelessWidget {
                       onSelectSize(index);
                     },
                     onDeleted: () {
-                      List<ProductSizeEntity> updatedList = List<ProductSizeEntity>.from(
-                        selectedSizes,
-                      );
+                      final updatedList = List<ProductSizeEntity>.from(selectedSizes);
                       updatedList.removeAt(index);
                       onSelectionChanged(updatedList);
                       onSelectSize(-1);
                     },
-                    deleteIconColor: Colors.redAccent,
-                    selectedColor: AppColors.primary.withValues(alpha: 0.1),
-                    showCheckmark: false,
-                    labelStyle: TextStyle(
-                      color: isActive
-                          ? AppColors.primary
-                          : (isDark ? Colors.white70 : Colors.black87),
-                      fontWeight: isActive
-                          ? FontWeight.bold
-                          : FontWeight.normal,
-                      fontSize: 12,
-                    ),
-                    backgroundColor: Colors.transparent,
-                    shape: StadiumBorder(
-                      side: BorderSide(
-                        color: isActive
-                            ? AppColors.primary
-                            : Colors.grey.withValues(alpha: 0.3),
-                        width: isActive ? 2 : 1,
-                      ),
-                    ),
+                    deleteIconColor: colorScheme.error,
                   );
                 }),
 
                 ActionChip(
-                  avatar: const Icon(
-                    Icons.edit_note,
+                  avatar: Icon(
+                    Icons.edit_note_rounded,
                     size: 16,
-                    color: AppColors.primary,
+                    color: colorScheme.primary,
                   ),
-                  label: const Text("حجم مخصص", style: TextStyle(fontSize: 12)),
+                  label: const Text("حجم مخصص"),
                   onPressed: () => _showAddSizeDialog(context),
-                  backgroundColor: AppColors.primary.withValues(alpha: 0.05),
-                  shape: const StadiumBorder(
-                    side: BorderSide(color: AppColors.primary),
-                  ),
                 ),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -159,14 +147,13 @@ class ProductSizeSelector extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("إضافة حجم/وزن جديد", style: TextStyle(fontSize: 16)),
+        title: const Text("إضافة حجم/وزن مخصص"),
         content: TextField(
           controller: sizeController,
           autofocus: true,
           decoration: const InputDecoration(
             hintText: "مثلاً: 1.5kg أو 180 Tabs",
             labelText: "الحجم",
-            border: OutlineInputBorder(),
           ),
         ),
         actions: [
@@ -174,7 +161,7 @@ class ProductSizeSelector extends StatelessWidget {
             onPressed: () => Navigator.pop(context),
             child: const Text("إلغاء"),
           ),
-          ElevatedButton(
+          FilledButton(
             onPressed: () {
               final newSize = sizeController.text.trim();
               if (newSize.isNotEmpty &&
