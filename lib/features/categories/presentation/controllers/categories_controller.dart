@@ -76,7 +76,7 @@ class CategoriesController extends GetxController {
   Future<void> fetchCategories() async {
     try {
       isLoading.value = true;
-      final data = await _categoryRepository.getCategories(tree: true);
+      final data = await _getCategoriesUseCase(tree: true);
       categories.assignAll(data);
       _applySearch();
     } catch (e) {
@@ -119,10 +119,10 @@ class CategoriesController extends GetxController {
       };
 
       if (existingId == null) {
-        final newCategory = await _categoryRepository.addCategory(categoryData);
+        final newCategory = await _addCategoryUseCase(categoryData);
         categories.add(newCategory);
       } else {
-        final updatedCategory = await _categoryRepository.updateCategory(existingId, categoryData);
+        final updatedCategory = await _updateCategoryUseCase(existingId, categoryData);
         final index = categories.indexWhere((c) => c.id == existingId);
         if (index != -1) {
           categories[index] = updatedCategory;
@@ -159,7 +159,7 @@ class CategoriesController extends GetxController {
   Future<void> _performDelete(String id) async {
     try {
       isProcessing.value = true;
-      final success = await _categoryRepository.deleteCategory(id);
+      final success = await _deleteCategoryUseCase(id);
       if (success) {
         categories.removeWhere((c) => c.id == id);
         _applySearch();
