@@ -6,38 +6,65 @@ Widget buildDetailRow(
   String value, {
   Widget? trailing,
 }) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 8.0),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, size: 20, color: Colors.grey),
-        const SizedBox(width: 12),
+  return Builder(
+    builder: (context) {
+      final theme = Theme.of(context);
+      final colorScheme = theme.colorScheme;
 
-        SizedBox(
-          width: 100,
-          child: Text(label, style: const TextStyle(color: Colors.grey)),
-        ),
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(7),
+              decoration: BoxDecoration(
+                color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                icon,
+                size: 16,
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(width: 12),
 
-        const SizedBox(width: 16),
-
-        Expanded(
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child:
-                trailing ??
-                SelectionArea(
-                  child: Text(
-                    value,
-                    textAlign: TextAlign.end,
-                    style: const TextStyle(fontWeight: FontWeight.w500),
-                    softWrap: true,
-                    overflow: TextOverflow.visible,
-                  ),
+            Expanded(
+              flex: 4,
+              child: Text(
+                label,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w500,
                 ),
-          ),
+              ),
+            ),
+
+            const SizedBox(width: 12),
+
+            Expanded(
+              flex: 5,
+              child: Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: trailing ??
+                    SelectionArea(
+                      child: Text(
+                        value,
+                        textAlign: TextAlign.end,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: colorScheme.onSurface,
+                        ),
+                        softWrap: true,
+                        overflow: TextOverflow.visible,
+                      ),
+                    ),
+              ),
+            ),
+          ],
         ),
-      ],
-    ),
+      );
+    },
   );
 }
