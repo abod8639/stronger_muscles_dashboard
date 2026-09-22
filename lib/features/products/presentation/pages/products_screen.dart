@@ -6,7 +6,7 @@ import 'package:stronger_muscles_dashboard/core/utils/components/custom_search_b
 import 'package:stronger_muscles_dashboard/core/utils/components/enhanced_loading_widget.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/generic_empty_state.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/horizontal_chips_selector.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/my_refreshIndicator.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/my_refresh_indicator.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/top_section.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_form_page.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
