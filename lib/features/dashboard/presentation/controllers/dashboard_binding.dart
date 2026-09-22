@@ -43,9 +43,9 @@ class DashboardBinding extends Bindings {
       Get.lazyPut<ProductRepository>(() => ProductRepositoryImpl(Get.find<ProductRemoteDataSource>()), fenix: true);
     }
 
-    // Categories (Already concrete, just ensure it's registered)
+    // Categories
     if (!Get.isRegistered<CategoryRepository>()) {
-      Get.lazyPut<CategoryRepository>(() => CategoryRepository(apiService), fenix: true);
+      Get.lazyPut<CategoryRepository>(() => CategoryRepositoryImpl(apiService), fenix: true);
     }
 
     // Users
