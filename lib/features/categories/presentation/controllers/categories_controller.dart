@@ -1,13 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
-import 'package:stronger_muscles_dashboard/core/network/api_service.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/confirm_dialog.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
-import 'package:stronger_muscles_dashboard/features/categories/data/repositories/category_repository.dart';
+import 'package:stronger_muscles_dashboard/features/categories/domain/usecases/add_category_usecase.dart';
+import 'package:stronger_muscles_dashboard/features/categories/domain/usecases/delete_category_usecase.dart';
+import 'package:stronger_muscles_dashboard/features/categories/domain/usecases/get_categories_usecase.dart';
+import 'package:stronger_muscles_dashboard/features/categories/domain/usecases/update_category_usecase.dart';
 
 class CategoriesController extends GetxController {
+  final GetCategoriesUseCase _getCategoriesUseCase;
+  final AddCategoryUseCase _addCategoryUseCase;
+  final UpdateCategoryUseCase _updateCategoryUseCase;
+  final DeleteCategoryUseCase _deleteCategoryUseCase;
+
+  CategoriesController({
+    required GetCategoriesUseCase getCategoriesUseCase,
+    required AddCategoryUseCase addCategoryUseCase,
+    required UpdateCategoryUseCase updateCategoryUseCase,
+    required DeleteCategoryUseCase deleteCategoryUseCase,
+  })  : _getCategoriesUseCase = getCategoriesUseCase,
+        _addCategoryUseCase = addCategoryUseCase,
+        _updateCategoryUseCase = updateCategoryUseCase,
+        _deleteCategoryUseCase = deleteCategoryUseCase;
+
   late final TextEditingController idController;
   late final TextEditingController nameArController;
   late final TextEditingController nameEnController;
@@ -16,7 +32,6 @@ class CategoriesController extends GetxController {
   late final TextEditingController descEnController;
   late final TextEditingController iconController;
 
-  late final CategoryRepository _categoryRepository;
   final RxBool isLoading = true.obs;
   final RxBool isProcessing = false.obs;
   final categories = <CategoryEntity>[].obs;
@@ -36,8 +51,6 @@ class CategoriesController extends GetxController {
     iconController = TextEditingController();
 
     super.onInit();
-    final apiService = Get.find<ApiService>();
-    _categoryRepository = CategoryRepository(apiService);
 
     debounce(
       searchQuery,
