@@ -55,7 +55,7 @@ class GenericActionButton extends StatelessWidget {
         blur: 10,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: color.withOpacity(isHovered ? 0.6 : 0.3),
+          color: color.withValues(alpha: isHovered ? 0.6 : 0.3),
           width: 1,
         ),
         child: Center(
