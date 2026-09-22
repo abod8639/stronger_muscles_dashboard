@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// بطاقة السكشن بنمط Material Design 3 (Card.outlined)
 class OrderCardSection extends StatelessWidget {
   final String? title;
   final IconData? icon;
@@ -26,9 +27,9 @@ class OrderCardSection extends StatelessWidget {
       elevation: 0,
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
         side: BorderSide(
-          color: colorScheme.outlineVariant.withValues(alpha: 0.6),
+          color: colorScheme.outlineVariant,
           width: 1.0,
         ),
       ),
@@ -39,20 +40,20 @@ class OrderCardSection extends StatelessWidget {
         children: [
           if (title != null) ...[
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
               child: Row(
                 children: [
                   if (icon != null) ...[
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: colorScheme.primary.withValues(alpha: 0.08),
+                        color: colorScheme.primaryContainer,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Icon(
                         icon,
                         size: 18,
-                        color: colorScheme.primary,
+                        color: colorScheme.onPrimaryContainer,
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -62,6 +63,7 @@ class OrderCardSection extends StatelessWidget {
                       title!,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
+                        color: colorScheme.onSurface,
                       ),
                     ),
                   ),
@@ -72,11 +74,11 @@ class OrderCardSection extends StatelessWidget {
             Divider(
               height: 1,
               thickness: 1,
-              color: colorScheme.outlineVariant.withValues(alpha: 0.4),
+              color: colorScheme.outlineVariant.withValues(alpha: 0.5),
             ),
           ],
           Padding(
-            padding: padding ?? const EdgeInsets.all(16),
+            padding: padding ?? const EdgeInsets.all(18),
             child: child,
           ),
         ],
@@ -85,6 +87,7 @@ class OrderCardSection extends StatelessWidget {
   }
 }
 
+/// دالة مساعدة للتوافق العكسي
 Widget buildSection({required Widget child, EdgeInsets? padding}) {
   return OrderCardSection(
     padding: padding,
