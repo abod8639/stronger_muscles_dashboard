@@ -1,6 +1,6 @@
-// عنصر الـ Chip المنفصل لتحسين الأداء وشكل الواجهة
 import 'package:flutter/material.dart';
 
+/// عنصر الشريحة (M3 FilterChip) المتوافق مع معايير Material Design 3
 class ChipItem extends StatelessWidget {
   final String label;
   final bool isSelected;
@@ -17,35 +17,35 @@ class ChipItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Padding(
-      padding: EdgeInsets.only(left: index < 1 ? 1 : 10),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-          decoration: BoxDecoration(
+      padding: EdgeInsetsDirectional.only(start: index < 1 ? 0 : 8),
+      child: Center(
+        child: FilterChip(
+          selected: isSelected,
+          onSelected: (_) => onTap(),
+          label: Text(label),
+          labelStyle: theme.textTheme.labelLarge?.copyWith(
             color: isSelected
-                ? Theme.of(context).primaryColor
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: isSelected
-                  ? Theme.of(context).primaryColor
-                  : Colors.grey.withValues(alpha: 0.2),
-            ),
+                ? colorScheme.onPrimary
+                : colorScheme.onSurfaceVariant,
+            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
           ),
-          child: Center(
-            child: Text(
-              label,
-              style: TextStyle(
-                color: isSelected ? Colors.white : Colors.grey,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                fontSize: 16,
-              ),
-            ),
+          backgroundColor: colorScheme.surfaceContainerLow,
+          selectedColor: colorScheme.primary,
+          showCheckmark: false,
+          side: BorderSide(
+            color: isSelected
+                ? colorScheme.primary
+                : colorScheme.outlineVariant,
+            width: 1.0,
           ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         ),
       ),
     );
