@@ -139,7 +139,7 @@ class OrdersTable extends StatelessWidget {
           style: TextStyle(
             color: isSelected
                 ? Colors.white
-                : Colors.white.withValues(alpha: 0.4),
+                : Colors.white60,
             fontSize: 13,
             fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
             letterSpacing: 0.3,
@@ -537,7 +537,7 @@ class OrdersTable extends StatelessWidget {
           '$pageNum',
           style: TextStyle(
             color: isSelected
-                ? Colors.white
+                ? Colors.black
                 : Colors.white.withValues(alpha: 0.6),
             fontSize: 12,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
