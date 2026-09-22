@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:stronger_muscles_dashboard/config/api_config.dart';
 import '../models/product_model.dart';
@@ -51,7 +52,7 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
             try {
               allProducts.add(ProductModel.fromJson(item as Map<String, dynamic>));
             } catch (e) {
-              print('X Error parsing product: $e');
+              debugPrint('X Error parsing product: $e');
             }
           }
         }
