@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
-import 'package:stronger_muscles_dashboard/config/theme.dart';
 
 class ProductFlavorSelector extends StatelessWidget {
   final List<String> selectedFlavors;
@@ -28,26 +26,40 @@ class ProductFlavorSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    // دمج النكهات الثابتة مع أي نكهات مخصصة تمت إضافتها سابقاً
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final combinedFlavors = {...availableFlavors, ...selectedFlavors}.toList();
 
-    return GlassContainer(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Center(
-            child: Text(
-              "النكهات المتوفرة لهذا المنتج",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+    return Card.outlined(
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: colorScheme.outlineVariant),
+      ),
+      color: colorScheme.surfaceContainerHigh.withValues(alpha: 0.35),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.icecream_outlined,
+                  size: 18,
+                  color: colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  "النكهات المتوفرة لهذا المنتج",
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 10),
-          GlassContainer(
-            width: double.infinity,
-            padding: const EdgeInsets.all(12),
-            child: Wrap(
+            const SizedBox(height: 12),
+            Wrap(
               spacing: 8,
               runSpacing: 8,
               children: [
@@ -57,9 +69,7 @@ class ProductFlavorSelector extends StatelessWidget {
                     label: Text(flavor),
                     selected: isSelected,
                     onSelected: (bool selected) {
-                      List<String> updatedList = List<String>.from(
-                        selectedFlavors,
-                      );
+                      final updatedList = List<String>.from(selectedFlavors);
                       if (selected) {
                         updatedList.add(flavor);
                       } else {
@@ -67,63 +77,39 @@ class ProductFlavorSelector extends StatelessWidget {
                       }
                       onSelectionChanged(updatedList);
                     },
-                    selectedColor: AppColors.primary.withValues(alpha: 0.2),
-                    checkmarkColor: AppColors.primary,
-                    labelStyle: TextStyle(
-                      color: isSelected
-                          ? AppColors.primary
-                          : (isDark ? Colors.white70 : Colors.black87),
-                      fontWeight: isSelected
-                          ? FontWeight.bold
-                          : FontWeight.normal,
-                      fontSize: 12,
-                    ),
-                    backgroundColor: Colors.transparent,
-                    shape: StadiumBorder(
-                      side: BorderSide(
-                        color: isSelected
-                            ? AppColors.primary
-                            : Colors.grey.withValues(alpha: 0.3),
-                      ),
-                    ),
                   );
                 }),
 
                 // زر إضافة نكهة جديدة
                 ActionChip(
-                  avatar: const Icon(
+                  avatar: Icon(
                     Icons.add,
                     size: 16,
-                    color: AppColors.primary,
+                    color: colorScheme.primary,
                   ),
                   label: const Text("نكهة مخصصة"),
                   onPressed: () => _showAddFlavorDialog(context),
-                  backgroundColor: AppColors.primary.withValues(alpha: 0.05),
-                  shape: const StadiumBorder(
-                    side: BorderSide(color: AppColors.primary),
-                  ),
                 ),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  // نافذة إضافة نكهة جديدة
   void _showAddFlavorDialog(BuildContext context) {
     final TextEditingController controller = TextEditingController();
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("إضافة نكهة جديدة", style: TextStyle(fontSize: 16)),
+        title: const Text("إضافة نكهة جديدة"),
         content: TextField(
           controller: controller,
           autofocus: true,
           decoration: const InputDecoration(
             hintText: "مثلاً: Pistachio",
-            border: OutlineInputBorder(),
+            labelText: "اسم النكهة",
           ),
         ),
         actions: [
@@ -131,8 +117,7 @@ class ProductFlavorSelector extends StatelessWidget {
             onPressed: () => Navigator.pop(context),
             child: const Text("إلغاء"),
           ),
-          ElevatedButton(
-            autofocus: true,
+          FilledButton(
             onPressed: () {
               final newFlavor = controller.text.trim();
               if (newFlavor.isNotEmpty &&
