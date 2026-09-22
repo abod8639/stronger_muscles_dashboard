@@ -291,7 +291,7 @@ class PromoFormSheet extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
             color: isSelected
-                ? AppColorsExtended.purpleAccent.withOpacity(0.15)
+                ? AppColorsExtended.purpleAccent.withValues(alpha: 0.15)
                 : AppColorsExtended.purpleAccent,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
@@ -520,8 +520,8 @@ class PromoFormSheet extends StatelessWidget {
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(vertical: 16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        disabledBackgroundColor: AppColorsExtended.purpleAccent.withOpacity(
-          0.4,
+        disabledBackgroundColor: AppColorsExtended.purpleAccent.withValues(
+          alpha: 0.4,
         ),
       ),
       icon: controller.isLoading.value
