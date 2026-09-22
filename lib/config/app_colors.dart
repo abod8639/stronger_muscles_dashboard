@@ -1,60 +1,52 @@
 import 'package:flutter/material.dart';
 
 class AppColorsExtended {
-  static const Color backgroundColor = Color(0xFF0F0F1E);
+  // --- Minimal Monochrome Backgrounds (Eye-friendly Neutral Zinc/Charcoal) ---
+  static const Color backgroundColor = Color(0xFF121214);
+  static const Color darkBg = Color(0xFF121214);
+  static const Color surfaceDark = Color(0xFF18181B);
+  static const Color cardBg = Color(0xFF1E1E22);
+  static const Color cardBgLight = Color(0xFF26262B);
 
-  // --- الألوان الأساسية (Primary Palette) ---
-  static const Color darkBg = Color(
-    0xFF0F0F1E,
-  ); // خلفية داكنة جداً (almost black)
-  static const Color surfaceDark = Color(0xFF1A1A2E); // سطح داكن
-  static const Color cardBg = Color(0xFF16213E); // خلفية البطاقات
-  static const Color cardBgLight = Color(0xFF1F2937); // خلفية بطاقة أفتح قليلاً
+  // --- Borders & Outlines ---
+  static const Color borderColor = Color(0xFF2E2E34);
+  static const Color borderColorLight = Color(0xFF383840);
 
-  // --- ألوان الحدود والفواصل ---
-  static const Color borderColor = Color(0xFF2D3748); // حدود ناعمة
-  static const Color borderColorLight = Color(0xFF3F4654);
+  // --- Typography (Clean, high-legibility, zero glare) ---
+  static const Color textPrimary = Color(0xFFF4F4F5);
+  static const Color textSecondary = Color(0xFFA1A1AA);
+  static const Color textMuted = Color(0xFF71717A);
 
-  // --- ألوان النصوص ---
-  static const Color textPrimary = Color(0xFFE8EAED); // نص أبيض
-  static const Color textSecondary = Color(0xFFB0B3B8); // نص رمادي فاتح
-  static const Color textMuted = Color(0xFF8A8D93); // نص رمادي داكن
+  // --- Monochrome Accents ---
+  static const Color purpleAccent = Color(0xFFE4E4E7);
+  static const Color purpleDark = Color(0xFF27272A);
+  static const Color purpleLight = Color(0xFFF4F4F5);
 
-  // --- ألوان الحالات ---
-  // البنفسجي (Ethereum)
-  static const Color purpleAccent = Color(0xFFB897EE);
-  static const Color purpleDark = Color(0xFF7C3AED);
-  static const Color purpleLight = Color(0xFFDDD6FE);
+  static const Color orangeAccent = Color(0xFFF59E0B);
+  static const Color orangeDark = Color(0xFFD97706);
+  static const Color orangeLight = Color(0xFFFEF3C7);
 
-  // البرتقالي (BNB Chain)
-  static const Color orangeAccent = Color(0xFFFBBF24);
-  static const Color orangeDark = Color(0xFFF59E0B);
-  static const Color orangeLight = Color(0xFFFED7AA);
+  static const Color pinkAccent = Color(0xFFD4D4D8);
+  static const Color pinkDark = Color(0xFF52525B);
+  static const Color pinkLight = Color(0xFFF4F4F5);
 
-  // الأحمر/الوردي (Polygon)
-  static const Color pinkAccent = Color(0xFFF472B6);
-  static const Color pinkDark = Color(0xFFEC4899);
-  static const Color pinkLight = Color(0xFFFCE7F3);
+  static const Color cyanAccent = Color(0xFFE4E4E7);
+  static const Color cyanDark = Color(0xFF3F3F46);
 
-  // الأزرق السماوي
-  static const Color cyanAccent = Color(0xFF22D3EE);
-  static const Color cyanDark = Color(0xFF06B6D4);
+  // --- Balanced, Eye-Friendly Status Colors ---
+  static const Color greenAccent = Color(0xFF22C55E);
+  static const Color greenLight = Color(0xFFDCFCE7);
 
-  // الأخضر
-  static const Color greenAccent = Color(0xFF10B981);
-  static const Color greenLight = Color(0xFFD1FAE5);
-
-  // الأحمر
   static const Color redAccent = Color(0xFFEF4444);
   static const Color redLight = Color(0xFFFEE2E2);
 
-  // --- Gradients ---
+  // --- Subtle Gradients ---
   static LinearGradient purpleGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     colors: [
-      purpleDark.withValues(alpha: 0.3),
-      purpleAccent.withValues(alpha: 0.1),
+      const Color(0xFF27272A),
+      const Color(0xFF1E1E22),
     ],
   );
 
@@ -62,8 +54,8 @@ class AppColorsExtended {
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     colors: [
-      orangeDark.withValues(alpha: 0.3),
-      orangeAccent.withValues(alpha: 0.1),
+      const Color(0xFF27272A),
+      const Color(0xFF1E1E22),
     ],
   );
 
@@ -71,24 +63,24 @@ class AppColorsExtended {
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     colors: [
-      pinkDark.withValues(alpha: 0.3),
-      pinkAccent.withValues(alpha: 0.1),
+      const Color(0xFF27272A),
+      const Color(0xFF1E1E22),
     ],
   );
 
-  // --- Shadows ---
+  // --- Subtle Shadows ---
   static List<BoxShadow> cardShadow = [
     BoxShadow(
-      color: Colors.black.withValues(alpha: 0.3),
-      blurRadius: 20,
-      offset: const Offset(0, 4),
+      color: Colors.black.withValues(alpha: 0.2),
+      blurRadius: 12,
+      offset: const Offset(0, 3),
     ),
   ];
 
   static List<BoxShadow> softShadow = [
     BoxShadow(
-      color: Colors.black.withValues(alpha: 0.1),
-      blurRadius: 8,
+      color: Colors.black.withValues(alpha: 0.12),
+      blurRadius: 6,
       offset: const Offset(0, 2),
     ),
   ];
