@@ -51,14 +51,14 @@ Widget buildNavItem({
                 children: [
                   Icon(
                     isSelected ? activeIcon : icon,
-                    color: isSelected ? AppColors.primary : Colors.white54,
+                    color: isSelected ? AppColors.primary : Colors.white60,
                     size: 20,
                   ),
                   const SizedBox(width: 16),
                   Text(
                     label,
                     style: TextStyle(
-                      color: isSelected ? Colors.white : Colors.white54,
+                      color: isSelected ? Colors.white : Colors.white60,
                       fontSize: 14,
                       fontWeight: isSelected
                           ? FontWeight.bold
