@@ -1,6 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import '../../../config/api_config.dart';
-import 'api_base.dart';
+import '../api_base.dart';
 
 class BrandService extends ApiBase {
   Future<List<dynamic>> fetchBrands() async {
@@ -21,6 +22,6 @@ class BrandService extends ApiBase {
   }
 
   void _logError(DioException e, String task) {
-    print('⚠️ [BrandService] Error in $task: ${e.message}');
+    debugPrint('⚠️ [BrandService] Error in $task: ${e.message}');
   }
 }
