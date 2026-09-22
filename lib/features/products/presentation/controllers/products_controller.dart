@@ -353,4 +353,18 @@ class ProductsController extends GetxController {
     backgroundColor: Colors.green,
     colorText: Colors.white,
   );
+
+  @override
+  void onClose() {
+    for (var c in textcontrollers.values) {
+      c.dispose();
+    }
+    for (var c in sizePriceControllers.values) {
+      c.dispose();
+    }
+    for (var c in sizeDiscountControllers.values) {
+      c.dispose();
+    }
+    super.onClose();
+  }
 }
