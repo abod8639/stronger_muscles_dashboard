@@ -11,7 +11,9 @@ import 'package:stronger_muscles_dashboard/core/utils/components/top_section.dar
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_form_page.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_list_item.dart';
+import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_bulk_actions_bar.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
+import 'package:stronger_muscles_dashboard/config/theme.dart';
 
 class ProductsScreen extends StatelessWidget {
   const ProductsScreen({super.key});
@@ -23,12 +25,28 @@ class ProductsScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColorsExtended.backgroundColor,
-
-      //  Colors.transparent,
       appBar: BaseAppBar(
         title: 'المنتجات',
         onPressed: () => Get.to(ProductFormPage()),
         icon: Icons.add,
+        extraActions: [
+          Obx(
+            () => IconButton(
+              icon: Icon(
+                controller.isSelectionMode.value
+                    ? Icons.checklist_rounded
+                    : Icons.checklist_outlined,
+                color: controller.isSelectionMode.value
+                    ? AppColors.primary
+                    : Colors.white70,
+              ),
+              tooltip: controller.isSelectionMode.value
+                  ? 'إلغاء وضع التحديد'
+                  : 'تحديد متعدد',
+              onPressed: () => controller.toggleSelectionMode(),
+            ),
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -37,10 +55,8 @@ class ProductsScreen extends StatelessWidget {
               CustomSearchBar(
                 hintText: 'ابحث عن منتج بالاسم أو الماركة...',
                 padding: responsive.defaultPadding,
-
                 onSearch: (value) => controller.onSearchChanged(value),
               ),
-
               Obx(
                 () => HorizontalChipsSelector(
                   items: controller.categories,
@@ -55,7 +71,15 @@ class ProductsScreen extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 8),
+          // شريط الإجراءات الجماعية يظهر بسلاسة عند تفعيل وضع التحديد
+          Obx(() {
+            if (controller.isSelectionMode.value) {
+              return const ProductBulkActionsBar();
+            }
+            return const SizedBox.shrink();
+          }),
+
+          const SizedBox(height: 4),
 
           Expanded(
             child: Obx(() {
@@ -70,9 +94,9 @@ class ProductsScreen extends StatelessWidget {
                   title: 'لا توجد نتائج',
                   message:
                       controller.searchQuery.value.isEmpty &&
-                          controller.selectedCategoryId.value == 'all'
-                      ? 'قائمة المنتجات فارغة حالياً'
-                      : 'لم نجد أي منتج يطابق بحثك: "${controller.searchQuery.value}"',
+                              controller.selectedCategoryId.value == 'all'
+                          ? 'قائمة المنتجات فارغة حالياً'
+                          : 'لم نجد أي منتج يطابق بحثك: "${controller.searchQuery.value}"',
                   icon: Icons.search_off_rounded,
                   onAction: () => controller.fetchData(),
                   actionLabel: 'إعادة المحاولة',
@@ -90,14 +114,35 @@ class ProductsScreen extends StatelessWidget {
                   separatorBuilder: (_, _) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     final product = controller.filteredProducts[index];
-                    return ProductListItem(
-                      product: product,
-                      index: index,
-                      onEdit: () =>
-                          controller.showProductForm(context, product: product),
-                      onDelete: () =>
-                          controller.confirmDelete(product.id, product.displayName ),
-                    );
+                    return Obx(() {
+                      final isSelected =
+                          controller.isProductSelected(product.id);
+                      final isSelectionMode =
+                          controller.isSelectionMode.value;
+
+                      return ProductListItem(
+                        product: product,
+                        index: index,
+                        isSelectionMode: isSelectionMode,
+                        isSelected: isSelected,
+                        onToggleSelect: () =>
+                            controller.toggleProductSelection(product.id),
+                        onLongPress: () {
+                          if (!isSelectionMode) {
+                            controller.toggleSelectionMode(true);
+                          }
+                          controller.toggleProductSelection(product.id);
+                        },
+                        onEdit: () => controller.showProductForm(
+                          context,
+                          product: product,
+                        ),
+                        onDelete: () => controller.confirmDelete(
+                          product.id,
+                          product.displayName,
+                        ),
+                      );
+                    });
                   },
                 ),
               );
