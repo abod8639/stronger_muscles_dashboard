@@ -59,7 +59,7 @@ class ImageGalleryEditor extends StatelessWidget {
           child: ReorderableListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: imageUrls.length + 1,
-            onReorder: (oldIndex, newIndex) {
+            onReorderItem: (oldIndex, newIndex) {
               // نمنع سحب زر "إضافة صورة"
               if (oldIndex < imageUrls.length && newIndex <= imageUrls.length) {
                 onReorder(oldIndex, newIndex);
