@@ -14,6 +14,8 @@ Widget buildModernTextField(
   int maxLines = 1,
   TextFieldStyle style = TextFieldStyle.solid,
   Function(String)? onChanged,
+  FocusNode? focusNode,
+  VoidCallback? onSubmitted,
 }) {
   return Builder(
     builder: (context) {
@@ -23,6 +25,8 @@ Widget buildModernTextField(
       final textField = TextField(
         controller: controller,
         enabled: enabled,
+        focusNode: focusNode,
+        onSubmitted: onSubmitted != null ? (_) => onSubmitted() : null,
         onChanged: onChanged,
         cursorColor: AppColors.primary,
         keyboardType: isNumber ? TextInputType.number : TextInputType.text,
