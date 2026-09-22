@@ -1,6 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import '../../../config/api_config.dart';
-import 'api_base.dart';
+import '../api_base.dart';
 
 class OrderService extends ApiBase {
   Future<List<dynamic>> fetchOrders() async {
@@ -39,6 +40,6 @@ class OrderService extends ApiBase {
   void _logError(DioException e, String task) {
     final String errorMsg =
         e.response?.data?['message'] ?? e.message ?? 'Unknown Error';
-    print('⚠️ [OrderService] خطأ في $task: $errorMsg');
+    debugPrint('⚠️ [OrderService] خطأ في $task: $errorMsg');
   }
 }
