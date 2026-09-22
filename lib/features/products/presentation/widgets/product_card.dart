@@ -261,7 +261,7 @@ class ProductCard extends StatelessWidget {
     Color bgColor,
     VoidCallback onTap, {
     double size = 38,
-    Color iconColor = Colors.white,
+    Color iconColor = Colors.black,
   }) {
     return Material(
       color: Colors.transparent,
