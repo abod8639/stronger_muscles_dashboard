@@ -17,10 +17,11 @@ class OrdersPage extends GetView<OrdersController> {
     final responsive = context.responsive;
 
     return Scaffold(
-      backgroundColor: AppColorsExtended.backgroundColor,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: BaseAppBar(
         extraActions: [
           _buildHeaderButton(
+            context,
             icon: Icons.download_rounded,
             label: 'Export CSV',
             onTap: () {
@@ -62,44 +63,37 @@ class OrdersPage extends GetView<OrdersController> {
     );
   }
 
-  Widget _buildHeaderButton({
+  Widget _buildHeaderButton(
+    BuildContext context, {
     required IconData icon,
     required String label,
     required VoidCallback onTap,
     bool isOutline = false,
   }) {
-    return Container(
-      height: 40,
-      decoration: BoxDecoration(
-        color: isOutline ? Colors.transparent : const Color(0xFFFF1744), // AppColors.primary
-        borderRadius: BorderRadius.circular(10),
-        border: isOutline
-            ? Border.all(color: Colors.white.withValues(alpha: 0.1))
-            : null,
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(10),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: [
-                Icon(icon, size: 18, color: Colors.white),
-                const SizedBox(width: 8),
-                Text(
-                  label,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
+    final colorScheme = Theme.of(context).colorScheme;
+    if (isOutline) {
+      return OutlinedButton.icon(
+        onPressed: onTap,
+        icon: Icon(icon, size: 18),
+        label: Text(label),
+        style: OutlinedButton.styleFrom(
+          side: BorderSide(color: colorScheme.outlineVariant),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
           ),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         ),
+      );
+    }
+    return FilledButton.tonalIcon(
+      onPressed: onTap,
+      icon: Icon(icon, size: 18),
+      label: Text(label),
+      style: FilledButton.styleFrom(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       ),
     );
   }
