@@ -1,38 +1,33 @@
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/core/network/api_service.dart';
 import 'package:stronger_muscles_dashboard/features/categories/data/repositories/category_repository.dart';
+import 'package:stronger_muscles_dashboard/features/categories/domain/repositories/category_repository.dart';
+import '../../domain/usecases/add_category_usecase.dart';
 import '../../domain/usecases/delete_category_usecase.dart';
-import '../../data/datasources/category_remote_datasource.dart';
+import '../../domain/usecases/get_categories_usecase.dart';
+import '../../domain/usecases/update_category_usecase.dart';
 import 'categories_controller.dart';
-import 'package:stronger_muscles_dashboard/core/network/api_base.dart';
 
 class CategoriesBinding extends Bindings {
   @override
   void dependencies() {
-    final apiBase = Get.find<ApiBase>();
-    final dio = apiBase.dio;
-
-    // Data Sources
-    Get.lazyPut<CategoryRemoteDataSource>(() => CategoryRemoteDataSourceImpl(dio));
-
     // Repository
-    // Get.lazyPut<CategoryRepository>(() => 
-    // CategoryRepositoryImpl(
-    //   Get.find<CategoryRemoteDataSource>()
-    //   )
-    // );
+    if (!Get.isRegistered<CategoryRepository>()) {
+      Get.lazyPut<CategoryRepository>(() => CategoryRepositoryImpl(Get.find<ApiService>()), fenix: true);
+    }
 
     // Use Cases
-    // Get.lazyPut(() => GetCategoriesUseCase(Get.find<CategoryRepository>()));
-    // Get.lazyPut(() => AddCategoryUseCase(Get.find<CategoryRepository>()));
-    // Get.lazyPut(() => UpdateCategoryUseCase(Get.find<CategoryRepository>()));
-    Get.lazyPut(() => DeleteCategoryUseCase(Get.find<CategoryRepository>()));
+    Get.lazyPut(() => GetCategoriesUseCase(Get.find<CategoryRepository>()), fenix: true);
+    Get.lazyPut(() => AddCategoryUseCase(Get.find<CategoryRepository>()), fenix: true);
+    Get.lazyPut(() => UpdateCategoryUseCase(Get.find<CategoryRepository>()), fenix: true);
+    Get.lazyPut(() => DeleteCategoryUseCase(Get.find<CategoryRepository>()), fenix: true);
 
     // Controller
-    Get.put(CategoriesController(
-      // getCategoriesUseCase: Get.find<GetCategoriesUseCase>(),
-      // addCategoryUseCase: Get.find<AddCategoryUseCase>(),
-      // updateCategoryUseCase: Get.find<UpdateCategoryUseCase>(),
-      // deleteCategoryUseCase: Get.find<DeleteCategoryUseCase>(),
-    ));
+    Get.lazyPut<CategoriesController>(() => CategoriesController(
+      getCategoriesUseCase: Get.find<GetCategoriesUseCase>(),
+      addCategoryUseCase: Get.find<AddCategoryUseCase>(),
+      updateCategoryUseCase: Get.find<UpdateCategoryUseCase>(),
+      deleteCategoryUseCase: Get.find<DeleteCategoryUseCase>(),
+    ), fenix: true);
   }
 }
