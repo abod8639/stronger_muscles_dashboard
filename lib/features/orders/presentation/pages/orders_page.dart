@@ -48,7 +48,9 @@ class OrdersPage extends GetView<OrdersController> {
             child:  Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height:responsive.isDesktop ? 180 : 320, child: OrdersStatsSection()),
+                SizedBox(
+                  height:responsive.isDesktop ? 180 : 320, 
+                  child: OrdersStatsSection()),
             const    SizedBox(height: 10),
             const    OrdersTable(),
             const    SizedBox(height: 10),
