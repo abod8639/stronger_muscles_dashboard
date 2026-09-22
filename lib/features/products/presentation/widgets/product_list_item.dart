@@ -7,6 +7,10 @@ class ProductListItem extends StatefulWidget {
   final VoidCallback onEdit;
   final VoidCallback onDelete;
   final int index;
+  final bool isSelectionMode;
+  final bool isSelected;
+  final VoidCallback? onToggleSelect;
+  final VoidCallback? onLongPress;
 
   const ProductListItem({
     super.key,
@@ -14,6 +18,10 @@ class ProductListItem extends StatefulWidget {
     required this.onEdit,
     required this.onDelete,
     this.index = 0,
+    this.isSelectionMode = false,
+    this.isSelected = false,
+    this.onToggleSelect,
+    this.onLongPress,
   });
 
   @override
@@ -36,6 +44,10 @@ class _ProductListItemState extends State<ProductListItem>
       product: widget.product,
       onEdit: widget.onEdit,
       onDelete: widget.onDelete,
+      isSelectionMode: widget.isSelectionMode,
+      isSelected: widget.isSelected,
+      onToggleSelect: widget.onToggleSelect,
+      onLongPress: widget.onLongPress,
     );
   }
 }
