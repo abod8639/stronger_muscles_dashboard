@@ -1,5 +1,5 @@
 import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
-import 'package:stronger_muscles_dashboard/features/categories/data/repositories/category_repository.dart';
+import 'package:stronger_muscles_dashboard/features/categories/domain/repositories/category_repository.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/entities/dashboard_stats_entity.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/repositories/dashboard_repository.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
