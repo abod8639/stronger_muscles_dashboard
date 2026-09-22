@@ -37,7 +37,7 @@ class StrongerMusclesDashboard extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'لوحة تحكم Stronger Muscles',
-      theme: AppTheme.getLightTheme(),
+      theme: AppThemeExtended.getLightTheme(),
       darkTheme: AppThemeExtended.getDarkTheme(),
       themeMode: ThemeMode.dark,
       initialRoute: isLoggedIn ? '/dashboard' : '/login',
