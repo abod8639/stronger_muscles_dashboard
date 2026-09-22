@@ -13,7 +13,7 @@ class ProductSizeSelector extends StatelessWidget {
   final List<String> availableSizes = [
     '500g', '1kg', '2kg', '4kg', '3kg', '5kg',
     '2lb', '5lb', '10lb',
-    '30 Servings', '60 Servings', '100 Servings',
+    '30 Servings', '60 Servings', '100 Servings','120 Servings',
     '120 Caps', 'Medium', 'Large', 'Small',
   ];
 
