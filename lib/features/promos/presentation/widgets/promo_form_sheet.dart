@@ -416,8 +416,7 @@ class PromoFormSheet extends StatelessWidget {
         child: DropdownButtonHideUnderline(
           child: DropdownButton<String>(
             isExpanded: true,
-            value: controller.selectedTargetId.value.isEmpty || 
-                    !brands.any((b) => b.id == controller.selectedTargetId.value)
+            value: brands.any((b) => b.id == controller.selectedTargetId.value)
                 ? null 
                 : controller.selectedTargetId.value,
             hint: const Text(
