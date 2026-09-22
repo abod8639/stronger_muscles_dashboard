@@ -5,7 +5,7 @@ import '../../../../core/utils/components/base_app_bar.dart';
 import '../../../../core/utils/components/custom_search_bar.dart';
 import '../../../../core/utils/components/enhanced_error_widget.dart';
 import '../../../../core/utils/components/enhanced_loading_widget.dart';
-import '../../../../core/utils/components/my_refreshIndicator.dart';
+import '../../../../core/utils/components/my_refresh_indicator.dart';
 import '../../../../core/utils/components/top_section.dart';
 import '../controllers/users_controller.dart';
 import '../widgets/user_card.dart';
