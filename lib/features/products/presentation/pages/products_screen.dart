@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/config/app_colors.dart';
+
 import 'package:stronger_muscles_dashboard/core/utils/components/base_app_bar.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/custom_search_bar.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/enhanced_loading_widget.dart';
@@ -13,7 +13,7 @@ import 'package:stronger_muscles_dashboard/features/products/presentation/contro
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_list_item.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_bulk_actions_bar.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
-import 'package:stronger_muscles_dashboard/config/theme.dart';
+
 
 class ProductsScreen extends StatelessWidget {
   const ProductsScreen({super.key});
@@ -24,7 +24,7 @@ class ProductsScreen extends StatelessWidget {
     final responsive = context.responsive;
 
     return Scaffold(
-      backgroundColor: AppColorsExtended.backgroundColor,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: BaseAppBar(
         title: 'المنتجات',
         onPressed: () => Get.to(ProductFormPage()),
@@ -37,8 +37,8 @@ class ProductsScreen extends StatelessWidget {
                     ? Icons.checklist_rounded
                     : Icons.checklist_outlined,
                 color: controller.isSelectionMode.value
-                    ? AppColors.primary
-                    : Colors.white70,
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               tooltip: controller.isSelectionMode.value
                   ? 'إلغاء وضع التحديد'
