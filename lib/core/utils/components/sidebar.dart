@@ -1,9 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/build_nav_item.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_controller.dart';
 import 'package:stronger_muscles_dashboard/functions/cache_manager.dart';
 
@@ -13,220 +11,217 @@ class Sidebar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final NavigationController controller = Get.find<NavigationController>();
 
     return Container(
-      width: 280, // تقليل العرض قليلاً ليبدو أكثر رشاقة
+      width: 280,
       height: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-      child: GlassContainer(
-        opacity: 0.08, // زيادة طفيفة للتباين
-        blur: 25,
+      child: Material(
+        color: colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(24),
-        child: Column(
-          children: [
-            // --- SECTION: LOGO ---
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      gradient: AppColors.primaryGradient,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primary.withValues(alpha: 0.2),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.flash_on_rounded,
-                      color: Colors.white,
-                      size: 22,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    'STRONGER',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
-                    ),
-                  ),
-                ],
-              ),
+        elevation: 1,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: colorScheme.outlineVariant.withValues(alpha: 0.6),
+              width: 1,
             ),
-
-            const Divider(color: Colors.white10, indent: 20, endIndent: 20),
-            const SizedBox(height: 10),
-
-            // --- SECTION: NAVIGATION ---
-            Expanded(
-              child: ListView(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                children: [
-                  _sectionTitle('MAIN MENU'),
-
-                  buildNavItem(
-                    isDrawer: isDrawer,
-                    controller: controller,
-                    index: 0,
-                    icon: Icons.dashboard_outlined,
-                    activeIcon: Icons.dashboard_rounded,
-                    label: 'Dashboard',
-                  ),
-                  buildNavItem(
-                    isDrawer: isDrawer,
-                    controller: controller,
-                    index: 2,
-                    icon: Icons.inventory_2_outlined,
-                    activeIcon: Icons.inventory_2_rounded,
-                    label: 'Products',
-                  ),
-                  buildNavItem(
-                    isDrawer: isDrawer,
-                    controller: controller,
-                    index: 3,
-                    icon: Icons.add_business_outlined,
-                    activeIcon: Icons.add_business_rounded,
-                    label: 'Ads',
-                  ),
-                  buildNavItem(
-                    isDrawer: isDrawer,
-                    controller: controller,
-                    index: 4,
-                    icon: Icons.people_outline,
-                    activeIcon: Icons.people_rounded,
-                    label: 'Users',
-                  ),
-
-                  const SizedBox(height: 20),
-                  _sectionTitle('MANAGEMENT'),
-                  buildNavItem(
-                    isDrawer: isDrawer,
-                    controller: controller,
-                    index: 1,
-                    icon: Icons.category_outlined,
-                    activeIcon: Icons.category_rounded,
-                    label: 'Categories',
-                  ),
-                  buildNavItem(
-                    isDrawer: isDrawer,
-                    controller: controller,
-                    index: 5,
-                    icon: Icons.local_shipping_outlined,
-                    activeIcon: Icons.local_shipping_rounded,
-                    label: 'Orders',
-                  ),
-                  buildNavItem(
-                    isDrawer: isDrawer,
-                    controller: controller,
-                    index: 6,
-                    icon: Icons.settings_outlined,
-                    activeIcon: Icons.settings_rounded,
-                    label: 'Settings',
-                  ),
-                ],
+          ),
+          child: Column(
+            children: [
+              // --- SECTION: LOGO ---
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Icon(
+                        Icons.flash_on_rounded,
+                        color: colorScheme.onPrimaryContainer,
+                        size: 22,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'STRONGER',
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        color: colorScheme.onSurface,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
 
-            // --- SECTION: USER PROFILE ---
-            _buildUserProfile(),
-          ],
+              Divider(
+                color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+                indent: 20,
+                endIndent: 20,
+              ),
+              const SizedBox(height: 10),
+
+              // --- SECTION: NAVIGATION ---
+              Expanded(
+                child: ListView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  children: [
+                    const _SidebarSectionTitle(title: 'MAIN MENU'),
+
+                    NavItemTile(
+                      isDrawer: isDrawer,
+                      controller: controller,
+                      index: 0,
+                      icon: Icons.dashboard_outlined,
+                      activeIcon: Icons.dashboard_rounded,
+                      label: 'Dashboard',
+                    ),
+                    NavItemTile(
+                      isDrawer: isDrawer,
+                      controller: controller,
+                      index: 2,
+                      icon: Icons.inventory_2_outlined,
+                      activeIcon: Icons.inventory_2_rounded,
+                      label: 'Products',
+                    ),
+                    NavItemTile(
+                      isDrawer: isDrawer,
+                      controller: controller,
+                      index: 3,
+                      icon: Icons.add_business_outlined,
+                      activeIcon: Icons.add_business_rounded,
+                      label: 'Ads',
+                    ),
+                    NavItemTile(
+                      isDrawer: isDrawer,
+                      controller: controller,
+                      index: 5,
+                      icon: Icons.people_outline,
+                      activeIcon: Icons.people_rounded,
+                      label: 'Users',
+                    ),
+
+                    const SizedBox(height: 20),
+                    const _SidebarSectionTitle(title: 'MANAGEMENT'),
+                    NavItemTile(
+                      isDrawer: isDrawer,
+                      controller: controller,
+                      index: 1,
+                      icon: Icons.category_outlined,
+                      activeIcon: Icons.category_rounded,
+                      label: 'Categories',
+                    ),
+                    NavItemTile(
+                      isDrawer: isDrawer,
+                      controller: controller,
+                      index: 4,
+                      icon: Icons.local_shipping_outlined,
+                      activeIcon: Icons.local_shipping_rounded,
+                      label: 'Orders',
+                    ),
+                    NavItemTile(
+                      isDrawer: isDrawer,
+                      controller: controller,
+                      index: 6,
+                      icon: Icons.settings_outlined,
+                      activeIcon: Icons.settings_rounded,
+                      label: 'Settings',
+                    ),
+                  ],
+                ),
+              ),
+
+              // --- SECTION: USER PROFILE ---
+              const _SidebarUserProfile(),
+            ],
+          ),
         ),
       ),
     );
   }
+}
 
-  // عنوان جانبي صغير لتنظيم القائمة
-  Widget _sectionTitle(String title) {
+class _SidebarSectionTitle extends StatelessWidget {
+  final String title;
+  const _SidebarSectionTitle({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.only(left: 12, bottom: 8, top: 12),
       child: Text(
         title,
-        style: TextStyle(
-          color: Colors.white38,
-          fontSize: 11,
+        style: theme.textTheme.labelSmall?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
           fontWeight: FontWeight.bold,
           letterSpacing: 1.1,
         ),
       ),
     );
   }
+}
 
-  Widget _buildUserProfile() {
+class _SidebarUserProfile extends StatelessWidget {
+  const _SidebarUserProfile();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Container(
       margin: const EdgeInsets.all(12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
+        color: colorScheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+        border: Border.all(
+          color: colorScheme.outlineVariant.withValues(alpha: 0.6),
+        ),
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(2.5), // المسافة بين الإطار والصورة
+            padding: const EdgeInsets.all(2),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              // إطار متدرج يعطي مظهر "النيون" الهادئ
-              gradient: LinearGradient(
-                colors: [
-                  AppColors.primary,
-                  AppColors.primary.withValues(alpha: 0.2),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.2),
-                  blurRadius: 10,
-                  spreadRadius: 2,
-                ),
-              ],
+              color: colorScheme.primary,
             ),
-            child: Container(
-              padding: const EdgeInsets.all(2),
-              decoration: const BoxDecoration(
-                color: Colors.black, // خلفية سوداء تفصل بين الإطار والصورة
-                shape: BoxShape.circle,
-              ),
-              child: ClipOval(
-                child: CachedNetworkImage(
-                  imageUrl:
-                      'https://avatars.githubusercontent.com/u/108903062?v=4',
-                  cacheManager: CustomCacheManager.instance,
-                  width: 36, // ضعف الـ radius (18 * 2)
-                  height: 36,
-                  fit: BoxFit.cover,
-                  // تأثير التحميل السلس
-                  placeholder: (context, url) => Container(
-                    color: Colors.grey[900],
-                    child: const Center(
-                      child: SizedBox(
-                        width: 15,
-                        height: 15,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
+            child: ClipOval(
+              child: CachedNetworkImage(
+                imageUrl: 'https://avatars.githubusercontent.com/u/108903062?v=4',
+                cacheManager: CustomCacheManager.instance,
+                width: 36,
+                height: 36,
+                fit: BoxFit.cover,
+                placeholder: (_, _) => Container(
+                  color: colorScheme.surfaceContainerHighest,
+                  child: const Center(
+                    child: SizedBox(
+                      width: 15,
+                      height: 15,
+                      child: CircularProgressIndicator(strokeWidth: 2),
                     ),
                   ),
-                  // في حال فشل التحميل تظهر أيقونة مستخدم
-                  errorWidget: (context, url, error) => Container(
-                    color: Colors.grey[900],
-                    child: const Icon(
-                      Icons.person,
-                      color: Colors.white54,
-                      size: 20,
-                    ),
+                ),
+                errorWidget: (_, _, _) => Container(
+                  color: colorScheme.surfaceContainerHighest,
+                  child: Icon(
+                    Icons.person,
+                    color: colorScheme.onSurfaceVariant,
+                    size: 20,
                   ),
                 ),
               ),
@@ -238,35 +233,27 @@ class Sidebar extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
+                Text(
                   'Dexter',
-                  style: TextStyle(
-                    color: Colors.white,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
-                    fontSize: 14,
                   ),
                 ),
                 Text(
                   'Admin Account',
-                  style: TextStyle(color: Colors.white54, fontSize: 11),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
           ),
-          Material(
-            color: Colors.transparent,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(10),
-              onTap: () {},
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Icon(
-                  Icons.logout_rounded,
-                  color: Colors.redAccent.withValues(alpha: 0.8),
-                  size: 20,
-                ),
-              ),
-            ),
+          IconButton(
+            icon: const Icon(Icons.logout_rounded, size: 20),
+            color: colorScheme.error,
+            tooltip: 'Logout',
+            onPressed: () {},
           ),
         ],
       ),
