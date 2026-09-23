@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'app_colors.dart';
-import 'theme.dart';
 
 class AppThemeExtended {
   /// الموضوع الداكن الهادئ والمريح للعين (Minimal Monochrome - Material Design 3)
