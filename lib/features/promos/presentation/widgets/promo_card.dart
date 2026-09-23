@@ -7,51 +7,56 @@ class PromoCard extends StatelessWidget {
 
   const PromoCard({super.key, required this.promo});
 
+  Color _parsePromoColor(BuildContext context) {
+    try {
+      final hex = promo.backgroundColor.replaceAll('#', '');
+      return Color(int.parse(hex.length == 6 ? '0xff$hex' : '0x$hex'));
+    } catch (_) {
+      return Theme.of(context).colorScheme.primaryContainer;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        // Here we would use the targetUrl if we were in the customer app.
-        // In the dashboard, we might just show a toast.
-      },
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    final theme = Theme.of(context);
+    final cardColor = _parsePromoColor(context);
+
+    return Card(
+      elevation: 2,
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
+        ),
+      ),
+      color: cardColor,
+      child: SizedBox(
         width: double.infinity,
         height: 180,
-        decoration: BoxDecoration(
-          color: Color(int.parse(promo.backgroundColor.replaceFirst('#', '0xff'))),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              offset: const Offset(0, 4),
-              blurRadius: 10,
-            ),
-          ],
-        ),
-        clipBehavior: Clip.antiAlias,
         child: Stack(
           children: [
             // Background Image
             if (promo.imageUrl.isNotEmpty)
               Positioned.fill(
                 child: Opacity(
-                  opacity: 0.8, // Slight opacity to make text readable
+                  opacity: 0.8,
                   child: CachedNetworkImage(
                     imageUrl: promo.imageUrl,
                     fit: BoxFit.cover,
                   ),
                 ),
               ),
-              
-            // Gradient Overlay for better text readability
+
+            // Gradient Overlay for readability
             Positioned.fill(
-              child: Container(
+              child: DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      Colors.black.withValues(alpha: 0.7),
-                      Colors.transparent,
+                      Colors.black.withValues(alpha: 0.75),
+                      Colors.black.withValues(alpha: 0.1),
                     ],
                     begin: Alignment.bottomRight,
                     end: Alignment.topLeft,
@@ -70,20 +75,19 @@ class PromoCard extends StatelessWidget {
                   if (promo.displaySubtitle.isNotEmpty)
                     Text(
                       promo.displaySubtitle,
-                      style: const TextStyle(
+                      style: theme.textTheme.titleSmall?.copyWith(
                         color: Colors.white70,
-                        fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        letterSpacing: 1.2,
+                        letterSpacing: 1.1,
                       ),
                     ),
-                  const SizedBox(height: 8),
+                  if (promo.displaySubtitle.isNotEmpty && promo.displayTitle.isNotEmpty)
+                    const SizedBox(height: 6),
                   if (promo.displayTitle.isNotEmpty)
                     Text(
                       promo.displayTitle,
-                      style: const TextStyle(
+                      style: theme.textTheme.headlineSmall?.copyWith(
                         color: Colors.white,
-                        fontSize: 24,
                         fontWeight: FontWeight.bold,
                         height: 1.2,
                       ),
@@ -92,18 +96,18 @@ class PromoCard extends StatelessWidget {
                     ),
                   const Spacer(),
                   if (promo.displayButtonText.isNotEmpty)
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: Text(
-                        promo.displayButtonText,
-                        style: TextStyle(
-                          color: Color(int.parse(promo.backgroundColor.replaceFirst('#', '0xff'))),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                    Material(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      elevation: 1,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                        child: Text(
+                          promo.displayButtonText,
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: cardColor,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
