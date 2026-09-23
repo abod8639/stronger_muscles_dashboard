@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../config/app_colors.dart';
+
 import '../../../../core/utils/components/base_app_bar.dart';
 import '../../../../core/utils/components/custom_search_bar.dart';
 import '../../../../core/utils/components/enhanced_error_widget.dart';
@@ -20,7 +20,7 @@ class UsersPage extends GetView<UsersController> {
     final responsive = context.responsive;
 
     return Scaffold(
-      backgroundColor: AppColorsExtended.backgroundColor,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: BaseAppBar(
         title: 'المستخدمون',
         onPressed: controller.fetchUsersStats,
