@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
-import 'package:stronger_muscles_dashboard/config/theme.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
 import '../controllers/products_controller.dart';
 
 class ProductBulkActionsBar extends StatelessWidget {
@@ -12,6 +10,8 @@ class ProductBulkActionsBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<ProductsController>();
     final responsive = context.responsive;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return Obx(() {
       final selectedCount = controller.selectedCount;
@@ -22,30 +22,39 @@ class ProductBulkActionsBar extends StatelessWidget {
           horizontal: responsive.defaultPadding.left,
           vertical: 6,
         ),
-        child: GlassContainer(
-          borderRadius: BorderRadius.circular(20),
-          opacity: 0.12,
-          blur: 20,
-          border: Border.all(
-            color: selectedCount > 0
-                ? AppColors.primary.withValues(alpha: 0.3)
-                : Colors.white.withValues(alpha: 0.1),
-            width: 1.2,
+        child: Card(
+          elevation: 2,
+          color: colorScheme.surfaceContainerHigh,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(
+              color: selectedCount > 0
+                  ? colorScheme.primary.withValues(alpha: 0.5)
+                  : colorScheme.outlineVariant.withValues(alpha: 0.6),
+              width: 1.2,
+            ),
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             child: isOperating
-                ? _buildOperatingState()
-                : _buildActionBar(context, controller, responsive, selectedCount),
+                ? _buildOperatingState(theme)
+                : _buildActionBar(
+                    context,
+                    controller,
+                    responsive,
+                    selectedCount,
+                    theme,
+                  ),
           ),
         ),
       );
     });
   }
 
-  Widget _buildOperatingState() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(vertical: 4),
+  Widget _buildOperatingState(ThemeData theme) {
+    final colorScheme = theme.colorScheme;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -54,16 +63,15 @@ class ProductBulkActionsBar extends StatelessWidget {
             height: 18,
             child: CircularProgressIndicator(
               strokeWidth: 2,
-              valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+              color: colorScheme.primary,
             ),
           ),
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
           Text(
             'جاري تنفيذ العملية الجماعية...',
-            style: TextStyle(
-              color: Colors.white,
+            style: theme.textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w600,
-              fontSize: 13,
+              color: colorScheme.onSurface,
             ),
           ),
         ],
@@ -76,7 +84,10 @@ class ProductBulkActionsBar extends StatelessWidget {
     ProductsController controller,
     dynamic responsive,
     int selectedCount,
+    ThemeData theme,
   ) {
+    final colorScheme = theme.colorScheme;
+
     return Row(
       children: [
         // 1. Select All Checkbox + Count Badge
@@ -94,42 +105,30 @@ class ProductBulkActionsBar extends StatelessWidget {
                   child: Checkbox(
                     value: controller.isAllSelected,
                     onChanged: (_) => controller.toggleSelectAll(),
-                    activeColor: AppColors.primary,
-                    checkColor: Colors.black,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5),
-                    ),
-                    side: BorderSide(
-                      color: Colors.white.withValues(alpha: 0.5),
-                      width: 1.5,
                     ),
                   ),
                 ),
                 const SizedBox(width: 8),
                 Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: selectedCount > 0
-                        ? AppColors.primary.withValues(alpha: 0.15)
-                        : Colors.white.withValues(alpha: 0.05),
+                        ? colorScheme.primaryContainer
+                        : colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: selectedCount > 0
-                          ? AppColors.primary.withValues(alpha: 0.3)
-                          : Colors.transparent,
-                    ),
                   ),
                   child: Text(
                     selectedCount > 0
                         ? '$selectedCount محدد'
                         : 'تحديد الكل',
-                    style: TextStyle(
+                    style: theme.textTheme.labelMedium?.copyWith(
                       color: selectedCount > 0
-                          ? Colors.white
-                          : Colors.white70,
+                          ? colorScheme.onPrimaryContainer
+                          : colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.bold,
-                      fontSize: 12,
                     ),
                   ),
                 ),
@@ -146,7 +145,8 @@ class ProductBulkActionsBar extends StatelessWidget {
           _buildActionButton(
             tooltip: 'تفعيل المنتجات المحددة',
             icon: Icons.check_circle_outline_rounded,
-            color: AppColors.success,
+            bgColor: colorScheme.primaryContainer,
+            fgColor: colorScheme.onPrimaryContainer,
             label: responsive.isMobile ? null : 'تفعيل',
             onTap: () => controller.bulkToggleStatus(activate: true),
           ),
@@ -156,7 +156,8 @@ class ProductBulkActionsBar extends StatelessWidget {
           _buildActionButton(
             tooltip: 'تعطيل المنتجات المحددة',
             icon: Icons.pause_circle_outline_rounded,
-            color: AppColors.warning,
+            bgColor: colorScheme.secondaryContainer,
+            fgColor: colorScheme.onSecondaryContainer,
             label: responsive.isMobile ? null : 'تعطيل',
             onTap: () => controller.bulkToggleStatus(activate: false),
           ),
@@ -166,7 +167,8 @@ class ProductBulkActionsBar extends StatelessWidget {
           _buildActionButton(
             tooltip: 'تغيير قسم المنتجات المحددة',
             icon: Icons.drive_file_move_rounded,
-            color: AppColors.info,
+            bgColor: colorScheme.tertiaryContainer,
+            fgColor: colorScheme.onTertiaryContainer,
             label: responsive.isMobile ? null : 'نقل',
             onTap: () => _showCategoryPickerDialog(context, controller),
           ),
@@ -176,7 +178,8 @@ class ProductBulkActionsBar extends StatelessWidget {
           _buildActionButton(
             tooltip: 'حذف المنتجات المحددة',
             icon: Icons.delete_outline_rounded,
-            color: AppColors.error,
+            bgColor: colorScheme.errorContainer,
+            fgColor: colorScheme.onErrorContainer,
             label: responsive.isMobile ? null : 'حذف',
             onTap: () => controller.confirmBulkDelete(),
           ),
@@ -188,7 +191,7 @@ class ProductBulkActionsBar extends StatelessWidget {
           onPressed: () => controller.toggleSelectionMode(false),
           icon: const Icon(Icons.close_rounded, size: 20),
           tooltip: 'إلغاء وضع التحديد',
-          color: Colors.white70,
+          color: colorScheme.onSurfaceVariant,
           splashRadius: 18,
           constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
           padding: EdgeInsets.zero,
@@ -200,44 +203,44 @@ class ProductBulkActionsBar extends StatelessWidget {
   Widget _buildActionButton({
     required String tooltip,
     required IconData icon,
-    required Color color,
+    required Color bgColor,
+    required Color fgColor,
     String? label,
     required VoidCallback onTap,
   }) {
     return Material(
       color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(10),
-        child: Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: label != null ? 10 : 8,
-            vertical: 6,
-          ),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: color.withValues(alpha: 0.3),
-              width: 1,
+      child: Tooltip(
+        message: tooltip,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(10),
+          child: Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: label != null ? 10 : 8,
+              vertical: 6,
             ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 17, color: color),
-              if (label != null) ...[
-                const SizedBox(width: 6),
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: color,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
+            decoration: BoxDecoration(
+              color: bgColor,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, size: 17, color: fgColor),
+                if (label != null) ...[
+                  const SizedBox(width: 6),
+                  Text(
+                    label,
+                    style: TextStyle(
+                      color: fgColor,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),
@@ -248,34 +251,50 @@ class ProductBulkActionsBar extends StatelessWidget {
     BuildContext context,
     ProductsController controller,
   ) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     Get.bottomSheet(
       Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: AppColors.surfaceDark,
+          color: colorScheme.surfaceContainer,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           border: Border.all(
-            color: Colors.white.withValues(alpha: 0.1),
+            color: colorScheme.outlineVariant.withValues(alpha: 0.5),
           ),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: colorScheme.outlineVariant,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'اختر القسم الجديد للمنتجات المحددة',
-                  style: TextStyle(
-                    color: Colors.white,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: colorScheme.onSurface,
                     fontWeight: FontWeight.bold,
-                    fontSize: 16,
                   ),
                 ),
                 IconButton(
                   onPressed: () => Get.back(),
-                  icon: const Icon(Icons.close_rounded, color: Colors.white54),
+                  icon: Icon(
+                    Icons.close_rounded,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
@@ -296,20 +315,20 @@ class ProductBulkActionsBar extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                       side: BorderSide(
-                        color: Colors.white.withValues(alpha: 0.05),
+                        color: colorScheme.outlineVariant.withValues(alpha: 0.4),
                       ),
                     ),
-                    tileColor: Colors.white.withValues(alpha: 0.03),
+                    tileColor: colorScheme.surfaceContainerHigh,
                     title: Text(
                       category.displayName,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurface,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    trailing: const Icon(
+                    trailing: Icon(
                       Icons.arrow_forward_ios_rounded,
-                      color: Colors.white38,
+                      color: colorScheme.onSurfaceVariant,
                       size: 14,
                     ),
                     onTap: () {
