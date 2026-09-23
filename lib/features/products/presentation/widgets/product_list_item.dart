@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_card.dart';
 
-class ProductListItem extends StatefulWidget {
+class ProductListItem extends StatelessWidget {
   final ProductEntity product;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
@@ -25,29 +25,16 @@ class ProductListItem extends StatefulWidget {
   });
 
   @override
-  State<ProductListItem> createState() => _ProductListItemState();
-}
-
-class _ProductListItemState extends State<ProductListItem>
-    with SingleTickerProviderStateMixin {
-  final bool _isHovered = false;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return ProductCard(
-      isHovered: _isHovered,
-      product: widget.product,
-      onEdit: widget.onEdit,
-      onDelete: widget.onDelete,
-      isSelectionMode: widget.isSelectionMode,
-      isSelected: widget.isSelected,
-      onToggleSelect: widget.onToggleSelect,
-      onLongPress: widget.onLongPress,
+      isHovered: false,
+      product: product,
+      onEdit: onEdit,
+      onDelete: onDelete,
+      isSelectionMode: isSelectionMode,
+      isSelected: isSelected,
+      onToggleSelect: onToggleSelect,
+      onLongPress: onLongPress,
     );
   }
 }
