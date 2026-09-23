@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../config/theme.dart';
 
 class UserInfoRow extends StatelessWidget {
   final String label;
@@ -15,17 +14,25 @@ class UserInfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(color: Colors.grey)),
+          Text(
+            label,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
           Text(
             value,
-            style: TextStyle(
-              fontWeight: FontWeight.w500,
-              color: isDark ? Colors.white : AppColors.textMuted,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: colorScheme.onSurface,
             ),
           ),
         ],
