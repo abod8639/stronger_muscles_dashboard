@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_form_sections.dart';
 
