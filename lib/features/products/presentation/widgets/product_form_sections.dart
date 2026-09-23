@@ -600,7 +600,7 @@ class ProductMediaSection extends StatelessWidget {
                                         placeholder: (_, _) => const Center(
                                           child: CircularProgressIndicator(),
                                         ),
-                                        errorWidget: (_, __, ___) => const Center(
+                                        errorWidget: (_, _, _) => const Center(
                                           child: Icon(Icons.broken_image_rounded),
                                         ),
                                       ),
@@ -847,8 +847,6 @@ class ProductSettingsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return FormSectionCard(
       title: 'إعدادات النشر والعرض',
       subtitle: 'التحكم في ظهور المنتج وتفضيلاته بالمتجر',
