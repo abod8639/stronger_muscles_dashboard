@@ -1,12 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/config/app_colors.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/build_modern_text_field.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/image_gallery_editor.dart';
-import 'package:stronger_muscles_dashboard/features/auth/presentation/widgets/build_text_field.dart';
 import 'package:stronger_muscles_dashboard/features/promos/domain/entities/promo_entity.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/controllers/promos_controller.dart';
 
+/// نافذة نموذج الإعلان المتوافقة بالكامل مع معايير Material Design 3
 class PromoFormSheet extends StatelessWidget {
   final PromoEntity? promo;
 
@@ -15,12 +15,13 @@ class PromoFormSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<PromosController>();
+    final colorScheme = Theme.of(context).colorScheme;
     final isEditing = promo != null;
 
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColorsExtended.backgroundColor,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       ),
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -30,14 +31,27 @@ class PromoFormSheet extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _buildHeader(isEditing),
+          // M3 Drag Handle
+          Center(
+            child: Container(
+              margin: const EdgeInsets.only(top: 12, bottom: 4),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: colorScheme.outlineVariant,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          _buildHeader(context, isEditing),
+          const Divider(height: 1),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // _buildImageSection(controller),
+                  // Image Section
                   Obx(() {
                     final imageUrls = <String>[];
                     if (controller.selectedImage.value != null) {
@@ -61,27 +75,29 @@ class PromoFormSheet extends StatelessWidget {
                     );
                   }),
                   const SizedBox(height: 24),
-                  _buildLanguageTabs(controller),
+                  _buildLanguageTabs(context, controller),
                   const SizedBox(height: 24),
-                  _buildSectionTitle('إعدادات الإعلان'),
-                  _buildColorRow(controller),
+                  _buildSectionTitle(context, 'إعدادات الإعلان'),
+                  _buildColorRow(context, controller),
                   const SizedBox(height: 20),
-                  _buildTargetSection(controller),
+                  _buildTargetSection(context, controller),
                   const SizedBox(height: 20),
                   Obx(
                     () => SwitchListTile(
-                      title: const Text(
+                      title: Text(
                         'تفعيل الإعلان',
-                        style: TextStyle(color: AppColorsExtended.textPrimary),
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: colorScheme.onSurface,
+                        ),
                       ),
                       value: controller.isActive.value,
                       onChanged: (val) => controller.isActive.value = val,
-                      activeThumbColor: AppColorsExtended.purpleAccent,
                       contentPadding: EdgeInsets.zero,
                     ),
                   ),
                   const SizedBox(height: 32),
-                  Obx(() => _buildSaveButton(controller, isEditing)),
+                  Obx(() => _buildSaveButton(context, controller, isEditing)),
                 ],
               ),
             ),
@@ -93,27 +109,26 @@ class PromoFormSheet extends StatelessWidget {
 
   // ─────────────────────────────  Header  ──────────────────────────────────
 
-  Widget _buildHeader(bool isEditing) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-      decoration: const BoxDecoration(
-        color: AppColorsExtended.greenAccent,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
+  Widget _buildHeader(BuildContext context, bool isEditing) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             isEditing ? 'تعديل الإعلان' : 'إضافة إعلان جديد',
-            style: const TextStyle(
-              fontSize: 20,
+            style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
-              color: AppColorsExtended.textPrimary,
+              color: colorScheme.onSurface,
             ),
           ),
           IconButton(
             onPressed: () => Get.back(),
-            icon: const Icon(Icons.close, color: AppColorsExtended.textPrimary),
+            icon: Icon(Icons.close, color: colorScheme.onSurfaceVariant),
+            tooltip: 'إغلاق',
           ),
         ],
       ),
@@ -122,24 +137,36 @@ class PromoFormSheet extends StatelessWidget {
 
   // ─────────────────────────────  Language Tabs  ───────────────────────────
 
-  Widget _buildLanguageTabs(PromosController controller) {
+  Widget _buildLanguageTabs(BuildContext context, PromosController controller) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return DefaultTabController(
       length: 2,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionTitle('المحتوى النصي'),
+          _buildSectionTitle(context, 'المحتوى النصي'),
           Container(
             decoration: BoxDecoration(
-              color: AppColorsExtended.purpleAccent,
+              color: colorScheme.surfaceContainerHigh,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColorsExtended.greenAccent),
+              border: Border.all(color: colorScheme.outlineVariant),
             ),
-            child: const TabBar(
-              indicatorColor: AppColorsExtended.cardBgLight,
-              labelColor: AppColorsExtended.cardBgLight,
-              unselectedLabelColor: AppColorsExtended.borderColor,
-              tabs: [
+            child: TabBar(
+              dividerColor: Colors.transparent,
+              indicatorSize: TabBarIndicatorSize.tab,
+              indicator: BoxDecoration(
+                color: colorScheme.primary,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              labelColor: colorScheme.onPrimary,
+              unselectedLabelColor: colorScheme.onSurfaceVariant,
+              labelStyle: theme.textTheme.labelLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+              unselectedLabelStyle: theme.textTheme.labelLarge,
+              tabs: const [
                 Tab(text: 'العربية'),
                 Tab(text: 'English'),
               ],
@@ -147,7 +174,7 @@ class PromoFormSheet extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           SizedBox(
-            height: 280,
+            height: 260,
             child: TabBarView(
               children: [
                 _buildTextFields(
@@ -176,20 +203,20 @@ class PromoFormSheet extends StatelessWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
-          buildTextField(
-            icon: Icons.title,
+          ModernTextField(
+            icon: Icons.title_rounded,
             label: 'العنوان',
             controller: titleCtrl,
           ),
-          const SizedBox(height: 16),
-          buildTextField(
-            icon: Icons.subtitles,
+          const SizedBox(height: 14),
+          ModernTextField(
+            icon: Icons.subtitles_rounded,
             label: 'العنوان الفرعي',
             controller: subtitleCtrl,
           ),
-          const SizedBox(height: 16),
-          buildTextField(
-            icon: Icons.smart_button,
+          const SizedBox(height: 14),
+          ModernTextField(
+            icon: Icons.smart_button_rounded,
             label: 'نص الزر',
             controller: buttonCtrl,
           ),
@@ -200,7 +227,9 @@ class PromoFormSheet extends StatelessWidget {
 
   // ─────────────────────────────  Color Row  ───────────────────────────────
 
-  Widget _buildColorRow(PromosController controller) {
+  Widget _buildColorRow(BuildContext context, PromosController controller) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -211,22 +240,23 @@ class PromoFormSheet extends StatelessWidget {
             if (hex.length == 6) parsed = Color(int.parse('FF$hex', radix: 16));
           } catch (_) {}
           return Container(
-            width: 44,
-            height: 44,
-            margin: const EdgeInsets.only(
-              top: 8,
-            ), // Align with text field input area
+            width: 48,
+            height: 48,
+            margin: const EdgeInsets.only(top: 2),
             decoration: BoxDecoration(
               color: parsed,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: AppColorsExtended.borderColor),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: colorScheme.outlineVariant,
+                width: 1.5,
+              ),
             ),
           );
         }),
         const SizedBox(width: 12),
         Expanded(
-          child: buildTextField(
-            icon: Icons.color_lens,
+          child: ModernTextField(
+            icon: Icons.color_lens_outlined,
             label: 'لون الخلفية (Hex #RRGGBB)',
             controller: controller.backgroundColorController,
           ),
@@ -237,35 +267,46 @@ class PromoFormSheet extends StatelessWidget {
 
   // ─────────────────────────────  Target Section  ──────────────────────────
 
-  Widget _buildTargetSection(PromosController controller) {
+  Widget _buildTargetSection(BuildContext context, PromosController controller) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionTitle('توجيه الإعلان'),
-        // Type selector
+        _buildSectionTitle(context, 'توجيه الإعلان'),
         Obx(
-          () => Row(
-            children: [
-              _typeChip(controller, 'none', 'لا يوجد', Icons.block),
-              const SizedBox(width: 8),
-              _typeChip(
-                controller,
-                'product',
-                'منتج',
-                Icons.inventory_2_rounded,
-              ),
-              const SizedBox(width: 8),
-              _typeChip(controller, 'brand', 'ماركة', Icons.category_rounded),
-            ],
+          () => SizedBox(
+            width: double.infinity,
+            child: SegmentedButton<String>(
+              segments: const [
+                ButtonSegment<String>(
+                  value: 'none',
+                  label: Text('لا يوجد'),
+                  icon: Icon(Icons.block_rounded, size: 18),
+                ),
+                ButtonSegment<String>(
+                  value: 'product',
+                  label: Text('منتج'),
+                  icon: Icon(Icons.inventory_2_rounded, size: 18),
+                ),
+                ButtonSegment<String>(
+                  value: 'brand',
+                  label: Text('ماركة'),
+                  icon: Icon(Icons.category_rounded, size: 18),
+                ),
+              ],
+              selected: {controller.selectedTargetType.value},
+              onSelectionChanged: (newSelection) {
+                controller.selectedTargetType.value = newSelection.first;
+                controller.selectedTargetId.value = null;
+              },
+            ),
           ),
         ),
         const SizedBox(height: 16),
-        // Product dropdown — shown only when type = product
         Obx(() {
           if (controller.selectedTargetType.value == 'product') {
-            return _buildProductDropdown(controller);
+            return _buildProductDropdown(context, controller);
           } else if (controller.selectedTargetType.value == 'brand') {
-            return _buildBrandDropdown(controller);
+            return _buildBrandDropdown(context, controller);
           }
           return const SizedBox.shrink();
         }),
@@ -273,113 +314,75 @@ class PromoFormSheet extends StatelessWidget {
     );
   }
 
-  Widget _typeChip(
-    PromosController c,
-    String type,
-    String label,
-    IconData icon,
+  Widget _buildProductDropdown(
+    BuildContext context,
+    PromosController controller,
   ) {
-    final isSelected = c.selectedTargetType.value == type;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          c.selectedTargetType.value = type;
-          c.selectedTargetId.value = null; // Clear ID when type changes
-        },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? AppColorsExtended.purpleAccent.withValues(alpha: 0.15)
-                : AppColorsExtended.purpleAccent,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: isSelected
-                  ? AppColorsExtended.purpleAccent
-                  : AppColorsExtended.backgroundColor,
-              width: isSelected ? 2 : 1,
-            ),
-          ),
-          child: Column(
-            children: [
-              Icon(
-                icon,
-                size: 20,
-                color: isSelected
-                    ? AppColorsExtended.purpleAccent
-                    : AppColorsExtended.backgroundColor,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                  color: isSelected
-                      ? AppColorsExtended.purpleAccent
-                      : AppColorsExtended.backgroundColor,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
-  Widget _buildProductDropdown(PromosController controller) {
     return Obx(() {
       final products = controller.products;
-      if (products.isEmpty) return _loadingDropdown('جاري تحميل المنتجات...');
+      if (products.isEmpty) {
+        return _loadingDropdown(context, 'جاري تحميل المنتجات...');
+      }
 
       return Container(
         decoration: BoxDecoration(
-          color: AppColorsExtended.purpleAccent,
+          color: colorScheme.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColorsExtended.borderColor),
+          border: Border.all(color: colorScheme.outlineVariant),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 14),
         child: DropdownButtonHideUnderline(
           child: DropdownButton<String>(
             isExpanded: true,
             value: controller.selectedTargetId.value,
-            hint: const Text(
+            hint: Text(
               'اختر منتجًا...',
-              style: TextStyle(color: AppColorsExtended.backgroundColor),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
             ),
-            dropdownColor: AppColorsExtended.cardBg,
-            icon: const Icon(
+            dropdownColor: colorScheme.surfaceContainerHigh,
+            icon: Icon(
               Icons.keyboard_arrow_down_rounded,
-              color: AppColorsExtended.purpleAccent,
+              color: colorScheme.onSurfaceVariant,
             ),
             items: products.map((p) {
               return DropdownMenuItem<String>(
                 value: p.id,
                 child: Row(
                   children: [
-                    CachedNetworkImage(
-                      imageUrl: p.imageUrls.first,
-                      width: 45,
-                      // height: 20,
-                      errorWidget: (context, url, error) => const Icon(
-                        Icons.category,
-                        color: AppColorsExtended.textSecondary,
-                      ),
-                      placeholder: (context, url) => const Icon(
-                        Icons.category,
-                        color: AppColorsExtended.textSecondary,
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: CachedNetworkImage(
+                        imageUrl: p.imageUrls.isNotEmpty ? p.imageUrls.first : '',
+                        width: 40,
+                        height: 40,
+                        fit: BoxFit.cover,
+                        errorWidget: (_, _, _) => Icon(
+                          Icons.category,
+                          color: colorScheme.onSurfaceVariant,
+                          size: 24,
+                        ),
+                        placeholder: (_, _) => Icon(
+                          Icons.category,
+                          color: colorScheme.onSurfaceVariant,
+                          size: 24,
+                        ),
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      p.nameAr,
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        p.nameAr,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: colorScheme.onSurface,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
@@ -392,88 +395,102 @@ class PromoFormSheet extends StatelessWidget {
     });
   }
 
-  Widget _buildBrandDropdown(PromosController controller) {
+  Widget _buildBrandDropdown(
+    BuildContext context,
+    PromosController controller,
+  ) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Obx(() {
       final brands = controller.brands;
       final isFetching = controller.isBrandsLoading.value;
 
       if (isFetching && brands.isEmpty) {
-        return _loadingDropdown('جاري تحميل الماركات...');
+        return _loadingDropdown(context, 'جاري تحميل الماركات...');
       }
 
       if (brands.isEmpty) {
-        return _emptyState('لا توجد ماركات متاحة');
-        // return _loadingDropdown('لا توجد ماركات');
+        return _emptyState(context, 'لا توجد ماركات متاحة');
       }
 
       return Container(
         decoration: BoxDecoration(
-          color: AppColorsExtended.greenLight,
+          color: colorScheme.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColorsExtended.borderColor),
+          border: Border.all(color: colorScheme.outlineVariant),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 14),
         child: DropdownButtonHideUnderline(
           child: DropdownButton<String>(
             isExpanded: true,
             value: brands.any((b) => b.id == controller.selectedTargetId.value)
-                ? null 
+                ? null
                 : controller.selectedTargetId.value,
-            hint: const Text(
+            hint: Text(
               'اختر ماركة...',
-              style: TextStyle(color: AppColorsExtended.textSecondary),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
             ),
-            dropdownColor: AppColorsExtended.cardBg,
-            icon: const Icon(
+            dropdownColor: colorScheme.surfaceContainerHigh,
+            icon: Icon(
               Icons.keyboard_arrow_down_rounded,
-              color: Colors.orange,
+              color: colorScheme.onSurfaceVariant,
             ),
             items: brands.map((b) {
               return DropdownMenuItem<String>(
                 value: b.id,
                 child: Row(
                   children: [
-                    if (b.imageUrl != null)
-                      CachedNetworkImage(
-                        imageUrl: b.imageUrl!,
-                        width: 45,
-                        errorWidget: (context, url, error) => const Icon(
-                          Icons.category,
-                          color: AppColorsExtended.textSecondary,
-                        ),
-                        placeholder: (context, url) => const Icon(
-                          Icons.category,
-                          color: AppColorsExtended.textSecondary,
+                    if (b.imageUrl != null && b.imageUrl!.isNotEmpty)
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: CachedNetworkImage(
+                          imageUrl: b.imageUrl!,
+                          width: 40,
+                          height: 40,
+                          fit: BoxFit.cover,
+                          errorWidget: (_, _, _) => Icon(
+                            Icons.category,
+                            color: colorScheme.onSurfaceVariant,
+                            size: 24,
+                          ),
+                          placeholder: (_, _) => Icon(
+                            Icons.category,
+                            color: colorScheme.onSurfaceVariant,
+                            size: 24,
+                          ),
                         ),
                       )
                     else
-                      const Icon(
-                        Icons.category,
-                        color: AppColorsExtended.textSecondary,
-                        size: 45,
+                      Icon(
+                        Icons.category_rounded,
+                        color: colorScheme.onSurfaceVariant,
+                        size: 32,
                       ),
                     const SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          b.displayName,
-                          style: const TextStyle(
-                            color: AppColorsExtended.textPrimary,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            b.displayName,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.onSurface,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Text(
-                          b.id,
-                          style: const TextStyle(
-                            color: AppColorsExtended.textSecondary,
-                            fontSize: 11,
+                          Text(
+                            b.id,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -486,23 +503,34 @@ class PromoFormSheet extends StatelessWidget {
     });
   }
 
-  Widget _loadingDropdown(String message) {
+  Widget _loadingDropdown(BuildContext context, String message) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColorsExtended.greenLight,
+        color: colorScheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColorsExtended.borderColor),
+        border: Border.all(color: colorScheme.outlineVariant),
       ),
       child: Row(
         children: [
-          const SizedBox(
+          SizedBox(
             width: 16,
             height: 16,
-            child: CircularProgressIndicator(strokeWidth: 2),
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: colorScheme.primary,
+            ),
           ),
           const SizedBox(width: 10),
-          Text(message),
+          Text(
+            message,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
         ],
       ),
     );
@@ -510,79 +538,95 @@ class PromoFormSheet extends StatelessWidget {
 
   // ─────────────────────────────  Save Button  ─────────────────────────────
 
-  Widget _buildSaveButton(PromosController controller, bool isEditing) {
-    return ElevatedButton.icon(
-      onPressed: controller.isLoading.value
-          ? null
-          : () => controller.savePromo(existingPromo: promo),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColorsExtended.purpleAccent,
-        foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        disabledBackgroundColor: AppColorsExtended.purpleAccent.withValues(
-          alpha: 0.4,
+  Widget _buildSaveButton(
+    BuildContext context,
+    PromosController controller,
+    bool isEditing,
+  ) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return SizedBox(
+      width: double.infinity,
+      child: FilledButton.icon(
+        onPressed: controller.isLoading.value
+            ? null
+            : () => controller.savePromo(existingPromo: promo),
+        style: FilledButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
         ),
-      ),
-      icon: controller.isLoading.value
-          ? const SizedBox(
-              width: 18,
-              height: 18,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: Colors.white,
+        icon: controller.isLoading.value
+            ? SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: colorScheme.onPrimary,
+                ),
+              )
+            : Icon(
+                isEditing ? Icons.save_rounded : Icons.add_circle_rounded,
+                size: 20,
               ),
-            )
-          : Icon(isEditing ? Icons.save_rounded : Icons.add_circle_rounded, color: Colors.black,),
-      label: Text(
-        isEditing ? 'تحديث الإعلان' : 'حفظ الإعلان',
-        style: const TextStyle(
-          color: Colors.black,
-          fontSize: 16, fontWeight: FontWeight.bold),
+        label: Text(
+          isEditing ? 'تحديث الإعلان' : 'حفظ الإعلان',
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: colorScheme.onPrimary,
+          ),
+        ),
       ),
     );
   }
 
   // ─────────────────────────────  Helpers  ─────────────────────────────────
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSectionTitle(BuildContext context, String title) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Text(
         title,
-        style: const TextStyle(
-          fontSize: 17,
+        style: theme.textTheme.titleMedium?.copyWith(
           fontWeight: FontWeight.bold,
-          color: AppColorsExtended.textPrimary,
+          color: colorScheme.onSurface,
         ),
       ),
     );
   }
-  
-  Widget _emptyState(String message) {
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        decoration: BoxDecoration(
-          color: AppColorsExtended.greenLight,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColorsExtended.borderColor),
-        ),
-        child: Row(
-          children: [
-            const Icon(
-              Icons.info_outline,
-              color: AppColorsExtended.textSecondary,
-              size: 20,
-            ),
-            const SizedBox(width: 10),
-            Text(
-              message,
-              style: const TextStyle(color: AppColorsExtended.textSecondary),
-            ),
-          ],
-        ),
-      );
-    }
-  
-  }
 
+  Widget _emptyState(BuildContext context, String message) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHigh,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colorScheme.outlineVariant),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.info_outline_rounded,
+            color: colorScheme.onSurfaceVariant,
+            size: 20,
+          ),
+          const SizedBox(width: 10),
+          Text(
+            message,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
