@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/build_background.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/drawer.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/my_bottomnavigationbar.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/sidebar.dart';
-import 'package:stronger_muscles_dashboard/features/promos/presentation/pages/promos_screen.dart';
 import 'package:stronger_muscles_dashboard/features/categories/presentation/page/categories_screen/categories_screen.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/presentation/pages/dashboard_page.dart';
 import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_controller.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/orders_page.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/pages/products_screen.dart';
+import 'package:stronger_muscles_dashboard/features/promos/presentation/pages/promos_screen.dart';
 import 'package:stronger_muscles_dashboard/features/settings/presentation/page/settings_screen.dart';
 import 'package:stronger_muscles_dashboard/features/users/presentation/pages/users_page.dart';
-import 'package:stronger_muscles_dashboard/features/dashboard/presentation/pages/dashboard_page.dart';
 
 class MainNavigationScreen extends StatelessWidget {
   const MainNavigationScreen({super.key});
@@ -20,6 +19,7 @@ class MainNavigationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<NavigationController>();
+    final colorScheme = Theme.of(context).colorScheme;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -27,11 +27,11 @@ class MainNavigationScreen extends StatelessWidget {
 
         return Scaffold(
           extendBodyBehindAppBar: true,
-          backgroundColor: AppColors.backgroundDark,
+          backgroundColor: colorScheme.surface,
           drawer: isDesktop ? null : myDrawer(),
           body: Stack(
             children: [
-              buildBackground(),
+              const AppAmbientBackground(),
 
               // Main Layout
               Row(
@@ -56,7 +56,6 @@ class MainNavigationScreen extends StatelessWidget {
                               ProductsScreen(),
                               PromosScreen(),
                               OrdersPage(),
-
                               UsersPage(),
                               SettingsScreen(),
                             ],
@@ -69,7 +68,7 @@ class MainNavigationScreen extends StatelessWidget {
               ),
             ],
           ),
-          bottomNavigationBar: isDesktop ? null : MyBottomNavigationBar(),
+          bottomNavigationBar: isDesktop ? null : const MyBottomNavigationBar(),
         );
       },
     );
