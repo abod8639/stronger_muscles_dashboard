@@ -10,7 +10,6 @@ import 'package:stronger_muscles_dashboard/features/navigation/presentation/cont
 import 'package:stronger_muscles_dashboard/main_navigation_screen.dart';
 import 'package:stronger_muscles_dashboard/functions/getx_init.dart';
 import 'package:stronger_muscles_dashboard/functions/hive_init.dart';
-import 'config/theme.dart';
 import 'config/theme_extended.dart';
 
 Future<void> main() async {
