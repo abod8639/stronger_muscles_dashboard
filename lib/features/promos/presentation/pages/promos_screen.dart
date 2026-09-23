@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/config/app_colors.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/base_app_bar.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/custom_search_bar.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/enhanced_loading_widget.dart';
@@ -21,7 +20,7 @@ class PromosScreen extends StatelessWidget {
     final responsive = context.responsive;
 
     return Scaffold(
-      backgroundColor: AppColorsExtended.backgroundColor,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: BaseAppBar(
         title: 'الإعلانات (Promos)',
         onPressed: () {
