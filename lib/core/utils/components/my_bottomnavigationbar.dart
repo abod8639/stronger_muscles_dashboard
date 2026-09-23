@@ -7,48 +7,47 @@ class MyBottomNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // استخدام Get.find() بدلاً من Get.put() لاسترجاع NavigationController المسجل
     final controller = Get.find<NavigationController>();
 
     return Obx(
-      () => BottomNavigationBar(
-        currentIndex: controller.selectedIndex.value,
-        type: BottomNavigationBarType.fixed,
-        onTap: controller.changeIndex,
-        items: const [
-          BottomNavigationBarItem(
+      () => NavigationBar(
+        selectedIndex: controller.selectedIndex.value,
+        onDestinationSelected: controller.changeIndex,
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+        destinations: const [
+          NavigationDestination(
             icon: Icon(Icons.dashboard_outlined),
-            activeIcon: Icon(Icons.dashboard),
+            selectedIcon: Icon(Icons.dashboard_rounded),
             label: 'الرئيسية',
           ),
-          BottomNavigationBarItem(
+          NavigationDestination(
             icon: Icon(Icons.category_outlined),
-            activeIcon: Icon(Icons.category),
+            selectedIcon: Icon(Icons.category_rounded),
             label: 'الأقسام',
           ),
-          BottomNavigationBarItem(
+          NavigationDestination(
             icon: Icon(Icons.inventory_2_outlined),
-            activeIcon: Icon(Icons.inventory_2),
+            selectedIcon: Icon(Icons.inventory_2_rounded),
             label: 'المنتجات',
           ),
-          BottomNavigationBarItem(
+          NavigationDestination(
             icon: Icon(Icons.add_business_outlined),
-            activeIcon: Icon(Icons.add_business_rounded),
-            label: 'الاعلانات',
+            selectedIcon: Icon(Icons.add_business_rounded),
+            label: 'الإعلانات',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_bag_outlined),
-            activeIcon: Icon(Icons.shopping_bag),
+          NavigationDestination(
+            icon: Icon(Icons.local_shipping_outlined),
+            selectedIcon: Icon(Icons.local_shipping_rounded),
             label: 'الطلبات',
           ),
-          BottomNavigationBarItem(
+          NavigationDestination(
             icon: Icon(Icons.people_outline),
-            activeIcon: Icon(Icons.people),
+            selectedIcon: Icon(Icons.people_rounded),
             label: 'المستخدمون',
           ),
-          BottomNavigationBarItem(
+          NavigationDestination(
             icon: Icon(Icons.settings_outlined),
-            activeIcon: Icon(Icons.settings),
+            selectedIcon: Icon(Icons.settings_rounded),
             label: 'الإعدادات',
           ),
         ],
