@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/config/theme.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
+import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/status_badge.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/orders_screen/widgets/build_enhanced_order_images.dart';
@@ -27,7 +26,8 @@ class OrderListTile extends StatefulWidget {
 class _OrderListTileState extends State<OrderListTile>
     with SingleTickerProviderStateMixin {
   bool _isHovered = false;
-  late AnimationController _scaleController;
+  late final AnimationController _scaleController;
+  late final Animation<double> _scaleAnimation;
 
   @override
   void initState() {
@@ -35,6 +35,12 @@ class _OrderListTileState extends State<OrderListTile>
     _scaleController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 200),
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.01).animate(
+      CurvedAnimation(
+        parent: _scaleController,
+        curve: Curves.easeOutCubic,
+      ),
     );
   }
 
@@ -44,86 +50,102 @@ class _OrderListTileState extends State<OrderListTile>
     super.dispose();
   }
 
+  void _onHover(bool isHovered) {
+    if (_isHovered == isHovered) return;
+    setState(() => _isHovered = isHovered);
+    if (isHovered) {
+      _scaleController.forward();
+    } else {
+      _scaleController.reverse();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isMobile = context.isMobile;
+
+    final borderRadius = BorderRadius.circular(isMobile ? 16 : 20);
+    final cardPadding = EdgeInsets.all(isMobile ? 10 : 14);
+
     return MouseRegion(
-      onEnter: (_) {
-        setState(() => _isHovered = true);
-        _scaleController.forward();
-      },
-      onExit: (_) {
-        setState(() => _isHovered = false);
-        _scaleController.reverse();
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-        height: 200,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: _isHovered
-                  ? AppColors.primary.withValues(alpha: 0.15)
-                  : Colors.black.withValues(alpha: 0.04),
-              blurRadius: _isHovered ? 20 : 8,
-              offset: Offset(0, _isHovered ? 8 : 2),
-            ),
-          ],
-        ),
-        child: GlassContainer(
-          padding: EdgeInsets.zero,
-          opacity: _isHovered ? 0.12 : 0.08,
-          // Blur is disabled by default in GlassContainer now
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(
+      onEnter: (_) => _onHover(true),
+      onExit: (_) => _onHover(false),
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOutCubic,
+          decoration: BoxDecoration(
             color: _isHovered
-                ? AppColors.primary.withValues(alpha: 0.3)
-                : Colors.white.withValues(alpha: 0.08),
-            width: _isHovered ? 1.5 : 1,
+                ? colorScheme.surfaceContainerHigh
+                : colorScheme.surfaceContainer,
+            borderRadius: borderRadius,
+            border: Border.all(
+              color: _isHovered
+                  ? colorScheme.primary.withValues(alpha: 0.35)
+                  : colorScheme.outlineVariant.withValues(alpha: 0.4),
+              width: _isHovered ? 1.5 : 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: _isHovered
+                    ? Colors.black.withValues(alpha: 0.25)
+                    : Colors.black.withValues(alpha: 0.08),
+                blurRadius: _isHovered ? 16 : 8,
+                offset: Offset(0, _isHovered ? 6 : 2),
+              ),
+            ],
           ),
-          child: InkWell(
-            onTap: widget.onTap,
-            borderRadius: BorderRadius.circular(24),
-            child: Stack(
-              children: [
-                // Content
-                Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Header Row
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(child: OrderHeader(order: widget.order)),
-                          const SizedBox(width: 12),
-                          OrderStatusBadge(status: widget.order.status),
-                        ],
-                      ),
+          child: Material(
+            color: Colors.transparent,
+            borderRadius: borderRadius,
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              onTap: widget.onTap,
+              hoverColor: colorScheme.primary.withValues(alpha: 0.03),
+              splashColor: colorScheme.primary.withValues(alpha: 0.08),
+              highlightColor: colorScheme.primary.withValues(alpha: 0.04),
+              child: Padding(
+                padding: cardPadding,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Header Row: Order Header & Status Badge
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: OrderHeader(order: widget.order),
+                        ),
+                        const SizedBox(width: 8),
+                        OrderStatusBadge(status: widget.order.status),
+                      ],
+                    ),
 
-                      const SizedBox(height: 12),
+                    SizedBox(height: isMobile ? 8 : 12),
 
-                      // Info Section
-                      buildInfoSection(widget.order),
+                    // Info Section
+                    buildInfoSection(widget.order),
 
-                      const Spacer(),
+                    SizedBox(height: isMobile ? 8 : 12),
 
-                      // Bottom Row
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Expanded(child: buildPriceSection(widget.order)),
-                          const SizedBox(width: 1),
-                          buildEnhancedOrderImages(widget.order, _isHovered),
-                        ],
-                      ),
-                    ],
-                  ),
+                    // Bottom Row: Price & Enhanced Images
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          child: buildPriceSection(widget.order),
+                        ),
+                        const SizedBox(width: 8),
+                        buildEnhancedOrderImages(widget.order, _isHovered),
+                      ],
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
