@@ -15,13 +15,12 @@ class OrdersStatsSection extends GetView<OrdersController> {
       }
       final res = context.responsive ;
       return GridView.count(
-        
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         crossAxisCount: res.isDesktop ? 4 : 2,
-        crossAxisSpacing: 10,
-        childAspectRatio: 1.9,
-        
+        crossAxisSpacing: 14,
+        mainAxisSpacing: 14,
+        childAspectRatio: res.isDesktop ? 1.85 : 1.55,
         children: [
           PremiumIndicatorCard(
             title: 'إجمالي الطلبات',
