@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/icon_card_with_shadow.dart';
 
 /// بطاقة السكشن بنمط Material Design 3 (Card.outlined)
 class OrderCardSection extends StatelessWidget {
@@ -39,23 +40,15 @@ class OrderCardSection extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (title != null) ...[
-            Padding(
+            Container(
+              
+                color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
               child: Row(
                 children: [
                   if (icon != null) ...[
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: colorScheme.primaryContainer,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(
-                        icon,
-                        size: 18,
-                        color: colorScheme.onPrimaryContainer,
-                      ),
-                    ),
+                    // icon card with shadow
+                    IconCardWithShadow( icon: icon),
                     const SizedBox(width: 12),
                   ],
                   Expanded(
