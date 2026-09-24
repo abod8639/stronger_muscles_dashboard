@@ -21,7 +21,7 @@ class DashboardIndicatorsSection extends GetView<DashboardController> {
 
     final double childAspectRatio = isSmallScreen
         ? 1.5
-        : (res.screenWidth < 1400 ? 1.1 : 1.5);
+        : (res.screenWidth < 1400 ? 1.1 : 2.1);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
