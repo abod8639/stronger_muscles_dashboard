@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
@@ -7,15 +8,33 @@ import 'package:stronger_muscles_dashboard/core/utils/components/base_app_bar.da
 import 'package:stronger_muscles_dashboard/core/utils/components/status_badge.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/address_entity.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
+import 'package:stronger_muscles_dashboard/features/orders/domain/usecases/update_order_status_usecase.dart';
+import 'package:stronger_muscles_dashboard/features/orders/presentation/controllers/orders_controller.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/order_details_screen/widget/build_detail_row.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/order_details_screen/widget/build_order_item.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/order_details_screen/widget/build_section.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/order_details_screen/widget/build_summary_row.dart';
+import 'package:stronger_muscles_dashboard/features/orders/presentation/services/invoice_pdf_service.dart';
 
-class OrderDetailsScreen extends StatelessWidget {
+class OrderDetailsScreen extends StatefulWidget {
   final OrderEntity order;
 
   const OrderDetailsScreen({super.key, required this.order});
+
+  @override
+  State<OrderDetailsScreen> createState() => _OrderDetailsScreenState();
+}
+
+class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
+  late final Rx<OrderEntity> _order;
+  bool _isUpdating = false;
+  bool _isGeneratingPdf = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _order = Rx<OrderEntity>(widget.order);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,91 +43,234 @@ class OrderDetailsScreen extends StatelessWidget {
     final isWide = screenWidth >= 960;
     final isMobile = context.isMobile;
 
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: BaseAppBar(
-        title: 'تفاصيل الطلب #${order.id}',
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(
-          horizontal: isWide ? 28.0 : (isMobile ? 12.0 : 18.0),
-          vertical: isMobile ? 12.0 : 18.0,
+    return Obx(() {
+      final currentOrder = _order.value;
+
+      return Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        appBar: BaseAppBar(
+          title: 'تفاصيل الطلب #${currentOrder.id}',
+          centerTitle: true,
+          // actions: [
+          //   IconButton(
+          //     icon: _isGeneratingPdf
+          //         ? const SizedBox(
+          //             width: 18,
+          //             height: 18,
+          //             child: CircularProgressIndicator(strokeWidth: 2),
+          //           )
+          //         : const Icon(Icons.print_outlined),
+          //     tooltip: 'طباعة الفاتورة',
+          //     onPressed: _isGeneratingPdf ? null : _handlePrintInvoice,
+          //   ),
+          // ],
         ),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 1400),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 1. Hero Header & Quick Stats
-                _buildHeroHeader(context),
-                const SizedBox(height: 16),
+        body: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(
+            horizontal: isWide ? 28.0 : (isMobile ? 12.0 : 18.0),
+            vertical: isMobile ? 12.0 : 18.0,
+          ),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1400),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 1. Hero Header & Quick Stats
+                  _buildHeroHeader(context, currentOrder),
+                  const SizedBox(height: 12),
 
-                // 2. Rearranged Content Grid
-                if (isWide)
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Main Column (Flex 3): Products & Notes
-                      Expanded(
-                        flex: 3,
-                        child: Column(
-                          children: [
-                            _buildProductsSection(context, isDark),
-                            if (order.notes != null &&
-                                order.notes!.isNotEmpty) ...[
-                              const SizedBox(height: 16),
-                              _buildNotesSection(context),
+                  // 2. Order Actions Bar (تأكيد، طباعة/PDF، إلغاء)
+                  _buildOrderActionsBar(context, currentOrder),
+                  const SizedBox(height: 16),
+
+                  // 3. Rearranged Content Grid
+                  if (isWide)
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Main Column (Flex 3): Products & Notes
+                        Expanded(
+                          flex: 3,
+                          child: Column(
+                            children: [
+                              _buildProductsSection(context, currentOrder, isDark),
+                              if (currentOrder.notes != null &&
+                                  currentOrder.notes!.isNotEmpty) ...[
+                                const SizedBox(height: 16),
+                                _buildNotesSection(context, currentOrder),
+                              ],
                             ],
-                          ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 16),
+                        const SizedBox(width: 16),
 
-                      // Sidebar Column (Flex 2): Financial Summary, Customer Info, Shipping
-                      Expanded(
-                        flex: 2,
-                        child: Column(
-                          children: [
-                            _buildSummarySection(context),
-                            const SizedBox(height: 16),
-                            _buildCustomerSection(context),
-                            const SizedBox(height: 16),
-                            _buildShippingAddressSection(context),
-                          ],
+                        // Sidebar Column (Flex 2): Financial Summary, Customer Info, Shipping
+                        Expanded(
+                          flex: 2,
+                          child: Column(
+                            children: [
+                              _buildSummarySection(context, currentOrder),
+                              const SizedBox(height: 16),
+                              _buildCustomerSection(context, currentOrder),
+                              const SizedBox(height: 16),
+                              _buildShippingAddressSection(context, currentOrder),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  )
-                else
-                  // Mobile Layout: Summary first for quick financial overview, then products, customer, shipping
-                  Column(
-                    children: [
-                      _buildSummarySection(context),
-                      const SizedBox(height: 16),
-                      _buildProductsSection(context, isDark),
-                      const SizedBox(height: 16),
-                      _buildCustomerSection(context),
-                      const SizedBox(height: 16),
-                      _buildShippingAddressSection(context),
-                      if (order.notes != null &&
-                          order.notes!.isNotEmpty) ...[
-                        const SizedBox(height: 16),
-                        _buildNotesSection(context),
                       ],
-                    ],
+                    )
+                  else
+                    // Mobile Layout: Summary first for quick financial overview, then products, customer, shipping
+                    Column(
+                      children: [
+                        _buildSummarySection(context, currentOrder),
+                        const SizedBox(height: 16),
+                        _buildProductsSection(context, currentOrder, isDark),
+                        const SizedBox(height: 16),
+                        _buildCustomerSection(context, currentOrder),
+                        const SizedBox(height: 16),
+                        _buildShippingAddressSection(context, currentOrder),
+                        if (currentOrder.notes != null &&
+                            currentOrder.notes!.isNotEmpty) ...[
+                          const SizedBox(height: 16),
+                          _buildNotesSection(context, currentOrder),
+                        ],
+                      ],
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    });
+  }
+
+  // ── Order Actions Bar (تأكيد، طباعة، إلغاء) ─────────────────────────────
+  Widget _buildOrderActionsBar(BuildContext context, OrderEntity currentOrder) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final currentStatus = currentOrder.status;
+
+    final isPending = currentStatus == OrderStatus.pending;
+    final canCancel = currentStatus != OrderStatus.cancelled &&
+        currentStatus != OrderStatus.delivered;
+
+    return Card.outlined(
+      margin: EdgeInsets.zero,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: colorScheme.outlineVariant.withValues(alpha: 0.6),
+        ),
+      ),
+      color: colorScheme.surfaceContainerLow,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Wrap(
+          alignment: WrapAlignment.spaceBetween,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 12,
+          runSpacing: 10,
+          children: [
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.bolt_rounded,
+                    size: 18,
+                    color: colorScheme.onPrimaryContainer,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'إجراءات سريعة:',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+              ],
+            ),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                // زر طباعة الفاتورة / PDF
+                FilledButton.tonalIcon(
+                  onPressed: _isGeneratingPdf ? null : _handlePrintInvoice,
+                  icon: _isGeneratingPdf
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.print_outlined, size: 18),
+                  label: const Text('طباعة الفاتورة / PDF'),
+                ),
+
+                // زر مشاركة ملف PDF
+                IconButton.filledTonal(
+                  onPressed: _isGeneratingPdf ? null : _handleSharePdf,
+                  icon: const Icon(Icons.share_outlined, size: 18),
+                  tooltip: 'مشاركة ملف الفاتورة PDF',
+                ),
+
+                // زر تأكيد الطلب (عندما تكون الحالة قيد الانتظار)
+                if (isPending)
+                  FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: Colors.green.shade700,
+                      foregroundColor: Colors.white,
+                    ),
+                    onPressed: _isUpdating ? null : _handleConfirmOrder,
+                    icon: _isUpdating
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Icon(Icons.check_circle_outline_rounded, size: 18),
+                    label: const Text('تأكيد الطلب'),
+                  ),
+
+                // زر إلغاء الطلب
+                if (canCancel)
+                  OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: colorScheme.error,
+                      side: BorderSide(
+                        color: colorScheme.error.withValues(alpha: 0.7),
+                      ),
+                    ),
+                    onPressed: _isUpdating
+                        ? null
+                        : () => _showCancelConfirmationDialog(context),
+                    icon: const Icon(Icons.cancel_outlined, size: 18),
+                    label: const Text('إلغاء الطلب'),
                   ),
               ],
             ),
-          ),
+          ],
         ),
       ),
     );
   }
 
   // ── Hero Header & Quick Stats ───────────────────────────────────────────
-  Widget _buildHeroHeader(BuildContext context) {
+  Widget _buildHeroHeader(BuildContext context, OrderEntity currentOrder) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isMobile = context.isMobile;
@@ -159,7 +321,7 @@ class OrderDetailsScreen extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  'طلب #${order.id}',
+                                  'طلب #${currentOrder.id}',
                                   style: theme.textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.w800,
                                     letterSpacing: 0.5,
@@ -173,7 +335,7 @@ class OrderDetailsScreen extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(6),
                                     onTap: () {
                                       Clipboard.setData(
-                                          ClipboardData(text: order.id));
+                                          ClipboardData(text: currentOrder.id));
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         SnackBar(
@@ -201,8 +363,8 @@ class OrderDetailsScreen extends StatelessWidget {
                               ],
                             ),
                           ),
-                          OrderStatusBadge(status: order.status),
-                          PaymentStatusBadge(status: order.paymentStatus),
+                          OrderStatusBadge(status: currentOrder.status),
+                          PaymentStatusBadge(status: currentOrder.paymentStatus),
                         ],
                       ),
                       const SizedBox(height: 8),
@@ -215,7 +377,7 @@ class OrderDetailsScreen extends StatelessWidget {
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            dateFormat.format(order.orderDate),
+                            dateFormat.format(currentOrder.orderDate),
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: colorScheme.onSurfaceVariant,
                               fontWeight: FontWeight.w500,
@@ -230,8 +392,8 @@ class OrderDetailsScreen extends StatelessWidget {
             ),
 
             // Tracking Number (if present)
-            if (order.trackingNumber != null &&
-                order.trackingNumber!.isNotEmpty) ...[
+            if (currentOrder.trackingNumber != null &&
+                currentOrder.trackingNumber!.isNotEmpty) ...[
               const SizedBox(height: 12),
               Container(
                 padding:
@@ -254,7 +416,7 @@ class OrderDetailsScreen extends StatelessWidget {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      'رقم التتبع: ${order.trackingNumber}',
+                      'رقم التتبع: ${currentOrder.trackingNumber}',
                       style: theme.textTheme.labelMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                         color: colorScheme.onSurface,
@@ -273,26 +435,26 @@ class OrderDetailsScreen extends StatelessWidget {
             const SizedBox(height: 12),
 
             // Quick Stats Strip
-            _buildQuickStatsStrip(context),
+            _buildQuickStatsStrip(context, currentOrder),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildQuickStatsStrip(BuildContext context) {
+  Widget _buildQuickStatsStrip(BuildContext context, OrderEntity currentOrder) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isMobile = context.isMobile;
 
     final totalItems =
-        order.items.fold<int>(0, (sum, item) => sum + item.quantity);
+        currentOrder.items.fold<int>(0, (sum, item) => sum + item.quantity);
 
     final stats = [
       _QuickStatData(
         icon: Icons.payments_outlined,
         title: 'الإجمالي',
-        value: '${order.totalAmount.toStringAsFixed(2)} ر.س',
+        value: '${currentOrder.totalAmount.toStringAsFixed(2)} ر.س',
         valueColor: colorScheme.primary,
         isBold: true,
       ),
@@ -300,13 +462,14 @@ class OrderDetailsScreen extends StatelessWidget {
         icon: Icons.shopping_bag_outlined,
         title: 'المنتجات',
         value:
-            '$totalItems ${totalItems == 1 ? 'عنصر' : 'عناصر'} (${order.items.length} ${order.items.length == 1 ? 'منتج' : 'منتجات'})',
+            '$totalItems ${totalItems == 1 ? 'عنصر' : 'عناصر'} (${currentOrder.items.length} ${currentOrder.items.length == 1 ? 'منتج' : 'منتجات'})',
       ),
       _QuickStatData(
         icon: Icons.credit_card_outlined,
         title: 'طريقة الدفع',
-        value:
-            order.paymentMethod.isNotEmpty ? order.paymentMethod : 'غير محدد',
+        value: currentOrder.paymentMethod.isNotEmpty
+            ? currentOrder.paymentMethod
+            : 'غير محدد',
       ),
     ];
 
@@ -405,14 +568,18 @@ class OrderDetailsScreen extends StatelessWidget {
   }
 
   // ── Products Section ─────────────────────────────────────────────────────
-  Widget _buildProductsSection(BuildContext context, bool isDark) {
+  Widget _buildProductsSection(
+    BuildContext context,
+    OrderEntity currentOrder,
+    bool isDark,
+  ) {
     final colorScheme = Theme.of(context).colorScheme;
 
     return OrderCardSection(
-      title: 'المنتجات (${order.items.length})',
+      title: 'المنتجات (${currentOrder.items.length})',
       icon: Icons.shopping_bag_outlined,
       padding: EdgeInsets.zero,
-      child: order.items.isEmpty
+      child: currentOrder.items.isEmpty
           ? const Padding(
               padding: EdgeInsets.all(24.0),
               child: Center(
@@ -422,21 +589,24 @@ class OrderDetailsScreen extends StatelessWidget {
           : ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: order.items.length,
+              itemCount: currentOrder.items.length,
               separatorBuilder: (context, index) => Divider(
                 height: 1,
                 thickness: 1,
                 color: colorScheme.outlineVariant.withValues(alpha: 0.35),
               ),
               itemBuilder: (context, index) => OrderItemTile(
-                item: order.items[index],
+                item: currentOrder.items[index],
               ),
             ),
     );
   }
 
   // ── Order Summary Section ────────────────────────────────────────────────
-  Widget _buildSummarySection(BuildContext context) {
+  Widget _buildSummarySection(
+    BuildContext context,
+    OrderEntity currentOrder,
+  ) {
     final colorScheme = Theme.of(context).colorScheme;
 
     return OrderCardSection(
@@ -446,22 +616,22 @@ class OrderDetailsScreen extends StatelessWidget {
         children: [
           OrderSummaryRow(
             label: 'المجموع الفرعي',
-            value: '${order.subtotal.toStringAsFixed(2)} ر.س',
+            value: '${currentOrder.subtotal.toStringAsFixed(2)} ر.س',
           ),
           OrderSummaryRow(
             label: 'تكلفة الشحن',
-            value: '${order.shippingCost.toStringAsFixed(2)} ر.س',
+            value: '${currentOrder.shippingCost.toStringAsFixed(2)} ر.س',
           ),
-          if (order.discount > 0)
+          if (currentOrder.discount > 0)
             OrderSummaryRow(
               label: 'الخصم',
-              value: '-${order.discount.toStringAsFixed(2)} ر.س',
+              value: '-${currentOrder.discount.toStringAsFixed(2)} ر.س',
               color: colorScheme.error,
             ),
           const SizedBox(height: 4),
           OrderSummaryRow(
             label: 'الإجمالي النهائي',
-            value: '${order.totalAmount.toStringAsFixed(2)} ر.س',
+            value: '${currentOrder.totalAmount.toStringAsFixed(2)} ر.س',
             isTotal: true,
             color: colorScheme.primary,
           ),
@@ -471,20 +641,26 @@ class OrderDetailsScreen extends StatelessWidget {
   }
 
   // ── Customer Info Section ────────────────────────────────────────────────
-  Widget _buildCustomerSection(BuildContext context) {
+  Widget _buildCustomerSection(
+    BuildContext context,
+    OrderEntity currentOrder,
+  ) {
     final colorScheme = Theme.of(context).colorScheme;
-    final customerName = order.shippingAddress?.fullName?.isNotEmpty == true
-        ? order.shippingAddress!.fullName!
-        : (order.userName.isNotEmpty ? order.userName : 'غير محدد');
+    final customerName =
+        currentOrder.shippingAddress?.fullName?.isNotEmpty == true
+            ? currentOrder.shippingAddress!.fullName!
+            : (currentOrder.userName.isNotEmpty
+                ? currentOrder.userName
+                : 'غير محدد');
 
-    final phone = order.shippingAddress?.phone?.isNotEmpty == true
-        ? order.shippingAddress!.phone!
-        : (order.phoneNumber?.isNotEmpty == true
-            ? order.phoneNumber!
+    final phone = currentOrder.shippingAddress?.phone?.isNotEmpty == true
+        ? currentOrder.shippingAddress!.phone!
+        : (currentOrder.phoneNumber?.isNotEmpty == true
+            ? currentOrder.phoneNumber!
             : 'غير محدد');
 
     final hasPhone = phone != 'غير محدد' && phone.isNotEmpty;
-    final hasEmail = order.userEmail.isNotEmpty;
+    final hasEmail = currentOrder.userEmail.isNotEmpty;
 
     return OrderCardSection(
       title: 'معلومات العميل',
@@ -504,12 +680,12 @@ class OrderDetailsScreen extends StatelessWidget {
             OrderDetailRow(
               icon: Icons.alternate_email_rounded,
               label: 'البريد الإلكتروني',
-              value: order.userEmail,
+              value: currentOrder.userEmail,
               trailing: IconButton(
                 icon: const Icon(Icons.mail_outline_rounded, size: 18),
                 tooltip: 'إرسال بريد',
                 visualDensity: VisualDensity.compact,
-                onPressed: () => _sendEmail(context, order.userEmail),
+                onPressed: () => _sendEmail(context, currentOrder.userEmail),
               ),
             ),
           ],
@@ -537,8 +713,8 @@ class OrderDetailsScreen extends StatelessWidget {
           OrderDetailRow(
             icon: Icons.credit_card_outlined,
             label: 'طريقة الدفع',
-            value: order.paymentMethod.isNotEmpty
-                ? order.paymentMethod
+            value: currentOrder.paymentMethod.isNotEmpty
+                ? currentOrder.paymentMethod
                 : 'غير محدد',
           ),
           Divider(
@@ -549,7 +725,7 @@ class OrderDetailsScreen extends StatelessWidget {
             icon: Icons.verified_outlined,
             label: 'حالة الدفع',
             value: '',
-            trailing: PaymentStatusBadge(status: order.paymentStatus),
+            trailing: PaymentStatusBadge(status: currentOrder.paymentStatus),
           ),
         ],
       ),
@@ -557,9 +733,12 @@ class OrderDetailsScreen extends StatelessWidget {
   }
 
   // ── Shipping Address Section ─────────────────────────────────────────────
-  Widget _buildShippingAddressSection(BuildContext context) {
+  Widget _buildShippingAddressSection(
+    BuildContext context,
+    OrderEntity currentOrder,
+  ) {
     final colorScheme = Theme.of(context).colorScheme;
-    final address = order.shippingAddress;
+    final address = currentOrder.shippingAddress;
     final hasAddress = address != null &&
         (address.hasCoordinates || address.fullAddress.isNotEmpty);
 
@@ -677,7 +856,7 @@ class OrderDetailsScreen extends StatelessWidget {
   }
 
   // ── Notes Section ────────────────────────────────────────────────────────
-  Widget _buildNotesSection(BuildContext context) {
+  Widget _buildNotesSection(BuildContext context, OrderEntity currentOrder) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -695,7 +874,7 @@ class OrderDetailsScreen extends StatelessWidget {
           ),
         ),
         child: Text(
-          order.notes!,
+          currentOrder.notes!,
           style: theme.textTheme.bodyMedium?.copyWith(
             height: 1.5,
             color: colorScheme.onSurface,
@@ -705,7 +884,153 @@ class OrderDetailsScreen extends StatelessWidget {
     );
   }
 
-  // ── Helpers ──────────────────────────────────────────────────────────────
+  // ── Action Handlers ──────────────────────────────────────────────────────
+
+  /// تأكيد الطلب
+  Future<void> _handleConfirmOrder() async {
+    await _handleStatusUpdate(OrderStatus.processing);
+  }
+
+  /// حوار تأكيد إلغاء الطلب
+  Future<void> _showCancelConfirmationDialog(BuildContext context) async {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        icon: Icon(
+          Icons.warning_amber_rounded,
+          color: colorScheme.error,
+          size: 36,
+        ),
+        title: Text(
+          'تأكيد إلغاء الطلب',
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        content: Text(
+          'هل أنت متأكد من رغبتك في إلغاء هذا الطلب رقم #${_order.value.id}؟\nسيتم تغيير حالة الطلب إلى "ملغي".',
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
+        ),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('تراجع'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: colorScheme.error,
+              foregroundColor: colorScheme.onError,
+            ),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('نعم، إلغاء الطلب'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await _handleStatusUpdate(OrderStatus.cancelled);
+    }
+  }
+
+  /// تنفيذ تحديث الحالة عبر الـ Controller
+  Future<void> _handleStatusUpdate(OrderStatus newStatus) async {
+    if (_isUpdating) return;
+    setState(() => _isUpdating = true);
+
+    try {
+      final controller = Get.isRegistered<OrdersController>()
+          ? Get.find<OrdersController>()
+          : null;
+
+      if (controller != null) {
+        final updated =
+            await controller.updateOrderStatus(_order.value.id, newStatus);
+        if (updated != null) {
+          _order.value = updated;
+        }
+      } else {
+        final useCase = Get.isRegistered<UpdateOrderStatusUseCase>()
+            ? Get.find<UpdateOrderStatusUseCase>()
+            : null;
+        if (useCase != null) {
+          final updated = await useCase(_order.value.id, newStatus);
+          _order.value = updated;
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('تم تحديث حالة الطلب بنجاح'),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('فشل في تحديث حالة الطلب: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isUpdating = false);
+    }
+  }
+
+  /// طباعة الفاتورة أو حفظها كـ PDF
+  Future<void> _handlePrintInvoice() async {
+    setState(() => _isGeneratingPdf = true);
+    try {
+      await InvoicePdfService.printInvoice(_order.value);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('تعذر إنشاء الفاتورة: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isGeneratingPdf = false);
+    }
+  }
+
+  /// مشاركة ملف PDF
+  Future<void> _handleSharePdf() async {
+    setState(() => _isGeneratingPdf = true);
+    try {
+      await InvoicePdfService.shareInvoice(_order.value);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('تعذر مشاركة ملف الفاتورة: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isGeneratingPdf = false);
+    }
+  }
+
+  // ── External Actions ─────────────────────────────────────────────────────
   Future<void> _makePhoneCall(BuildContext context, String phone) async {
     final uri = Uri.parse('tel:$phone');
     try {
