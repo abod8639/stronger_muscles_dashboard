@@ -44,9 +44,7 @@ class _OrderListTileState extends State<OrderListTile> {
         scale: _isHovered ? 1.012 : 1.0,
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeOutCubic,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 220),
-          curve: Curves.easeOutCubic,
+        child: Container(
           decoration: BoxDecoration(
             color: _isHovered
                 ? colorScheme.surfaceContainer
