@@ -67,7 +67,10 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
       'status': status.name,
     });
     if (response.statusCode == 200) {
-      return OrderModel.fromJson(response.data);
+      final data = (response.data is Map && response.data.containsKey('data'))
+          ? response.data['data']
+          : response.data;
+      return OrderModel.fromJson(data as Map<String, dynamic>);
     }
     throw Exception('Failed to update order status');
   }
