@@ -129,7 +129,7 @@ class _CategoryIdFieldState extends State<CategoryIdField> {
                 ),
                 if (isEditing)
                   Positioned(
-                    left: 14,
+                    right: 14,
                     child: IconButton(
                       icon: Icon(
                         _isIdFieldEnabled
