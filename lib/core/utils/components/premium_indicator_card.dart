@@ -138,7 +138,7 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
                       Text(
                         widget.subtitle!,
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.outline,
+                          color: colorScheme.onSurfaceVariant.withValues(alpha: .7),
                           fontSize: 11,
                         ),
                         maxLines: 1,
