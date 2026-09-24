@@ -29,7 +29,10 @@ class OrdersTable extends StatelessWidget {
 
           responsive.isDesktop
               ? _buildTableContent(controller, responsive)
-              : Obx(() => buildRecentOrders(responsive, controller.paginatedOrders)),
+              : Obx(
+                  () =>
+                      buildRecentOrders(responsive, controller.paginatedOrders),
+                ),
 
           _buildTableFooter(controller, responsive),
         ],
@@ -50,10 +53,7 @@ class OrdersTable extends StatelessWidget {
         color: colorScheme.surfaceContainerHigh.withValues(alpha: 0.25),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         border: Border(
-          bottom: BorderSide(
-            color: colorScheme.outlineVariant,
-            width: 1,
-          ),
+          bottom: BorderSide(color: colorScheme.outlineVariant, width: 1),
         ),
       ),
       child: Column(
@@ -72,7 +72,7 @@ class OrdersTable extends StatelessWidget {
                 ),
                 if (responsive.isDesktop) const Spacer(),
               ],
-
+              SizedBox(width: 20),
               Expanded(
                 child: CustomSearchBar(
                   onSearch: controller.onSearchChanged,
@@ -106,7 +106,12 @@ class OrdersTable extends StatelessWidget {
     );
   }
 
-  Widget _buildTab(BuildContext context, OrdersController controller, String id, String label) {
+  Widget _buildTab(
+    BuildContext context,
+    OrdersController controller,
+    String id,
+    String label,
+  ) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isSelected = controller.selectedStatusId.value == id;
@@ -127,14 +132,10 @@ class OrdersTable extends StatelessWidget {
         selectedColor: colorScheme.primary,
         showCheckmark: false,
         side: BorderSide(
-          color: isSelected
-              ? colorScheme.primary
-              : colorScheme.outlineVariant,
+          color: isSelected ? colorScheme.primary : colorScheme.outlineVariant,
           width: 1.0,
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       ),
     );
@@ -166,7 +167,10 @@ class OrdersTable extends StatelessWidget {
 
           // Rows
           ...List.generate(orders.length, (index) {
-            return _buildOrderRow( orders[index], isLast: index == orders.length - 1);
+            return _buildOrderRow(
+              orders[index],
+              isLast: index == orders.length - 1,
+            );
           }),
 
           if (orders.isEmpty)
