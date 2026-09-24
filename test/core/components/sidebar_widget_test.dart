@@ -60,7 +60,8 @@ void main() {
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 200));
 
     expect(find.text('Master Admin'), findsOneWidget);
     expect(find.text('Super Admin'), findsOneWidget);
@@ -86,7 +87,8 @@ void main() {
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 200));
 
     expect(find.text('Support Agent'), findsOneWidget);
     expect(find.text('Customer Support'), findsOneWidget);
