@@ -29,6 +29,16 @@ class OrderDetailsController extends GetxController {
     await updateOrderStatus(OrderStatus.processing);
   }
 
+  /// شحن الطلب بنقله إلى حالة "تم الشحن"
+  Future<void> shipOrder() async {
+    await updateOrderStatus(OrderStatus.shipped);
+  }
+
+  /// توصيل الطلب بنقله إلى حالة "تم التوصيل"
+  Future<void> deliverOrder() async {
+    await updateOrderStatus(OrderStatus.delivered);
+  }
+
   /// إلغاء الطلب بنقله إلى حالة "ملغي"
   Future<void> cancelOrder() async {
     await updateOrderStatus(OrderStatus.cancelled);
@@ -54,7 +64,7 @@ class OrderDetailsController extends GetxController {
 
       Get.snackbar(
         'تم التحديث',
-        'تم تغيير حالة الطلب إلى "${_getStatusText(newStatus)}" بنجاح',
+        'تم تغيير حالة الطلب إلى "${getStatusText(newStatus)}" بنجاح',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.black87,
         colorText: Colors.white,
@@ -189,7 +199,7 @@ class OrderDetailsController extends GetxController {
     }
   }
 
-  String _getStatusText(OrderStatus status) {
+  String getStatusText(OrderStatus status) {
     switch (status) {
       case OrderStatus.pending:
         return 'قيد الانتظار';
