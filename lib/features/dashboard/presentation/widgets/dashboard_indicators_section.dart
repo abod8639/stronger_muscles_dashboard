@@ -4,8 +4,7 @@ import 'package:stronger_muscles_dashboard/config/app_colors.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/premium_indicator_card.dart';
-import 'dart:math' as math;
-import 'package:fl_chart/fl_chart.dart';
+import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 
 class DashboardIndicatorsSection extends GetView<DashboardController> {
   const DashboardIndicatorsSection({super.key});
@@ -39,6 +38,13 @@ class DashboardIndicatorsSection extends GetView<DashboardController> {
         ),
         Obx(() {
           final s = controller.stats.value;
+          final pendingTrend =
+              controller.getStatusTrendData(OrderStatus.pending);
+          final deliveredTrend =
+              controller.getStatusTrendData(OrderStatus.delivered);
+          final cancelledTrend =
+              controller.getStatusTrendData(OrderStatus.cancelled);
+
           return GridView(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -55,10 +61,10 @@ class DashboardIndicatorsSection extends GetView<DashboardController> {
                 value: s.pendingOrders.toString(),
                 icon: Icons.hourglass_empty,
                 accentColor: AppColorsExtended.purpleDark,
-                trend: '+5%',
-                trendUp: true,
+                trend: pendingTrend.trend,
+                trendUp: pendingTrend.trendUp,
                 chartColor: AppColorsExtended.orangeAccent,
-                chartSpots: _generateSpots(s.pendingOrders.toDouble()),
+                chartSpots: pendingTrend.spots,
               ),
               PremiumIndicatorCard(
                 title: 'المسلمة',
@@ -66,10 +72,10 @@ class DashboardIndicatorsSection extends GetView<DashboardController> {
                 value: s.deliveredOrders.toString(),
                 icon: Icons.check_circle,
                 accentColor: AppColorsExtended.purpleDark,
-                trend: '+12%',
-                trendUp: true,
+                trend: deliveredTrend.trend,
+                trendUp: deliveredTrend.trendUp,
                 chartColor: AppColorsExtended.greenAccent,
-                chartSpots: _generateSpots(s.deliveredOrders.toDouble()),
+                chartSpots: deliveredTrend.spots,
               ),
               PremiumIndicatorCard(
                 title: 'ملغاة',
@@ -77,22 +83,15 @@ class DashboardIndicatorsSection extends GetView<DashboardController> {
                 value: s.cancelledOrders.toString(),
                 icon: Icons.cancel,
                 accentColor: AppColorsExtended.purpleDark,
-                trend: '-2%',
-                trendUp: false,
+                trend: cancelledTrend.trend,
+                trendUp: cancelledTrend.trendUp,
                 chartColor: AppColorsExtended.redAccent,
-                chartSpots: _generateSpots(s.cancelledOrders.toDouble()),
+                chartSpots: cancelledTrend.spots,
               ),
             ],
           );
         }),
       ],
     );
-  }
-
-  List<FlSpot> _generateSpots(double baseValue) {
-    return List.generate(10, (i) {
-      double sineValue = math.sin(i * 0.5) * (baseValue * 0.1 + 2);
-      return FlSpot(i.toDouble(), (baseValue + sineValue).clamp(0, 1000000));
-    });
   }
 }
