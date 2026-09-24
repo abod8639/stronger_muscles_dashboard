@@ -7,7 +7,7 @@ import 'package:stronger_muscles_dashboard/core/utils/components/generic_empty_s
 import 'package:stronger_muscles_dashboard/core/utils/components/my_refresh_indicator.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/top_section.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/controllers/promos_controller.dart';
-import 'package:stronger_muscles_dashboard/features/promos/presentation/widgets/promo_form_sheet.dart';
+import 'package:stronger_muscles_dashboard/features/promos/presentation/pages/promo_form_screen.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/widgets/promo_list_item.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 
@@ -24,12 +24,7 @@ class PromosScreen extends StatelessWidget {
       appBar: BaseAppBar(
         title: 'الإعلانات (Promos)',
         onPressed: () {
-          controller.clearForm();
-          Get.bottomSheet(
-            const PromoFormSheet(),
-            isScrollControlled: true,
-            backgroundColor: Colors.transparent,
-          );
+          Get.to(() => const PromoFormScreen());
         },
         icon: Icons.add,
       ),
@@ -80,12 +75,7 @@ class PromosScreen extends StatelessWidget {
                       promo: promo,
                       index: index,
                       onEdit: () {
-                        controller.populateForm(promo);
-                        Get.bottomSheet(
-                          PromoFormSheet(promo: promo),
-                          isScrollControlled: true,
-                          backgroundColor: Colors.transparent,
-                        );
+                        Get.to(() => PromoFormScreen(promo: promo));
                       },
                       onDelete: () => controller.confirmDelete(promo.id, promo.displayTitle),
                     );
