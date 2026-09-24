@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../domain/entities/auth_entity.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/signup_usecase.dart';
 import '../../domain/usecases/logout_usecase.dart';
@@ -14,6 +15,9 @@ class AuthController extends GetxController {
     required this.signupUseCase,
     required this.logoutUseCase,
   });
+
+  // Current Logged-in User
+  final currentUser = Rxn<AuthEntity>();
 
   // Text Controllers
   final nameController = TextEditingController();
