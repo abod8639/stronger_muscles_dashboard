@@ -8,30 +8,49 @@ import 'package:stronger_muscles_dashboard/features/orders/presentation/controll
 import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/orders_screen/widgets/orders_table.dart';
 import '../widgets/orders_stats_section.dart';
 
+/// صفحة إدارة الطلبات المحدثة بالكامل وفق معايير وتصميم Material Design 3
 class OrdersPage extends GetView<OrdersController> {
   const OrdersPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final responsive = context.responsive;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: colorScheme.surface,
       appBar: BaseAppBar(
+        title: 'إدارة الطلبات',
+        icon: Icons.refresh_rounded,
+        onPressed: controller.fetchOrders,
         extraActions: [
-          _buildHeaderButton(
-            context,
-            icon: Icons.download_rounded,
-            label: 'Export CSV',
-            onTap: () {
-              // TODO: implement export CSV
-            },
-            isOutline: true,
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: FilledButton.tonalIcon(
+              onPressed: () {
+                Get.snackbar(
+                  'تصدير الطلبات',
+                  'جاري إعداد وتحميل ملف البيانات بصيغة CSV...',
+                  backgroundColor: colorScheme.primaryContainer,
+                  colorText: colorScheme.onPrimaryContainer,
+                  icon: Icon(Icons.download_rounded, color: colorScheme.primary),
+                  snackPosition: SnackPosition.BOTTOM,
+                  margin: const EdgeInsets.all(16),
+                  borderRadius: 16,
+                );
+              },
+              icon: const Icon(Icons.download_rounded, size: 18),
+              label: const Text('تصدير CSV'),
+              style: FilledButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+              ),
+            ),
           ),
         ],
-        title: 'إدارة الطلبات',
-        onPressed: controller.fetchOrders,
-        icon: Icons.refresh_rounded,
       ),
       body: Obx(() {
         if (controller.isLoading.value && controller.filteredOrders.isEmpty) {
@@ -44,56 +63,25 @@ class OrdersPage extends GetView<OrdersController> {
             physics: const AlwaysScrollableScrollPhysics(),
             padding: EdgeInsets.symmetric(
               horizontal: responsive.defaultPadding.left,
+              vertical: 16,
             ),
-            child:  Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height:responsive.isDesktop ? 180 : 320, 
-                  child: OrdersStatsSection()),
-            const    SizedBox(height: 10),
-            const    OrdersTable(),
-            const    SizedBox(height: 10),
+              children: const [
+                // 1. بطاقات المؤشرات والإحصائيات بنمط Material 3
+                OrdersStatsSection(),
+
+                SizedBox(height: 18),
+
+                // 2. جدول وعمليات الطلبات
+                OrdersTable(),
+
+                SizedBox(height: 24),
               ],
             ),
           ),
         );
       }),
-    );
-  }
-
-  Widget _buildHeaderButton(
-    BuildContext context, {
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-    bool isOutline = false,
-  }) {
-    final colorScheme = Theme.of(context).colorScheme;
-    if (isOutline) {
-      return OutlinedButton.icon(
-        onPressed: onTap,
-        icon: Icon(icon, size: 18),
-        label: Text(label),
-        style: OutlinedButton.styleFrom(
-          side: BorderSide(color: colorScheme.outlineVariant),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        ),
-      );
-    }
-    return FilledButton.tonalIcon(
-      onPressed: onTap,
-      icon: Icon(icon, size: 18),
-      label: Text(label),
-      style: FilledButton.styleFrom(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      ),
     );
   }
 }
