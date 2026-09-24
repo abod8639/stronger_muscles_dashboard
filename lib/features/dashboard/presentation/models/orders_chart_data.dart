@@ -19,3 +19,15 @@ class OrdersChartData {
     required this.totalPeriodOrders,
   });
 }
+
+class IndicatorTrendData {
+  final List<FlSpot> spots;
+  final String trend;
+  final bool trendUp;
+
+  const IndicatorTrendData({
+    required this.spots,
+    required this.trend,
+    required this.trendUp,
+  });
+}
