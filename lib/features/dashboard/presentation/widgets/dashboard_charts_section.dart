@@ -4,8 +4,6 @@ import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/enhanced_line_chart.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
-import 'package:fl_chart/fl_chart.dart';
-import 'dart:math' as math;
 
 class DashboardChartsSection extends GetView<DashboardController> {
   const DashboardChartsSection({super.key});
@@ -51,10 +49,10 @@ class DashboardChartsSection extends GetView<DashboardController> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Column(
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'اتجاه الطلبات',
                     style: TextStyle(
                       fontSize: 16,
@@ -63,12 +61,14 @@ class DashboardChartsSection extends GetView<DashboardController> {
                       letterSpacing: 0.3,
                     ),
                   ),
-                  SizedBox(height: 4),
-                  Text(
-                    'آخر 30 يوم',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.white60,
+                  const SizedBox(height: 4),
+                  Obx(
+                    () => Text(
+                      controller.ordersChartData.periodSubtitle,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.white60,
+                      ),
                     ),
                   ),
                 ],
@@ -95,32 +95,21 @@ class DashboardChartsSection extends GetView<DashboardController> {
           SizedBox(
             height: 300,
             child: Obx(() {
-              final orderCount = controller.stats.value.orders.length.toDouble();
-              final maxY = orderCount + 50;
+              final chartData = controller.ordersChartData;
               return EnhancedLineChartWidget(
                 title: '',
-                spots: _generateChartSpots(20, maxY, orderCount),
+                spots: chartData.spots,
+                bottomTitles: chartData.bottomTitles,
+                bottomTitleInterval: chartData.bottomTitleInterval,
+                horizontalInterval: chartData.interval,
                 lineColor: Colors.cyan,
                 gradientColor: Colors.cyan,
-                maxY: maxY,
+                maxY: chartData.maxY,
               );
             }),
           ),
         ],
       ),
     );
-  }
-
-  List<FlSpot> _generateChartSpots(int count, double maxY, double baseValue) {
-    final double effectiveMaxY = maxY < 5.0 ? 50.0 : maxY;
-    return List.generate(count, (i) {
-      double sineValue = math.sin(i * 0.5) * (effectiveMaxY * 0.1);
-      double trend = (i / count) * (effectiveMaxY * 0.2);
-      double finalY = (baseValue + sineValue + trend);
-      return FlSpot(
-        i.toDouble(),
-        finalY.clamp(0.0, effectiveMaxY),
-      );
-    });
   }
 }
