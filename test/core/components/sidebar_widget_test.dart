@@ -48,6 +48,10 @@ void main() {
   });
 
   testWidgets('Sidebar renders full menu for super_admin role', (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(1280, 1024);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
     Get.put<AuthService>(
       RoleMockAuthService(mockRole: 'super_admin', mockName: 'Master Admin'),
       permanent: true,
