@@ -9,6 +9,7 @@ class OrdersStatsSection extends GetView<OrdersController> {
 
   @override
   Widget build(BuildContext context) {
+    double aspectRatio = MediaQuery.of(context).size.width /1000;
     return Obx(() {
       if (controller.isLoading.value && controller.totalOrders == 0) {
         return const SizedBox.shrink();
@@ -20,7 +21,7 @@ class OrdersStatsSection extends GetView<OrdersController> {
         crossAxisCount: res.isDesktop ? 4 : 2,
         crossAxisSpacing: 14,
         mainAxisSpacing: 14,
-        childAspectRatio: res.isDesktop ? 1.85 : 1.55,
+        childAspectRatio: res.isDesktop ?aspectRatio : aspectRatio*2.2,
         children: [
           PremiumIndicatorCard(
             title: 'إجمالي الطلبات',
