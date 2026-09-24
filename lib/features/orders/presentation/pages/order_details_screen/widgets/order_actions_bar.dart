@@ -193,7 +193,7 @@ class OrderActionsBar extends StatelessWidget {
               : const Icon(Icons.check_circle_outline_rounded, size: 18),
           label: const Text('تأكيد الطلب'),
           style: FilledButton.styleFrom(
-            backgroundColor: colorScheme.primary,
+            backgroundColor: Colors.greenAccent.shade400,
             foregroundColor: colorScheme.onPrimary,
             shape: buttonShape,
           ),
