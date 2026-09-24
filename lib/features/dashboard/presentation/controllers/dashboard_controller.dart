@@ -226,5 +226,170 @@ class DashboardController extends GetxController {
 
     return (maxY, interval);
   }
+
+  /// Calculates real sparkline spots and trend comparison for a specific order status.
+  IndicatorTrendData getStatusTrendData(OrderStatus status) {
+    final orders = stats.value.orders;
+    final period = selectPeriod.value;
+
+    switch (period) {
+      case 'month':
+        return _calculateStatusMonthData(orders, status);
+      case 'year':
+        return _calculateStatusYearData(orders, status);
+      case 'week':
+      default:
+        return _calculateStatusWeekData(orders, status);
+    }
+  }
+
+  IndicatorTrendData _calculateStatusWeekData(
+    List<OrderEntity> orders,
+    OrderStatus status,
+  ) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    final currentDays =
+        List.generate(7, (i) => today.subtract(Duration(days: 6 - i)));
+    final previousDays =
+        List.generate(7, (i) => today.subtract(Duration(days: 13 - i)));
+
+    final spots = <FlSpot>[];
+    int currentTotal = 0;
+
+    for (int i = 0; i < currentDays.length; i++) {
+      final day = currentDays[i];
+      final count = orders.where((o) {
+        return o.status == status &&
+            o.orderDate.year == day.year &&
+            o.orderDate.month == day.month &&
+            o.orderDate.day == day.day;
+      }).length;
+
+      currentTotal += count;
+      spots.add(FlSpot(i.toDouble(), count.toDouble()));
+    }
+
+    int previousTotal = 0;
+    for (final day in previousDays) {
+      final count = orders.where((o) {
+        return o.status == status &&
+            o.orderDate.year == day.year &&
+            o.orderDate.month == day.month &&
+            o.orderDate.day == day.day;
+      }).length;
+      previousTotal += count;
+    }
+
+    final (trend, trendUp) =
+        _calculateTrendPercentage(currentTotal, previousTotal);
+
+    return IndicatorTrendData(
+      spots: spots,
+      trend: trend,
+      trendUp: trendUp,
+    );
+  }
+
+  IndicatorTrendData _calculateStatusMonthData(
+    List<OrderEntity> orders,
+    OrderStatus status,
+  ) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    final currentDays =
+        List.generate(30, (i) => today.subtract(Duration(days: 29 - i)));
+    final previousDays =
+        List.generate(30, (i) => today.subtract(Duration(days: 59 - i)));
+
+    final spots = <FlSpot>[];
+    int currentTotal = 0;
+
+    for (int i = 0; i < currentDays.length; i++) {
+      final day = currentDays[i];
+      final count = orders.where((o) {
+        return o.status == status &&
+            o.orderDate.year == day.year &&
+            o.orderDate.month == day.month &&
+            o.orderDate.day == day.day;
+      }).length;
+
+      currentTotal += count;
+      spots.add(FlSpot(i.toDouble(), count.toDouble()));
+    }
+
+    int previousTotal = 0;
+    for (final day in previousDays) {
+      final count = orders.where((o) {
+        return o.status == status &&
+            o.orderDate.year == day.year &&
+            o.orderDate.month == day.month &&
+            o.orderDate.day == day.day;
+      }).length;
+      previousTotal += count;
+    }
+
+    final (trend, trendUp) =
+        _calculateTrendPercentage(currentTotal, previousTotal);
+
+    return IndicatorTrendData(
+      spots: spots,
+      trend: trend,
+      trendUp: trendUp,
+    );
+  }
+
+  IndicatorTrendData _calculateStatusYearData(
+    List<OrderEntity> orders,
+    OrderStatus status,
+  ) {
+    final now = DateTime.now();
+    final spots = <FlSpot>[];
+    int currentTotal = 0;
+
+    for (int m = 1; m <= 12; m++) {
+      final count = orders.where((o) {
+        return o.status == status &&
+            o.orderDate.year == now.year &&
+            o.orderDate.month == m;
+      }).length;
+
+      currentTotal += count;
+      spots.add(FlSpot((m - 1).toDouble(), count.toDouble()));
+    }
+
+    int previousTotal = orders.where((o) {
+      return o.status == status && o.orderDate.year == (now.year - 1);
+    }).length;
+
+    final (trend, trendUp) =
+        _calculateTrendPercentage(currentTotal, previousTotal);
+
+    return IndicatorTrendData(
+      spots: spots,
+      trend: trend,
+      trendUp: trendUp,
+    );
+  }
+
+  (String, bool) _calculateTrendPercentage(int current, int previous) {
+    if (previous == 0) {
+      if (current == 0) {
+        return ('0%', true);
+      }
+      return ('+100%', true);
+    }
+
+    final diff = current - previous;
+    final percent = ((diff / previous) * 100).round();
+
+    if (percent >= 0) {
+      return ('+$percent%', true);
+    } else {
+      return ('$percent%', false);
+    }
+  }
 }
 
