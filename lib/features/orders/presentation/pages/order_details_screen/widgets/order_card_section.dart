@@ -67,7 +67,7 @@ class OrderCardSection extends StatelessWidget {
                       ),
                     ),
                   ),
-                  if (trailing != null) trailing!,
+                  ?trailing,
                 ],
               ),
             ),
