@@ -58,7 +58,7 @@ class OrderHeroHeader extends StatelessWidget {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: colorScheme.surfaceContainerHighest,
+                              color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
                                 color: colorScheme.outlineVariant
