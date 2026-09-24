@@ -12,7 +12,7 @@ Widget buildEnhancedOrderImages(OrderEntity order, bool isHovered) {
 
   return SizedBox(
     width: 70,
-    height: 52,
+    height: 50,
     child: Stack(
       clipBehavior: Clip.none,
       children: [
@@ -44,6 +44,7 @@ Widget buildEnhancedOrderImages(OrderEntity order, bool isHovered) {
                     : [],
               ),
               child: ClipRRect(
+                
                 borderRadius: BorderRadius.circular(10),
                 child: CachedNetworkImage(
                   imageUrl: items[index].imageUrl ?? '',
