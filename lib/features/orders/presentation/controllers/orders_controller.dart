@@ -7,7 +7,7 @@ import 'package:stronger_muscles_dashboard/features/orders/domain/usecases/updat
 
 class OrdersController extends GetxController {
   final GetOrdersUseCase _getOrdersUseCase;
-  final GetOrderDetailUseCase? _getOrderDetailUseCase;
+  // final GetOrderDetailUseCase? _getOrderDetailUseCase;
   final UpdateOrderStatusUseCase? _updateOrderStatusUseCase;
 
   OrdersController({
@@ -15,7 +15,7 @@ class OrdersController extends GetxController {
     GetOrderDetailUseCase? getOrderDetailUseCase,
     UpdateOrderStatusUseCase? updateOrderStatusUseCase,
   })  : _getOrdersUseCase = getOrdersUseCase,
-        _getOrderDetailUseCase = getOrderDetailUseCase,
+        // _getOrderDetailUseCase = getOrderDetailUseCase,
         _updateOrderStatusUseCase = updateOrderStatusUseCase;
 
   final RxList<OrderEntity> _allOrders = <OrderEntity>[].obs;
@@ -154,7 +154,7 @@ class OrdersController extends GetxController {
 
     try {
       isUpdatingStatus.value = true;
-      final updatedOrder = await _updateOrderStatusUseCase!(orderId, newStatus);
+      final updatedOrder = await _updateOrderStatusUseCase(orderId, newStatus);
 
       // تحديث الطلب في القوائم المحلية
       final index = _allOrders.indexWhere((o) => o.id == orderId);
