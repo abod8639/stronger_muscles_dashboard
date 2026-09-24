@@ -68,13 +68,25 @@ class OrderHeroHeader extends StatelessWidget {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(
-                                  'طلب #${order.id}',
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.w800,
-                                    letterSpacing: 0.5,
-                                    color: colorScheme.onSurface,
-                                  ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'طلب # ',
+                                      style: theme.textTheme.titleMedium?.copyWith(
+                                        fontWeight: FontWeight.w800,
+                                        letterSpacing: 0.5,
+                                        color: colorScheme.onSurface,
+                                      ),
+                                    ),
+                                    Text(
+                                      order.id,
+                                      style: theme.textTheme.titleMedium?.copyWith(
+                                        fontWeight: FontWeight.w800,
+                                        letterSpacing: 0.5,
+                                        color: Colors.blue,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 const SizedBox(width: 4),
                                 Tooltip(
