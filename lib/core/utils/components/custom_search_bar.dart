@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:stronger_muscles_dashboard/config/responsive.dart';
 
 /// شريط بحث تفاعلي متوافق بالكامل مع مواصفات وتصميم Material Design 3 (M3 SearchBar)
 /// يعتمد على رموز ألوان وثيمات `ColorScheme` و `TextTheme` لدعم الوضعين الفاتح والداكن تلقائياً.
@@ -100,7 +99,6 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
-    final responsive = context.responsive;
 
     final isFocused = _focusNode.hasFocus;
 
