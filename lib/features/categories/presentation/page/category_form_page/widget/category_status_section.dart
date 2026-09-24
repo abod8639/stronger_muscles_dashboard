@@ -82,7 +82,7 @@ class CategoryStatusSection extends StatelessWidget {
             Switch.adaptive(
               value: active,
               onChanged: (val) => controller.isActive.value = val,
-              activeColor: colorScheme.primary,
+              activeTrackColor: colorScheme.primary,
             ),
           ],
         ),
