@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/base_app_bar.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/status_badge.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/address_entity.dart';
@@ -19,8 +20,9 @@ class OrderDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final screenWidth = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery.sizeOf(context).width;
     final isWide = screenWidth >= 960;
+    final isMobile = context.isMobile;
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -30,8 +32,8 @@ class OrderDetailsScreen extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(
-          horizontal: isWide ? 28.0 : 16.0,
-          vertical: 16.0,
+          horizontal: isWide ? 28.0 : (isMobile ? 12.0 : 18.0),
+          vertical: isMobile ? 12.0 : 18.0,
         ),
         child: Center(
           child: ConstrainedBox(
@@ -39,13 +41,16 @@ class OrderDetailsScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // 1. Hero Header & Quick Stats
                 _buildHeroHeader(context),
                 const SizedBox(height: 16),
+
+                // 2. Rearranged Content Grid
                 if (isWide)
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Left Column: Products & Notes
+                      // Main Column (Flex 3): Products & Notes
                       Expanded(
                         flex: 3,
                         child: Column(
@@ -60,7 +65,8 @@ class OrderDetailsScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      // Right Column: Summary, Customer, Shipping
+
+                      // Sidebar Column (Flex 2): Financial Summary, Customer Info, Shipping
                       Expanded(
                         flex: 2,
                         child: Column(
@@ -76,11 +82,12 @@ class OrderDetailsScreen extends StatelessWidget {
                     ],
                   )
                 else
+                  // Mobile Layout: Summary first for quick financial overview, then products, customer, shipping
                   Column(
                     children: [
-                      _buildProductsSection(context, isDark),
-                      const SizedBox(height: 16),
                       _buildSummarySection(context),
+                      const SizedBox(height: 16),
+                      _buildProductsSection(context, isDark),
                       const SizedBox(height: 16),
                       _buildCustomerSection(context),
                       const SizedBox(height: 16),
@@ -100,73 +107,110 @@ class OrderDetailsScreen extends StatelessWidget {
     );
   }
 
-  // ── Hero Header ──────────────────────────────────────────────────────────
+  // ── Hero Header & Quick Stats ───────────────────────────────────────────
   Widget _buildHeroHeader(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final isMobile = context.isMobile;
     final dateFormat = intl.DateFormat('yyyy-MM-dd • hh:mm a');
 
     return Card.outlined(
       margin: EdgeInsets.zero,
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(16),
         side: BorderSide(
-          color: colorScheme.outlineVariant,
+          color: colorScheme.outlineVariant.withValues(alpha: 0.6),
         ),
       ),
       color: colorScheme.surfaceContainerLow,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(isMobile ? 14.0 : 18.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Top Bar: Order ID, Date, and Badges
             Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 8,
+                        runSpacing: 6,
                         children: [
-                          Flexible(
-                            child: Text(
-                              'طلب #${order.id}',
-                              style: theme.textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 0.5,
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: colorScheme.surfaceContainerHighest,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: colorScheme.outlineVariant
+                                    .withValues(alpha: 0.5),
                               ),
-                              overflow: TextOverflow.ellipsis,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'طلب #${order.id}',
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: 0.5,
+                                    color: colorScheme.onSurface,
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                Tooltip(
+                                  message: 'نسخ رقم الطلب',
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(6),
+                                    onTap: () {
+                                      Clipboard.setData(
+                                          ClipboardData(text: order.id));
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: const Text(
+                                              'تم نسخ رقم الطلب إلى الحافظة'),
+                                          behavior: SnackBarBehavior.floating,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          duration: const Duration(seconds: 2),
+                                        ),
+                                      );
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(2),
+                                      child: Icon(
+                                        Icons.copy_rounded,
+                                        size: 15,
+                                        color: colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          IconButton(
-                            icon: const Icon(Icons.copy_rounded, size: 16),
-                            visualDensity: VisualDensity.compact,
-                            tooltip: 'نسخ رقم الطلب',
-                            onPressed: () {
-                              Clipboard.setData(ClipboardData(text: order.id));
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: const Text('تم نسخ رقم الطلب إلى الحافظة'),
-                                  behavior: SnackBarBehavior.floating,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  duration: const Duration(seconds: 2),
-                                ),
-                              );
-                            },
-                          ),
+                          OrderStatusBadge(status: order.status),
+                          PaymentStatusBadge(status: order.paymentStatus),
                         ],
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 8),
                       Row(
                         children: [
                           Icon(
                             Icons.calendar_today_outlined,
-                            size: 14,
+                            size: 13,
                             color: colorScheme.onSurfaceVariant,
                           ),
                           const SizedBox(width: 6),
@@ -174,6 +218,7 @@ class OrderDetailsScreen extends StatelessWidget {
                             dateFormat.format(order.orderDate),
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: colorScheme.onSurfaceVariant,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],
@@ -181,27 +226,22 @@ class OrderDetailsScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 6,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    OrderStatusBadge(status: order.status),
-                    PaymentStatusBadge(status: order.paymentStatus),
-                  ],
-                ),
               ],
             ),
+
+            // Tracking Number (if present)
             if (order.trackingNumber != null &&
                 order.trackingNumber!.isNotEmpty) ...[
               const SizedBox(height: 12),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(10),
+                  color: colorScheme.surfaceContainerHighest
+                      .withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+                    color: colorScheme.outlineVariant.withValues(alpha: 0.4),
                   ),
                 ),
                 child: Row(
@@ -209,23 +249,158 @@ class OrderDetailsScreen extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.local_shipping_outlined,
-                      size: 16,
+                      size: 15,
                       color: colorScheme.primary,
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 6),
                     Text(
                       'رقم التتبع: ${order.trackingNumber}',
-                      style: theme.textTheme.bodySmall?.copyWith(
+                      style: theme.textTheme.labelMedium?.copyWith(
                         fontWeight: FontWeight.w600,
+                        color: colorScheme.onSurface,
                       ),
                     ),
                   ],
                 ),
               ),
             ],
+
+            const SizedBox(height: 14),
+            Divider(
+              height: 1,
+              color: colorScheme.outlineVariant.withValues(alpha: 0.4),
+            ),
+            const SizedBox(height: 12),
+
+            // Quick Stats Strip
+            _buildQuickStatsStrip(context),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildQuickStatsStrip(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isMobile = context.isMobile;
+
+    final totalItems =
+        order.items.fold<int>(0, (sum, item) => sum + item.quantity);
+
+    final stats = [
+      _QuickStatData(
+        icon: Icons.payments_outlined,
+        title: 'الإجمالي',
+        value: '${order.totalAmount.toStringAsFixed(2)} ر.س',
+        valueColor: colorScheme.primary,
+        isBold: true,
+      ),
+      _QuickStatData(
+        icon: Icons.shopping_bag_outlined,
+        title: 'المنتجات',
+        value:
+            '$totalItems ${totalItems == 1 ? 'عنصر' : 'عناصر'} (${order.items.length} ${order.items.length == 1 ? 'منتج' : 'منتجات'})',
+      ),
+      _QuickStatData(
+        icon: Icons.credit_card_outlined,
+        title: 'طريقة الدفع',
+        value:
+            order.paymentMethod.isNotEmpty ? order.paymentMethod : 'غير محدد',
+      ),
+    ];
+
+    if (isMobile) {
+      return Column(
+        children: stats
+            .map((stat) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    children: [
+                      Icon(stat.icon,
+                          size: 15, color: colorScheme.onSurfaceVariant),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${stat.title}:',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const Spacer(),
+                      Text(
+                        stat.value,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: stat.valueColor ?? colorScheme.onSurface,
+                          fontWeight:
+                              stat.isBold ? FontWeight.bold : FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ))
+            .toList(),
+      );
+    }
+
+    return Row(
+      children: stats
+          .map((stat) => Expanded(
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  decoration: BoxDecoration(
+                    color: colorScheme.surfaceContainerHighest
+                        .withValues(alpha: 0.35),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: colorScheme.outlineVariant.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: colorScheme.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(stat.icon,
+                            size: 16, color: colorScheme.primary),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              stat.title,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              stat.value,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                fontWeight: stat.isBold
+                                    ? FontWeight.bold
+                                    : FontWeight.w600,
+                                color: stat.valueColor ?? colorScheme.onSurface,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ))
+          .toList(),
     );
   }
 
@@ -285,7 +460,7 @@ class OrderDetailsScreen extends StatelessWidget {
             ),
           const SizedBox(height: 4),
           OrderSummaryRow(
-            label: 'الإجمالي',
+            label: 'الإجمالي النهائي',
             value: '${order.totalAmount.toStringAsFixed(2)} ر.س',
             isTotal: true,
             color: colorScheme.primary,
@@ -308,6 +483,9 @@ class OrderDetailsScreen extends StatelessWidget {
             ? order.phoneNumber!
             : 'غير محدد');
 
+    final hasPhone = phone != 'غير محدد' && phone.isNotEmpty;
+    final hasEmail = order.userEmail.isNotEmpty;
+
     return OrderCardSection(
       title: 'معلومات العميل',
       icon: Icons.person_outline_rounded,
@@ -318,7 +496,7 @@ class OrderDetailsScreen extends StatelessWidget {
             label: 'اسم العميل',
             value: customerName,
           ),
-          if (order.userEmail.isNotEmpty) ...[
+          if (hasEmail) ...[
             Divider(
               height: 1,
               color: colorScheme.outlineVariant.withValues(alpha: 0.35),
@@ -327,6 +505,12 @@ class OrderDetailsScreen extends StatelessWidget {
               icon: Icons.alternate_email_rounded,
               label: 'البريد الإلكتروني',
               value: order.userEmail,
+              trailing: IconButton(
+                icon: const Icon(Icons.mail_outline_rounded, size: 18),
+                tooltip: 'إرسال بريد',
+                visualDensity: VisualDensity.compact,
+                onPressed: () => _sendEmail(context, order.userEmail),
+              ),
             ),
           ],
           Divider(
@@ -337,6 +521,14 @@ class OrderDetailsScreen extends StatelessWidget {
             icon: Icons.phone_outlined,
             label: 'رقم الهاتف',
             value: phone,
+            trailing: hasPhone
+                ? IconButton(
+                    icon: const Icon(Icons.phone_outlined, size: 18),
+                    tooltip: 'اتصال بالعميل',
+                    visualDensity: VisualDensity.compact,
+                    onPressed: () => _makePhoneCall(context, phone),
+                  )
+                : null,
           ),
           Divider(
             height: 1,
@@ -345,7 +537,9 @@ class OrderDetailsScreen extends StatelessWidget {
           OrderDetailRow(
             icon: Icons.credit_card_outlined,
             label: 'طريقة الدفع',
-            value: order.paymentMethod.isNotEmpty ? order.paymentMethod : 'غير محدد',
+            value: order.paymentMethod.isNotEmpty
+                ? order.paymentMethod
+                : 'غير محدد',
           ),
           Divider(
             height: 1,
@@ -511,7 +705,37 @@ class OrderDetailsScreen extends StatelessWidget {
     );
   }
 
-  // ── Google Maps Launcher ─────────────────────────────────────────────────
+  // ── Helpers ──────────────────────────────────────────────────────────────
+  Future<void> _makePhoneCall(BuildContext context, String phone) async {
+    final uri = Uri.parse('tel:$phone');
+    try {
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri);
+      }
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('تعذر إجراء المكالمة')),
+        );
+      }
+    }
+  }
+
+  Future<void> _sendEmail(BuildContext context, String email) async {
+    final uri = Uri.parse('mailto:$email');
+    try {
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri);
+      }
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('تعذر فتح تطبيق البريد')),
+        );
+      }
+    }
+  }
+
   Future<void> _openGoogleMaps(
     BuildContext context,
     AddressEntity address,
@@ -549,4 +773,20 @@ class OrderDetailsScreen extends StatelessWidget {
       }
     }
   }
+}
+
+class _QuickStatData {
+  final IconData icon;
+  final String title;
+  final String value;
+  final Color? valueColor;
+  final bool isBold;
+
+  const _QuickStatData({
+    required this.icon,
+    required this.title,
+    required this.value,
+    this.valueColor,
+    this.isBold = false,
+  });
 }
