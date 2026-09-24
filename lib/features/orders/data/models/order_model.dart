@@ -99,12 +99,55 @@ class OrderItemModel with _$OrderItemModel {
 }
 
 // Data mapping helpers...
-Map<String, dynamic> _mapOrderJson(Map<String, dynamic> json) {
+Map<String, dynamic> _mapOrderJson(Map<String, dynamic> rawJson) {
+  Map<String, dynamic> json = Map<String, dynamic>.from(rawJson);
+
+  // Unwrap if wrapped in Laravel response (e.g. {"status": "success", "data": {...}})
+  while (json.containsKey('data') && json['data'] is Map) {
+    final inner = json['data'] as Map;
+    if (inner.containsKey('id') ||
+        inner.containsKey('user_id') ||
+        inner.containsKey('userId') ||
+        inner.containsKey('status') ||
+        inner.containsKey('total_amount')) {
+      json = Map<String, dynamic>.from(inner);
+    } else {
+      break;
+    }
+  }
+
   String extractUserId() {
     if (json['userId'] != null) return json['userId'].toString();
     if (json['user_id'] != null) return json['user_id'].toString();
     if (json['user'] is Map) return (json['user']['id'] ?? '').toString();
     return '';
+  }
+
+  String sanitizeOrderStatus(dynamic val) {
+    if (val == null) return 'pending';
+    final str = val.toString().trim().toLowerCase();
+    if (str == 'canceled') return 'cancelled';
+    const valid = [
+      'pending',
+      'processing',
+      'shipped',
+      'delivered',
+      'cancelled',
+    ];
+    if (valid.contains(str)) {
+      return str;
+    }
+    return 'pending';
+  }
+
+  String sanitizePaymentStatus(dynamic val) {
+    if (val == null) return 'pending';
+    final str = val.toString().trim().toLowerCase();
+    const valid = ['pending', 'paid', 'failed', 'refunded'];
+    if (valid.contains(str)) {
+      return str;
+    }
+    return 'pending';
   }
 
   dynamic rawAddress = json['shipping_address'] ?? json['shippingAddress'];
@@ -135,13 +178,16 @@ Map<String, dynamic> _mapOrderJson(Map<String, dynamic> json) {
         json['order_date'] ??
         json['orderDate'] ??
         DateTime.now().toIso8601String(),
+    'status': sanitizeOrderStatus(json['status']),
+    'paymentStatus': sanitizePaymentStatus(
+      json['payment_status'] ?? json['paymentStatus'],
+    ),
     'addressId': (json['address_id'] ?? json['addressId'] ?? '').toString(),
     'shippingCost': _parseDouble(json['shippingCost'] ?? json['shipping_cost']),
     'totalAmount': _parseDouble(json['total_amount'] ?? json['totalAmount']),
     'subtotal': _parseDouble(json['subtotal']),
     'discount': _parseDouble(json['discount'] ?? json['discount_amount']),
     'items': json['order_items'] ?? json['items'],
-    'paymentStatus': json['payment_status'] ?? json['paymentStatus'],
     'paymentMethod': json['payment_method'] ?? json['paymentMethod'] ?? 'card',
     'trackingNumber': json['tracking_number'] ?? json['trackingNumber'],
     'phoneNumber':
