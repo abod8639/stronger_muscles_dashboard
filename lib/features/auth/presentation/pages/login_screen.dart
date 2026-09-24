@@ -4,7 +4,6 @@ import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/build_background.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/features/auth/presentation/controllers/auth_controller.dart';
-import 'package:stronger_muscles_dashboard/features/auth/presentation/pages/signup_screen.dart';
 import 'package:stronger_muscles_dashboard/features/auth/presentation/widgets/build_primary_button.dart';
 import 'package:stronger_muscles_dashboard/features/auth/presentation/widgets/build_text_field.dart';
 
@@ -236,10 +235,7 @@ class LoginScreen extends StatelessWidget {
           style: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
         ),
         TextButton(
-          onPressed: () => Get.to(
-            () => const SignupScreen(),
-            transition: Transition.cupertino,
-          ),
+          onPressed: () => Get.toNamed('/signup'),
           child: const Text(
             'إنشاء حساب جديد',
             style: TextStyle(
