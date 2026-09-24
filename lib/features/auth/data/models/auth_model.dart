@@ -5,6 +5,7 @@ class AuthModel extends AuthEntity {
     required super.id,
     required super.name,
     required super.email,
+    super.role = 'admin',
     super.token,
     super.profileImage,
   });
@@ -15,6 +16,7 @@ class AuthModel extends AuthEntity {
       id: user['id']?.toString() ?? '',
       name: user['name']?.toString() ?? '',
       email: user['email']?.toString() ?? '',
+      role: user['role']?.toString() ?? json['role']?.toString() ?? 'admin',
       token: json['token']?.toString() ?? json['access_token']?.toString(),
       profileImage: user['profile_image']?.toString(),
     );
@@ -25,6 +27,7 @@ class AuthModel extends AuthEntity {
       'id': id,
       'name': name,
       'email': email,
+      'role': role,
       'token': token,
       'profile_image': profileImage,
     };
