@@ -111,29 +111,8 @@ class OrderDetailsScreen extends StatelessWidget {
                       ],
                     )
                   else
-                    // تخطيط الشاشات الصغيرة (الجوال)
-                    Column(
-                      children: [
-                        OrderSummarySection(order: currentOrder),
-                        const SizedBox(height: 16),
-                        OrderProductsSection(items: currentOrder.items),
-                        const SizedBox(height: 16),
-                        OrderCustomerSection(
-                          order: currentOrder,
-                          controller: controller,
-                        ),
-                        const SizedBox(height: 16),
-                        OrderShippingSection(
-                          order: currentOrder,
-                          controller: controller,
-                        ),
-                        if (currentOrder.notes != null &&
-                            currentOrder.notes!.isNotEmpty) ...[
-                          const SizedBox(height: 16),
-                          OrderNotesSection(notes: currentOrder.notes!),
-                        ],
-                      ],
-                    ),
+                    MobileView(currentOrder: currentOrder, controller: controller),
+
                 ],
               ),
             ),
@@ -141,5 +120,43 @@ class OrderDetailsScreen extends StatelessWidget {
         ),
       );
     });
+  }
+}
+
+class MobileView extends StatelessWidget {
+  const MobileView({
+    super.key,
+    required this.currentOrder,
+    required this.controller,
+  });
+
+  final OrderEntity currentOrder;
+  final OrderDetailsController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        OrderSummarySection(order: currentOrder),
+        const SizedBox(height: 16),
+        OrderProductsSection(items: currentOrder.items),
+        const SizedBox(height: 16),
+        OrderCustomerSection(
+          order: currentOrder,
+          controller: controller,
+        ),
+        const SizedBox(height: 16),
+        OrderShippingSection(
+          order: currentOrder,
+          controller: controller,
+        ),
+        if (currentOrder.notes != null &&
+            currentOrder.notes!.isNotEmpty) ...[
+          const SizedBox(height: 16),
+          OrderNotesSection(notes: currentOrder.notes!),
+        ],
+        const SizedBox(height: 50),
+      ],
+    );
   }
 }
