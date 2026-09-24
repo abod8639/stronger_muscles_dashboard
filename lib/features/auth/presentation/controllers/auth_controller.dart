@@ -113,7 +113,8 @@ class AuthController extends GetxController {
 
     try {
       isLoading.value = true;
-      await loginUseCase(emailController.text.trim(), passwordController.text);
+      final user = await loginUseCase(emailController.text.trim(), passwordController.text);
+      currentUser.value = user;
       
       Get.snackbar('نجاح', 'تم تسجيل الدخول بنجاح');
       Get.offAllNamed('/dashboard');
@@ -129,11 +130,12 @@ class AuthController extends GetxController {
 
     try {
       isLoading.value = true;
-      await signupUseCase(
+      final user = await signupUseCase(
         nameController.text.trim(),
         emailController.text.trim(),
         passwordController.text,
       );
+      currentUser.value = user;
       
       Get.snackbar('نجاح', 'تم إنشاء الحساب بنجاح');
       Get.offAllNamed('/dashboard');
@@ -147,6 +149,7 @@ class AuthController extends GetxController {
   Future<void> logout() async {
     try {
       await logoutUseCase();
+      currentUser.value = null;
       Get.offAllNamed('/login');
     } catch (e) {
       Get.snackbar('خطأ', 'فشل تسجيل الخروج');
