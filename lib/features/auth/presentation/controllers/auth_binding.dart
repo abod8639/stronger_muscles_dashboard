@@ -19,26 +19,35 @@ class AuthBinding extends Bindings {
     final storage = GetStorage();
 
     // Data Sources
-    Get.lazyPut<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(dio));
-    Get.lazyPut<AuthLocalDataSource>(() => AuthLocalDataSourceImpl(storage));
+    Get.lazyPut<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(dio),
+        fenix: true);
+    Get.lazyPut<AuthLocalDataSource>(() => AuthLocalDataSourceImpl(storage),
+        fenix: true);
 
     // Repository
-    Get.lazyPut<AuthRepository>(() => AuthRepositoryImpl(
-          remoteDataSource: Get.find<AuthRemoteDataSource>(),
-          localDataSource: Get.find<AuthLocalDataSource>(),
-        ));
+    Get.lazyPut<AuthRepository>(
+      () => AuthRepositoryImpl(
+        remoteDataSource: Get.find<AuthRemoteDataSource>(),
+        localDataSource: Get.find<AuthLocalDataSource>(),
+      ),
+      fenix: true,
+    );
 
     // Use Cases
-    Get.lazyPut(() => LoginUseCase(Get.find<AuthRepository>()));
-    Get.lazyPut(() => SignupUseCase(Get.find<AuthRepository>()));
-    Get.lazyPut(() => LogoutUseCase(Get.find<AuthRepository>()));
-    Get.lazyPut(() => CheckAuthStatusUseCase(Get.find<AuthRepository>()));
+    Get.lazyPut(() => LoginUseCase(Get.find<AuthRepository>()), fenix: true);
+    Get.lazyPut(() => SignupUseCase(Get.find<AuthRepository>()), fenix: true);
+    Get.lazyPut(() => LogoutUseCase(Get.find<AuthRepository>()), fenix: true);
+    Get.lazyPut(() => CheckAuthStatusUseCase(Get.find<AuthRepository>()),
+        fenix: true);
 
     // Controller
-    Get.put(AuthController(
-      loginUseCase: Get.find<LoginUseCase>(),
-      signupUseCase: Get.find<SignupUseCase>(),
-      logoutUseCase: Get.find<LogoutUseCase>(),
-    ));
+    Get.lazyPut<AuthController>(
+      () => AuthController(
+        loginUseCase: Get.find<LoginUseCase>(),
+        signupUseCase: Get.find<SignupUseCase>(),
+        logoutUseCase: Get.find<LogoutUseCase>(),
+      ),
+      fenix: true,
+    );
   }
 }
