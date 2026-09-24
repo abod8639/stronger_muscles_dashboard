@@ -7,6 +7,8 @@ import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/or
 import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/orders_screen/widgets/build_order_header.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/orders_screen/widgets/build_price_section.dart';
 
+/// بطاقة عرض عنصر الطلب المتوافقة بالكامل مع مواصفات وتصميم Material Design 3
+/// متناسقة مع ألوان وثيم التطبيق وتدعم الوضع الفاتح والداكن بانتقالات بصرية سلسة.
 class OrderListTile extends StatefulWidget {
   final OrderEntity order;
   final VoidCallback? onTap;
@@ -23,79 +25,52 @@ class OrderListTile extends StatefulWidget {
   State<OrderListTile> createState() => _OrderListTileState();
 }
 
-class _OrderListTileState extends State<OrderListTile>
-    with SingleTickerProviderStateMixin {
+class _OrderListTileState extends State<OrderListTile> {
   bool _isHovered = false;
-  late final AnimationController _scaleController;
-  late final Animation<double> _scaleAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _scaleController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 200),
-    );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.01).animate(
-      CurvedAnimation(
-        parent: _scaleController,
-        curve: Curves.easeOutCubic,
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _scaleController.dispose();
-    super.dispose();
-  }
-
-  void _onHover(bool isHovered) {
-    if (_isHovered == isHovered) return;
-    setState(() => _isHovered = isHovered);
-    if (isHovered) {
-      _scaleController.forward();
-    } else {
-      _scaleController.reverse();
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
     final isMobile = context.isMobile;
 
-    final borderRadius = BorderRadius.circular(isMobile ? 16 : 20);
-    final cardPadding = EdgeInsets.all( 10);
+    final borderRadius = BorderRadius.circular(isMobile ? 18 : 22);
 
     return MouseRegion(
-      onEnter: (_) => _onHover(true),
-      onExit: (_) => _onHover(false),
-      child: ScaleTransition(
-        scale: _scaleAnimation,
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: AnimatedScale(
+        scale: _isHovered ? 1.012 : 1.0,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOutCubic,
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 250),
+          duration: const Duration(milliseconds: 220),
           curve: Curves.easeOutCubic,
           decoration: BoxDecoration(
             color: _isHovered
-                ? colorScheme.surfaceContainerHigh
-                : colorScheme.surfaceContainer,
+                ? colorScheme.surfaceContainer
+                : colorScheme.surfaceContainerLow,
             borderRadius: borderRadius,
             border: Border.all(
               color: _isHovered
-                  ? colorScheme.primary.withValues(alpha: 0.35)
-                  : colorScheme.outlineVariant.withValues(alpha: 0.4),
-              width: _isHovered ? 1.5 : 1,
+                  ? colorScheme.primary.withValues(alpha: 0.45)
+                  : colorScheme.outlineVariant.withValues(alpha: 0.45),
+              width: _isHovered ? 1.4 : 1.0,
             ),
             boxShadow: [
-              BoxShadow(
-                color: _isHovered
-                    ? Colors.black.withValues(alpha: 0.25)
-                    : Colors.black.withValues(alpha: 0.08),
-                blurRadius: _isHovered ? 16 : 8,
-                offset: Offset(0, _isHovered ? 6 : 2),
-              ),
+              if (_isHovered)
+                BoxShadow(
+                  color: colorScheme.shadow.withValues(alpha: isDark ? 0.35 : 0.08),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
+                )
+              else
+                BoxShadow(
+                  color: colorScheme.shadow.withValues(alpha: isDark ? 0.22 : 0.04),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
             ],
           ),
           child: Material(
@@ -104,16 +79,16 @@ class _OrderListTileState extends State<OrderListTile>
             clipBehavior: Clip.antiAlias,
             child: InkWell(
               onTap: widget.onTap,
-              hoverColor: colorScheme.primary.withValues(alpha: 0.03),
+              hoverColor: Colors.transparent,
               splashColor: colorScheme.primary.withValues(alpha: 0.08),
               highlightColor: colorScheme.primary.withValues(alpha: 0.04),
               child: Padding(
-                padding: cardPadding,
+                padding: EdgeInsets.all(isMobile ? 12 : 14),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Header Row: Order Header & Status Badge
+                    // 1. ترويسة الطلب: المعرف والتاريخ + شارة الحالة
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -125,21 +100,21 @@ class _OrderListTileState extends State<OrderListTile>
                       ],
                     ),
 
-                    SizedBox(height: isMobile ? 8 : 12),
+                    SizedBox(height: isMobile ? 10 : 12),
 
-                    // Info Section
+                    // 2. معلومات العميل وعدد المنتجات بنمط M3
                     buildInfoSection(widget.order),
 
-                    SizedBox(height: isMobile ? 8 : 12),
+                    SizedBox(height: isMobile ? 10 : 12),
 
-                    // Bottom Row: Price & Enhanced Images
+                    // 3. الجزء السفلي: الإجمالي + معرض صور المنتجات المضمنة
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Expanded(
                           child: buildPriceSection(widget.order),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 10),
                         buildEnhancedOrderImages(widget.order, _isHovered),
                       ],
                     ),
