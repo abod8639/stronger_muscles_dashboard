@@ -27,7 +27,7 @@ class EnhancedOrderImages extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final isMobile = context.isMobile;
 
-    final imageSize = isMobile ? 44.0 : 50.0;
+    final imageSize = isMobile ? 44.0 : 60.0;
     final overlapOffset = isMobile ? 14.0 : 18.0;
     final displayCount = items.length > 3 ? 3 : items.length;
     final hasMore = items.length > 3;
