@@ -13,13 +13,13 @@ Widget buildInfoItem({
       final colorScheme = theme.colorScheme;
 
       return Row(
-        mainAxisSize: MainAxisSize.max,
+        mainAxisSize: MainAxisSize.min,
         children: [
           IconCardWithShadow(icon: icon),
           const SizedBox(width: 8),
           Flexible(
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
                   label,
