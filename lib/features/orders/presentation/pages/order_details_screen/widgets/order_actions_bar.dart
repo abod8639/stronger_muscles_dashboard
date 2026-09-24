@@ -47,7 +47,7 @@ class OrderActionsBar extends StatelessWidget {
             children: [
               // عنوان الشريط والمؤشر
               Row(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: MainAxisSize.max,
                 children: [
                   IconCardWithShadow(icon: Icons.bolt_rounded),
                   const SizedBox(width: 10),
@@ -73,10 +73,10 @@ class OrderActionsBar extends StatelessWidget {
                   ),
                 ],
               ),
-
               // أزرار الإجراءات المتوافقة تماماً مع Material Design 3
               Wrap(
-                spacing: 8,
+                
+                spacing: 10,
                 runSpacing: 8,
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
