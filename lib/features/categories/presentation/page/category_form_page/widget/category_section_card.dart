@@ -52,7 +52,7 @@ class CategorySectionCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (trailing != null) trailing!,
+                ?trailing,
               ],
             ),
           ),
