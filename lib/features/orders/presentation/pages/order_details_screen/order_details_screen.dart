@@ -58,10 +58,7 @@ class OrderDetailsScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // 1. ترويسة الطلب والإحصائيات السريعة
-                  OrderHeroHeader(
-                    order: currentOrder,
-                    controller: controller,
-                  ),
+                  OrderHeroHeader(order: currentOrder, controller: controller),
                   const SizedBox(height: 12),
 
                   // 2. شريط إجراءات الطلب السريعة (طباعة، مشاركة، تأكيد، إلغاء)
@@ -83,6 +80,11 @@ class OrderDetailsScreen extends StatelessWidget {
                                   currentOrder.notes!.isNotEmpty) ...[
                                 const SizedBox(height: 16),
                                 OrderNotesSection(notes: currentOrder.notes!),
+                                const SizedBox(height: 16),
+                                OrderShippingSection(
+                                  order: currentOrder,
+                                  controller: controller,
+                                ),
                               ],
                             ],
                           ),
@@ -101,18 +103,16 @@ class OrderDetailsScreen extends StatelessWidget {
                                 controller: controller,
                               ),
                               const SizedBox(height: 16),
-                              OrderShippingSection(
-                                order: currentOrder,
-                                controller: controller,
-                              ),
                             ],
                           ),
                         ),
                       ],
                     )
                   else
-                    MobileView(currentOrder: currentOrder, controller: controller),
-
+                    MobileView(
+                      currentOrder: currentOrder,
+                      controller: controller,
+                    ),
                 ],
               ),
             ),
@@ -140,21 +140,14 @@ class MobileView extends StatelessWidget {
         OrderSummarySection(order: currentOrder),
         const SizedBox(height: 16),
         OrderProductsSection(items: currentOrder.items),
-        const SizedBox(height: 16),
-        OrderCustomerSection(
-          order: currentOrder,
-          controller: controller,
-        ),
-        const SizedBox(height: 16),
-        OrderShippingSection(
-          order: currentOrder,
-          controller: controller,
-        ),
-        if (currentOrder.notes != null &&
-            currentOrder.notes!.isNotEmpty) ...[
+        if (currentOrder.notes != null && currentOrder.notes!.isNotEmpty) ...[
           const SizedBox(height: 16),
           OrderNotesSection(notes: currentOrder.notes!),
         ],
+        const SizedBox(height: 16),
+        OrderCustomerSection(order: currentOrder, controller: controller),
+        const SizedBox(height: 16),
+        OrderShippingSection(order: currentOrder, controller: controller),
         const SizedBox(height: 50),
       ],
     );
