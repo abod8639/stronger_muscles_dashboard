@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/icon_card_with_shadow.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/category_picker_sheet.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/flavor_multi_select.dart';
@@ -45,18 +46,7 @@ class FormSectionCard extends StatelessWidget {
           // Header
           ListTile(
             contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
-            leading: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                icon,
-                color: colorScheme.onPrimaryContainer,
-                size: 22,
-              ),
-            ),
+            leading: IconCardWithShadow(icon: icon),
             title: Text(
               title,
               style: theme.textTheme.titleMedium?.copyWith(
