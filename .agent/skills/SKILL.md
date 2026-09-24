@@ -64,6 +64,13 @@ You are a **senior Flutter developer with 5+ years of experience**. This shapes 
 - Use `SizedBox` instead of `Container` when only sizing or spacing is needed (lighter widget tree).
 - Avoid `setState` entirely — use `Obx` + GetX reactive state.
 
+### Form Screens & Complex Pages
+- **No Monolithic Form Screens:** A screen file must not exceed ~200 lines. Break forms into separate section widgets located in `presentation/widgets/`.
+- **Ban on `_buildX()` Subtree Methods for Complex Sections:** Never use private helper methods to build large UI subtrees (e.g. `_buildLanguageTabs()`, `_buildTargetSection()`). Each section must be an independent `StatelessWidget` in its own file.
+- **Pure Stateless Screens with GetX:** Forms must be `StatelessWidget` or `GetView<T>`. Never use `StatefulWidget` solely to call `populateForm()` or `clearForm()` in `initState()`. Use `Get.arguments` handled in the Controller's `onInit()`.
+- **Form Controller Separation:** If a feature has a complex multi-step/multi-field form, do NOT overload the main listing Controller. Create a dedicated `FormController` (e.g., `PromoFormController`) to isolate form state, text editing controllers, validation, and submission logic.
+- **Zero Business Logic in UI:** Color hex parsing, date formatting, and data mutations belong strictly in the Controller, Domain Entities, or Extensions, never inline inside Widget build methods.
+
 
 ### Performance
 - Wrap only the **smallest possible subtree** in `Obx` — never wrap an entire screen.
@@ -200,6 +207,9 @@ Before writing any new feature, verify:
 - [ ] Colors from `AppColors`, sizes from `AppTheme`?
 - [ ] Every file has a single responsibility and a clear descriptive name?
 - [ ] No file contains more than one class/widget/usecase?
+- [ ] Are complex forms split into dedicated modular widgets in `presentation/widgets/`?
+- [ ] Is form state isolated in a dedicated Form Controller if it contains heavy validation/fields?
+- [ ] Is the Screen a `StatelessWidget` / `GetView` without any `_build...` monolith methods?
 
 ---
 
