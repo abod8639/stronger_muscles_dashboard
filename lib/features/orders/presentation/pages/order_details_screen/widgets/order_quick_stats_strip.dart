@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/icon_card_with_shadow.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 
 class _QuickStatData {
@@ -109,15 +110,7 @@ class OrderQuickStatsStrip extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: colorScheme.surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Icon(stat.icon,
-                            size: 16, color: colorScheme.primary),
-                      ),
+                      IconCardWithShadow(icon: stat.icon),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Column(
