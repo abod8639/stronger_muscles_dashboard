@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/core/network/auth_service.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/build_nav_item.dart';
 import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_controller.dart';
 import 'package:stronger_muscles_dashboard/functions/cache_manager.dart';
@@ -14,6 +15,10 @@ class Sidebar extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final NavigationController controller = Get.find<NavigationController>();
+    final authService = Get.isRegistered<AuthService>() ? Get.find<AuthService>() : null;
+    final userRole = authService?.getUserRole() ?? 'admin';
+    final isSuperOrAdmin = userRole == 'super_admin' || userRole == 'admin';
+    final isSupport = userRole == 'customer_support';
 
     return Container(
       width: 280,
@@ -87,41 +92,45 @@ class Sidebar extends StatelessWidget {
                       activeIcon: Icons.dashboard_rounded,
                       label: 'Dashboard',
                     ),
-                    NavItemTile(
-                      isDrawer: isDrawer,
-                      controller: controller,
-                      index: 2,
-                      icon: Icons.inventory_2_outlined,
-                      activeIcon: Icons.inventory_2_rounded,
-                      label: 'Products',
-                    ),
-                    NavItemTile(
-                      isDrawer: isDrawer,
-                      controller: controller,
-                      index: 3,
-                      icon: Icons.add_business_outlined,
-                      activeIcon: Icons.add_business_rounded,
-                      label: 'Ads',
-                    ),
-                    NavItemTile(
-                      isDrawer: isDrawer,
-                      controller: controller,
-                      index: 5,
-                      icon: Icons.people_outline,
-                      activeIcon: Icons.people_rounded,
-                      label: 'Users',
-                    ),
+                    if (!isSupport)
+                      NavItemTile(
+                        isDrawer: isDrawer,
+                        controller: controller,
+                        index: 2,
+                        icon: Icons.inventory_2_outlined,
+                        activeIcon: Icons.inventory_2_rounded,
+                        label: 'Products',
+                      ),
+                    if (isSuperOrAdmin)
+                      NavItemTile(
+                        isDrawer: isDrawer,
+                        controller: controller,
+                        index: 3,
+                        icon: Icons.add_business_outlined,
+                        activeIcon: Icons.add_business_rounded,
+                        label: 'Ads',
+                      ),
+                    if (isSuperOrAdmin)
+                      NavItemTile(
+                        isDrawer: isDrawer,
+                        controller: controller,
+                        index: 5,
+                        icon: Icons.people_outline,
+                        activeIcon: Icons.people_rounded,
+                        label: 'Users',
+                      ),
 
                     const SizedBox(height: 20),
                     const _SidebarSectionTitle(title: 'MANAGEMENT'),
-                    NavItemTile(
-                      isDrawer: isDrawer,
-                      controller: controller,
-                      index: 1,
-                      icon: Icons.category_outlined,
-                      activeIcon: Icons.category_rounded,
-                      label: 'Categories',
-                    ),
+                    if (!isSupport)
+                      NavItemTile(
+                        isDrawer: isDrawer,
+                        controller: controller,
+                        index: 1,
+                        icon: Icons.category_outlined,
+                        activeIcon: Icons.category_rounded,
+                        label: 'Categories',
+                      ),
                     NavItemTile(
                       isDrawer: isDrawer,
                       controller: controller,
@@ -130,14 +139,15 @@ class Sidebar extends StatelessWidget {
                       activeIcon: Icons.local_shipping_rounded,
                       label: 'Orders',
                     ),
-                    NavItemTile(
-                      isDrawer: isDrawer,
-                      controller: controller,
-                      index: 6,
-                      icon: Icons.settings_outlined,
-                      activeIcon: Icons.settings_rounded,
-                      label: 'Settings',
-                    ),
+                    if (isSuperOrAdmin)
+                      NavItemTile(
+                        isDrawer: isDrawer,
+                        controller: controller,
+                        index: 6,
+                        icon: Icons.settings_outlined,
+                        activeIcon: Icons.settings_rounded,
+                        label: 'Settings',
+                      ),
                   ],
                 ),
               ),
@@ -176,10 +186,26 @@ class _SidebarSectionTitle extends StatelessWidget {
 class _SidebarUserProfile extends StatelessWidget {
   const _SidebarUserProfile();
 
+  String _formatRole(String role) {
+    switch (role.toLowerCase()) {
+      case 'super_admin':
+        return 'Super Admin';
+      case 'inventory_manager':
+        return 'Inventory Manager';
+      case 'customer_support':
+        return 'Customer Support';
+      default:
+        return 'Administrator';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final authService = Get.isRegistered<AuthService>() ? Get.find<AuthService>() : null;
+    final adminName = authService?.getUserName() ?? 'Dexter';
+    final adminRole = authService?.getUserRole() ?? 'admin';
 
     return Container(
       margin: const EdgeInsets.all(12),
@@ -234,17 +260,21 @@ class _SidebarUserProfile extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Dexter',
+                  adminName,
                   style: theme.textTheme.labelLarge?.copyWith(
                     color: colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 Text(
-                  'Admin Account',
+                  _formatRole(adminRole),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
@@ -253,7 +283,13 @@ class _SidebarUserProfile extends StatelessWidget {
             icon: const Icon(Icons.logout_rounded, size: 20),
             color: colorScheme.error,
             tooltip: 'Logout',
-            onPressed: () {},
+            onPressed: () {
+              if (authService != null) {
+                authService.logout();
+              } else {
+                Get.offAllNamed('/login');
+              }
+            },
           ),
         ],
       ),
