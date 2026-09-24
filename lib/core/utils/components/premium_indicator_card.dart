@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
@@ -240,15 +241,36 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
 
   /// إعدادات الرسم البياني المصغر بنمط M3 التفاعلي
   LineChartData _buildChartData(Color chartColor) {
+    final spots = widget.chartSpots ?? [];
+    double minY = 0.0;
+    double maxY = 4.0;
+
+    if (spots.isNotEmpty) {
+      final yValues = spots.map((s) => s.y).toList();
+      final maxVal = yValues.reduce(math.max);
+      final minVal = yValues.reduce(math.min);
+      minY = minVal < 0 ? minVal : 0.0;
+      maxY = maxVal <= minY ? (minY + 4.0) : (maxVal * 1.25);
+    }
+
+    final maxX = spots.isEmpty
+        ? 1.0
+        : (spots.length <= 1 ? 1.0 : (spots.length - 1).toDouble());
+
     return LineChartData(
+      minY: minY,
+      maxY: maxY,
+      minX: 0.0,
+      maxX: maxX,
       gridData: const FlGridData(show: false),
       titlesData: const FlTitlesData(show: false),
       borderData: FlBorderData(show: false),
       lineTouchData: const LineTouchData(enabled: false),
       lineBarsData: [
         LineChartBarData(
-          spots: widget.chartSpots ?? [],
-          isCurved: true,
+          spots: spots,
+          isCurved: spots.length >= 2,
+          preventCurveOverShooting: true,
           curveSmoothness: 0.35,
           color: chartColor,
           barWidth: 2.5,
