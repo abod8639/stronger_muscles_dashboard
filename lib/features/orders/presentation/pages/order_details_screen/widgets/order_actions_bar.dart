@@ -95,11 +95,11 @@ class OrderActionsBar extends StatelessWidget {
                     tooltip: 'مشاركة ملف الفاتورة PDF',
                   ),
 
-                  // زر تأكيد الطلب (عندما تكون الحالة قيد الانتظار)
+                  // زر تأكيد الطلب (قيد الانتظار -> قيد المعالجة)
                   if (isPending)
                     FilledButton.icon(
                       style: FilledButton.styleFrom(
-                        backgroundColor: Colors.green.shade700,
+                        backgroundColor: Colors.blue.shade700,
                         foregroundColor: Colors.white,
                       ),
                       onPressed: isUpdating ? null : controller.confirmOrder,
@@ -115,6 +115,60 @@ class OrderActionsBar extends StatelessWidget {
                           : const Icon(Icons.check_circle_outline_rounded, size: 18),
                       label: const Text('تأكيد الطلب'),
                     ),
+
+                  // زر بدء الشحن (قيد المعالجة -> تم الشحن)
+                  if (currentStatus == OrderStatus.processing)
+                    FilledButton.icon(
+                      style: FilledButton.styleFrom(
+                        backgroundColor: Colors.indigo.shade600,
+                        foregroundColor: Colors.white,
+                      ),
+                      onPressed: isUpdating ? null : controller.shipOrder,
+                      icon: isUpdating
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Icon(Icons.local_shipping_outlined, size: 18),
+                      label: const Text('بدء الشحن'),
+                    ),
+
+                  // زر تأكيد التوصيل (تم الشحن -> تم التوصيل)
+                  if (currentStatus == OrderStatus.shipped)
+                    FilledButton.icon(
+                      style: FilledButton.styleFrom(
+                        backgroundColor: Colors.green.shade700,
+                        foregroundColor: Colors.white,
+                      ),
+                      onPressed: isUpdating ? null : controller.deliverOrder,
+                      icon: isUpdating
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Icon(Icons.task_alt_rounded, size: 18),
+                      label: const Text('تأكيد التوصيل'),
+                    ),
+
+                  // زر تغيير الحالة يدويًا لأي حالة
+                  OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: colorScheme.primary,
+                    ),
+                    onPressed: isUpdating
+                        ? null
+                        : () => _showChangeStatusDialog(context),
+                    icon: const Icon(Icons.edit_note_rounded, size: 18),
+                    label: const Text('تغيير الحالة...'),
+                  ),
 
                   // زر إلغاء الطلب
                   if (canCancel)
@@ -138,6 +192,82 @@ class OrderActionsBar extends StatelessWidget {
         ),
       );
     });
+  }
+
+  /// حوار تغيير حالة الطلب يدويًا
+  Future<void> _showChangeStatusDialog(BuildContext context) async {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final currentStatus = controller.order.value.status;
+    OrderStatus selectedStatus = currentStatus;
+
+    final confirmed = await showDialog<OrderStatus>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setState) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          title: Text(
+            'تغيير حالة الطلب',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: OrderStatus.values.map((status) {
+                final isSelected = selectedStatus == status;
+                return ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  tileColor: isSelected
+                      ? colorScheme.primaryContainer.withValues(alpha: 0.3)
+                      : null,
+                  leading: Icon(
+                    isSelected
+                        ? Icons.radio_button_checked
+                        : Icons.radio_button_off,
+                    color: isSelected
+                        ? colorScheme.primary
+                        : colorScheme.outline,
+                  ),
+                  title: Text(
+                    controller.getStatusText(status),
+                    style: TextStyle(
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.normal,
+                      color: isSelected
+                          ? colorScheme.primary
+                          : colorScheme.onSurface,
+                    ),
+                  ),
+                  onTap: () {
+                    setState(() => selectedStatus = status);
+                  },
+                );
+              }).toList(),
+            ),
+          ),
+          actionsAlignment: MainAxisAlignment.center,
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(null),
+              child: const Text('إلغاء'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(ctx).pop(selectedStatus),
+              child: const Text('حفظ التغيير'),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (confirmed != null && confirmed != currentStatus) {
+      await controller.updateOrderStatus(confirmed);
+    }
   }
 
   /// حوار تأكيد إلغاء الطلب
