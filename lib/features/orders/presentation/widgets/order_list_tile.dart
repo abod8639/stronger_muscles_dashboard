@@ -67,7 +67,7 @@ class _OrderListTileState extends State<OrderListTile>
     final isMobile = context.isMobile;
 
     final borderRadius = BorderRadius.circular(isMobile ? 16 : 20);
-    final cardPadding = EdgeInsets.all(isMobile ? 10 : 14);
+    final cardPadding = EdgeInsets.all( 10);
 
     return MouseRegion(
       onEnter: (_) => _onHover(true),
