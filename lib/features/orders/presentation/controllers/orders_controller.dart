@@ -7,17 +7,22 @@ import 'package:stronger_muscles_dashboard/features/orders/domain/usecases/updat
 
 class OrdersController extends GetxController {
   final GetOrdersUseCase _getOrdersUseCase;
+  final GetOrderDetailUseCase? _getOrderDetailUseCase;
+  final UpdateOrderStatusUseCase? _updateOrderStatusUseCase;
 
   OrdersController({
     required GetOrdersUseCase getOrdersUseCase,
     GetOrderDetailUseCase? getOrderDetailUseCase,
     UpdateOrderStatusUseCase? updateOrderStatusUseCase,
-  }) : _getOrdersUseCase = getOrdersUseCase;
+  })  : _getOrdersUseCase = getOrdersUseCase,
+        _getOrderDetailUseCase = getOrderDetailUseCase,
+        _updateOrderStatusUseCase = updateOrderStatusUseCase;
 
   final RxList<OrderEntity> _allOrders = <OrderEntity>[].obs;
   final RxList<OrderEntity> filteredOrders = <OrderEntity>[].obs;
 
   final RxBool isLoading = false.obs;
+  final RxBool isUpdatingStatus = false.obs;
   final RxString errorMessage = ''.obs;
   final RxString searchQuery = ''.obs;
 
@@ -134,6 +139,53 @@ class OrdersController extends GetxController {
       case OrderStatus.shipped: return Colors.purple;
       case OrderStatus.delivered: return Colors.green;
       case OrderStatus.cancelled: return Colors.red;
+    }
+  }
+
+  /// تحديث حالة الطلب مع معالجة الأخطاء والتحديث التفاعلي
+  Future<OrderEntity?> updateOrderStatus(
+    String orderId,
+    OrderStatus newStatus,
+  ) async {
+    if (_updateOrderStatusUseCase == null) {
+      Get.snackbar('خطأ', 'خدمة تحديث حالة الطلب غير متوفرة');
+      return null;
+    }
+
+    try {
+      isUpdatingStatus.value = true;
+      final updatedOrder = await _updateOrderStatusUseCase!(orderId, newStatus);
+
+      // تحديث الطلب في القوائم المحلية
+      final index = _allOrders.indexWhere((o) => o.id == orderId);
+      if (index != -1) {
+        _allOrders[index] = updatedOrder;
+        _applyFilters();
+      }
+
+      Get.snackbar(
+        'تم التحديث',
+        'تم تحديث حالة الطلب إلى "${getStatusText(newStatus)}" بنجاح',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.black87,
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(16),
+        duration: const Duration(seconds: 3),
+      );
+
+      return updatedOrder;
+    } catch (e) {
+      Get.snackbar(
+        'فشل التحديث',
+        'تعذر تحديث حالة الطلب: $e',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(16),
+      );
+      return null;
+    } finally {
+      isUpdatingStatus.value = false;
     }
   }
 }
