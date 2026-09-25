@@ -40,6 +40,12 @@ class ProductFormBody extends StatelessWidget {
         // 2. قسم البيانات الأساسية
         ProductBasicInfoSection(
           controller: controller,
+        ),
+        const SizedBox(height: 20),
+
+        // 3. قسم تصنيف المنتج
+        ProductCategorySection(
+          controller: controller,
           selectedCategoryId: selectedCategoryId,
           onCategorySelected: onCategorySelected,
         ),
