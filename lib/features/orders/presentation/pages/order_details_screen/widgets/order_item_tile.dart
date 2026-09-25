@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 import 'package:stronger_muscles_dashboard/functions/cache_manager.dart';
 
-/// عنصر منتج الطلب المتوافق مع معايير Material Design 3
+/// عنصر منتج الطلب بتصميم Neumorphism / Soft UI
+/// متناسق مع ألوان وثيم التطبيق للوضعين الداكن والفاتح بحواف ناعمة وظلال ثنائية هادئة.
 class OrderItemTile extends StatelessWidget {
   final OrderItemEntity item;
 
@@ -16,21 +17,52 @@ class OrderItemTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Product Image Container
+          // 1. حاوية صورة المنتج النيومورفية (Neumorphic Product Image Frame)
           Container(
             width: 64,
             height: 64,
             decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(14),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: isDark
+                    ? [
+                        Color.lerp(colorScheme.surfaceContainerHigh, Colors.white, 0.05)!,
+                        Color.lerp(colorScheme.surfaceContainerHigh, Colors.black, 0.12)!,
+                      ]
+                    : [
+                        Colors.white,
+                        Color.lerp(colorScheme.surfaceContainerLow, Colors.black, 0.03)!,
+                      ],
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: isDark
+                      ? Colors.black.withValues(alpha: 0.45)
+                      : const Color(0xFFA3B1C6).withValues(alpha: 0.35),
+                  offset: const Offset(2, 3),
+                  blurRadius: 5,
+                ),
+                BoxShadow(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.04)
+                      : Colors.white.withValues(alpha: 0.95),
+                  offset: const Offset(-2, -2),
+                  blurRadius: 4,
+                ),
+              ],
               border: Border.all(
-                color: colorScheme.outlineVariant.withValues(alpha: 0.6),
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : Colors.white.withValues(alpha: 0.85),
                 width: 1.0,
               ),
             ),
@@ -68,7 +100,7 @@ class OrderItemTile extends StatelessWidget {
           ),
           const SizedBox(width: 14),
 
-          // Product Details
+          // 2. تفاصيل المنتج (Product Details)
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,15 +116,16 @@ class OrderItemTile extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
 
-                // Quantity & Unit Price
+                // الكمية وسعر الوحدة
                 Text(
                   '${item.quantity} × ${item.unitPrice.toStringAsFixed(2)} ر.س',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
 
-                // Flavor & Size attributes
+                // خصائص المنتج (النكهة والحجم)
                 if ((item.selectedFlavor != null &&
                         item.selectedFlavor!.isNotEmpty) ||
                     (item.selectedSize != null &&
@@ -107,12 +140,14 @@ class OrderItemTile extends StatelessWidget {
                         _OrderItemAttributeChip(
                           icon: Icons.local_cafe_outlined,
                           label: item.selectedFlavor!,
+                          isDark: isDark,
                         ),
                       if (item.selectedSize != null &&
                           item.selectedSize!.isNotEmpty)
                         _OrderItemAttributeChip(
                           icon: Icons.straighten_outlined,
                           label: item.selectedSize!,
+                          isDark: isDark,
                         ),
                     ],
                   ),
@@ -122,14 +157,45 @@ class OrderItemTile extends StatelessWidget {
           ),
           const SizedBox(width: 12),
 
-          // Subtotal Badge
+          // 3. شارة الإجمالي الفرعي المجسمة (Neumorphic Subtotal Badge)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(12),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: isDark
+                    ? [
+                        Color.lerp(colorScheme.surfaceContainerHigh, Colors.white, 0.05)!,
+                        Color.lerp(colorScheme.surfaceContainerHigh, Colors.black, 0.12)!,
+                      ]
+                    : [
+                        Colors.white,
+                        Color.lerp(colorScheme.surfaceContainerLow, Colors.black, 0.03)!,
+                      ],
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: isDark
+                      ? Colors.black.withValues(alpha: 0.40)
+                      : const Color(0xFFA3B1C6).withValues(alpha: 0.35),
+                  offset: const Offset(1.5, 2),
+                  blurRadius: 4,
+                ),
+                BoxShadow(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.04)
+                      : Colors.white.withValues(alpha: 0.95),
+                  offset: const Offset(-1.5, -1.5),
+                  blurRadius: 3,
+                ),
+              ],
               border: Border.all(
-                color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.07)
+                    : Colors.white.withValues(alpha: 0.85),
+                width: 1.0,
               ),
             ),
             child: Text(
@@ -137,7 +203,7 @@ class OrderItemTile extends StatelessWidget {
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: colorScheme.onSurface,
+                color: colorScheme.primary,
               ),
             ),
           ),
@@ -150,10 +216,12 @@ class OrderItemTile extends StatelessWidget {
 class _OrderItemAttributeChip extends StatelessWidget {
   final IconData icon;
   final String label;
+  final bool isDark;
 
   const _OrderItemAttributeChip({
     required this.icon,
     required this.label,
+    required this.isDark,
   });
 
   @override
@@ -162,14 +230,34 @@ class _OrderItemAttributeChip extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3.5),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.7),
+        color: isDark
+            ? Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.15)!
+            : Color.lerp(colorScheme.surfaceContainer, Colors.white, 0.60)!,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.05)
+              : Colors.white.withValues(alpha: 0.70),
           width: 0.8,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.25)
+                : const Color(0xFFA3B1C6).withValues(alpha: 0.20),
+            offset: const Offset(1, 1.5),
+            blurRadius: 2.5,
+          ),
+          BoxShadow(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.03)
+                : Colors.white.withValues(alpha: 0.85),
+            offset: const Offset(-1, -1),
+            blurRadius: 2,
+          ),
+        ],
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -177,7 +265,7 @@ class _OrderItemAttributeChip extends StatelessWidget {
           Icon(
             icon,
             size: 12,
-            color: colorScheme.onSurfaceVariant,
+            color: colorScheme.primary,
           ),
           const SizedBox(width: 4),
           Text(
@@ -185,6 +273,7 @@ class _OrderItemAttributeChip extends StatelessWidget {
             style: theme.textTheme.labelSmall?.copyWith(
               color: colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.w600,
+              fontSize: 11,
             ),
           ),
         ],
