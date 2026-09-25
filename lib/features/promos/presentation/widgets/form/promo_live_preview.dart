@@ -56,19 +56,12 @@ class _PromoLivePreviewState extends State<PromoLivePreview> {
               : controller.subtitleArController.text);
 
       final buttonText = isArabic
-          ? (controller.buttonArController.text.isNotEmpty
-              ? controller.buttonArController.text
-              : (controller.buttonEnController.text.isNotEmpty
-                  ? controller.buttonEnController.text
-                  : 'تسوق الآن'))
-          : (controller.buttonEnController.text.isNotEmpty
-              ? controller.buttonEnController.text
-              : (controller.buttonArController.text.isNotEmpty
-                  ? controller.buttonArController.text
-                  : 'Shop Now'));
-
-      final hasTarget = controller.selectedTargetId.value != null &&
-          controller.selectedTargetId.value!.isNotEmpty;
+          ? (controller.buttonArController.text.trim().isNotEmpty
+              ? controller.buttonArController.text.trim()
+              : controller.buttonEnController.text.trim())
+          : (controller.buttonEnController.text.trim().isNotEmpty
+              ? controller.buttonEnController.text.trim()
+              : controller.buttonArController.text.trim());
 
       final hasLocalImage = controller.selectedImage.value != null;
       final hasRemoteImage = controller.existingImageUrl.value.isNotEmpty;
@@ -126,7 +119,7 @@ class _PromoLivePreviewState extends State<PromoLivePreview> {
 
           // كارد المحاكاة المباشر لمواصفات تطبيق المتجر
           Container(
-            height: 170,
+            height: 250,
             decoration: BoxDecoration(
               color: bgColor,
               borderRadius: BorderRadius.circular(16),
@@ -139,7 +132,7 @@ class _PromoLivePreviewState extends State<PromoLivePreview> {
                 ),
               ],
             ),
-            clipBehavior: Clip.antiAlias,
+            // clipBehavior: Clip.antiAlias,
             child: Stack(
               fit: StackFit.expand,
               children: [
@@ -153,7 +146,7 @@ class _PromoLivePreviewState extends State<PromoLivePreview> {
                   CachedNetworkImage(
                     cacheManager: CustomCacheManager.instance,
                     imageUrl: controller.existingImageUrl.value,
-                    fit: BoxFit.cover,
+                    fit: BoxFit.contain,
                     errorWidget: (_, _, _) => Container(color: bgColor),
                     placeholder: (_, _) => Container(
                       color: bgColor,
@@ -229,7 +222,7 @@ class _PromoLivePreviewState extends State<PromoLivePreview> {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      if (hasTarget || buttonText.isNotEmpty) ...[
+                      if (buttonText.isNotEmpty) ...[
                         const SizedBox(height: 16),
                         Container(
                           padding: const EdgeInsets.symmetric(
