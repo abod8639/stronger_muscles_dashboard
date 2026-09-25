@@ -1,116 +1,192 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/features/promos/domain/entities/promo_entity.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:stronger_muscles_dashboard/functions/cache_manager.dart';
 
+/// بطاقة الإعلان الترويجي التي تحاكي بنسبة 100% شكل الإعلان داخل تطبيق المتجر
 class PromoCard extends StatelessWidget {
   final PromoEntity promo;
+  final String locale;
+  final VoidCallback? onTap;
+  final EdgeInsetsGeometry? margin;
 
-  const PromoCard({super.key, required this.promo});
+  const PromoCard({
+    super.key,
+    required this.promo,
+    this.locale = 'ar',
+    this.onTap,
+    this.margin,
+  });
 
-  Color _parsePromoColor(BuildContext context) {
+  /// لون التطبيق الأساسي في تطبيق الجوال (AppColors.primary)
+  static const Color appPrimaryColor = Color(0xFFD32F2F);
+
+  Color _parsePromoColor() {
     try {
-      final hex = promo.backgroundColor.replaceAll('#', '');
-      return Color(int.parse(hex.length == 6 ? '0xff$hex' : '0x$hex'));
-    } catch (_) {
-      return Theme.of(context).colorScheme.primaryContainer;
+      String hex = promo.backgroundColor.replaceAll('#', '').trim();
+      if (hex.startsWith('0x') || hex.startsWith('0X')) {
+        hex = hex.substring(2);
+      }
+      if (hex.length == 6) {
+        return Color(int.parse('0xFF$hex'));
+      } else if (hex.length == 8) {
+        return Color(int.parse('0x$hex'));
+      }
+    } catch (_) {}
+    return const Color(0xFF1E1E22);
+  }
+
+  String _getLocalizedTitle() {
+    if (promo.title != null) {
+      if (promo.title!.containsKey(locale) &&
+          promo.title![locale]?.toString().trim().isNotEmpty == true) {
+        return promo.title![locale].toString();
+      }
     }
+    return promo.displayTitle;
+  }
+
+  String _getLocalizedSubtitle() {
+    if (promo.subtitle != null) {
+      if (promo.subtitle!.containsKey(locale) &&
+          promo.subtitle![locale]?.toString().trim().isNotEmpty == true) {
+        return promo.subtitle![locale].toString();
+      }
+    }
+    return promo.displaySubtitle;
+  }
+
+  String _getLocalizedButtonText() {
+    if (promo.buttonText != null) {
+      if (promo.buttonText!.containsKey(locale) &&
+          promo.buttonText![locale]?.toString().trim().isNotEmpty == true) {
+        return promo.buttonText![locale].toString();
+      }
+    }
+    final text = promo.displayButtonText;
+    if (text.isNotEmpty) return text;
+    return locale == 'en' ? 'Shop Now' : 'تسوق الآن';
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final cardColor = _parsePromoColor(context);
+    final bgColor = _parsePromoColor();
+    final title = _getLocalizedTitle();
+    final subtitle = _getLocalizedSubtitle();
+    final buttonText = _getLocalizedButtonText();
+    final hasTarget = promo.targetId != null && promo.targetId!.isNotEmpty;
 
-    return Card(
-      elevation: 2,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-        side: BorderSide(
-          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: margin ?? const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          color: bgColor,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: .1),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+              blurStyle: BlurStyle.outer,
+            ),
+          ],
         ),
-      ),
-      color: cardColor,
-      child: SizedBox(
-        width: double.infinity,
-        height: 180,
+        clipBehavior: Clip.antiAlias,
         child: Stack(
+          fit: StackFit.expand,
           children: [
-            // Background Image
+            // صورة الإعلان المأخوذة من الكاش أو الرابط
             if (promo.imageUrl.isNotEmpty)
-              Positioned.fill(
-                child: Opacity(
-                  opacity: 0.8,
-                  child: CachedNetworkImage(
-                    imageUrl: promo.imageUrl,
-                    fit: BoxFit.cover,
+              CachedNetworkImage(
+                cacheManager: CustomCacheManager.instance,
+                imageUrl: promo.imageUrl,
+                fit: BoxFit.cover,
+                errorWidget: (context, error, stackTrace) =>
+                    Container(color: bgColor),
+                placeholder: (context, url) => Container(
+                  color: bgColor,
+                  child: const Center(
+                    child: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white60,
+                      ),
+                    ),
                   ),
                 ),
-              ),
+              )
+            else
+              Container(color: bgColor),
 
-            // Gradient Overlay for readability
-            Positioned.fill(
-              child: DecoratedBox(
+            // التدرج اللوني فوق الصورة في حال وجود عنوان
+            if (title.isNotEmpty)
+              Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      Colors.black.withValues(alpha: 0.75),
-                      Colors.black.withValues(alpha: 0.1),
+                      Colors.black.withValues(alpha: .8),
+                      Colors.black.withValues(alpha: .2),
                     ],
-                    begin: Alignment.bottomRight,
-                    end: Alignment.topLeft,
+                    begin: AlignmentDirectional.centerStart,
+                    end: AlignmentDirectional.centerEnd,
                   ),
                 ),
               ),
-            ),
 
-            // Content
+            // محتوى الإعلان (النصوص وزر التوجيه)
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (promo.displaySubtitle.isNotEmpty)
+                  if (title.isNotEmpty)
                     Text(
-                      promo.displaySubtitle,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        color: Colors.white70,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 1.1,
-                      ),
-                    ),
-                  if (promo.displaySubtitle.isNotEmpty && promo.displayTitle.isNotEmpty)
-                    const SizedBox(height: 6),
-                  if (promo.displayTitle.isNotEmpty)
-                    Text(
-                      promo.displayTitle,
-                      style: theme.textTheme.headlineSmall?.copyWith(
+                      title,
+                      style: const TextStyle(
                         color: Colors.white,
+                        fontSize: 22,
                         fontWeight: FontWeight.bold,
-                        height: 1.2,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  if (subtitle.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: .9),
+                        fontSize: 14,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                  const Spacer(),
-                  if (promo.displayButtonText.isNotEmpty)
-                    Material(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(24),
-                      elevation: 1,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-                        child: Text(
-                          promo.displayButtonText,
-                          style: theme.textTheme.labelMedium?.copyWith(
-                            color: cardColor,
-                            fontWeight: FontWeight.bold,
-                          ),
+                  ],
+                  if (hasTarget || buttonText.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: appPrimaryColor,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        buttonText,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
                         ),
                       ),
                     ),
+                  ],
                 ],
               ),
             ),
