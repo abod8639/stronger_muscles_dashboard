@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/category_picker_sheet.dart';
 import 'form_section_card.dart';
 import 'modern_form_field.dart';
 
-/// قسم البيانات الأساسية للمنتج (الاسم، الوصف، العلامة التجارية، والتصنيف)
+/// قسم البيانات الأساسية للمنتج بتصميم Neumorphism / Soft UI
+/// يتضمن مفتاح تبديل لغات ناعم، حقول إدخال مجسمة، وقائمة إكمال تلقائي ملموسة
 class ProductBasicInfoSection extends StatefulWidget {
   final ProductsController controller;
   final String? selectedCategoryId;
@@ -27,30 +29,16 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
     final ctrl = widget.controller;
 
     return FormSectionCard(
       title: 'البيانات الأساسية',
       subtitle: 'الاسم، العلامة التجارية، التصنيف والوصف',
       icon: Icons.edit_note_rounded,
-      trailing: SegmentedButton<String>(
-        segments: const [
-          ButtonSegment<String>(
-            value: 'ar',
-            label: Text('العربية 🇸🇦'),
-            icon: Icon(Icons.language_rounded, size: 16),
-          ),
-          ButtonSegment<String>(
-            value: 'en',
-            label: Text('English 🇬🇧'),
-            icon: Icon(Icons.translate_rounded, size: 16),
-          ),
-        ],
-        selected: {_selectedLang},
-        onSelectionChanged: (newSelection) {
-          setState(() => _selectedLang = newSelection.first);
-        },
-      ),
+      trailing: _buildLanguageSelector(colorScheme, isDark),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -98,34 +86,170 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
           const SizedBox(height: 18),
 
           // Brand Autocomplete & Category Picker
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Brand
-              Expanded(
-                child: _buildBrandAutocomplete(ctrl),
-              ),
-              const SizedBox(width: 14),
-              // Category
-              Expanded(
-                child: CategoryPickerField(
+          if (context.isMobile)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildBrandAutocomplete(ctrl, colorScheme, isDark),
+                const SizedBox(height: 16),
+                CategoryPickerField(
                   categories: ctrl.categories.toList(),
                   selectedId: widget.selectedCategoryId,
                   onSelected: widget.onCategorySelected,
                 ),
-              ),
-            ],
-          ),
+              ],
+            )
+          else
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: _buildBrandAutocomplete(ctrl, colorScheme, isDark),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: CategoryPickerField(
+                    categories: ctrl.categories.toList(),
+                    selectedId: widget.selectedCategoryId,
+                    onSelected: widget.onCategorySelected,
+                  ),
+                ),
+              ],
+            ),
         ],
       ),
     );
   }
 
-  Widget _buildBrandAutocomplete(ProductsController ctrl) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final isDark = theme.brightness == Brightness.dark;
+  /// محدد اللغة بنمط Neumorphic Soft UI
+  Widget _buildLanguageSelector(ColorScheme colorScheme, bool isDark) {
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: isDark
+            ? colorScheme.surfaceContainerLowest.withValues(alpha: 0.6)
+            : colorScheme.surfaceContainerLow.withValues(alpha: 0.6),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.25)
+                : const Color(0xFFA3B1C6).withValues(alpha: 0.20),
+            offset: const Offset(1, 1),
+            blurRadius: 2,
+          ),
+          BoxShadow(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.02)
+                : Colors.white.withValues(alpha: 0.80),
+            offset: const Offset(-1, -1),
+            blurRadius: 1.5,
+          ),
+        ],
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.03)
+              : Colors.white.withValues(alpha: 0.70),
+          width: 0.8,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildLangPill(
+              'ar', 'العربية 🇸🇦', Icons.language_rounded, colorScheme, isDark),
+          const SizedBox(width: 4),
+          _buildLangPill(
+              'en', 'English 🇬🇧', Icons.translate_rounded, colorScheme, isDark),
+        ],
+      ),
+    );
+  }
 
+  Widget _buildLangPill(String lang, String label, IconData icon,
+      ColorScheme colorScheme, bool isDark) {
+    final isSelected = _selectedLang == lang;
+    return InkWell(
+      borderRadius: BorderRadius.circular(9),
+      onTap: () => setState(() => _selectedLang = lang),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(9),
+          gradient: isSelected
+              ? LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: isDark
+                      ? [
+                          Color.lerp(colorScheme.surfaceContainerHigh,
+                              Colors.white, 0.02)!,
+                          Color.lerp(colorScheme.surfaceContainerHigh,
+                              Colors.black, 0.10)!,
+                        ]
+                      : [
+                          Colors.white,
+                          Color.lerp(colorScheme.surfaceContainerLow,
+                              Colors.black, 0.02)!,
+                        ],
+                )
+              : null,
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: isDark
+                        ? Colors.black.withValues(alpha: 0.35)
+                        : const Color(0xFFA3B1C6).withValues(alpha: 0.30),
+                    offset: const Offset(1.5, 2),
+                    blurRadius: 3,
+                  ),
+                  BoxShadow(
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.02)
+                        : Colors.white.withValues(alpha: 0.90),
+                    offset: const Offset(-1.5, -1.5),
+                    blurRadius: 2.5,
+                  ),
+                ]
+              : null,
+          border: isSelected
+              ? Border.all(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.03)
+                      : Colors.white.withValues(alpha: 0.85),
+                  width: 1.0,
+                )
+              : null,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 15,
+              color: isSelected
+                  ? colorScheme.primary
+                  : colorScheme.onSurfaceVariant,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                color: isSelected
+                    ? colorScheme.primary
+                    : colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBrandAutocomplete(
+      ProductsController ctrl, ColorScheme colorScheme, bool isDark) {
     return Autocomplete<String>(
       optionsBuilder: (TextEditingValue textEditingValue) {
         if (textEditingValue.text.isEmpty) {
@@ -157,7 +281,11 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
           decoration: InputDecoration(
             labelText: 'العلامة التجارية (البراند)',
             hintText: 'اختر أو اكتب براند جديد...',
-            prefixIcon: const Icon(Icons.verified_outlined, size: 20),
+            prefixIcon: Icon(
+              Icons.verified_outlined,
+              size: 20,
+              color: colorScheme.onSurfaceVariant,
+            ),
             filled: true,
             fillColor: isDark
                 ? colorScheme.surfaceContainerLowest.withValues(alpha: 0.5)
@@ -202,12 +330,15 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
                 end: Alignment.bottomRight,
                 colors: isDark
                     ? [
-                        Color.lerp(colorScheme.surfaceContainerHigh, Colors.white, 0.02)!,
-                        Color.lerp(colorScheme.surfaceContainerHigh, Colors.black, 0.10)!,
+                        Color.lerp(colorScheme.surfaceContainerHigh,
+                            Colors.white, 0.02)!,
+                        Color.lerp(colorScheme.surfaceContainerHigh,
+                            Colors.black, 0.10)!,
                       ]
                     : [
                         Colors.white,
-                        Color.lerp(colorScheme.surfaceContainerLow, Colors.black, 0.035)!,
+                        Color.lerp(colorScheme.surfaceContainerLow,
+                            Colors.black, 0.035)!,
                       ],
               ),
               boxShadow: [
@@ -248,7 +379,14 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
                       color: colorScheme.primary,
                       size: 18,
                     ),
-                    title: Text(option),
+                    title: Text(
+                      option,
+                      style: TextStyle(
+                        color: colorScheme.onSurface,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
+                    ),
                     onTap: () => onSelected(option),
                   );
                 },
