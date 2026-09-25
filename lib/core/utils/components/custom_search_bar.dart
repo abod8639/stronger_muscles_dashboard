@@ -39,7 +39,6 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
   bool _ownsController = false;
   bool _ownsFocusNode = false;
   bool _hasText = false;
-  bool _isHovered = false;
 
   @override
   void initState() {
@@ -101,147 +100,142 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
     final isDark = theme.brightness == Brightness.dark;
 
     final isFocused = _focusNode.hasFocus;
+    final borderRadius = BorderRadius.circular(100);
 
-    // حاوية خلفية بألوان M3 Surface Container
-    final Color containerColor = isFocused
-        ? colorScheme.surfaceContainerHighest
-        : (_isHovered
-            ? colorScheme.surfaceContainerHigh
-            : colorScheme.surfaceContainer);
-
-    // إطار متناسق مع معايير M3
-    final Border border = Border.all(
-      color: isFocused
-          ? colorScheme.primary
-          : (_isHovered
-              ? colorScheme.outline.withValues(alpha: 0.6)
-              : colorScheme.outlineVariant.withValues(alpha: 0.45)),
-      width: isFocused ? 1.5 : 1.0,
-    );
-
-    // ظلال وظهور ناعم عند التركيز
-    final List<BoxShadow> shadows = [
-      if (isFocused)
-        BoxShadow(
-          color: colorScheme.primary.withValues(alpha: 0.12),
-          blurRadius: 14,
-          offset: const Offset(0, 3),
-        )
-      else
-        BoxShadow(
-          color: colorScheme.shadow.withValues(alpha: isDark ? 0.22 : 0.04),
-          blurRadius: 8,
-          offset: const Offset(0, 2),
+    final Widget content = Container(
+      height: 50,
+      decoration: BoxDecoration(
+        borderRadius: borderRadius,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isDark
+              ? [
+                  Color.lerp(colorScheme.surfaceContainer, Colors.white, 0.03)!,
+                  Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.09)!,
+                ]
+              : [
+                  Color.lerp(colorScheme.surfaceContainer, Colors.white, 0.70)!,
+                  Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.03)!,
+                ],
         ),
-    ];
-
-    Widget content = MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOutCubic,
-        height: 52,
-        decoration: BoxDecoration(
-          color: containerColor,
-          borderRadius: BorderRadius.circular(28), // M3 Full Pill Shape
-          border: border,
-          boxShadow: shadows,
+        boxShadow: [
+          // الظل السفلي الغامق (Drop Shadow)
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.50)
+                : const Color(0xFFA3B1C6).withValues(alpha: 0.40),
+            offset: const Offset(3, 4),
+            blurRadius: 10,
+          ),
+          // الظل العلوي الفاتح العاكس للضوء (Highlight Glow)
+          BoxShadow(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.04)
+                : Colors.white.withValues(alpha: 0.95),
+            offset: const Offset(-2.5, -2.5),
+            blurRadius: 8,
+          ),
+          if (isFocused)
+            BoxShadow(
+              color: colorScheme.primary.withValues(alpha: isDark ? 0.12 : 0.15),
+              offset: const Offset(0, 2),
+              blurRadius: 12,
+            ),
+        ],
+        border: Border.all(
+          color: isFocused
+              ? colorScheme.primary.withValues(alpha: isDark ? 0.5 : 0.6)
+              : (isDark
+                  ? Colors.white.withValues(alpha: 0.06)
+                  : Colors.white.withValues(alpha: 0.85)),
+          width: isFocused ? 1.4 : 1.0,
         ),
-        child: Material(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(28),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // 1. Leading Search Icon
-              Padding(
-                padding: const EdgeInsetsDirectional.only(start: 16, end: 8),
-                child: widget.leading ??
-                    Icon(
-                      Icons.search_rounded,
-                      size: 22,
-                      color: isFocused
-                          ? colorScheme.primary
-                          : colorScheme.onSurfaceVariant,
-                    ),
-              ),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: borderRadius,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // 1. Leading Search Icon
+            Padding(
+              padding: const EdgeInsetsDirectional.only(start: 16, end: 8),
+              child: widget.leading ??
+                  Icon(
+                    Icons.search_rounded,
+                    size: 22,
+                    color: isFocused
+                        ? colorScheme.primary
+                        : colorScheme.onSurfaceVariant,
+                  ),
+            ),
 
-              // 2. TextField Input
-              Expanded(
-                child: CallbackShortcuts(
-                  bindings: <ShortcutActivator, VoidCallback>{
-                    const SingleActivator(LogicalKeyboardKey.escape): () {
-                      if (_hasText) {
-                        _clearSearch();
-                      } else {
-                        _focusNode.unfocus();
-                      }
-                    },
+            // 2. TextField Input
+            Expanded(
+              child: CallbackShortcuts(
+                bindings: <ShortcutActivator, VoidCallback>{
+                  const SingleActivator(LogicalKeyboardKey.escape): () {
+                    if (_hasText) {
+                      _clearSearch();
+                    } else {
+                      _focusNode.unfocus();
+                    }
                   },
-                  child: TextField(
-                    controller: _textController,
-                    focusNode: _focusNode,
-                    autofocus: widget.autofocus,
-                    onChanged: widget.onSearch,
-                    onSubmitted: widget.onSubmitted,
-                    cursorColor: colorScheme.primary,
-                    cursorWidth: 2,
-                    cursorRadius: const Radius.circular(2),
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: colorScheme.onSurface,
+                },
+                child: TextField(
+                  controller: _textController,
+                  focusNode: _focusNode,
+                  autofocus: widget.autofocus,
+                  onChanged: widget.onSearch,
+                  onSubmitted: widget.onSubmitted,
+                  cursorColor: colorScheme.primary,
+                  cursorWidth: 2,
+                  cursorRadius: const Radius.circular(2),
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: colorScheme.onSurface,
+                    fontWeight: FontWeight.normal,
+                  ),
+                  textInputAction: TextInputAction.search,
+                  decoration: InputDecoration(
+                    hintText: widget.hintText,
+                    hintStyle: theme.textTheme.bodyLarge?.copyWith(
+                      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.70),
                       fontWeight: FontWeight.normal,
                     ),
-                    textInputAction: TextInputAction.search,
-                    decoration: InputDecoration(
-                      hintText: widget.hintText,
-                      hintStyle: theme.textTheme.bodyLarge?.copyWith(
-                        color: colorScheme.onSurfaceVariant.withValues(alpha: 0.70),
-                        fontWeight: FontWeight.normal,
-                      ),
-                      border: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      filled: false,
-                      isDense: true,
-                      contentPadding: const EdgeInsets.symmetric(
-                        vertical: 14,
-                        horizontal: 4,
-                      ),
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    filled: false,
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 14,
+                      horizontal: 4,
                     ),
                   ),
                 ),
               ),
+            ),
 
-              // 3. Clear Button (Trailing)
-              AnimatedScale(
-                scale: _hasText ? 1.0 : 0.0,
-                duration: const Duration(milliseconds: 150),
-                child: AnimatedOpacity(
-                  opacity: _hasText ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 150),
-                  child: _hasText
-                      ? Padding(
-                          padding: const EdgeInsetsDirectional.only(end: 4),
-                          child: IconButton(
-                            icon: const Icon(Icons.close_rounded, size: 18),
-                            tooltip: 'مسح البحث',
-                            color: colorScheme.onSurfaceVariant,
-                            splashRadius: 18,
-                            onPressed: _clearSearch,
-                          ),
-                        )
-                      : const SizedBox.shrink(),
+            // 3. Clear Button (Trailing) - بدون أنيميشن
+            if (_hasText)
+              Padding(
+                padding: const EdgeInsetsDirectional.only(end: 4),
+                child: IconButton(
+                  icon: const Icon(Icons.close_rounded, size: 18),
+                  tooltip: 'مسح البحث',
+                  color: colorScheme.onSurfaceVariant,
+                  splashRadius: 18,
+                  onPressed: _clearSearch,
                 ),
               ),
 
-              // 4. Any Additional Trailing Widgets
-              if (widget.trailing != null && widget.trailing!.isNotEmpty) ...[
-                ...widget.trailing!,
-                const SizedBox(width: 8),
-              ],
+            // 4. Any Additional Trailing Widgets
+            if (widget.trailing != null && widget.trailing!.isNotEmpty) ...[
+              ...widget.trailing!,
+              const SizedBox(width: 8),
             ],
-          ),
+          ],
         ),
       ),
     );
