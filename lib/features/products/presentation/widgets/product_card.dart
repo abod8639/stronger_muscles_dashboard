@@ -31,92 +31,133 @@ class ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
     final responsive = context.responsive;
     final padding = responsive.defaultPadding;
-
-    final cardBgColor = isSelected
-        ? colorScheme.primaryContainer.withValues(alpha: 0.35)
-        : (isHovered
-            ? colorScheme.surfaceContainerHigh
-            : colorScheme.surfaceContainerLow);
-
-    final borderColor = isSelected
-        ? colorScheme.primary
-        : (isHovered
-            ? colorScheme.outline
-            : colorScheme.outlineVariant.withValues(alpha: 0.6));
+    final borderRadius = BorderRadius.circular(20);
 
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: padding.left,
         vertical: responsive.itemSpacing / 2,
       ),
-      child: Card(
-        margin: EdgeInsets.zero,
-        color: cardBgColor,
-        elevation: isSelected ? 1 : 0,
-        clipBehavior: Clip.antiAlias,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: BorderSide(
-            color: borderColor,
-            width: isSelected ? 1.8 : 1.0,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: borderRadius,
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: isSelected
+                ? (isDark
+                    ? [
+                        Color.lerp(colorScheme.primaryContainer, Colors.white, 0.03)!,
+                        Color.lerp(colorScheme.surfaceContainer, colorScheme.primary, 0.12)!,
+                      ]
+                    : [
+                        Color.lerp(colorScheme.primaryContainer, Colors.white, 0.60)!,
+                        Color.lerp(colorScheme.primaryContainer, Colors.black, 0.03)!,
+                      ])
+                : (isDark
+                    ? [
+                        Color.lerp(colorScheme.surfaceContainer, Colors.white, 0.02)!,
+                        Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.09)!,
+                      ]
+                    : [
+                        Colors.white,
+                        Color.lerp(colorScheme.surfaceContainerLow, Colors.black, 0.035)!,
+                      ]),
+          ),
+          boxShadow: [
+            // الظل السفلي الغامق للعمق (Drop Shadow)
+            BoxShadow(
+              color: isDark
+                  ? Colors.black.withValues(alpha: 0.45)
+                  : const Color(0xFFA3B1C6).withValues(alpha: 0.40),
+              offset: const Offset(3, 4),
+              blurRadius: 10,
+            ),
+            // الظل العلوي الفاتح العاكس للضوء (Highlight Glow)
+            BoxShadow(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.02)
+                  : Colors.white.withValues(alpha: 0.95),
+              offset: const Offset(-2.5, -2.5),
+              blurRadius: 8,
+            ),
+            if (isSelected)
+              BoxShadow(
+                color: colorScheme.primary.withValues(alpha: isDark ? 0.20 : 0.22),
+                offset: const Offset(0, 2),
+                blurRadius: 12,
+              ),
+          ],
+          border: Border.all(
+            color: isSelected
+                ? colorScheme.primary.withValues(alpha: isDark ? 0.70 : 0.85)
+                : (isDark
+                    ? Colors.white.withValues(alpha: 0.03)
+                    : Colors.white.withValues(alpha: 0.85)),
+            width: isSelected ? 1.6 : 1.0,
           ),
         ),
-        child: InkWell(
-          onTap: isSelectionMode ? onToggleSelect : onEdit,
-          onLongPress: onLongPress,
-          borderRadius: BorderRadius.circular(20),
-          child: Padding(
-            padding: EdgeInsets.all(responsive.isMobile ? 12 : 16),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // خانة الاختيار عند تفعيل وضع التحديد
-                if (isSelectionMode) ...[
-                  _buildSelectionCheckbox(colorScheme),
-                  SizedBox(width: responsive.isMobile ? 10 : 16),
-                ],
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: borderRadius,
+          child: InkWell(
+            onTap: isSelectionMode ? onToggleSelect : onEdit,
+            onLongPress: onLongPress,
+            borderRadius: borderRadius,
+            child: Padding(
+              padding: EdgeInsets.all(responsive.isMobile ? 12 : 16),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // خانة الاختيار عند تفعيل وضع التحديد
+                  if (isSelectionMode) ...[
+                    _buildSelectionCheckbox(colorScheme),
+                    SizedBox(width: responsive.isMobile ? 10 : 16),
+                  ],
 
-                // 1. صورة المنتج
-                _buildProductImage(responsive, colorScheme),
+                  // 1. صورة المنتج
+                  _buildProductImage(responsive, isDark, colorScheme),
 
-                SizedBox(width: responsive.isMobile ? 16 : 20),
+                  SizedBox(width: responsive.isMobile ? 16 : 20),
 
-                // 2. تفاصيل المنتج
-                Expanded(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          _buildBrandInfo(theme),
-                          const SizedBox(width: 8),
-                          _buildStatusBadge(colorScheme),
+                  // 2. تفاصيل المنتج
+                  Expanded(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            _buildBrandInfo(theme, isDark),
+                            const SizedBox(width: 8),
+                            _buildStatusBadge(colorScheme, isDark),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        _buildProductName(responsive, theme),
+
+                        if (product.flavors != null &&
+                            product.flavors!.isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          _buildFlavorTags(responsive, theme, isDark),
                         ],
-                      ),
-                      const SizedBox(height: 6),
-                      _buildProductName(responsive, theme),
 
-                      if (product.flavors != null &&
-                          product.flavors!.isNotEmpty) ...[
-                        const SizedBox(height: 8),
-                        _buildFlavorTags(responsive, theme),
+                        const SizedBox(height: 12),
+                        _buildPriceAndStock(responsive, theme),
                       ],
-
-                      const SizedBox(height: 12),
-                      _buildPriceAndStock(responsive, theme),
-                    ],
+                    ),
                   ),
-                ),
 
-                if (!isSelectionMode)
-                  Padding(
-                    padding: const EdgeInsets.only(left: 12),
-                    child: _buildDesktopActions(colorScheme),
-                  ),
-              ],
+                  if (!isSelectionMode)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 12),
+                      child: _buildDesktopActions(isDark, colorScheme),
+                    ),
+                ],
+              ),
             ),
           ),
         ),
@@ -138,43 +179,126 @@ class ProductCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusBadge(ColorScheme colorScheme) {
+  Widget _buildStatusBadge(ColorScheme colorScheme, bool isDark) {
     final isActive = product.isActive;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: isActive
-            ? colorScheme.primaryContainer
-            : colorScheme.errorContainer,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Text(
-        isActive ? 'نشط' : 'معطل',
-        style: TextStyle(
-          color: isActive
-              ? colorScheme.onPrimaryContainer
-              : colorScheme.onErrorContainer,
-          fontSize: 10,
-          fontWeight: FontWeight.bold,
+        borderRadius: BorderRadius.circular(8),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isDark
+              ? [
+                  Color.lerp(colorScheme.surfaceContainerHigh, Colors.white, 0.02)!,
+                  Color.lerp(colorScheme.surfaceContainerHigh, Colors.black, 0.10)!,
+                ]
+              : [
+                  Colors.white,
+                  Color.lerp(colorScheme.surfaceContainerLow, Colors.black, 0.02)!,
+                ],
         ),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.30)
+                : const Color(0xFFA3B1C6).withValues(alpha: 0.25),
+            offset: const Offset(1, 1.5),
+            blurRadius: 2.5,
+          ),
+          BoxShadow(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.02)
+                : Colors.white.withValues(alpha: 0.85),
+            offset: const Offset(-1, -1),
+            blurRadius: 2,
+          ),
+        ],
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.03)
+              : Colors.white.withValues(alpha: 0.80),
+          width: 0.8,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: isActive ? colorScheme.primary : colorScheme.error,
+              boxShadow: [
+                BoxShadow(
+                  color: (isActive ? colorScheme.primary : colorScheme.error)
+                      .withValues(alpha: 0.5),
+                  blurRadius: 4,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 5),
+          Text(
+            isActive ? 'نشط' : 'معطل',
+            style: TextStyle(
+              color: isActive ? colorScheme.primary : colorScheme.error,
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildProductImage(dynamic responsive, ColorScheme colorScheme) {
+  Widget _buildProductImage(
+      dynamic responsive, bool isDark, ColorScheme colorScheme) {
     final double imgSize = responsive.isMobile ? 85 : 105;
     return Container(
       width: imgSize,
       height: imgSize,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        color: colorScheme.surfaceContainerHighest,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isDark
+              ? [
+                  Color.lerp(colorScheme.surfaceContainerHigh, Colors.white, 0.02)!,
+                  Color.lerp(colorScheme.surfaceContainerHigh, Colors.black, 0.12)!,
+                ]
+              : [
+                  Colors.white,
+                  Color.lerp(colorScheme.surfaceContainerLow, Colors.black, 0.03)!,
+                ],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.35)
+                : const Color(0xFFA3B1C6).withValues(alpha: 0.35),
+            offset: const Offset(2, 2.5),
+            blurRadius: 4,
+          ),
+          BoxShadow(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.02)
+                : Colors.white.withValues(alpha: 0.90),
+            offset: const Offset(-1.5, -1.5),
+            blurRadius: 3,
+          ),
+        ],
         border: Border.all(
-          color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.03)
+              : Colors.white.withValues(alpha: 0.85),
+          width: 1.0,
         ),
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(15),
         child: product.imageUrls.isNotEmpty
             ? CachedNetworkImage(
                 cacheManager: CustomCacheManager.instance,
@@ -218,18 +342,52 @@ class ProductCard extends StatelessWidget {
     );
   }
 
-  Widget _buildBrandInfo(ThemeData theme) {
+  Widget _buildBrandInfo(ThemeData theme, bool isDark) {
     final colorScheme = theme.colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: colorScheme.secondaryContainer,
         borderRadius: BorderRadius.circular(6),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isDark
+              ? [
+                  Color.lerp(colorScheme.surfaceContainerHigh, Colors.white, 0.02)!,
+                  Color.lerp(colorScheme.surfaceContainerHigh, Colors.black, 0.10)!,
+                ]
+              : [
+                  Colors.white,
+                  Color.lerp(colorScheme.surfaceContainerLow, Colors.black, 0.02)!,
+                ],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.30)
+                : const Color(0xFFA3B1C6).withValues(alpha: 0.25),
+            offset: const Offset(1, 1.5),
+            blurRadius: 2.5,
+          ),
+          BoxShadow(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.02)
+                : Colors.white.withValues(alpha: 0.85),
+            offset: const Offset(-1, -1),
+            blurRadius: 2,
+          ),
+        ],
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.03)
+              : Colors.white.withValues(alpha: 0.75),
+          width: 0.8,
+        ),
       ),
       child: Text(
         (product.brand ?? 'GENERIC').toUpperCase(),
         style: theme.textTheme.labelSmall?.copyWith(
-          color: colorScheme.onSecondaryContainer,
+          color: colorScheme.primary,
           fontWeight: FontWeight.w800,
           letterSpacing: 0.8,
           fontSize: 9,
@@ -238,7 +396,7 @@ class ProductCard extends StatelessWidget {
     );
   }
 
-  Widget _buildFlavorTags(dynamic responsive, ThemeData theme) {
+  Widget _buildFlavorTags(dynamic responsive, ThemeData theme, bool isDark) {
     final colorScheme = theme.colorScheme;
     final int limit = responsive.isMobile ? 1 : 3;
     return Wrap(
@@ -252,10 +410,41 @@ class ProductCard extends StatelessWidget {
               (f) => Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(6),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: isDark
+                        ? [
+                            Color.lerp(colorScheme.surfaceContainerHigh, Colors.white, 0.02)!,
+                            Color.lerp(colorScheme.surfaceContainerHigh, Colors.black, 0.08)!,
+                          ]
+                        : [
+                            Colors.white,
+                            Color.lerp(colorScheme.surfaceContainerLow, Colors.black, 0.02)!,
+                          ],
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: isDark
+                          ? Colors.black.withValues(alpha: 0.25)
+                          : const Color(0xFFA3B1C6).withValues(alpha: 0.20),
+                      offset: const Offset(1, 1),
+                      blurRadius: 2,
+                    ),
+                    BoxShadow(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.02)
+                          : Colors.white.withValues(alpha: 0.80),
+                      offset: const Offset(-1, -1),
+                      blurRadius: 1.5,
+                    ),
+                  ],
                   border: Border.all(
-                    color: colorScheme.outlineVariant.withValues(alpha: 0.4),
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.03)
+                        : Colors.white.withValues(alpha: 0.75),
+                    width: 0.8,
                   ),
                 ),
                 child: Text(
@@ -263,7 +452,7 @@ class ProductCard extends StatelessWidget {
                   style: theme.textTheme.labelSmall?.copyWith(
                     fontSize: 9,
                     color: colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -317,30 +506,94 @@ class ProductCard extends StatelessWidget {
     );
   }
 
-  Widget _buildDesktopActions(ColorScheme colorScheme) {
+  Widget _buildDesktopActions(bool isDark, ColorScheme colorScheme) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        IconButton.filledTonal(
-          icon: const Icon(Icons.edit_outlined, size: 18),
+        _buildNeumorphicActionButton(
           tooltip: 'تعديل',
-          style: IconButton.styleFrom(
-            backgroundColor: colorScheme.primaryContainer,
-            foregroundColor: colorScheme.onPrimaryContainer,
-          ),
-          onPressed: onEdit,
+          icon: Icons.edit_outlined,
+          iconColor: colorScheme.primary,
+          onTap: onEdit,
+          isDark: isDark,
+          colorScheme: colorScheme,
         ),
-        const SizedBox(height: 8),
-        IconButton.filledTonal(
-          icon: const Icon(Icons.delete_outline, size: 18),
+        const SizedBox(height: 10),
+        _buildNeumorphicActionButton(
           tooltip: 'حذف',
-          style: IconButton.styleFrom(
-            backgroundColor: colorScheme.errorContainer,
-            foregroundColor: colorScheme.onErrorContainer,
-          ),
-          onPressed: onDelete,
+          icon: Icons.delete_outline,
+          iconColor: colorScheme.error,
+          onTap: onDelete,
+          isDark: isDark,
+          colorScheme: colorScheme,
         ),
       ],
+    );
+  }
+
+  Widget _buildNeumorphicActionButton({
+    required String tooltip,
+    required IconData icon,
+    required Color iconColor,
+    required VoidCallback onTap,
+    required bool isDark,
+    required ColorScheme colorScheme,
+  }) {
+    return Tooltip(
+      message: tooltip,
+      child: Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: isDark
+                ? [
+                    Color.lerp(colorScheme.surfaceContainerHigh, Colors.white, 0.02)!,
+                    Color.lerp(colorScheme.surfaceContainerHigh, Colors.black, 0.10)!,
+                  ]
+                : [
+                    Colors.white,
+                    Color.lerp(colorScheme.surfaceContainerLow, Colors.black, 0.03)!,
+                  ],
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: isDark
+                  ? Colors.black.withValues(alpha: 0.35)
+                  : const Color(0xFFA3B1C6).withValues(alpha: 0.35),
+              offset: const Offset(1.5, 2),
+              blurRadius: 3,
+            ),
+            BoxShadow(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.02)
+                  : Colors.white.withValues(alpha: 0.90),
+              offset: const Offset(-1.5, -1.5),
+              blurRadius: 2.5,
+            ),
+          ],
+          border: Border.all(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.03)
+                : Colors.white.withValues(alpha: 0.85),
+            width: 1.0,
+          ),
+        ),
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(10),
+            onTap: onTap,
+            child: Center(
+              child: Icon(icon, size: 18, color: iconColor),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
