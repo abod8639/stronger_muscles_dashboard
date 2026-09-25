@@ -81,7 +81,7 @@ class PromoCard extends StatelessWidget {
       child: Container(
         margin: margin ?? const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
+          // borderRadius: BorderRadius.circular(16),
           color: bgColor,
           boxShadow: [
             BoxShadow(
