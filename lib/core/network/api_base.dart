@@ -40,7 +40,10 @@ class ApiBase {
   }
 
   void _handleError(DioException e) {
-    if (e.response?.statusCode == 401) {
+    final path = e.requestOptions.path;
+    final isAuthEndpoint = path.contains('/login') || path.contains('/register');
+
+    if (e.response?.statusCode == 401 && !isAuthEndpoint) {
       _authService.logout();
       Get.snackbar('انتهت الجلسة', 'يرجى تسجيل الدخول مرة أخرى');
     } else if (e.response?.statusCode == 403) {
