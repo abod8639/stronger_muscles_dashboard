@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/build_modern_text_field.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
 
+/// مدير تنويعات المنتج (SKUs) بتصميم Neumorphism / Soft UI
 class ProductVariantManager extends StatelessWidget {
   final ProductsController controller;
 
@@ -13,6 +13,7 @@ class ProductVariantManager extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
 
     return Obx(
       () => Column(
@@ -25,43 +26,146 @@ class ProductVariantManager extends StatelessWidget {
                 'تنويعات المنتج (SKUs)',
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurface,
                 ),
               ),
-              FilledButton.icon(
-                onPressed: controller.addVariant,
-                icon: const Icon(Icons.add, size: 18),
-                label: const Text('إضافة تنويع'),
+              // Neumorphic Add Variant Button
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: isDark
+                        ? [
+                            Color.lerp(colorScheme.primaryContainer,
+                                Colors.white, 0.02)!,
+                            Color.lerp(colorScheme.surfaceContainer,
+                                colorScheme.primary, 0.12)!,
+                          ]
+                        : [
+                            Color.lerp(colorScheme.primaryContainer,
+                                Colors.white, 0.40)!,
+                            Color.lerp(colorScheme.primaryContainer,
+                                Colors.black, 0.02)!,
+                          ],
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: isDark
+                          ? Colors.black.withValues(alpha: 0.35)
+                          : const Color(0xFFA3B1C6).withValues(alpha: 0.30),
+                      offset: const Offset(1.5, 2),
+                      blurRadius: 3,
+                    ),
+                    BoxShadow(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.02)
+                          : Colors.white.withValues(alpha: 0.90),
+                      offset: const Offset(-1.5, -1.5),
+                      blurRadius: 2.5,
+                    ),
+                  ],
+                  border: Border.all(
+                    color: colorScheme.primary
+                        .withValues(alpha: isDark ? 0.6 : 0.7),
+                    width: 1.0,
+                  ),
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(10),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(10),
+                    onTap: controller.addVariant,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 8),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.add_rounded,
+                              size: 18, color: colorScheme.primary),
+                          const SizedBox(width: 6),
+                          Text(
+                            'إضافة تنويع',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
           const SizedBox(height: 12),
           if (controller.variants.isEmpty)
-            Card.outlined(
-              margin: EdgeInsets.zero,
-              color: colorScheme.surfaceContainerHigh.withValues(alpha: 0.3),
-              shape: RoundedRectangleBorder(
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
-                side: BorderSide(color: colorScheme.outlineVariant),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Center(
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.inventory_2_outlined,
-                        color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
-                        size: 36,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'لا توجد تنويعات بعد. أضف واحداً لإدارة مخزون SKU.',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: isDark
+                      ? [
+                          Color.lerp(colorScheme.surfaceContainerHigh,
+                              Colors.white, 0.02)!,
+                          Color.lerp(colorScheme.surfaceContainerHigh,
+                              Colors.black, 0.12)!,
+                        ]
+                      : [
+                          Colors.white,
+                          Color.lerp(colorScheme.surfaceContainerLow,
+                              Colors.black, 0.03)!,
+                        ],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: isDark
+                        ? Colors.black.withValues(alpha: 0.35)
+                        : const Color(0xFFA3B1C6).withValues(alpha: 0.30),
+                    offset: const Offset(2, 2.5),
+                    blurRadius: 4,
                   ),
+                  BoxShadow(
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.02)
+                        : Colors.white.withValues(alpha: 0.90),
+                    offset: const Offset(-1.5, -1.5),
+                    blurRadius: 3,
+                  ),
+                ],
+                border: Border.all(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.03)
+                      : Colors.white.withValues(alpha: 0.85),
+                  width: 1.0,
+                ),
+              ),
+              child: Center(
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.inventory_2_outlined,
+                      color:
+                          colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                      size: 36,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'لا توجد تنويعات بعد. أضف واحداً لإدارة مخزون SKU.',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             )
@@ -159,14 +263,50 @@ class _VariantItemEditorState extends State<_VariantItemEditor> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
 
-    return Card.outlined(
-      margin: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(
+    return Container(
+      decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: colorScheme.outlineVariant),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isDark
+              ? [
+                  Color.lerp(colorScheme.surfaceContainerHigh, Colors.white,
+                      0.02)!,
+                  Color.lerp(colorScheme.surfaceContainerHigh, Colors.black,
+                      0.10)!,
+                ]
+              : [
+                  Colors.white,
+                  Color.lerp(colorScheme.surfaceContainerLow, Colors.black,
+                      0.03)!,
+                ],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.35)
+                : const Color(0xFFA3B1C6).withValues(alpha: 0.30),
+            offset: const Offset(2, 2.5),
+            blurRadius: 4,
+          ),
+          BoxShadow(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.02)
+                : Colors.white.withValues(alpha: 0.90),
+            offset: const Offset(-1.5, -1.5),
+            blurRadius: 3,
+          ),
+        ],
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.03)
+              : Colors.white.withValues(alpha: 0.85),
+          width: 1.0,
+        ),
       ),
-      color: colorScheme.surfaceContainerHigh.withValues(alpha: 0.35),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -174,15 +314,59 @@ class _VariantItemEditorState extends State<_VariantItemEditor> {
           children: [
             Row(
               children: [
-                CircleAvatar(
-                  radius: 14,
-                  backgroundColor: colorScheme.primaryContainer,
-                  child: Text(
-                    '${widget.index + 1}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: colorScheme.onPrimaryContainer,
-                      fontWeight: FontWeight.bold,
+                // Soft Number Badge
+                Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: isDark
+                          ? [
+                              Color.lerp(colorScheme.primaryContainer,
+                                  Colors.white, 0.02)!,
+                              Color.lerp(colorScheme.surfaceContainer,
+                                  colorScheme.primary, 0.10)!,
+                            ]
+                          : [
+                              Color.lerp(colorScheme.primaryContainer,
+                                  Colors.white, 0.40)!,
+                              Color.lerp(colorScheme.primaryContainer,
+                                  Colors.black, 0.02)!,
+                            ],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: isDark
+                            ? Colors.black.withValues(alpha: 0.30)
+                            : const Color(0xFFA3B1C6).withValues(alpha: 0.25),
+                        offset: const Offset(1, 1),
+                        blurRadius: 2,
+                      ),
+                      BoxShadow(
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.02)
+                            : Colors.white.withValues(alpha: 0.85),
+                        offset: const Offset(-1, -1),
+                        blurRadius: 1.5,
+                      ),
+                    ],
+                    border: Border.all(
+                      color: colorScheme.primary
+                          .withValues(alpha: isDark ? 0.5 : 0.6),
+                      width: 0.8,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '${widget.index + 1}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
@@ -191,17 +375,64 @@ class _VariantItemEditorState extends State<_VariantItemEditor> {
                   'تنويع ${widget.index + 1}',
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
+                    color: colorScheme.onSurface,
                   ),
                 ),
                 const Spacer(),
-                IconButton(
-                  onPressed: widget.onDelete,
-                  icon: Icon(
-                    Icons.delete_outline,
-                    color: colorScheme.error,
-                    size: 20,
+                // Neumorphic Delete Button
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: isDark
+                          ? [
+                              Color.lerp(colorScheme.surfaceContainerHigh,
+                                  Colors.white, 0.02)!,
+                              Color.lerp(colorScheme.surfaceContainerHigh,
+                                  Colors.black, 0.10)!,
+                            ]
+                          : [
+                              Colors.white,
+                              Color.lerp(colorScheme.surfaceContainerLow,
+                                  Colors.black, 0.02)!,
+                            ],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: isDark
+                            ? Colors.black.withValues(alpha: 0.30)
+                            : const Color(0xFFA3B1C6).withValues(alpha: 0.25),
+                        offset: const Offset(1, 1.5),
+                        blurRadius: 2,
+                      ),
+                      BoxShadow(
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.02)
+                            : Colors.white.withValues(alpha: 0.85),
+                        offset: const Offset(-1, -1),
+                        blurRadius: 1.5,
+                      ),
+                    ],
+                    border: Border.all(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.03)
+                          : Colors.white.withValues(alpha: 0.80),
+                      width: 0.8,
+                    ),
                   ),
-                  tooltip: 'حذف التنويع',
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(8),
+                    onTap: widget.onDelete,
+                    child: Icon(
+                      Icons.delete_outline_rounded,
+                      color: colorScheme.error,
+                      size: 18,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -210,19 +441,23 @@ class _VariantItemEditorState extends State<_VariantItemEditor> {
               children: [
                 Expanded(
                   flex: 2,
-                  child: buildModernTextField(
-                    skuCtrl,
-                    'رقم SKU',
-                    Icons.qr_code_scanner,
+                  child: _buildSoftTextField(
+                    controller: skuCtrl,
+                    label: 'رقم SKU',
+                    icon: Icons.qr_code_scanner,
+                    colorScheme: colorScheme,
+                    isDark: isDark,
                     onChanged: (_) => _triggerUpdate(),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: buildModernTextField(
-                    stockCtrl,
-                    'المخزون',
-                    Icons.inventory_2_outlined,
+                  child: _buildSoftTextField(
+                    controller: stockCtrl,
+                    label: 'المخزون',
+                    icon: Icons.inventory_2_outlined,
+                    colorScheme: colorScheme,
+                    isDark: isDark,
                     isNumber: true,
                     onChanged: (_) => _triggerUpdate(),
                   ),
@@ -233,21 +468,27 @@ class _VariantItemEditorState extends State<_VariantItemEditor> {
             Row(
               children: [
                 Expanded(
-                  child: buildModernTextField(
-                    priceCtrl,
-                    'السعر',
-                    Icons.payments_outlined,
+                  child: _buildSoftTextField(
+                    controller: priceCtrl,
+                    label: 'السعر',
+                    icon: Icons.payments_outlined,
+                    colorScheme: colorScheme,
+                    isDark: isDark,
                     isNumber: true,
+                    suffixText: 'ر.س',
                     onChanged: (_) => _triggerUpdate(),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: buildModernTextField(
-                    discountCtrl,
-                    'الخصم',
-                    Icons.sell_outlined,
+                  child: _buildSoftTextField(
+                    controller: discountCtrl,
+                    label: 'الخصم',
+                    icon: Icons.sell_outlined,
+                    colorScheme: colorScheme,
+                    isDark: isDark,
                     isNumber: true,
+                    suffixText: 'ر.س',
                     onChanged: (_) => _triggerUpdate(),
                   ),
                 ),
@@ -258,6 +499,7 @@ class _VariantItemEditorState extends State<_VariantItemEditor> {
               'السمات (Attributes)',
               style: theme.textTheme.labelMedium?.copyWith(
                 fontWeight: FontWeight.bold,
+                color: colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 8),
@@ -265,12 +507,68 @@ class _VariantItemEditorState extends State<_VariantItemEditor> {
               spacing: 8,
               runSpacing: 8,
               children: [
-                _buildAttributeSelector(context, 'المقاس', widget.availableSizes, 'size'),
-                _buildAttributeSelector(context, 'النكهة', widget.availableFlavors, 'flavor'),
+                _buildAttributeSelector(context, 'المقاس',
+                    widget.availableSizes, 'size', colorScheme, isDark),
+                _buildAttributeSelector(context, 'النكهة',
+                    widget.availableFlavors, 'flavor', colorScheme, isDark),
               ],
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildSoftTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    required ColorScheme colorScheme,
+    required bool isDark,
+    bool isNumber = false,
+    String? suffixText,
+    ValueChanged<String>? onChanged,
+  }) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: isNumber
+          ? const TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.text,
+      onChanged: onChanged,
+      style: TextStyle(color: colorScheme.onSurface, fontSize: 13),
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, size: 18, color: colorScheme.onSurfaceVariant),
+        suffixText: suffixText,
+        filled: true,
+        fillColor: isDark
+            ? colorScheme.surfaceContainerLowest.withValues(alpha: 0.5)
+            : colorScheme.surfaceContainerLow.withValues(alpha: 0.5),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.03)
+                : colorScheme.outlineVariant.withValues(alpha: 0.5),
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.03)
+                : colorScheme.outlineVariant.withValues(alpha: 0.5),
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: colorScheme.primary,
+            width: 1.4,
+          ),
+        ),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       ),
     );
   }
@@ -280,10 +578,13 @@ class _VariantItemEditorState extends State<_VariantItemEditor> {
     String label,
     List<String> options,
     String key,
+    ColorScheme colorScheme,
+    bool isDark,
   ) {
     if (options.isEmpty) return const SizedBox.shrink();
 
     final currentVal = widget.variant.attributes[key];
+    final hasVal = currentVal != null && currentVal.toString().isNotEmpty;
 
     return PopupMenuButton<String>(
       onSelected: (val) {
@@ -303,10 +604,86 @@ class _VariantItemEditorState extends State<_VariantItemEditor> {
       itemBuilder: (context) => options
           .map((opt) => PopupMenuItem(value: opt, child: Text(opt)))
           .toList(),
-      child: ActionChip(
-        avatar: const Icon(Icons.arrow_drop_down, size: 18),
-        label: Text(currentVal ?? '$label: اختر'),
-        onPressed: null, //handled by PopupMenuButton child
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: hasVal
+                ? (isDark
+                    ? [
+                        Color.lerp(colorScheme.primaryContainer, Colors.white,
+                            0.02)!,
+                        Color.lerp(colorScheme.surfaceContainer,
+                            colorScheme.primary, 0.10)!,
+                      ]
+                    : [
+                        Color.lerp(colorScheme.primaryContainer, Colors.white,
+                            0.50)!,
+                        Color.lerp(colorScheme.primaryContainer, Colors.black,
+                            0.02)!,
+                      ])
+                : (isDark
+                    ? [
+                        Color.lerp(colorScheme.surfaceContainerHigh,
+                            Colors.white, 0.02)!,
+                        Color.lerp(colorScheme.surfaceContainerHigh,
+                            Colors.black, 0.10)!,
+                      ]
+                    : [
+                        Colors.white,
+                        Color.lerp(colorScheme.surfaceContainerLow,
+                            Colors.black, 0.02)!,
+                      ]),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: isDark
+                  ? Colors.black.withValues(alpha: 0.30)
+                  : const Color(0xFFA3B1C6).withValues(alpha: 0.25),
+              offset: const Offset(1, 1.5),
+              blurRadius: 2.5,
+            ),
+            BoxShadow(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.02)
+                  : Colors.white.withValues(alpha: 0.85),
+              offset: const Offset(-1, -1),
+              blurRadius: 2,
+            ),
+          ],
+          border: Border.all(
+            color: hasVal
+                ? colorScheme.primary.withValues(alpha: isDark ? 0.6 : 0.7)
+                : (isDark
+                    ? Colors.white.withValues(alpha: 0.03)
+                    : Colors.white.withValues(alpha: 0.80)),
+            width: 0.8,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.arrow_drop_down_rounded,
+              size: 18,
+              color:
+                  hasVal ? colorScheme.primary : colorScheme.onSurfaceVariant,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              currentVal ?? '$label: اختر',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: hasVal ? FontWeight.bold : FontWeight.w500,
+                color:
+                    hasVal ? colorScheme.primary : colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
