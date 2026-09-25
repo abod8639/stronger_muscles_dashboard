@@ -28,6 +28,7 @@ class _ProductFormPageState extends State<ProductFormPage>
 
   // GlobalKeys for Section Navigation
   final _basicInfoKey = GlobalKey();
+  final _categoryKey = GlobalKey();
   final _mediaKey = GlobalKey();
   final _pricingKey = GlobalKey();
   final _variantsKey = GlobalKey();
@@ -215,6 +216,7 @@ class _ProductFormPageState extends State<ProductFormPage>
     final colorScheme = theme.colorScheme;
     final navItems = [
       {'label': 'البيانات الأساسية', 'icon': Icons.edit_note_rounded, 'key': _basicInfoKey},
+      {'label': 'القسم والتصنيف', 'icon': Icons.category_rounded, 'key': _categoryKey},
       {'label': 'الوسائط والصور', 'icon': Icons.photo_library_outlined, 'key': _mediaKey},
       {'label': 'التسعير والمخزون', 'icon': Icons.payments_outlined, 'key': _pricingKey},
       {'label': 'الأحجام والتنويعات', 'icon': Icons.tune_rounded, 'key': _variantsKey},
@@ -386,6 +388,13 @@ class _ProductFormPageState extends State<ProductFormPage>
                 key: _basicInfoKey,
                 child: ProductBasicInfoSection(
                   controller: controller,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Container(
+                key: _categoryKey,
+                child: ProductCategorySection(
+                  controller: controller,
                   selectedCategoryId: _selectedCategoryId,
                   onCategorySelected: (id) =>
                       setState(() => _selectedCategoryId = id),
@@ -463,6 +472,13 @@ class _ProductFormPageState extends State<ProductFormPage>
         Container(
           key: _basicInfoKey,
           child: ProductBasicInfoSection(
+            controller: controller,
+          ),
+        ),
+        const SizedBox(height: 20),
+        Container(
+          key: _categoryKey,
+          child: ProductCategorySection(
             controller: controller,
             selectedCategoryId: _selectedCategoryId,
             onCategorySelected: (id) =>
