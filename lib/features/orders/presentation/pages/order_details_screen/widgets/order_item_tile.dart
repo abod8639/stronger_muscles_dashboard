@@ -167,7 +167,7 @@ class OrderItemTile extends StatelessWidget {
                 end: Alignment.bottomRight,
                 colors: isDark
                     ? [
-                        Color.lerp(colorScheme.surfaceContainerHigh, Colors.white, 0.05)!,
+                        Color.lerp(colorScheme.surfaceContainerHigh, Colors.white, 0.01)!,
                         Color.lerp(colorScheme.surfaceContainerHigh, Colors.black, 0.12)!,
                       ]
                     : [
@@ -185,7 +185,7 @@ class OrderItemTile extends StatelessWidget {
                 ),
                 BoxShadow(
                   color: isDark
-                      ? Colors.white.withValues(alpha: 0.04)
+                      ? Colors.white.withValues(alpha: 0.01)
                       : Colors.white.withValues(alpha: 0.95),
                   offset: const Offset(-1.5, -1.5),
                   blurRadius: 3,
@@ -193,7 +193,7 @@ class OrderItemTile extends StatelessWidget {
               ],
               border: Border.all(
                 color: isDark
-                    ? Colors.white.withValues(alpha: 0.07)
+                    ? Colors.white.withValues(alpha: 0.01)
                     : Colors.white.withValues(alpha: 0.85),
                 width: 1.0,
               ),
@@ -238,7 +238,7 @@ class _OrderItemAttributeChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: isDark
-              ? Colors.white.withValues(alpha: 0.05)
+              ? Colors.white.withValues(alpha: 0.01)
               : Colors.white.withValues(alpha: 0.70),
           width: 0.8,
         ),
@@ -252,7 +252,7 @@ class _OrderItemAttributeChip extends StatelessWidget {
           ),
           BoxShadow(
             color: isDark
-                ? Colors.white.withValues(alpha: 0.03)
+                ? Colors.white.withValues(alpha: 0.01)
                 : Colors.white.withValues(alpha: 0.85),
             offset: const Offset(-1, -1),
             blurRadius: 2,
