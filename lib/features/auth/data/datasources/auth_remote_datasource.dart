@@ -34,15 +34,22 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<AuthModel> signup(String name, String email, String password) async {
-    final response = await dio.post('/auth/register', data: {
-      'name': name,
-      'email': email,
-      'password': password,
-    });
+    try {
+      final response = await dio.post(ApiConfig.adminRegister, data: {
+        'name': name,
+        'email': email,
+        'password': password,
+      });
 
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return AuthModel.fromJson(response.data);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return AuthModel.fromJson(response.data);
+      }
+      throw Exception(response.data['message'] ?? 'فشل في إنشاء حساب المشرف');
+    } on DioException catch (e) {
+      final message = e.response?.data is Map && e.response?.data['message'] != null
+          ? e.response!.data['message']
+          : (e.message ?? 'فشل في إنشاء حساب المشرف');
+      throw Exception(message);
     }
-    throw Exception(response.data['message'] ?? 'Failed to register');
   }
 }
