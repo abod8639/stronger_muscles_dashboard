@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
-import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/category_picker_sheet.dart';
 import 'form_section_card.dart';
 import 'modern_form_field.dart';
 
@@ -10,13 +8,13 @@ import 'modern_form_field.dart';
 class ProductBasicInfoSection extends StatefulWidget {
   final ProductsController controller;
   final String? selectedCategoryId;
-  final ValueChanged<String> onCategorySelected;
+  final ValueChanged<String>? onCategorySelected;
 
   const ProductBasicInfoSection({
     super.key,
     required this.controller,
-    required this.selectedCategoryId,
-    required this.onCategorySelected,
+    this.selectedCategoryId,
+    this.onCategorySelected,
   });
 
   @override
@@ -36,7 +34,7 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
 
     return FormSectionCard(
       title: 'البيانات الأساسية',
-      subtitle: 'الاسم، العلامة التجارية، التصنيف والوصف',
+      subtitle: 'الاسم، العلامة التجارية، والوصف للمنتج',
       icon: Icons.edit_note_rounded,
       trailing: _buildLanguageSelector(colorScheme, isDark),
       child: Column(
@@ -85,37 +83,8 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
                 ),
           const SizedBox(height: 18),
 
-          // Brand Autocomplete & Category Picker
-          if (context.isMobile)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildBrandAutocomplete(ctrl, colorScheme, isDark),
-                const SizedBox(height: 16),
-                CategoryPickerField(
-                  categories: ctrl.categories.toList(),
-                  selectedId: widget.selectedCategoryId,
-                  onSelected: widget.onCategorySelected,
-                ),
-              ],
-            )
-          else
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: _buildBrandAutocomplete(ctrl, colorScheme, isDark),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: CategoryPickerField(
-                    categories: ctrl.categories.toList(),
-                    selectedId: widget.selectedCategoryId,
-                    onSelected: widget.onCategorySelected,
-                  ),
-                ),
-              ],
-            ),
+          // Brand Autocomplete
+          _buildBrandAutocomplete(ctrl, colorScheme, isDark),
         ],
       ),
     );
