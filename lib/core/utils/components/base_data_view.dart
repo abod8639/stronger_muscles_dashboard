@@ -172,8 +172,8 @@ class _NeumorphicSeeAllButton extends StatefulWidget {
 }
 
 class _NeumorphicSeeAllButtonState extends State<_NeumorphicSeeAllButton> {
-  bool _isHovered = false;
-  bool _isPressed = false;
+  // bool _isHovered = false;
+  // bool _isPressed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -181,96 +181,66 @@ class _NeumorphicSeeAllButtonState extends State<_NeumorphicSeeAllButton> {
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
 
-    return MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
-      cursor: SystemMouseCursors.click,
-      child: GestureDetector(
-        onTapDown: (_) => setState(() => _isPressed = true),
-        onTapUp: (_) {
-          setState(() => _isPressed = false);
-          widget.onTap();
-        },
-        onTapCancel: () => setState(() => _isPressed = false),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 160),
-          curve: Curves.easeOutCubic,
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(100),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: _isPressed
-                  ? (isDark
-                      ? [
-                          Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.15)!,
-                          Color.lerp(colorScheme.surfaceContainerHigh, Colors.white, 0.02)!,
-                        ]
-                      : [
-                          Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.06)!,
-                          Colors.white,
-                        ])
-                  : (isDark
-                      ? [
-                          Color.lerp(colorScheme.surfaceContainerHigh, Colors.white, _isHovered ? 0.06 : 0.03)!,
-                          Color.lerp(colorScheme.surfaceContainer, Colors.black, _isHovered ? 0.05 : 0.1)!,
-                        ]
-                      : [
-                          Color.lerp(colorScheme.surfaceContainer, Colors.white, _isHovered ? 0.8 : 0.6)!,
-                          Color.lerp(colorScheme.surfaceContainer, Colors.black, _isHovered ? 0.01 : 0.03)!,
-                        ]),
-            ),
-            boxShadow: _isPressed
-                ? []
-                : [
-                    BoxShadow(
-                      color: isDark
-                          ? Colors.black.withValues(alpha: _isHovered ? 0.55 : 0.45)
-                          : const Color(0xFFA3B1C6).withValues(alpha: _isHovered ? 0.5 : 0.38),
-                      offset: const Offset(2.5, 3),
-                      blurRadius: _isHovered ? 7 : 5,
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 160),
+      curve: Curves.easeOutCubic,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(100),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: (isDark
+                  ? [
+                      Color.lerp(colorScheme.surfaceContainerHigh, Colors.white, 0.03)!,
+                      Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.1)!,
+                    ]
+                  : [
+                      Color.lerp(colorScheme.surfaceContainer,Colors.white , 0.8)!,
+                      Color.lerp(colorScheme.surfaceContainer,Colors.black , 0.01)!,
+                    ]
                     ),
-                    BoxShadow(
-                      color: isDark
-                          ? Colors.white.withValues(alpha: _isHovered ? 0.06 : 0.04)
-                          : Colors.white.withValues(alpha: _isHovered ? 1.0 : 0.9),
-                      offset: const Offset(-2, -2),
-                      blurRadius: _isHovered ? 6 : 4,
-                    ),
-                  ],
-            border: Border.all(
-              color: isDark
-                  ? (_isHovered
-                      ? colorScheme.primary.withValues(alpha: 0.3)
-                      : Colors.white.withValues(alpha: 0.06))
-                  : (_isHovered
-                      ? colorScheme.primary.withValues(alpha: 0.35)
-                      : Colors.white.withValues(alpha: 0.8)),
-              width: 1.0,
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'عرض الكل',
-                style: TextStyle(
-                  color: colorScheme.primary,
-                  fontWeight: FontWeight.w700,
-                  fontSize: widget.fontSize,
-                  letterSpacing: 0.2,
-                ),
-              ),
-              const SizedBox(width: 6),
-              Icon(
-                Icons.arrow_forward_ios_rounded,
-                size: widget.fontSize - 1,
-                color: colorScheme.primary,
-              ),
-            ],
-          ),
         ),
+        boxShadow:  [
+                BoxShadow(
+                  color: isDark
+                      ? Colors.black.withValues(alpha:  0.45)
+                      : const Color(0xFFA3B1C6).withValues(alpha: 0.38),
+                  offset: const Offset(2.5, 3),
+                  blurRadius:  5,
+                ),
+                BoxShadow(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.04)
+                      : Colors.white.withValues(alpha: 0.9),
+                  offset: const Offset(-2, -2),
+                  blurRadius:  4,
+                ),
+              ],
+        border: Border.all(
+          color: colorScheme.primary.withValues(alpha: 0.3),
+          width: 1.0,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'عرض الكل',
+            style: TextStyle(
+              color: colorScheme.primary,
+              fontWeight: FontWeight.w700,
+              fontSize: widget.fontSize,
+              letterSpacing: 0.2,
+            ),
+          ),
+          const SizedBox(width: 6),
+          Icon(
+            Icons.arrow_forward_ios_rounded,
+            size: widget.fontSize - 1,
+            color: colorScheme.primary,
+          ),
+        ],
       ),
     );
   }
