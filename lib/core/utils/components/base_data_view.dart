@@ -85,12 +85,12 @@ class BaseDataView<T> extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: colorScheme.primary,
                   borderRadius: BorderRadius.circular(4),
-                  boxShadow: [
-                    BoxShadow(
-                      color: colorScheme.primary.withValues(alpha: 0.4),
-                      blurRadius: 6,
-                    ),
-                  ],
+                  // boxShadow: [
+                  //   BoxShadow(
+                  //     color: colorScheme.primary.withValues(alpha: 0.1),
+                  //     blurRadius: 6,
+                  //   ),
+                  // ],
                 ),
               ),
               const SizedBox(width: 10),
