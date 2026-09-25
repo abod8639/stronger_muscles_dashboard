@@ -120,7 +120,7 @@ class AuthController extends GetxController {
       Get.offAllNamed('/dashboard');
     } catch (e) {
       Get.snackbar('خطأ', e.toString().replaceAll('Exception: ', ''));
-    } finally {
+          } finally {
       isLoading.value = false;
     }
   }
