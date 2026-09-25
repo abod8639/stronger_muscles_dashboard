@@ -19,7 +19,7 @@ class _QuickStatData {
   });
 }
 
-/// شريط الإحصائيات السريعة للطلب (الإجمالي، عدد العناصر، طريقة الدفع)
+/// شريط الإحصائيات السريعة للطلب بتصميم Neumorphism / Soft UI (بدون أنيميشن)
 class OrderQuickStatsStrip extends StatelessWidget {
   final OrderEntity order;
 
@@ -32,6 +32,7 @@ class OrderQuickStatsStrip extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
     final isMobile = context.isMobile;
 
     final totalItems =
@@ -60,16 +61,61 @@ class OrderQuickStatsStrip extends StatelessWidget {
       ),
     ];
 
+    final tileDecoration = BoxDecoration(
+      borderRadius: BorderRadius.circular(12),
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: isDark
+            ? [
+                Color.lerp(colorScheme.surfaceContainerHigh, Colors.white, 0.02)!,
+                Color.lerp(colorScheme.surfaceContainerHigh, Colors.black, 0.12)!,
+              ]
+            : [
+                Colors.white,
+                Color.lerp(colorScheme.surfaceContainerLow, Colors.black, 0.03)!,
+              ],
+      ),
+      boxShadow: [
+        BoxShadow(
+          color: isDark
+              ? Colors.black.withValues(alpha: 0.35)
+              : const Color(0xFFA3B1C6).withValues(alpha: 0.35),
+          offset: const Offset(2, 2.5),
+          blurRadius: 4,
+        ),
+        BoxShadow(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.02)
+              : Colors.white.withValues(alpha: 0.90),
+          offset: const Offset(-1.5, -1.5),
+          blurRadius: 3,
+        ),
+      ],
+      border: Border.all(
+        color: isDark
+            ? Colors.white.withValues(alpha: 0.03)
+            : Colors.white.withValues(alpha: 0.85),
+        width: 1.0,
+      ),
+    );
+
     if (isMobile) {
       return Column(
         children: stats
-            .map((stat) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
+            .map((stat) => Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: tileDecoration,
                   child: Row(
                     children: [
-                      Icon(stat.icon,
-                          size: 15, color: colorScheme.onSurfaceVariant),
-                      const SizedBox(width: 8),
+                      IconCardWithShadow(
+                        icon: stat.icon,
+                        size: 16,
+                        padding: const EdgeInsets.all(6),
+                      ),
+                      const SizedBox(width: 10),
                       Text(
                         '${stat.title}:',
                         style: theme.textTheme.bodySmall?.copyWith(
@@ -98,16 +144,9 @@ class OrderQuickStatsStrip extends StatelessWidget {
           .map((stat) => Expanded(
                 child: Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   margin: const EdgeInsets.symmetric(horizontal: 4),
-                  decoration: BoxDecoration(
-                    color: colorScheme.surfaceContainerHighest
-                        .withValues(alpha: 0.35),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: colorScheme.outlineVariant.withValues(alpha: 0.3),
-                    ),
-                  ),
+                  decoration: tileDecoration,
                   child: Row(
                     children: [
                       IconCardWithShadow(icon: stat.icon),
@@ -121,6 +160,7 @@ class OrderQuickStatsStrip extends StatelessWidget {
                               stat.title,
                               style: theme.textTheme.labelSmall?.copyWith(
                                 color: colorScheme.onSurfaceVariant,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                             const SizedBox(height: 2),
@@ -146,3 +186,4 @@ class OrderQuickStatsStrip extends StatelessWidget {
     );
   }
 }
+
