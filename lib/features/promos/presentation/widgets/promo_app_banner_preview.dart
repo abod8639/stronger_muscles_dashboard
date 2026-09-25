@@ -394,7 +394,7 @@ class _PromoAppBannerPreviewState extends State<PromoAppBannerPreview> {
     return Column(
       children: [
         SizedBox(
-          height: 170,
+          height: 200,
           child: PageView.builder(
             allowImplicitScrolling: false,
             pageSnapping: true,
