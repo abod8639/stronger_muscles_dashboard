@@ -60,12 +60,12 @@ class PromoCard extends StatelessWidget {
     if (promo.buttonText != null) {
       if (promo.buttonText!.containsKey(locale) &&
           promo.buttonText![locale]?.toString().trim().isNotEmpty == true) {
-        return promo.buttonText![locale].toString();
+        return promo.buttonText![locale].toString().trim();
       }
     }
-    final text = promo.displayButtonText;
+    final text = promo.displayButtonText.trim();
     if (text.isNotEmpty) return text;
-    return locale == 'en' ? 'Shop Now' : 'تسوق الآن';
+    return '';
   }
 
   @override
@@ -74,7 +74,6 @@ class PromoCard extends StatelessWidget {
     final title = _getLocalizedTitle();
     final subtitle = _getLocalizedSubtitle();
     final buttonText = _getLocalizedButtonText();
-    final hasTarget = promo.targetId != null && promo.targetId!.isNotEmpty;
 
     return GestureDetector(
       onTap: onTap,
@@ -166,7 +165,7 @@ class PromoCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
-                  if (hasTarget || buttonText.isNotEmpty) ...[
+                  if (buttonText.isNotEmpty) ...[
                     const SizedBox(height: 16),
                     Container(
                       padding: const EdgeInsets.symmetric(
