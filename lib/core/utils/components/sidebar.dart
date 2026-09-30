@@ -228,6 +228,15 @@ class Sidebar extends StatelessWidget {
                       isDrawer: isDrawer,
                       controller: controller,
                       index: 6,
+                      icon: Icons.notifications_outlined,
+                      activeIcon: Icons.notifications_rounded,
+                      label: 'Notifications',
+                    ),
+                  if (isSuperOrAdmin)
+                    NavItemTile(
+                      isDrawer: isDrawer,
+                      controller: controller,
+                      index: 7,
                       icon: Icons.settings_outlined,
                       activeIcon: Icons.settings_rounded,
                       label: 'Settings',
