@@ -10,6 +10,7 @@ class PromoAppearanceSection extends StatelessWidget {
   const PromoAppearanceSection({super.key, required this.controller});
 
   static const List<String> presetColors = [
+    '#00000000',
     '#FFFFFF',
     '#18181B',
     '#0F172A',
@@ -28,7 +29,7 @@ class PromoAppearanceSection extends StatelessWidget {
         return Color(int.parse('FF$clean', radix: 16));
       }
     } catch (_) {}
-    return Colors.white;
+    return Colors.transparent;
   }
 
   @override
