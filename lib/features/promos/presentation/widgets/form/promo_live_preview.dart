@@ -119,7 +119,7 @@ class _PromoLivePreviewState extends State<PromoLivePreview> {
 
           // كارد المحاكاة المباشر لمواصفات تطبيق المتجر
           Container(
-            height: 250,
+            height: 370,
             decoration: BoxDecoration(
               color: bgColor,
               borderRadius: BorderRadius.circular(16),
