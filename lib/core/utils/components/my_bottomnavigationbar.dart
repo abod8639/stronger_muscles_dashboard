@@ -46,6 +46,11 @@ class MyBottomNavigationBar extends StatelessWidget {
             label: 'المستخدمون',
           ),
           NavigationDestination(
+            icon: Icon(Icons.notifications_outlined),
+            selectedIcon: Icon(Icons.notifications_rounded),
+            label: 'الإشعارات',
+          ),
+          NavigationDestination(
             icon: Icon(Icons.settings_outlined),
             selectedIcon: Icon(Icons.settings_rounded),
             label: 'الإعدادات',
