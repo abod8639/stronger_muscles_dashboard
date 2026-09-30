@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
 
 class ApiConfigController extends GetxController {
-  final String ip = "localhost";
-  // final String ip = "192.168.1.17";
+  // final String ip = "localhost";
+  final String ip = "192.168.1.17";
   // final String ip = "192.168.1.17";
 
   final String port = "8080";
@@ -66,6 +66,10 @@ class ApiConfig {
   static const String adminPromos = '/admin/promos';
   static String adminPromoDetail(String id) => '/admin/promos/$id';
   static const String shopPromos = '/shop/promos';
+
+  // Notifications Management
+  static const String adminNotifications = '/admin/notifications';
+  static String adminNotificationDetail(String id) => '/admin/notifications/$id';
 
   // ==================== Customer Endpoints (Protected) ====================
   static const String customerProfile = '/customer/profile';
