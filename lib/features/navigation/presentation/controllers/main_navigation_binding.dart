@@ -8,6 +8,7 @@ import 'package:stronger_muscles_dashboard/features/orders/presentation/controll
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_binding.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/controllers/promos_binding.dart';
 import 'package:stronger_muscles_dashboard/features/users/presentation/controllers/users_binding.dart';
+import 'package:stronger_muscles_dashboard/features/support/presentation/controllers/support_binding.dart';
 
 class MainNavigationBinding extends Bindings {
   @override
@@ -26,5 +27,6 @@ class MainNavigationBinding extends Bindings {
     OrdersBinding().dependencies();
     UsersBinding().dependencies();
     NotificationsBinding().dependencies();
+    SupportBinding().dependencies();
   }
 }
