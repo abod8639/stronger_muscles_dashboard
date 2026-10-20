@@ -92,7 +92,7 @@ class NotificationItemCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Top row: Type badge, target chip, date, and delete action
+            // Top row: Type badge, target chip, and delete action
             Row(
               children: [
                 // Type badge
@@ -148,20 +148,12 @@ class NotificationItemCard extends StatelessWidget {
                 ),
                 const Spacer(),
 
-                // Date
-                Text(
-                  dateStr,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                    fontSize: 11,
-                  ),
-                ),
-                const SizedBox(width: 8),
-
                 // Delete button
                 IconButton(
                   icon: Icon(Icons.delete_outline_rounded, size: 20, color: colorScheme.error.withValues(alpha: 0.8)),
                   tooltip: 'حذف الإشعار',
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                   onPressed: () {
                     Get.defaultDialog(
                       title: 'تأكيد الحذف',
@@ -200,21 +192,40 @@ class NotificationItemCard extends StatelessWidget {
               ),
             ),
 
-            if (notification.adminName != null) ...[
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  Icon(Icons.shield_outlined, size: 14, color: colorScheme.outline),
+            // Footer metadata: Date & Admin
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Icon(
+                  Icons.access_time_rounded,
+                  size: 13,
+                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                ),
+                const SizedBox(width: 5),
+                Text(
+                  dateStr,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                    fontSize: 11,
+                  ),
+                ),
+                if (notification.adminName != null) ...[
+                  const Spacer(),
+                  Icon(Icons.shield_outlined, size: 13, color: colorScheme.outline),
                   const SizedBox(width: 4),
-                  Text(
-                    'أُرسل بواسطة: ${notification.adminName}',
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: colorScheme.outline,
+                  Flexible(
+                    child: Text(
+                      'أُرسل بواسطة: ${notification.adminName}',
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: colorScheme.outline,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
-              ),
-            ],
+              ],
+            ),
           ],
         ),
       ),
