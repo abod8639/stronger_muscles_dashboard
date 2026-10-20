@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../domain/entities/support_message_entity.dart';
 import '../../domain/entities/support_ticket_entity.dart';
+import '../../../../config/responsive.dart';
 import '../controllers/support_controller.dart';
 
 class SupportChatView extends GetView<SupportController> {
@@ -118,205 +119,429 @@ class SupportChatView extends GetView<SupportController> {
   Widget _buildTopHeader(BuildContext context, SupportTicketEntity ticket, bool isDark) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final isMobile = context.isMobile;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+      padding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 12 : 20,
+        vertical: isMobile ? 10 : 14,
+      ),
       decoration: BoxDecoration(
         color: isDark ? Colors.black.withValues(alpha: 0.15) : Colors.grey.withValues(alpha: 0.04),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 20,
-                backgroundColor: colorScheme.primary.withValues(alpha: 0.15),
-                backgroundImage: ticket.userAvatar != null
-                    ? CachedNetworkImageProvider(ticket.userAvatar!)
-                    : null,
-                child: ticket.userAvatar == null
-                    ? Text(
-                        ticket.userName.isNotEmpty ? ticket.userName[0].toUpperCase() : 'U',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.primary,
-                        ),
-                      )
-                    : null,
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final isCompact = constraints.maxWidth < 620;
+
+          if (isCompact) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Top Row: (Back button on mobile) + Avatar + User info + Delete button
+                Row(
                   children: [
-                    Row(
-                      children: [
-                        Text(
-                          ticket.userName,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: colorScheme.onSurface,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: colorScheme.primary.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            ticket.ticketNumber,
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                              color: colorScheme.primary,
-                            ),
-                          ),
-                        ),
-                      ],
+                    if (!context.isDesktop) ...[
+                      IconButton(
+                        tooltip: 'العودة للتذاكر',
+                        icon: const Icon(Icons.arrow_back_rounded, size: 20),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                        onPressed: () => controller.selectedTicket.value = null,
+                      ),
+                      const SizedBox(width: 6),
+                    ],
+                    CircleAvatar(
+                      radius: 18,
+                      backgroundColor: colorScheme.primary.withValues(alpha: 0.15),
+                      backgroundImage: ticket.userAvatar != null
+                          ? CachedNetworkImageProvider(ticket.userAvatar!)
+                          : null,
+                      child: ticket.userAvatar == null
+                          ? Text(
+                              ticket.userName.isNotEmpty ? ticket.userName[0].toUpperCase() : 'U',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: colorScheme.primary,
+                              ),
+                            )
+                          : null,
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      '${ticket.userEmail} ${ticket.userPhone != null ? '• ${ticket.userPhone}' : ''}',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  ticket.userName,
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: colorScheme.onSurface,
+                                    fontSize: 14,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: colorScheme.primary.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  ticket.ticketNumber,
+                                  style: TextStyle(
+                                    fontSize: 10.5,
+                                    fontWeight: FontWeight.bold,
+                                    color: colorScheme.primary,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            '${ticket.userEmail} ${ticket.userPhone != null ? '• ${ticket.userPhone}' : ''}',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                              fontSize: 11,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      tooltip: 'حذف التذكرة',
+                      icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 20),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                      onPressed: () => _confirmDeleteTicket(ticket),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+
+                // Actions Row: Status + Priority Dropdowns side-by-side
+                Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 38,
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        decoration: BoxDecoration(
+                          color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: isDark ? Colors.white12 : Colors.black12),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: ticket.status,
+                            isExpanded: true,
+                            dropdownColor: isDark ? colorScheme.surfaceContainer : Colors.white,
+                            items: const [
+                              DropdownMenuItem(value: 'open', child: Text('جديدة', style: TextStyle(fontSize: 12))),
+                              DropdownMenuItem(value: 'in_progress', child: Text('قيد المعالجة', style: TextStyle(fontSize: 12))),
+                              DropdownMenuItem(value: 'waiting_user', child: Text('بانتظار العميل', style: TextStyle(fontSize: 12))),
+                              DropdownMenuItem(value: 'resolved', child: Text('تم الحل', style: TextStyle(fontSize: 12))),
+                              DropdownMenuItem(value: 'closed', child: Text('مغلقة', style: TextStyle(fontSize: 12))),
+                            ],
+                            onChanged: (val) {
+                              if (val != null) controller.updateTicketStatus(val);
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Container(
+                        height: 38,
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        decoration: BoxDecoration(
+                          color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: isDark ? Colors.white12 : Colors.black12),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: ticket.priority,
+                            isExpanded: true,
+                            dropdownColor: isDark ? colorScheme.surfaceContainer : Colors.white,
+                            items: const [
+                              DropdownMenuItem(value: 'urgent', child: Text('عاجلة 🔥', style: TextStyle(fontSize: 12))),
+                              DropdownMenuItem(value: 'high', child: Text('مرتفعة', style: TextStyle(fontSize: 12))),
+                              DropdownMenuItem(value: 'normal', child: Text('عادية', style: TextStyle(fontSize: 12))),
+                              DropdownMenuItem(value: 'low', child: Text('منخفضة', style: TextStyle(fontSize: 12))),
+                            ],
+                            onChanged: (val) {
+                              if (val != null) controller.updateTicketPriority(val);
+                            },
+                          ),
+                        ),
                       ),
                     ),
                   ],
                 ),
-              ),
+                const SizedBox(height: 8),
 
-              // Status Dropdown
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                decoration: BoxDecoration(
-                  color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: isDark ? Colors.white12 : Colors.black12,
-                  ),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: ticket.status,
-                    dropdownColor: isDark ? colorScheme.surfaceContainer : Colors.white,
-                    items: const [
-                      DropdownMenuItem(value: 'open', child: Text('تذكرة جديدة')),
-                      DropdownMenuItem(value: 'in_progress', child: Text('قيد المعالجة')),
-                      DropdownMenuItem(value: 'waiting_user', child: Text('بانتظار العميل')),
-                      DropdownMenuItem(value: 'resolved', child: Text('تم الحل بنجاح')),
-                      DropdownMenuItem(value: 'closed', child: Text('مغلقة')),
-                    ],
-                    onChanged: (val) {
-                      if (val != null) controller.updateTicketStatus(val);
-                    },
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-
-              // Priority Dropdown
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                decoration: BoxDecoration(
-                  color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: isDark ? Colors.white12 : Colors.black12,
-                  ),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: ticket.priority,
-                    dropdownColor: isDark ? colorScheme.surfaceContainer : Colors.white,
-                    items: const [
-                      DropdownMenuItem(value: 'urgent', child: Text('عاجلة جداً 🔥')),
-                      DropdownMenuItem(value: 'high', child: Text('أولوية مرتفعة')),
-                      DropdownMenuItem(value: 'normal', child: Text('أولوية عادية')),
-                      DropdownMenuItem(value: 'low', child: Text('منخفضة')),
-                    ],
-                    onChanged: (val) {
-                      if (val != null) controller.updateTicketPriority(val);
-                    },
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-
-              // Delete button
-              IconButton(
-                tooltip: 'حذف التذكرة',
-                icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 20),
-                onPressed: () async {
-                  final confirmed = await Get.dialog<bool>(
-                    AlertDialog(
-                      title: const Text('حذف التذكرة'),
-                      content: Text('هل أنت متأكد من حذف التذكرة #${ticket.ticketNumber} نهائياً؟'),
-                      actions: [
-                        TextButton(onPressed: () => Get.back(result: false), child: const Text('إلغاء')),
-                        TextButton(
-                          onPressed: () => Get.back(result: true),
-                          child: const Text('حذف', style: TextStyle(color: Colors.redAccent)),
+                // Subject & Order Link row
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'الموضوع: ${ticket.subject}',
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: colorScheme.onSurface,
+                          fontSize: 12.5,
                         ),
-                      ],
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                  );
-
-                  if (confirmed == true) {
-                    controller.deleteTicket(ticket.id);
-                  }
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-
-          // Subject & Order Link row
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'الموضوع: ${ticket.subject}',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: colorScheme.onSurface,
-                  ),
-                ),
-              ),
-              if (ticket.orderNumber != null) ...[
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.teal.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.teal.withValues(alpha: 0.3)),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.shopping_bag_outlined, size: 14, color: Colors.teal),
-                      const SizedBox(width: 4),
-                      Text(
-                        'طلب مرتبط: #${ticket.orderNumber}',
-                        style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.teal,
+                    if (ticket.orderNumber != null) ...[
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: Colors.teal.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.teal.withValues(alpha: 0.3)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.shopping_bag_outlined, size: 12, color: Colors.teal),
+                            const SizedBox(width: 4),
+                            Text(
+                              '#${ticket.orderNumber}',
+                              style: const TextStyle(
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.teal,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
-                  ),
+                  ],
                 ),
               ],
+            );
+          }
+
+          // Desktop wide layout
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  CircleAvatar(
+                    radius: 20,
+                    backgroundColor: colorScheme.primary.withValues(alpha: 0.15),
+                    backgroundImage: ticket.userAvatar != null
+                        ? CachedNetworkImageProvider(ticket.userAvatar!)
+                        : null,
+                    child: ticket.userAvatar == null
+                        ? Text(
+                            ticket.userName.isNotEmpty ? ticket.userName[0].toUpperCase() : 'U',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.primary,
+                            ),
+                          )
+                        : null,
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                ticket.userName,
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: colorScheme.onSurface,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: colorScheme.primary.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                ticket.ticketNumber,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  color: colorScheme.primary,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          '${ticket.userEmail} ${ticket.userPhone != null ? '• ${ticket.userPhone}' : ''}',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Status Dropdown
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                      color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: isDark ? Colors.white12 : Colors.black12,
+                      ),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        value: ticket.status,
+                        dropdownColor: isDark ? colorScheme.surfaceContainer : Colors.white,
+                        items: const [
+                          DropdownMenuItem(value: 'open', child: Text('تذكرة جديدة')),
+                          DropdownMenuItem(value: 'in_progress', child: Text('قيد المعالجة')),
+                          DropdownMenuItem(value: 'waiting_user', child: Text('بانتظار العميل')),
+                          DropdownMenuItem(value: 'resolved', child: Text('تم الحل بنجاح')),
+                          DropdownMenuItem(value: 'closed', child: Text('مغلقة')),
+                        ],
+                        onChanged: (val) {
+                          if (val != null) controller.updateTicketStatus(val);
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+
+                  // Priority Dropdown
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                      color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: isDark ? Colors.white12 : Colors.black12,
+                      ),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        value: ticket.priority,
+                        dropdownColor: isDark ? colorScheme.surfaceContainer : Colors.white,
+                        items: const [
+                          DropdownMenuItem(value: 'urgent', child: Text('عاجلة جداً 🔥')),
+                          DropdownMenuItem(value: 'high', child: Text('أولوية مرتفعة')),
+                          DropdownMenuItem(value: 'normal', child: Text('أولوية عادية')),
+                          DropdownMenuItem(value: 'low', child: Text('منخفضة')),
+                        ],
+                        onChanged: (val) {
+                          if (val != null) controller.updateTicketPriority(val);
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+
+                  // Delete button
+                  IconButton(
+                    tooltip: 'حذف التذكرة',
+                    icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 20),
+                    onPressed: () => _confirmDeleteTicket(ticket),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+
+              // Subject & Order Link row
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'الموضوع: ${ticket.subject}',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+                  if (ticket.orderNumber != null) ...[
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.teal.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.teal.withValues(alpha: 0.3)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.shopping_bag_outlined, size: 14, color: Colors.teal),
+                          const SizedBox(width: 4),
+                          Text(
+                            'طلب مرتبط: #${ticket.orderNumber}',
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.teal,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
+              ),
             ],
+          );
+        },
+      ),
+    );
+  }
+
+  Future<void> _confirmDeleteTicket(SupportTicketEntity ticket) async {
+    final confirmed = await Get.dialog<bool>(
+      AlertDialog(
+        title: const Text('حذف التذكرة'),
+        content: Text('هل أنت متأكد من حذف التذكرة #${ticket.ticketNumber} نهائياً؟'),
+        actions: [
+          TextButton(onPressed: () => Get.back(result: false), child: const Text('إلغاء')),
+          TextButton(
+            onPressed: () => Get.back(result: true),
+            child: const Text('حذف', style: TextStyle(color: Colors.redAccent)),
           ),
         ],
       ),
     );
+
+    if (confirmed == true) {
+      controller.deleteTicket(ticket.id);
+    }
   }
 
   Widget _buildMessagesList(BuildContext context, SupportTicketEntity ticket, bool isDark) {
@@ -358,15 +583,19 @@ class SupportChatView extends GetView<SupportController> {
               children: [
                 const Icon(Icons.lock_rounded, size: 15, color: Colors.amber),
                 const SizedBox(width: 6),
-                Text(
-                  'ملاحظة داخلية للمشرفين (مخفية عن العميل) • بواسطة ${message.senderName}',
-                  style: const TextStyle(
-                    fontSize: 11.5,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.amber,
+                Expanded(
+                  child: Text(
+                    'ملاحظة داخلية للمشرفين • بواسطة ${message.senderName}',
+                    style: const TextStyle(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.amber,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(width: 8),
                 Text(
                   timeStr,
                   style: TextStyle(
@@ -390,13 +619,14 @@ class SupportChatView extends GetView<SupportController> {
     }
 
     final isUser = message.isUser;
+    final isMobile = context.isMobile;
 
     return Align(
       alignment: isUser ? Alignment.centerLeft : Alignment.centerRight,
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 6),
         constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.45,
+          maxWidth: MediaQuery.of(context).size.width * (isMobile ? 0.82 : 0.50),
         ),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
@@ -487,9 +717,10 @@ class SupportChatView extends GetView<SupportController> {
   Widget _buildReplyComposer(BuildContext context, SupportTicketEntity ticket, bool isDark) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final isMobile = context.isMobile;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(isMobile ? 12 : 16),
       decoration: BoxDecoration(
         color: isDark ? Colors.black.withValues(alpha: 0.15) : Colors.grey.withValues(alpha: 0.03),
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
@@ -527,63 +758,86 @@ class SupportChatView extends GetView<SupportController> {
           const SizedBox(height: 10),
 
           // ── Toggle: Reply vs Internal Note ─────────────────────────────────
-          Row(
-            children: [
-              Obx(() => ChoiceChip(
-                    label: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.send_rounded, size: 14),
-                        SizedBox(width: 4),
-                        Text('رد رسمي للعميل (إشعار FCM)'),
-                      ],
-                    ),
-                    selected: !controller.isInternalNote.value,
-                    selectedColor: colorScheme.primary.withValues(alpha: 0.15),
-                    onSelected: (val) {
-                      if (val) controller.isInternalNote.value = false;
-                    },
-                  )),
-              const SizedBox(width: 8),
-              Obx(() => ChoiceChip(
-                    label: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.lock_outline_rounded, size: 14, color: Colors.amber),
-                        SizedBox(width: 4),
-                        Text('ملاحظة داخلية للمشرفين فقط'),
-                      ],
-                    ),
-                    selected: controller.isInternalNote.value,
-                    selectedColor: Colors.amber.withValues(alpha: 0.18),
-                    onSelected: (val) {
-                      if (val) controller.isInternalNote.value = true;
-                    },
-                  )),
-              const Spacer(),
-              Obx(() {
-                if (controller.isInternalNote.value) return const SizedBox.shrink();
-                return Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text('تغيير الحالة عند الإرسال: ', style: TextStyle(fontSize: 11.5)),
-                    DropdownButton<String>(
-                      value: controller.replyStatus.value,
-                      isDense: true,
-                      dropdownColor: isDark ? colorScheme.surfaceContainer : Colors.white,
-                      items: const [
-                        DropdownMenuItem(value: 'waiting_user', child: Text('بانتظار رد العميل')),
-                        DropdownMenuItem(value: 'in_progress', child: Text('قيد المعالجة')),
-                        DropdownMenuItem(value: 'resolved', child: Text('تم الحل بنجاح')),
-                      ],
-                      onChanged: (val) {
-                        if (val != null) controller.replyStatus.value = val;
-                      },
-                    ),
-                  ],
-                );
-              }),
-            ],
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final isCompact = constraints.maxWidth < 620;
+              return Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                alignment: WrapAlignment.spaceBetween,
+                children: [
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 6,
+                    children: [
+                      Obx(() => ChoiceChip(
+                            label: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.send_rounded, size: 14),
+                                const SizedBox(width: 4),
+                                Text(isCompact ? 'رد للعميل' : 'رد رسمي للعميل (إشعار FCM)'),
+                              ],
+                            ),
+                            selected: !controller.isInternalNote.value,
+                            selectedColor: colorScheme.primary.withValues(alpha: 0.15),
+                            onSelected: (val) {
+                              if (val) controller.isInternalNote.value = false;
+                            },
+                          )),
+                      Obx(() => ChoiceChip(
+                            label: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.lock_outline_rounded, size: 14, color: Colors.amber),
+                                const SizedBox(width: 4),
+                                Text(isCompact ? 'ملاحظة داخلية' : 'ملاحظة داخلية للمشرفين فقط'),
+                              ],
+                            ),
+                            selected: controller.isInternalNote.value,
+                            selectedColor: Colors.amber.withValues(alpha: 0.18),
+                            onSelected: (val) {
+                              if (val) controller.isInternalNote.value = true;
+                            },
+                          )),
+                    ],
+                  ),
+                  Obx(() {
+                    if (controller.isInternalNote.value) return const SizedBox.shrink();
+                    return Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.03),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: isDark ? Colors.white12 : Colors.black12),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text('تغيير الحالة: ', style: TextStyle(fontSize: 11.5)),
+                          DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              value: controller.replyStatus.value,
+                              isDense: true,
+                              dropdownColor: isDark ? colorScheme.surfaceContainer : Colors.white,
+                              items: const [
+                                DropdownMenuItem(value: 'waiting_user', child: Text('بانتظار رد العميل')),
+                                DropdownMenuItem(value: 'in_progress', child: Text('قيد المعالجة')),
+                                DropdownMenuItem(value: 'resolved', child: Text('تم الحل بنجاح')),
+                              ],
+                              onChanged: (val) {
+                                if (val != null) controller.replyStatus.value = val;
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                ],
+              );
+            },
           ),
           const SizedBox(height: 10),
 
@@ -602,31 +856,34 @@ class SupportChatView extends GetView<SupportController> {
                   ),
                   child: TextField(
                     controller: controller.replyController,
-                    minLines: 2,
-                    maxLines: 5,
+                    minLines: 1,
+                    maxLines: 4,
                     style: TextStyle(
                       fontSize: 13.5,
                       color: isDark ? Colors.white : Colors.black87,
                     ),
                     decoration: InputDecoration(
                       hintText: controller.isInternalNote.value
-                          ? 'اكتب ملاحظتك الداخلية هنا (ستكون مرئية لفرق الدعم فقط)...'
-                          : 'اكتب ردك للعميل (سيتم إرسال إشعار فوري عبر فايربيس على جواله)...',
-                      hintStyle: const TextStyle(fontSize: 12.5, color: Colors.grey),
+                          ? (isMobile ? 'اكتب ملاحظتك الداخلية هنا...' : 'اكتب ملاحظتك الداخلية هنا (ستكون مرئية لفرق الدعم فقط)...')
+                          : (isMobile ? 'اكتب ردك للعميل...' : 'اكتب ردك للعميل (سيتم إرسال إشعار فوري عبر فايربيس على جواله)...'),
+                      hintStyle: const TextStyle(fontSize: 12, color: Colors.grey),
                       border: InputBorder.none,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 8),
               Obx(() => ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: controller.isInternalNote.value
                           ? Colors.amber[800]
                           : colorScheme.primary,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isMobile ? 14 : 20,
+                        vertical: 14,
+                      ),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       elevation: 3,
                     ),
@@ -646,8 +903,8 @@ class SupportChatView extends GetView<SupportController> {
                                     : Icons.send_rounded,
                                 size: 18,
                               ),
-                              const SizedBox(width: 6),
-                              Text(controller.isInternalNote.value ? 'حفظ الملاحظة' : 'إرسال الرد'),
+                              const SizedBox(width: 4),
+                              Text(controller.isInternalNote.value ? 'حفظ' : 'إرسال'),
                             ],
                           ),
                   )),
