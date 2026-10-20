@@ -16,82 +16,86 @@ class SupportScreen extends GetView<SupportController> {
     final isDark = theme.brightness == Brightness.dark;
     final isDesktop = responsive.screenWidth >= 950;
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // ── Top Title & Search Bar ───────────────────────────────────────
-            _buildHeader(context, isDark),
+    return Obx(() {
+      final hasSelectedTicket = !isDesktop && controller.selectedTicket.value != null;
 
-            // ── KPI Stats Header ─────────────────────────────────────────────
-            const SupportStatsHeader(),
-            const SizedBox(height: 8),
+      return PopScope(
+        canPop: !hasSelectedTicket,
+        onPopInvokedWithResult: (didPop, result) {
+          if (!didPop && hasSelectedTicket) {
+            controller.selectedTicket.value = null;
+          }
+        },
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: SafeArea(
+            child: hasSelectedTicket
+                // Mobile / Tablet Chat View (Takes full screen with internal back button)
+                ? const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                    child: SupportChatView(),
+                  )
+                // Dashboard view with Header, Stats, Filters and Tickets list
+                : Column(
+                    children: [
+                      // ── Top Title & Search Bar ───────────────────────────────────────
+                      _buildHeader(context, isDark),
 
-            // ── Filters & Category Bar ───────────────────────────────────────
-            _buildFiltersBar(context, isDark),
-            const SizedBox(height: 10),
+                      // ── KPI Stats Header ─────────────────────────────────────────────
+                      const SupportStatsHeader(),
+                      const SizedBox(height: 8),
 
-            // ── Main Content: Split Master-Detail or Responsive ──────────────
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: responsive.defaultPadding.left,
-                ),
-                child: Obx(() {
-                  if (controller.isLoading.value && controller.tickets.isEmpty) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
+                      // ── Filters & Category Bar ───────────────────────────────────────
+                      _buildFiltersBar(context, isDark),
+                      const SizedBox(height: 10),
 
-                  if (controller.tickets.isEmpty) {
-                    return _buildNoTicketsState(context, isDark);
-                  }
-
-                  if (isDesktop) {
-                    // Desktop Master-Detail split
-                    return Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Left Pane: Tickets List
-                        SizedBox(
-                          width: 380,
-                          child: _buildTicketsList(context, isDark),
-                        ),
-                        const SizedBox(width: 14),
-
-                        // Right Pane: Chat & Resolution Workspace
-                        const Expanded(
-                          child: SupportChatView(),
-                        ),
-                      ],
-                    );
-                  } else {
-                    // Mobile / Tablet Navigation
-                    if (controller.selectedTicket.value != null) {
-                      return Column(
-                        children: [
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: TextButton.icon(
-                              onPressed: () => controller.selectedTicket.value = null,
-                              icon: const Icon(Icons.arrow_back_rounded, size: 18),
-                              label: const Text('العودة لقائمة التذاكر'),
-                            ),
+                      // ── Main Content: Split Master-Detail or List ────────────────────
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: responsive.defaultPadding.left,
                           ),
-                          const Expanded(child: SupportChatView()),
-                        ],
-                      );
-                    }
-                    return _buildTicketsList(context, isDark);
-                  }
-                }),
-              ),
-            ),
-            const SizedBox(height: 14),
-          ],
+                          child: Obx(() {
+                            if (controller.isLoading.value && controller.tickets.isEmpty) {
+                              return const Center(child: CircularProgressIndicator());
+                            }
+
+                            if (controller.tickets.isEmpty) {
+                              return _buildNoTicketsState(context, isDark);
+                            }
+
+                            if (isDesktop) {
+                              // Desktop Master-Detail split
+                              return Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Left Pane: Tickets List
+                                  SizedBox(
+                                    width: 380,
+                                    child: _buildTicketsList(context, isDark),
+                                  ),
+                                  const SizedBox(width: 14),
+
+                                  // Right Pane: Chat & Resolution Workspace
+                                  const Expanded(
+                                    child: SupportChatView(),
+                                  ),
+                                ],
+                              );
+                            } else {
+                              // Mobile / Tablet: Show Tickets List only
+                              return _buildTicketsList(context, isDark);
+                            }
+                          }),
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                    ],
+                  ),
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildHeader(BuildContext context, bool isDark) {
@@ -127,13 +131,21 @@ class SupportScreen extends GetView<SupportController> {
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w800,
                     color: colorScheme.onSurface,
+                    fontSize: responsive.isMobile ? 16 : null,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 Text(
-                  'متابعة البلاغات والرد الفوري مع إشعارات Push وتحديثات Real-time عبر فايربيس',
+                  responsive.isMobile
+                      ? 'متابعة البلاغات والرد الفوري مع العملاء'
+                      : 'متابعة البلاغات والرد الفوري مع إشعارات Push وتحديثات Real-time عبر فايربيس',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurfaceVariant,
+                    fontSize: responsive.isMobile ? 11 : null,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
@@ -181,7 +193,9 @@ class SupportScreen extends GetView<SupportController> {
                     onChanged: (val) => controller.searchQuery.value = val,
                     style: TextStyle(fontSize: 13, color: isDark ? Colors.white : Colors.black87),
                     decoration: InputDecoration(
-                      hintText: 'ابحث برقم التذكرة، اسم العميل، البريد، أو الموضوع...',
+                      hintText: responsive.isMobile
+                          ? 'بحث بالتذاكر أو العميل...'
+                          : 'ابحث برقم التذكرة، اسم العميل، البريد، أو الموضوع...',
                       hintStyle: const TextStyle(fontSize: 12, color: Colors.grey),
                       prefixIcon: const Icon(Icons.search_rounded, size: 18),
                       suffixIcon: Obx(() {
