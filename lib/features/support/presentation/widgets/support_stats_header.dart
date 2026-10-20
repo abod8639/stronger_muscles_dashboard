@@ -27,6 +27,76 @@ class SupportStatsHeader extends GetView<SupportController> {
         final urgent = stats.urgent.toString();
         final resolved = stats.resolved.toString();
 
+        if (responsive.isMobile) {
+          return SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 140,
+                  child: _buildStatCard(
+                    context,
+                    title: 'إجمالي البلاغات',
+                    value: total,
+                    icon: Icons.confirmation_number_rounded,
+                    iconColor: colorScheme.primary,
+                    isDark: isDark,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                SizedBox(
+                  width: 140,
+                  child: _buildStatCard(
+                    context,
+                    title: 'بانتظار المعالجة',
+                    value: open,
+                    icon: Icons.mark_chat_unread_rounded,
+                    iconColor: Colors.amber,
+                    isDark: isDark,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                SizedBox(
+                  width: 140,
+                  child: _buildStatCard(
+                    context,
+                    title: 'قيد المتابعة',
+                    value: inProgress,
+                    icon: Icons.sync_rounded,
+                    iconColor: Colors.blue,
+                    isDark: isDark,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                SizedBox(
+                  width: 140,
+                  child: _buildStatCard(
+                    context,
+                    title: 'شكاوى عاجلة',
+                    value: urgent,
+                    icon: Icons.warning_amber_rounded,
+                    iconColor: Colors.redAccent,
+                    isDark: isDark,
+                    isAlert: stats.urgent > 0,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                SizedBox(
+                  width: 140,
+                  child: _buildStatCard(
+                    context,
+                    title: 'تم الحل',
+                    value: resolved,
+                    icon: Icons.check_circle_outline_rounded,
+                    iconColor: Colors.green,
+                    isDark: isDark,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
         if (isNarrow) {
           return Column(
             children: [
