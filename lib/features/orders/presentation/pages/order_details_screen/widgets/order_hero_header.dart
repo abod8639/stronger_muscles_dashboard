@@ -53,6 +53,9 @@ class OrderHeroHeader extends StatelessWidget {
                         runSpacing: 6,
                         children: [
                           Container(
+                            constraints: BoxConstraints(
+                              maxWidth: MediaQuery.of(context).size.width - (isMobile ? 56 : 80),
+                            ),
                             padding: const EdgeInsets.symmetric(
                               horizontal: 10,
                               vertical: 4,
@@ -68,27 +71,31 @@ class OrderHeroHeader extends StatelessWidget {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      'طلب # ',
-                                      style: theme.textTheme.titleMedium?.copyWith(
-                                        fontWeight: FontWeight.w800,
-                                        letterSpacing: 0.5,
-                                        color: colorScheme.onSurface,
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        order.id,
-                                        style: theme.textTheme.titleMedium?.copyWith(
-                                          fontWeight: FontWeight.w800,
-                                          letterSpacing: 0.5,
-                                          color: Colors.blue,
+                                Flexible(
+                                  child: Text.rich(
+                                    TextSpan(
+                                      children: [
+                                        TextSpan(
+                                          text: 'طلب # ',
+                                          style: theme.textTheme.titleMedium?.copyWith(
+                                            fontWeight: FontWeight.w800,
+                                            letterSpacing: 0.5,
+                                            color: colorScheme.onSurface,
+                                          ),
                                         ),
-                                      ),
+                                        TextSpan(
+                                          text: order.id,
+                                          style: theme.textTheme.titleMedium?.copyWith(
+                                            fontWeight: FontWeight.w800,
+                                            letterSpacing: 0.5,
+                                            color: Colors.blue,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                                 const SizedBox(width: 4),
                                 Tooltip(
