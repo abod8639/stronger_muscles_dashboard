@@ -223,6 +223,14 @@ class Sidebar extends StatelessWidget {
                     activeIcon: Icons.local_shipping_rounded,
                     label: 'Orders',
                   ),
+                  NavItemTile(
+                    isDrawer: isDrawer,
+                    controller: controller,
+                    index: 8,
+                    icon: Icons.support_agent_outlined,
+                    activeIcon: Icons.support_agent_rounded,
+                    label: 'Support & Tickets',
+                  ),
                   if (isSuperOrAdmin)
                     NavItemTile(
                       isDrawer: isDrawer,
