@@ -78,12 +78,14 @@ class OrderHeroHeader extends StatelessWidget {
                                         color: colorScheme.onSurface,
                                       ),
                                     ),
-                                    Text(
-                                      order.id,
-                                      style: theme.textTheme.titleMedium?.copyWith(
-                                        fontWeight: FontWeight.w800,
-                                        letterSpacing: 0.5,
-                                        color: Colors.blue,
+                                    Expanded(
+                                      child: Text(
+                                        order.id,
+                                        style: theme.textTheme.titleMedium?.copyWith(
+                                          fontWeight: FontWeight.w800,
+                                          letterSpacing: 0.5,
+                                          color: Colors.blue,
+                                        ),
                                       ),
                                     ),
                                   ],
