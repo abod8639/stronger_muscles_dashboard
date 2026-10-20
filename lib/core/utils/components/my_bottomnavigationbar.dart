@@ -55,6 +55,11 @@ class MyBottomNavigationBar extends StatelessWidget {
             selectedIcon: Icon(Icons.settings_rounded),
             label: 'الإعدادات',
           ),
+          NavigationDestination(
+            icon: Icon(Icons.support_agent_outlined),
+            selectedIcon: Icon(Icons.support_agent_rounded),
+            label: 'الدعم الفني',
+          ),
         ],
       ),
     );
