@@ -12,6 +12,7 @@ import 'package:stronger_muscles_dashboard/features/products/presentation/pages/
 import 'package:stronger_muscles_dashboard/features/promos/presentation/pages/promos_screen.dart';
 import 'package:stronger_muscles_dashboard/features/notifications/presentation/pages/notifications_screen.dart';
 import 'package:stronger_muscles_dashboard/features/settings/presentation/page/settings_screen.dart';
+import 'package:stronger_muscles_dashboard/features/support/presentation/pages/support_screen.dart';
 import 'package:stronger_muscles_dashboard/features/users/presentation/pages/users_page.dart';
 
 class MainNavigationScreen extends StatelessWidget {
@@ -60,6 +61,7 @@ class MainNavigationScreen extends StatelessWidget {
                               UsersPage(),
                               NotificationsScreen(),
                               SettingsScreen(),
+                              SupportScreen(),
                             ],
                           ),
                         ),
