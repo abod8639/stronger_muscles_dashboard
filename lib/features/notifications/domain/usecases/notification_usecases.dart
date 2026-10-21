@@ -1,4 +1,8 @@
+import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
+import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import '../entities/admin_notification_entity.dart';
+import '../entities/notifications_result_entity.dart';
 import '../repositories/notification_repository.dart';
 
 class GetNotificationsUseCase {
@@ -6,8 +10,18 @@ class GetNotificationsUseCase {
 
   GetNotificationsUseCase(this.repository);
 
-  Future<Map<String, dynamic>> call({String? search, String? type, int page = 1}) {
-    return repository.getNotifications(search: search, type: type, page: page);
+  Future<Either<Failure, NotificationsResultEntity>> call({
+    String? search,
+    String? type,
+    int page = 1,
+    CancelToken? cancelToken,
+  }) {
+    return repository.getNotifications(
+      search: search,
+      type: type,
+      page: page,
+      cancelToken: cancelToken,
+    );
   }
 }
 
@@ -16,8 +30,11 @@ class SendNotificationUseCase {
 
   SendNotificationUseCase(this.repository);
 
-  Future<AdminNotificationEntity> call(Map<String, dynamic> data) {
-    return repository.sendNotification(data);
+  Future<Either<Failure, AdminNotificationEntity>> call(
+    Map<String, dynamic> data, {
+    CancelToken? cancelToken,
+  }) {
+    return repository.sendNotification(data, cancelToken: cancelToken);
   }
 }
 
@@ -26,7 +43,10 @@ class DeleteNotificationUseCase {
 
   DeleteNotificationUseCase(this.repository);
 
-  Future<void> call(String id) {
-    return repository.deleteNotification(id);
+  Future<Either<Failure, void>> call(
+    String id, {
+    CancelToken? cancelToken,
+  }) {
+    return repository.deleteNotification(id, cancelToken: cancelToken);
   }
 }
