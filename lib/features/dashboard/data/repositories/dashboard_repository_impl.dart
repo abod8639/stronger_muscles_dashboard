@@ -42,7 +42,19 @@ class DashboardRepositoryImpl implements DashboardRepository {
         _userRepository.getUsersStats(),
       ]);
 
-      final orders = (results[0] as List<OrderEntity>?) ?? const <OrderEntity>[];
+      final ordersResult = results[0];
+      List<OrderEntity> orders = const <OrderEntity>[];
+      if (ordersResult is Either<Failure, List<OrderEntity>>) {
+        ordersResult.fold(
+          (failure) {
+            debugPrint('Dashboard: Orders fetch returned failure: ${failure.toMessage()}');
+          },
+          (ords) => orders = ords,
+        );
+      } else if (ordersResult is List<OrderEntity>) {
+        orders = ordersResult;
+      }
+
       final products = (results[1] as List<ProductEntity>?) ?? const <ProductEntity>[];
 
       final categoriesResult = results[2];
