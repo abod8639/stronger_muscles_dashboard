@@ -463,31 +463,31 @@ class _$AddressModelImpl extends _AddressModel {
 
 abstract class _AddressModel extends AddressModel {
   const factory _AddressModel(
-      {@HiveField(0) @JsonKey(fromJson: _parseInt) required final int id,
+      {@HiveField(0) @JsonKey(fromJson: _parseInt) required int id,
       @HiveField(1)
       @JsonKey(name: 'user_id', fromJson: _parseIntNullable)
-      final int? userId,
-      @HiveField(2) final String? label,
-      @HiveField(3) @JsonKey(name: 'full_name') final String? fullName,
-      @HiveField(4) final String? phone,
-      @HiveField(5) required final String street,
-      @HiveField(6) required final String city,
-      @HiveField(7) final String? state,
-      @HiveField(8) @JsonKey(name: 'postal_code') final String? postalCode,
-      @HiveField(9) final String? country,
+      int? userId,
+      @HiveField(2) String? label,
+      @HiveField(3) @JsonKey(name: 'full_name') String? fullName,
+      @HiveField(4) String? phone,
+      @HiveField(5) required String street,
+      @HiveField(6) required String city,
+      @HiveField(7) String? state,
+      @HiveField(8) @JsonKey(name: 'postal_code') String? postalCode,
+      @HiveField(9) String? country,
       @HiveField(10)
       @JsonKey(name: 'is_default', fromJson: _parseBool)
-      final bool isDefault,
+      bool isDefault,
       @HiveField(11)
       @JsonKey(fromJson: _parseDoubleNullable)
-      final double? latitude,
+      double? latitude,
       @HiveField(12)
       @JsonKey(fromJson: _parseDoubleNullable)
-      final double? longitude,
-      @HiveField(13) @JsonKey(name: 'created_at') final DateTime? createdAt,
+      double? longitude,
+      @HiveField(13) @JsonKey(name: 'created_at') DateTime? createdAt,
       @HiveField(14)
       @JsonKey(name: 'updated_at')
-      final DateTime? updatedAt}) = _$AddressModelImpl;
+      DateTime? updatedAt}) = _$AddressModelImpl;
   const _AddressModel._() : super._();
 
   factory _AddressModel.fromJson(Map<String, dynamic> json) =
