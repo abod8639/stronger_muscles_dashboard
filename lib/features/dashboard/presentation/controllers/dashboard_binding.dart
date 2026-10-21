@@ -29,7 +29,7 @@ class DashboardBinding extends Bindings {
       Get.lazyPut<OrderRemoteDataSource>(() => OrderRemoteDataSourceImpl(dio), fenix: true);
     }
     if (!Get.isRegistered<OrderRepository>()) {
-      Get.lazyPut<OrderRepository>(() => OrderRepositoryImpl(Get.find<OrderRemoteDataSource>()), fenix: true);
+      Get.lazyPut<OrderRepository>(() => OrderRepositoryImpl(remoteDataSource: Get.find<OrderRemoteDataSource>()), fenix: true);
     }
 
     // 2. Products
