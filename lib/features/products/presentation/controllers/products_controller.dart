@@ -1,7 +1,9 @@
 import 'package:dartz/dartz.dart' hide State;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
+import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/repositories/category_repository.dart';
 import '../../domain/entities/product_entity.dart';
@@ -12,7 +14,6 @@ import '../../domain/usecases/update_product_usecase.dart';
 import '../../domain/usecases/upload_product_image_usecase.dart';
 import 'package:stronger_muscles_dashboard/features/brands/domain/entities/brand_entity.dart';
 import 'package:stronger_muscles_dashboard/features/brands/domain/repositories/brand_repository.dart';
-import '../widgets/product_form_page.dart';
 
 class ProductsController extends GetxController {
   final GetProductsUseCase _getProductsUseCase;
@@ -574,7 +575,7 @@ class ProductsController extends GetxController {
   }
 
   void showProductForm(BuildContext context, {ProductEntity? product}) {
-    Get.to(() => ProductFormPage(product: product));
+    context.push(AppRoutes.productForm, extra: product);
   }
 
   void _showErrorSnackbar(String title, String message) {
