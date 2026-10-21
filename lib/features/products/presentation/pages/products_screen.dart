@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
+import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/base_app_bar.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/custom_search_bar.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/enhanced_loading_widget.dart';
@@ -14,7 +16,6 @@ import 'package:stronger_muscles_dashboard/features/products/presentation/contro
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_providers.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_bulk_actions_bar.dart';
-import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_form_page.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_list_item.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/products_error_card.dart';
 
@@ -48,7 +49,7 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: BaseAppBar(
         title: 'المنتجات',
-        onPressed: () => Get.to(ProductFormPage()),
+        onPressed: () => context.push(AppRoutes.productForm),
         icon: Icons.add,
         extraActions: [
           IconButton(
