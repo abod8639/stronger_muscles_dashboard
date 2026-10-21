@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
+import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/base_app_bar.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/confirm_dialog.dart';
@@ -15,7 +17,6 @@ import 'package:stronger_muscles_dashboard/features/categories/domain/entities/c
 import 'package:stronger_muscles_dashboard/features/categories/presentation/controllers/categories_providers.dart';
 import 'package:stronger_muscles_dashboard/features/categories/presentation/page/categories_screen/widgets/category_grid_card.dart';
 import 'package:stronger_muscles_dashboard/features/categories/presentation/page/categories_screen/widgets/category_list_item.dart';
-import 'package:stronger_muscles_dashboard/features/categories/presentation/page/category_form_page/category_form_page.dart';
 
 /// شاشة استعراض وإدارة التصنيفات المتوافقة بالكامل مع Material Design 3
 /// والمعتمدة على Riverpod [AsyncValue.when] لمنع أي تجميد أو انهيار للشاشة
@@ -59,7 +60,7 @@ class CategoriesScreen extends ConsumerWidget {
       backgroundColor: colorScheme.surface,
       appBar: BaseAppBar(
         title: 'إدارة التصنيفات',
-        onPressed: () => Get.to(() => const CategoryFormPage()),
+        onPressed: () => context.push(AppRoutes.categoryForm),
         icon: Icons.add_circle_outline,
       ),
       body: Column(
@@ -128,11 +129,13 @@ class CategoriesScreen extends ConsumerWidget {
                         final category = filteredCategories[index];
                         return CategoryListItem(
                           category: category,
-                          onTap: () => Get.to(
-                            () => CategoryFormPage(category: category),
+                          onTap: () => context.push(
+                            AppRoutes.categoryForm,
+                            extra: category,
                           ),
-                          onEdit: () => Get.to(
-                            () => CategoryFormPage(category: category),
+                          onEdit: () => context.push(
+                            AppRoutes.categoryForm,
+                            extra: category,
                           ),
                           onDelete: () =>
                               _confirmDelete(context, ref, category.id),
@@ -166,11 +169,13 @@ class CategoriesScreen extends ConsumerWidget {
                       final category = filteredCategories[index];
                       return CategoryGridCard(
                         category: category,
-                        onTap: () => Get.to(
-                          () => CategoryFormPage(category: category),
+                        onTap: () => context.push(
+                          AppRoutes.categoryForm,
+                          extra: category,
                         ),
-                        onEdit: () => Get.to(
-                          () => CategoryFormPage(category: category),
+                        onEdit: () => context.push(
+                          AppRoutes.categoryForm,
+                          extra: category,
                         ),
                         onDelete: () =>
                             _confirmDelete(context, ref, category.id),
@@ -192,5 +197,5 @@ void showCategoryForm(
   BuildContext context, {
   CategoryEntity? category,
 }) {
-  Get.to(() => CategoryFormPage(category: category));
+  context.push(AppRoutes.categoryForm, extra: category);
 }
