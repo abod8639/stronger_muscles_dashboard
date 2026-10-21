@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive/hive.dart';
 import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
@@ -44,32 +45,90 @@ class CategoryModel with _$CategoryModel {
       );
 
   factory CategoryModel.fromJson(Map<String, dynamic> json) =>
-      _$CategoryModelFromJson(_customJson(json));
+      _$CategoryModelFromJson(_safeCategoryJson(json));
+
+  /// معالجة استخراج تصنيف مفرد في Isolate منفصل عبر `compute` لمنع تجميد واجهة المستخدم
+  static Future<CategoryModel> fromJsonAsync(Map<String, dynamic> json) async {
+    return await compute(_parseCategoryIsolate, json);
+  }
+
+  /// معالجة استخراج قائمة تصنيفات كاملة (أو شجرة التصنيفات) في Isolate خلفي
+  static Future<List<CategoryModel>> fromJsonListAsync(List<dynamic> jsonList) async {
+    return await compute(_parseCategoryListIsolate, jsonList);
+  }
 }
 
-Map<String, dynamic> _customJson(Map<String, dynamic> json) {
+/// دوال Isolate Top-level
+CategoryModel _parseCategoryIsolate(Map<String, dynamic> json) {
+  return CategoryModel.fromJson(json);
+}
+
+List<CategoryModel> _parseCategoryListIsolate(List<dynamic> jsonList) {
+  final list = <CategoryModel>[];
+  for (final item in jsonList) {
+    if (item is Map) {
+      try {
+        list.add(CategoryModel.fromJson(Map<String, dynamic>.from(item)));
+      } catch (e) {
+        debugPrint('X Error parsing category in Isolate: $e');
+      }
+    }
+  }
+  return list;
+}
+
+/// تحليل آمن ومقاوم للـ TypeError والـ Null Pointer في جميع الحقول
+Map<String, dynamic> _safeCategoryJson(Map<String, dynamic> json) {
   if (json['processed'] == true) return json;
 
   dynamic parseTranslatable(dynamic val) {
     if (val is Map) {
       return {
-        'ar': val['ar']?.toString() ?? '',
-        'en': val['en']?.toString() ?? '',
+        'ar': val['ar']?.toString().trim() ?? '',
+        'en': val['en']?.toString().trim() ?? '',
       };
     }
-    final strVal = val?.toString() ?? '';
+    final strVal = val?.toString().trim() ?? '';
     return {'ar': strVal, 'en': strVal};
+  }
+
+  int parseSortOrder(dynamic val) {
+    if (val is int) return val;
+    if (val is String) return int.tryParse(val) ?? 0;
+    if (val is num) return val.toInt();
+    return 0;
+  }
+
+  bool parseIsActive(dynamic val) {
+    if (val is bool) return val;
+    if (val is int || val is num) return val == 1;
+    if (val is String) {
+      final lower = val.toLowerCase().trim();
+      return lower == '1' || lower == 'true' || lower == 'active';
+    }
+    return true;
+  }
+
+  List<dynamic> parseChildren(dynamic val) {
+    if (val is List) {
+      return val
+          .whereType<Map>()
+          .map((item) => _safeCategoryJson(Map<String, dynamic>.from(item)))
+          .toList();
+    }
+    return const [];
   }
 
   return {
     ...json,
-    'id': json['id']?.toString() ?? '',
+    'id': json['id']?.toString().trim() ?? '',
     'name': parseTranslatable(json['name']),
     'description': parseTranslatable(json['description']),
-    'imageUrl': json['imageUrl'] ?? json['image_url'],
-    'parentId': json['parentId'] ?? json['parent_id'],
-    'sortOrder': json['sortOrder'] ?? json['sort_order'] ?? 0,
-    'isActive': json['isActive'] ?? json['is_active'] ?? true,
+    'imageUrl': json['imageUrl']?.toString() ?? json['image_url']?.toString(),
+    'parentId': json['parentId']?.toString() ?? json['parent_id']?.toString(),
+    'sortOrder': parseSortOrder(json['sortOrder'] ?? json['sort_order']),
+    'isActive': parseIsActive(json['isActive'] ?? json['is_active']),
+    'children': parseChildren(json['children']),
     'processed': true,
   };
 }
