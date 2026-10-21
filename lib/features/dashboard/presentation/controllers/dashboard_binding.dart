@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/core/network/api_service.dart';
 import 'package:stronger_muscles_dashboard/core/network/api/user_service.dart';
+import 'package:stronger_muscles_dashboard/features/categories/data/datasources/category_remote_datasource.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/repositories/category_repository.dart';
 import 'package:stronger_muscles_dashboard/features/categories/data/repositories/category_repository.dart';
 import 'package:stronger_muscles_dashboard/features/orders/data/datasources/order_remote_datasource.dart';
@@ -21,13 +21,10 @@ import 'dashboard_controller.dart';
 class DashboardBinding extends Bindings {
   @override
   void dependencies() {
-    final apiService = Get.find<ApiService>();
     final apiBase = Get.find<ApiBase>();
     final dio = apiBase.dio;
 
-    // Repositories needed for Dashboard (Fallback if not provided by other bindings)
-    
-    // Orders
+    // 1. Orders
     if (!Get.isRegistered<OrderRemoteDataSource>()) {
       Get.lazyPut<OrderRemoteDataSource>(() => OrderRemoteDataSourceImpl(dio), fenix: true);
     }
@@ -35,7 +32,7 @@ class DashboardBinding extends Bindings {
       Get.lazyPut<OrderRepository>(() => OrderRepositoryImpl(Get.find<OrderRemoteDataSource>()), fenix: true);
     }
 
-    // Products
+    // 2. Products
     if (!Get.isRegistered<ProductRemoteDataSource>()) {
       Get.lazyPut<ProductRemoteDataSource>(() => ProductRemoteDataSourceImpl(dio), fenix: true);
     }
@@ -43,12 +40,18 @@ class DashboardBinding extends Bindings {
       Get.lazyPut<ProductRepository>(() => ProductRepositoryImpl(Get.find<ProductRemoteDataSource>()), fenix: true);
     }
 
-    // Categories
+    // 3. Categories
+    if (!Get.isRegistered<CategoryRemoteDataSource>()) {
+      Get.lazyPut<CategoryRemoteDataSource>(() => CategoryRemoteDataSourceImpl(dio), fenix: true);
+    }
     if (!Get.isRegistered<CategoryRepository>()) {
-      Get.lazyPut<CategoryRepository>(() => CategoryRepositoryImpl(apiService), fenix: true);
+      Get.lazyPut<CategoryRepository>(
+        () => CategoryRepositoryImpl(remoteDataSource: Get.find<CategoryRemoteDataSource>()),
+        fenix: true,
+      );
     }
 
-    // Users
+    // 4. Users
     if (!Get.isRegistered<UserService>()) {
       Get.lazyPut(() => UserService(), fenix: true);
     }
@@ -59,7 +62,7 @@ class DashboardBinding extends Bindings {
       Get.lazyPut<UserRepository>(() => UserRepositoryImpl(Get.find<UserRemoteDataSource>()), fenix: true);
     }
     
-    // Note: Ensuring DashboardRepository is registered after its dependencies
+    // 5. Dashboard Repository & UseCase
     Get.lazyPut<DashboardRepository>(
       () => DashboardRepositoryImpl(
         orderRepository: Get.find<OrderRepository>(),
