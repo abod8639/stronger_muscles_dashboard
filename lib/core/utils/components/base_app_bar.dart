@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_controller.dart';
+import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_controller.dart';
 
 class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -11,6 +12,7 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool centerTitle;
   final IconData icon;
   final Color? surfaceTintColor;
+  final Widget? leading;
 
   const BaseAppBar({
     super.key,
@@ -21,16 +23,33 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.centerTitle = true,
     this.icon = Icons.refresh_rounded,
     this.surfaceTintColor,
+    this.leading,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final canPop = ModalRoute.of(context)?.canPop ?? false;
+    final isDesktop = MediaQuery.sizeOf(context).width >= 900;
 
     final DashboardController statusController =
         Get.find<DashboardController>();
 
+    Widget? effectiveLeading = leading;
+    if (effectiveLeading == null && !canPop && !isDesktop) {
+      effectiveLeading = IconButton(
+        icon: const Icon(Icons.menu_rounded),
+        tooltip: 'القائمة الرئيسية',
+        onPressed: () {
+          if (Get.isRegistered<NavigationController>()) {
+            Get.find<NavigationController>().openDrawer();
+          }
+        },
+      );
+    }
+
     return AppBar(
+      leading: effectiveLeading,
       surfaceTintColor: surfaceTintColor ?? Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.transparent,
