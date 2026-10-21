@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
+import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/build_background.dart';
 import 'package:stronger_muscles_dashboard/features/auth/domain/entities/auth_entity.dart';
@@ -101,7 +102,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         );
 
     if (success && mounted) {
-      Get.offAllNamed('/dashboard');
+      context.go(AppRoutes.dashboard);
     }
   }
 
@@ -406,7 +407,13 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           ),
         ),
         TextButton(
-          onPressed: () => Get.back(),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go(AppRoutes.login);
+            }
+          },
           child: const Text(
             'تسجيل الدخول',
             style: TextStyle(
