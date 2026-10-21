@@ -16,7 +16,7 @@ class DashboardController extends GetxController {
 
   // --- UI States ---
   final isLoading = true.obs;
-  final isConnected = true.obs; // Defaults to true if we're calling fetch
+  final isConnected = true.obs;
   final errorMessage = ''.obs;
 
   // --- Dashboard Data ---
@@ -38,18 +38,36 @@ class DashboardController extends GetxController {
     fetchDashboardData();
   }
 
+  /// مزامنة البيانات مباشرة من موفر Riverpod لتفادي ازدواجية الطلبات
+  void syncWithRiverpod(DashboardStatsEntity newStats) {
+    stats.value = newStats;
+    isConnected.value = true;
+    errorMessage.value = '';
+    isLoading.value = false;
+  }
+
   Future<void> fetchDashboardData() async {
     try {
       isLoading.value = true;
       errorMessage.value = '';
 
       final result = await _getDashboardDataUseCase();
-      stats.value = result;
-      isConnected.value = true;
+      result.fold(
+        (failure) {
+          errorMessage.value = failure.toMessage();
+          isConnected.value = false;
+          debugPrint('Dashboard Failure: ${failure.toMessage()}');
+        },
+        (data) {
+          stats.value = data;
+          isConnected.value = true;
+          errorMessage.value = '';
+        },
+      );
     } catch (e) {
       errorMessage.value = 'فشل في تحديث البيانات: $e';
       isConnected.value = false;
-      debugPrint('Dashboard Error: $e');
+      debugPrint('Dashboard Unexpected Error: $e');
     } finally {
       isLoading.value = false;
     }
@@ -63,7 +81,7 @@ class DashboardController extends GetxController {
     await fetchDashboardData();
   }
 
-  /// Calculates real chart data based on loaded orders and the selected period.
+  /// Calculates real chart data based on loaded orders and the selected period with safe fallbacks.
   OrdersChartData get ordersChartData {
     final orders = stats.value.orders;
     final period = selectPeriod.value;
@@ -107,7 +125,7 @@ class DashboardController extends GetxController {
 
       total += count;
       spots.add(FlSpot(i.toDouble(), count.toDouble()));
-      bottomTitles.add(arabicDays[day.weekday - 1]);
+      bottomTitles.add(arabicDays[(day.weekday - 1) % 7]);
     }
 
     final (maxY, interval) = _calculateMaxYAndInterval(spots);
@@ -392,4 +410,3 @@ class DashboardController extends GetxController {
     }
   }
 }
-
