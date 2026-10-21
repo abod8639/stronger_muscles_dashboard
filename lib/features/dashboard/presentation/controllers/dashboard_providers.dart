@@ -33,7 +33,7 @@ final dashboardProductRepositoryProvider = Provider<ProductRepository>((ref) {
     return Get.find<ProductRepository>();
   }
   final dio = ref.watch(dioProvider);
-  return ProductRepositoryImpl(ProductRemoteDataSourceImpl(dio));
+  return ProductRepositoryImpl(remoteDataSource: ProductRemoteDataSourceImpl(dio));
 });
 
 /// موفر مستودع المستخدمين مع دعم التوافق مع GetX
