@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:stronger_muscles_dashboard/core/router/app_router.dart';
+import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
 
 /// Legacy Bridge for Auth Management
 class AuthService extends GetxService {
@@ -42,7 +44,7 @@ class AuthService extends GetxService {
   Future<void> logout() async {
     await _storage.remove(_tokenKey);
     await _storage.remove(_userKey);
-    Get.offAllNamed('/login');
+    appRouter.go(AppRoutes.login);
   }
 
   Map<String, String> getAuthHeaders() {
