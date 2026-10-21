@@ -29,6 +29,46 @@ class AdminNotificationEntity {
     this.createdAt,
   });
 
+  factory AdminNotificationEntity.initial() => const AdminNotificationEntity(
+        id: '',
+        title: '',
+        body: '',
+        type: 'general',
+        targetType: 'all',
+      );
+
+  AdminNotificationEntity copyWith({
+    String? id,
+    String? title,
+    String? body,
+    String? type,
+    String? targetType,
+    String? userId,
+    String? userName,
+    String? userEmail,
+    String? adminName,
+    String? imageUrl,
+    Map<String, dynamic>? data,
+    bool? isRead,
+    DateTime? createdAt,
+  }) {
+    return AdminNotificationEntity(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      body: body ?? this.body,
+      type: type ?? this.type,
+      targetType: targetType ?? this.targetType,
+      userId: userId ?? this.userId,
+      userName: userName ?? this.userName,
+      userEmail: userEmail ?? this.userEmail,
+      adminName: adminName ?? this.adminName,
+      imageUrl: imageUrl ?? this.imageUrl,
+      data: data ?? this.data,
+      isRead: isRead ?? this.isRead,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
   String get typeLabel {
     switch (type) {
       case 'promo':
@@ -48,4 +88,14 @@ class AdminNotificationEntity {
     }
     return userName != null ? 'المستخدم: $userName' : 'مستخدم محدد (#$userId)';
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AdminNotificationEntity &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
 }
