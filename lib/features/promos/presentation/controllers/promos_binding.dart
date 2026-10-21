@@ -32,7 +32,7 @@ class PromosBinding extends Bindings {
     // Product data layer (for the product picker dropdown)
     if (!Get.isRegistered<ProductRepository>()) {
       Get.lazyPut<ProductRemoteDataSource>(() => ProductRemoteDataSourceImpl(dio));
-      Get.lazyPut<ProductRepository>(() => ProductRepositoryImpl(Get.find<ProductRemoteDataSource>()));
+      Get.lazyPut<ProductRepository>(() => ProductRepositoryImpl(remoteDataSource: Get.find<ProductRemoteDataSource>()));
     }
     if (!Get.isRegistered<GetProductsUseCase>()) {
       Get.lazyPut(() => GetProductsUseCase(Get.find<ProductRepository>()));
