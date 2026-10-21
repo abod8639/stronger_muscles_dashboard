@@ -37,7 +37,7 @@ class DashboardBinding extends Bindings {
       Get.lazyPut<ProductRemoteDataSource>(() => ProductRemoteDataSourceImpl(dio), fenix: true);
     }
     if (!Get.isRegistered<ProductRepository>()) {
-      Get.lazyPut<ProductRepository>(() => ProductRepositoryImpl(Get.find<ProductRemoteDataSource>()), fenix: true);
+      Get.lazyPut<ProductRepository>(() => ProductRepositoryImpl(remoteDataSource: Get.find<ProductRemoteDataSource>()), fenix: true);
     }
 
     // 3. Categories
