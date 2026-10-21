@@ -1,28 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_controller.dart';
+import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_controller.dart';
 
 class DashboardHeaderStatus extends GetView<DashboardController> {
   const DashboardHeaderStatus({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDesktop = MediaQuery.sizeOf(context).width >= 900;
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const Text(
-          'لوحة التحكم',
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'لوحة التحكم',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Obx(() => ConnectionStatusWidget(
+              isConnected: controller.isConnected.value,
+              lastUpdated: DateTime.now(), // Fixed time for simple display
+            )),
+          ],
         ),
-        const SizedBox(height: 8),
-        Obx(() => ConnectionStatusWidget(
-          isConnected: controller.isConnected.value,
-          lastUpdated: DateTime.now(), // Fixed time for simple display
-        )),
+        if (!isDesktop)
+          IconButton.filledTonal(
+            onPressed: () {
+              if (Get.isRegistered<NavigationController>()) {
+                Get.find<NavigationController>().openDrawer();
+              }
+            },
+            icon: const Icon(Icons.menu_rounded),
+            tooltip: 'القائمة الرئيسية',
+            style: IconButton.styleFrom(
+              backgroundColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+          ),
       ],
     );
   }
