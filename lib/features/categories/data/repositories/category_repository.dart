@@ -1,116 +1,137 @@
+import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/core/network/api_service.dart';
+import 'package:stronger_muscles_dashboard/core/error/failures.dart';
+import 'package:stronger_muscles_dashboard/core/error/network_error_handler.dart';
 import 'package:stronger_muscles_dashboard/core/storage/cache_service.dart';
+import 'package:stronger_muscles_dashboard/features/categories/data/datasources/category_remote_datasource.dart';
 import 'package:stronger_muscles_dashboard/features/categories/data/models/category_model.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
-
-
-
 import 'package:stronger_muscles_dashboard/features/categories/domain/repositories/category_repository.dart';
 
 class CategoryRepositoryImpl implements CategoryRepository {
-  final ApiService _apiService;
-  late final CacheService _cacheService;
+  final CategoryRemoteDataSource remoteDataSource;
+  CacheService? _cacheService;
 
   static const String _cacheKeyCategories = 'categories_list';
   static const String _cacheKeyCategoriesTree = 'categories_tree';
 
-  CategoryRepositoryImpl(this._apiService) {
-    _cacheService = Get.find<CacheService>();
+  CategoryRepositoryImpl({required this.remoteDataSource}) {
+    if (Get.isRegistered<CacheService>()) {
+      _cacheService = Get.find<CacheService>();
+    }
   }
 
   @override
-  Future<List<CategoryEntity>> getCategories({
+  Future<Either<Failure, List<CategoryEntity>>> getCategories({
     bool tree = false,
     bool forceRefresh = false,
+    CancelToken? cancelToken,
   }) async {
-    try {
-      final cacheKey = tree ? _cacheKeyCategoriesTree : _cacheKeyCategories;
+    final cacheKey = tree ? _cacheKeyCategoriesTree : _cacheKeyCategories;
 
-      if (forceRefresh) {
-        _cacheService.remove(cacheKey);
-      }
-
-      // 1. Get from Cache
+    // 1. القراءة الآمنة من الذاكرة المؤقتة (Cache)
+    if (!forceRefresh && _cacheService != null) {
       try {
-        final cachedData = _cacheService.get<dynamic>(cacheKey);
-        if (cachedData != null && cachedData is List && !forceRefresh) {
-          if (cachedData.isEmpty || cachedData.first is CategoryModel) {
-            debugPrint('✓ تم استرجاع التصنيفات من الـ Cache');
-            return (cachedData as List<CategoryModel>).map((m) => m.toEntity()).toList();
-          } else {
-            _cacheService.remove(cacheKey);
+        final cachedData = _cacheService!.get<dynamic>(cacheKey);
+        if (cachedData is List && cachedData.isNotEmpty) {
+          if (cachedData.first is CategoryModel) {
+            final entities =
+                (cachedData as List<CategoryModel>).map((m) => m.toEntity()).toList();
+            return Right(entities);
           }
         }
       } catch (e) {
-        _cacheService.remove(cacheKey);
+        _cacheService?.remove(cacheKey);
       }
-
-      // 2. Fetch from Remote
-      debugPrint('↓ جاري تحميل التصنيفات من الخادم (tree: $tree)...');
-      final data = await _apiService.fetchCategories(tree: tree);
-      
-      final models = <CategoryModel>[];
-      for (var item in data) {
-        try {
-          models.add(CategoryModel.fromJson(item as Map<String, dynamic>));
-        } catch (e) {
-          debugPrint('X خطأ في معالجة تصنيف واحد: $e');
-        }
-      }
-
-      // 3. Save to Cache
-      _cacheService.set(cacheKey, models, cacheDurationSeconds: 300);
-      
-      return models.map((m) => m.toEntity()).toList();
-    } catch (e) {
-      debugPrint('X خطأ فادح في CategoryRepository: $e');
-      rethrow;
     }
-  }
 
-  @override
-  Future<CategoryEntity> addCategory(Map<String, dynamic> categoryJson) async {
+    // 2. الجلب من الخادم
     try {
-      final data = await _apiService.addCategory(categoryJson);
-      _cacheService.remove(_cacheKeyCategories);
-      _cacheService.remove(_cacheKeyCategoriesTree);
-      return CategoryModel.fromJson(data).toEntity();
-    } catch (e) {
-      debugPrint('خطأ في إضافة التصنيف: $e');
-      rethrow;
+      final models = await remoteDataSource.getCategories(
+        tree: tree,
+        cancelToken: cancelToken,
+      );
+
+      // 3. التخزين المؤقت
+      _cacheService?.set(cacheKey, models, cacheDurationSeconds: 300);
+
+      final entities = models.map((m) => m.toEntity()).toList();
+      return Right(entities);
+    } catch (e, stackTrace) {
+      final failure = NetworkErrorHandler.handleException(e, stackTrace);
+      return Left(failure);
     }
   }
 
   @override
-  Future<CategoryEntity> updateCategory(
+  Future<Either<Failure, CategoryEntity>> addCategory(
+    Map<String, dynamic> categoryData, {
+    CancelToken? cancelToken,
+  }) async {
+    try {
+      final model = await remoteDataSource.addCategory(
+        categoryData,
+        cancelToken: cancelToken,
+      );
+      _invalidateCache();
+      return Right(model.toEntity());
+    } catch (e, stackTrace) {
+      final failure = NetworkErrorHandler.handleException(e, stackTrace);
+      return Left(failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, CategoryEntity>> updateCategory(
     String id,
-    Map<String, dynamic> categoryJson,
-  ) async {
+    Map<String, dynamic> categoryData, {
+    CancelToken? cancelToken,
+  }) async {
     try {
-      final data = await _apiService.updateCategory(id, categoryJson);
-      _cacheService.remove(_cacheKeyCategories);
-      _cacheService.remove(_cacheKeyCategoriesTree);
-      return CategoryModel.fromJson(data).toEntity();
-    } catch (e) {
-      debugPrint('خطأ في تحديث التصنيف: $e');
-      rethrow;
+      final model = await remoteDataSource.updateCategory(
+        id,
+        categoryData,
+        cancelToken: cancelToken,
+      );
+      _invalidateCache();
+      return Right(model.toEntity());
+    } catch (e, stackTrace) {
+      final failure = NetworkErrorHandler.handleException(e, stackTrace);
+      return Left(failure);
     }
   }
 
   @override
-  Future<bool> deleteCategory(String id) async {
+  Future<Either<Failure, Unit>> deleteCategory(
+    String id, {
+    CancelToken? cancelToken,
+  }) async {
     try {
-      final result = await _apiService.deleteCategory(id);
-      if (result) {
-        _cacheService.remove(_cacheKeyCategories);
-        _cacheService.remove(_cacheKeyCategoriesTree);
+      final success = await remoteDataSource.deleteCategory(
+        id,
+        cancelToken: cancelToken,
+      );
+      if (success) {
+        _invalidateCache();
+        return const Right(unit);
       }
-      return result;
+      return const Left(
+        ServerFailure(message: 'تعذر حذف التصنيف من الخادم'),
+      );
+    } catch (e, stackTrace) {
+      final failure = NetworkErrorHandler.handleException(e, stackTrace);
+      return Left(failure);
+    }
+  }
+
+  void _invalidateCache() {
+    try {
+      _cacheService?.remove(_cacheKeyCategories);
+      _cacheService?.remove(_cacheKeyCategoriesTree);
     } catch (e) {
-      debugPrint('خطأ في حذف التصنيف في المستودع: $e');
-      return false;
+      debugPrint('X Error invalidating categories cache: $e');
     }
   }
 }
