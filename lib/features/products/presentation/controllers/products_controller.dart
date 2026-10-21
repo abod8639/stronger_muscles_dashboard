@@ -558,7 +558,7 @@ class ProductsController extends GetxController {
     try {
       isUploadingImage.value = true;
       final result = await _uploadProductImageUseCase(filePath);
-      return result.fold(
+      return await result.fold(
         (failure) {
           _showErrorSnackbar('خطأ في الرفع', failure.toMessage());
           return null;
