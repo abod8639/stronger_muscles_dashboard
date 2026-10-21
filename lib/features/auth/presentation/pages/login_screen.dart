@@ -1,25 +1,128 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
+import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/build_background.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
-import 'package:stronger_muscles_dashboard/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:stronger_muscles_dashboard/features/auth/domain/entities/auth_entity.dart';
+import 'package:stronger_muscles_dashboard/features/auth/presentation/controllers/auth_providers.dart';
+import 'package:stronger_muscles_dashboard/features/auth/presentation/widgets/auth_error_card.dart';
 import 'package:stronger_muscles_dashboard/features/auth/presentation/widgets/build_primary_button.dart';
 import 'package:stronger_muscles_dashboard/features/auth/presentation/widgets/build_text_field.dart';
 
-
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  bool _isPasswordVisible = false;
+  bool _rememberMe = false;
+
+  String? _emailError;
+  String? _passwordError;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  bool _validate() {
+    bool isValid = true;
+    setState(() {
+      _emailError = null;
+      _passwordError = null;
+    });
+
+    final email = _emailController.text.trim();
+    if (email.isEmpty) {
+      setState(() => _emailError = 'البريد الإلكتروني مطلوب');
+      isValid = false;
+    } else if (!email.contains('@') && email != 'test') {
+      setState(() => _emailError = 'بريد إلكتروني غير صالح');
+      isValid = false;
+    }
+
+    if (_passwordController.text.isEmpty) {
+      setState(() => _passwordError = 'كلمة المرور مطلوبة');
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
+  Future<void> _handleLogin() async {
+    if (!_validate()) return;
+
+    final success = await ref.read(authControllerProvider.notifier).login(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        );
+
+    if (success && mounted) {
+      Get.offAllNamed('/dashboard');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final controller = Get.find<AuthController>();
-    // final controller = Get.put(AuthController(
-    //   loginUseCase: null, 
-    //   signupUseCase: null, 
-    //   logoutUseCase: null));
+    final authState = ref.watch(authControllerProvider);
     final size = MediaQuery.of(context).size;
     final isDesktop = size.width >= 900;
+
+    // الاستماع لتغييرات الحالة لعرض الرسائل وتأثيرات التنقل
+    ref.listen<AsyncValue<AuthEntity?>>(authControllerProvider, (previous, next) {
+      next.whenOrNull(
+        error: (error, _) {
+          final message =
+              error is Failure ? error.toMessage() : error.toString();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.error_outline, color: Colors.white),
+                  const SizedBox(width: 10),
+                  Expanded(child: Text(message)),
+                ],
+              ),
+              backgroundColor: AppColors.error,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          );
+        },
+        data: (user) {
+          if (user != null && previous?.isLoading == true) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Row(
+                  children: [
+                    Icon(Icons.check_circle_outline, color: Colors.white),
+                    SizedBox(width: 10),
+                    Text('تم تسجيل الدخول بنجاح'),
+                  ],
+                ),
+                backgroundColor: AppColors.success,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            );
+          }
+        },
+      );
+    });
 
     return Scaffold(
       body: Stack(
@@ -36,7 +139,7 @@ class LoginScreen extends StatelessWidget {
                 child: Center(
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 450),
-                    child: _buildLoginCard(controller),
+                    child: _buildLoginCard(authState),
                   ),
                 ),
               ),
@@ -47,7 +150,7 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLoginCard(AuthController controller) {
+  Widget _buildLoginCard(AsyncValue<AuthEntity?> authState) {
     return TweenAnimationBuilder<double>(
       duration: const Duration(milliseconds: 1000),
       tween: Tween(begin: 0.0, end: 1.0),
@@ -60,7 +163,6 @@ class LoginScreen extends StatelessWidget {
           ),
         );
       },
-
       child: GlassContainer(
         borderRadius: BorderRadius.circular(30),
         padding: const EdgeInsets.all(32),
@@ -75,12 +177,22 @@ class LoginScreen extends StatelessWidget {
             _buildLogo(),
             const SizedBox(height: 24),
             _buildHeaderText(),
-            const SizedBox(height: 40),
-            _buildFormFields(controller),
+            const SizedBox(height: 28),
+
+            // واجهة بديلة (Fallback UI) عند حدوث خطأ دون انهيار الشاشة
+            if (authState.hasError && authState.error != null)
+              AuthErrorCard(
+                error: authState.error!,
+                onRetry: _handleLogin,
+                onDismiss: () =>
+                    ref.read(authControllerProvider.notifier).clearError(),
+              ),
+
+            _buildFormFields(authState.isLoading),
             const SizedBox(height: 16),
-            _buildRememberForgot(controller),
+            _buildRememberForgot(authState.isLoading),
             const SizedBox(height: 32),
-            _buildLoginAction(controller),
+            _buildLoginAction(authState.isLoading),
             const SizedBox(height: 24),
             _buildFooter(),
           ],
@@ -136,68 +248,67 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFormFields(AuthController controller) {
+  Widget _buildFormFields(bool isLoading) {
     return Column(
       children: [
-        Obx(
-          () => buildTextField(
-            controller: controller.emailController,
-            label: 'اسم المستخدم (test) / البريد الإلكتروني',
-            icon: Icons.person_outline,
-            keyboardType: TextInputType.emailAddress,
-            errorText: controller.emailError.value,
-          ),
+        buildTextField(
+          controller: _emailController,
+          label: 'اسم المستخدم (test) / البريد الإلكتروني',
+          icon: Icons.person_outline,
+          keyboardType: TextInputType.emailAddress,
+          errorText: _emailError,
         ),
         const SizedBox(height: 20),
-        Obx(
-          () => buildTextField(
-            controller: controller.passwordController,
-            label: 'كلمة المرور',
-            icon: Icons.lock_person_outlined,
-            isPassword: true,
-            isPasswordVisible: controller.isPasswordVisible.value,
-            onTogglePassword: controller.togglePasswordVisibility,
-            errorText: controller.passwordError.value,
-          ),
+        buildTextField(
+          controller: _passwordController,
+          label: 'كلمة المرور',
+          icon: Icons.lock_person_outlined,
+          isPassword: true,
+          isPasswordVisible: _isPasswordVisible,
+          onTogglePassword: () =>
+              setState(() => _isPasswordVisible = !_isPasswordVisible),
+          errorText: _passwordError,
         ),
       ],
     );
   }
 
-  Widget _buildRememberForgot(AuthController controller) {
+  Widget _buildRememberForgot(bool isLoading) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Obx(
-          () => InkWell(
-            onTap: () => controller.rememberMe.toggle(),
-            child: Row(
-              children: [
-                SizedBox(
-                  height: 24,
-                  width: 24,
-                  child: Checkbox(
-                    value: controller.rememberMe.value,
-                    onChanged: (v) => controller.rememberMe.value = v!,
-                    activeColor: AppColors.primary,
-                    side: BorderSide(
-                      color: Colors.white.withValues(alpha: 0.4),
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4),
-                    ),
+        InkWell(
+          onTap: isLoading
+              ? null
+              : () => setState(() => _rememberMe = !_rememberMe),
+          child: Row(
+            children: [
+              SizedBox(
+                height: 24,
+                width: 24,
+                child: Checkbox(
+                  value: _rememberMe,
+                  onChanged: isLoading
+                      ? null
+                      : (v) => setState(() => _rememberMe = v ?? false),
+                  activeColor: AppColors.primary,
+                  side: BorderSide(
+                    color: Colors.white.withValues(alpha: 0.4),
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
                   ),
                 ),
-                const SizedBox(width: 8),
-                Text(
-                  'تذكرني',
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.8),
-                    fontSize: 13,
-                  ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'تذكرني',
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.8),
+                  fontSize: 13,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
         TextButton(
@@ -215,13 +326,11 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLoginAction(AuthController controller) {
-    return Obx(
-      () => buildPrimaryButton(
-        label: 'تسجيل الدخول',
-        isLoading: controller.isLoading.value,
-        onPressed: controller.login,
-      ),
+  Widget _buildLoginAction(bool isLoading) {
+    return buildPrimaryButton(
+      label: 'تسجيل الدخول',
+      isLoading: isLoading,
+      onPressed: _handleLogin,
     );
   }
 
@@ -248,5 +357,4 @@ class LoginScreen extends StatelessWidget {
       ],
     );
   }
-  
 }
