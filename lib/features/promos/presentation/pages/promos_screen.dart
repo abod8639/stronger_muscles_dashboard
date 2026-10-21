@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
+import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/base_app_bar.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/custom_search_bar.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/enhanced_loading_widget.dart';
@@ -7,7 +9,6 @@ import 'package:stronger_muscles_dashboard/core/utils/components/generic_empty_s
 import 'package:stronger_muscles_dashboard/core/utils/components/my_refresh_indicator.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/top_section.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/controllers/promos_controller.dart';
-import 'package:stronger_muscles_dashboard/features/promos/presentation/pages/promo_form_screen.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/widgets/promo_app_banner_preview.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/widgets/promo_list_item.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
@@ -25,7 +26,7 @@ class PromosScreen extends StatelessWidget {
       appBar: BaseAppBar(
         title: 'الإعلانات (Promos)',
         onPressed: () {
-          Get.to(() => const PromoFormScreen());
+          context.push(AppRoutes.promoForm);
         },
         icon: Icons.add,
       ),
@@ -74,7 +75,7 @@ class PromosScreen extends StatelessWidget {
                     PromoAppBannerPreview(
                       promos: promos,
                       onPromoTap: (promo) {
-                        Get.to(() => PromoFormScreen(promo: promo));
+                        context.push(AppRoutes.promoForm, extra: promo);
                       },
                     ),
                     const SizedBox(height: 4),
@@ -163,7 +164,7 @@ class PromosScreen extends StatelessWidget {
                             promo: promo,
                             index: index,
                             onEdit: () {
-                              Get.to(() => PromoFormScreen(promo: promo));
+                              context.push(AppRoutes.promoForm, extra: promo);
                             },
                             onDelete: () => controller.confirmDelete(
                               promo.id,
