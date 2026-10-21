@@ -58,4 +58,40 @@ class DashboardStatsEntity {
         lowStock: 0,
         outOfStock: 0,
       );
+
+  DashboardStatsEntity copyWith({
+    double? totalRevenue,
+    int? totalOrders,
+    int? totalUsers,
+    int? totalProducts,
+    List<OrderEntity>? orders,
+    List<ProductEntity>? products,
+    List<CategoryEntity>? categories,
+    int? pendingOrders,
+    int? processingOrders,
+    int? shippedOrders,
+    int? deliveredOrders,
+    int? cancelledOrders,
+    int? inStock,
+    int? lowStock,
+    int? outOfStock,
+  }) {
+    return DashboardStatsEntity(
+      totalRevenue: totalRevenue ?? this.totalRevenue,
+      totalOrders: totalOrders ?? this.totalOrders,
+      totalUsers: totalUsers ?? this.totalUsers,
+      totalProducts: totalProducts ?? this.totalProducts,
+      orders: orders ?? this.orders,
+      products: products ?? this.products,
+      categories: categories ?? this.categories,
+      pendingOrders: pendingOrders ?? this.pendingOrders,
+      processingOrders: processingOrders ?? this.processingOrders,
+      shippedOrders: shippedOrders ?? this.shippedOrders,
+      deliveredOrders: deliveredOrders ?? this.deliveredOrders,
+      cancelledOrders: cancelledOrders ?? this.cancelledOrders,
+      inStock: inStock ?? this.inStock,
+      lowStock: lowStock ?? this.lowStock,
+      outOfStock: outOfStock ?? this.outOfStock,
+    );
+  }
 }
