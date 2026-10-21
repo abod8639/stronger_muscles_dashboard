@@ -28,7 +28,7 @@ final GoRouter appRouter = GoRouter(
   routes: [
     GoRoute(
       path: AppRoutes.initial,
-      redirect: (_, __) => AppRoutes.dashboard,
+      redirect: (context, state) => AppRoutes.dashboard,
     ),
     GoRoute(
       path: AppRoutes.dashboard,
