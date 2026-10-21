@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -20,7 +21,11 @@ Future<void> main() async {
   await hiveInit();
   initializeServices();
 
-  runApp(const StrongerMusclesDashboard());
+  runApp(
+    const ProviderScope(
+      child: StrongerMusclesDashboard(),
+    ),
+  );
 }
  
 class StrongerMusclesDashboard extends StatelessWidget {
