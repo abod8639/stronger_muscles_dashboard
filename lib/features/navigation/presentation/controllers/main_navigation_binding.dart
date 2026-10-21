@@ -13,11 +13,9 @@ import 'package:stronger_muscles_dashboard/features/support/presentation/control
 class MainNavigationBinding extends Bindings {
   @override
   void dependencies() {
-    // Note: Since all feature bindings follow the same pattern, 
-    // we can call them here to ensure everything is initialized 
-    // for the MainNavigationScreen which uses an IndexedStack.
-    
-    Get.put(NavigationController(), permanent: true);
+    if (!Get.isRegistered<NavigationController>()) {
+      Get.put<NavigationController>(NavigationController(), permanent: true);
+    }
     
     AuthBinding().dependencies();
     DashboardBinding().dependencies();
