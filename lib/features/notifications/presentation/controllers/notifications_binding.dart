@@ -12,17 +12,41 @@ class NotificationsBinding extends Bindings {
   void dependencies() {
     final dio = Get.isRegistered<ApiBase>() ? Get.find<ApiBase>().dio : Dio();
 
-    Get.lazyPut<NotificationRemoteDataSource>(() => NotificationRemoteDataSourceImpl(dio: dio));
-    Get.lazyPut<NotificationRepository>(() => NotificationRepositoryImpl(remoteDataSource: Get.find()));
+    if (!Get.isRegistered<NotificationRemoteDataSource>()) {
+      Get.lazyPut<NotificationRemoteDataSource>(
+        () => NotificationRemoteDataSourceImpl(dio: dio),
+        fenix: true,
+      );
+    }
 
-    Get.lazyPut(() => GetNotificationsUseCase(Get.find()));
-    Get.lazyPut(() => SendNotificationUseCase(Get.find()));
-    Get.lazyPut(() => DeleteNotificationUseCase(Get.find()));
+    if (!Get.isRegistered<NotificationRepository>()) {
+      Get.lazyPut<NotificationRepository>(
+        () => NotificationRepositoryImpl(remoteDataSource: Get.find()),
+        fenix: true,
+      );
+    }
 
-    Get.lazyPut(() => NotificationsController(
+    if (!Get.isRegistered<GetNotificationsUseCase>()) {
+      Get.lazyPut(() => GetNotificationsUseCase(Get.find()), fenix: true);
+    }
+
+    if (!Get.isRegistered<SendNotificationUseCase>()) {
+      Get.lazyPut(() => SendNotificationUseCase(Get.find()), fenix: true);
+    }
+
+    if (!Get.isRegistered<DeleteNotificationUseCase>()) {
+      Get.lazyPut(() => DeleteNotificationUseCase(Get.find()), fenix: true);
+    }
+
+    if (!Get.isRegistered<NotificationsController>()) {
+      Get.lazyPut(
+        () => NotificationsController(
           getNotificationsUseCase: Get.find(),
           sendNotificationUseCase: Get.find(),
           deleteNotificationUseCase: Get.find(),
-        ));
+        ),
+        fenix: true,
+      );
+    }
   }
 }
