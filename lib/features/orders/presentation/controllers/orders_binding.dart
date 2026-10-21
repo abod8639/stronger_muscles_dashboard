@@ -18,7 +18,7 @@ class OrdersBinding extends Bindings {
     Get.lazyPut<OrderRemoteDataSource>(() => OrderRemoteDataSourceImpl(dio));
 
     // Repository
-    Get.lazyPut<OrderRepository>(() => OrderRepositoryImpl(Get.find<OrderRemoteDataSource>()));
+    Get.lazyPut<OrderRepository>(() => OrderRepositoryImpl(remoteDataSource: Get.find<OrderRemoteDataSource>()));
 
     // Use Cases
     Get.lazyPut(() => GetOrdersUseCase(Get.find<OrderRepository>()));
