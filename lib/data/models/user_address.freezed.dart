@@ -368,18 +368,18 @@ class _$UserAddressImpl extends _UserAddress {
 
 abstract class _UserAddress extends UserAddress {
   const factory _UserAddress(
-      {@HiveField(0) required final String id,
-      @HiveField(1) final String label,
-      @HiveField(2) final String fullName,
-      @HiveField(3) final String phone,
-      @HiveField(4) final String street,
-      @HiveField(5) final String city,
-      @HiveField(6) final String state,
-      @HiveField(7) final String postalCode,
-      @HiveField(8) final String country,
-      @HiveField(9) final bool isDefault,
-      @HiveField(10) final double? latitude,
-      @HiveField(11) final double? longitude}) = _$UserAddressImpl;
+      {@HiveField(0) required String id,
+      @HiveField(1) String label,
+      @HiveField(2) String fullName,
+      @HiveField(3) String phone,
+      @HiveField(4) String street,
+      @HiveField(5) String city,
+      @HiveField(6) String state,
+      @HiveField(7) String postalCode,
+      @HiveField(8) String country,
+      @HiveField(9) bool isDefault,
+      @HiveField(10) double? latitude,
+      @HiveField(11) double? longitude}) = _$UserAddressImpl;
   const _UserAddress._() : super._();
 
   factory _UserAddress.fromJson(Map<String, dynamic> json) =
