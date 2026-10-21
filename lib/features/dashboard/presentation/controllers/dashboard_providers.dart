@@ -24,7 +24,7 @@ final dashboardOrderRepositoryProvider = Provider<OrderRepository>((ref) {
     return Get.find<OrderRepository>();
   }
   final dio = ref.watch(dioProvider);
-  return OrderRepositoryImpl(OrderRemoteDataSourceImpl(dio));
+  return OrderRepositoryImpl(remoteDataSource: OrderRemoteDataSourceImpl(dio));
 });
 
 /// موفر مستودع المنتجات مع دعم التوافق مع GetX
