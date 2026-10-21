@@ -55,6 +55,62 @@ class SupportTicketEntity {
     required this.createdAt,
   });
 
+  SupportTicketEntity copyWith({
+    int? id,
+    String? ticketNumber,
+    int? userId,
+    String? userName,
+    String? userEmail,
+    String? userPhone,
+    String? userAvatar,
+    String? subject,
+    String? category,
+    String? priority,
+    String? status,
+    int? orderId,
+    String? orderNumber,
+    double? orderTotal,
+    int? adminId,
+    String? adminName,
+    String? adminRole,
+    int? messagesCount,
+    int? unreadMessagesCount,
+    SupportMessageEntity? latestMessage,
+    List<SupportMessageEntity>? messages,
+    DateTime? lastReplyAt,
+    DateTime? resolvedAt,
+    DateTime? closedAt,
+    DateTime? createdAt,
+  }) {
+    return SupportTicketEntity(
+      id: id ?? this.id,
+      ticketNumber: ticketNumber ?? this.ticketNumber,
+      userId: userId ?? this.userId,
+      userName: userName ?? this.userName,
+      userEmail: userEmail ?? this.userEmail,
+      userPhone: userPhone ?? this.userPhone,
+      userAvatar: userAvatar ?? this.userAvatar,
+      subject: subject ?? this.subject,
+      category: category ?? this.category,
+      priority: priority ?? this.priority,
+      status: status ?? this.status,
+      orderId: orderId ?? this.orderId,
+      orderNumber: orderNumber ?? this.orderNumber,
+      orderTotal: orderTotal ?? this.orderTotal,
+      adminId: adminId ?? this.adminId,
+      adminName: adminName ?? this.adminName,
+      adminRole: adminRole ?? this.adminRole,
+      messagesCount: messagesCount ?? this.messagesCount,
+      unreadMessagesCount: unreadMessagesCount ?? this.unreadMessagesCount,
+      latestMessage: latestMessage ?? this.latestMessage,
+      messages: messages ?? this.messages,
+      lastReplyAt: lastReplyAt ?? this.lastReplyAt,
+      resolvedAt: resolvedAt ?? this.resolvedAt,
+      closedAt: closedAt ?? this.closedAt,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
   bool get isOpen => status == 'open' || status == 'in_progress' || status == 'waiting_user';
   bool get isResolved => status == 'resolved';
   bool get isClosed => status == 'closed';
