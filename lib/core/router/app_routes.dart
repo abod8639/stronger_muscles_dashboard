@@ -1,0 +1,12 @@
+/// تعريف جميع مسارات التطبيق المركزية لـ GoRouter
+abstract class AppRoutes {
+  static const String initial = '/';
+  static const String dashboard = '/dashboard';
+  static const String login = '/login';
+  static const String signup = '/signup';
+
+  static const String productForm = '/products/form';
+  static const String categoryForm = '/categories/form';
+  static const String promoForm = '/promos/form';
+  static const String orderDetails = '/orders/details';
+}
