@@ -95,8 +95,11 @@ class PromosController extends GetxController {
 
   Future<void> fetchProducts() async {
     try {
-      final data = await getProductsUseCase.call();
-      products.assignAll(data);
+      final result = await getProductsUseCase.call();
+      result.fold(
+        (failure) {},
+        (data) => products.assignAll(data),
+      );
     } catch (_) {}
   }
 
