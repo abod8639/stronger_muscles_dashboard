@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import '../../domain/entities/admin_notification_entity.dart';
+import '../../domain/entities/notifications_result_entity.dart';
 
 class AdminNotificationModel {
   final String id;
@@ -15,7 +17,7 @@ class AdminNotificationModel {
   final bool isRead;
   final DateTime? createdAt;
 
-  AdminNotificationModel({
+  const AdminNotificationModel({
     required this.id,
     required this.title,
     required this.body,
@@ -35,13 +37,29 @@ class AdminNotificationModel {
     String? userName;
     String? userEmail;
     if (json['user'] is Map) {
-      userName = json['user']['name']?.toString();
-      userEmail = json['user']['email']?.toString();
+      final userMap = json['user'] as Map;
+      userName = userMap['name']?.toString();
+      userEmail = userMap['email']?.toString();
     }
 
     String? adminName;
     if (json['admin'] is Map) {
-      adminName = json['admin']['name']?.toString();
+      final adminMap = json['admin'] as Map;
+      adminName = adminMap['name']?.toString();
+    }
+
+    Map<String, dynamic>? dataMap;
+    if (json['data'] is Map) {
+      try {
+        dataMap = Map<String, dynamic>.from(json['data'] as Map);
+      } catch (_) {
+        dataMap = null;
+      }
+    }
+
+    DateTime? parsedDate;
+    if (json['created_at'] != null) {
+      parsedDate = DateTime.tryParse(json['created_at'].toString());
     }
 
     return AdminNotificationModel(
@@ -55,9 +73,9 @@ class AdminNotificationModel {
       userEmail: userEmail,
       adminName: adminName,
       imageUrl: json['image_url']?.toString(),
-      data: json['data'] is Map ? Map<String, dynamic>.from(json['data']) : null,
-      isRead: json['is_read'] == true || json['is_read'] == 1,
-      createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at'].toString()) : null,
+      data: dataMap,
+      isRead: json['is_read'] == true || json['is_read'] == 1 || json['is_read'] == '1',
+      createdAt: parsedDate,
     );
   }
 
@@ -88,6 +106,113 @@ class AdminNotificationModel {
       data: data,
       isRead: isRead,
       createdAt: createdAt,
+    );
+  }
+}
+
+class NotificationsResultModel {
+  final List<AdminNotificationModel> notifications;
+  final int totalCount;
+  final int todayCount;
+  final int broadcastCount;
+  final int targetedCount;
+
+  const NotificationsResultModel({
+    required this.notifications,
+    required this.totalCount,
+    required this.todayCount,
+    required this.broadcastCount,
+    required this.targetedCount,
+  });
+
+  factory NotificationsResultModel.fromJson(Map<String, dynamic> json) {
+    final List<dynamic> items = json['data'] is List ? (json['data'] as List) : [];
+    final notifications = items
+        .whereType<Map>()
+        .map((e) => AdminNotificationModel.fromJson(Map<String, dynamic>.from(e)))
+        .toList();
+
+    final stats = json['stats'] is Map ? (json['stats'] as Map) : const {};
+
+    return NotificationsResultModel(
+      notifications: notifications,
+      totalCount: _parseInt(stats['total'], fallback: notifications.length),
+      todayCount: _parseInt(stats['sent_today']),
+      broadcastCount: _parseInt(stats['broadcast']),
+      targetedCount: _parseInt(stats['targeted']),
+    );
+  }
+
+  static int _parseInt(dynamic value, {int fallback = 0}) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    if (value is String) return int.tryParse(value) ?? fallback;
+    return fallback;
+  }
+
+  NotificationsResultEntity toEntity() {
+    return NotificationsResultEntity(
+      notifications: notifications.map((m) => m.toEntity()).toList(),
+      totalCount: totalCount,
+      todayCount: todayCount,
+      broadcastCount: broadcastCount,
+      targetedCount: targetedCount,
+    );
+  }
+}
+
+/// دالة Isolate لتحليل مصفوفة الإشعارات والإحصائيات في الخلفية
+NotificationsResultModel parseNotificationsResultCompute(dynamic rawJson) {
+  try {
+    if (rawJson is Map<String, dynamic>) {
+      return NotificationsResultModel.fromJson(rawJson);
+    } else if (rawJson is Map) {
+      return NotificationsResultModel.fromJson(Map<String, dynamic>.from(rawJson));
+    }
+    return const NotificationsResultModel(
+      notifications: [],
+      totalCount: 0,
+      todayCount: 0,
+      broadcastCount: 0,
+      targetedCount: 0,
+    );
+  } catch (e) {
+    debugPrint('parseNotificationsResultCompute fallback: $e');
+    return const NotificationsResultModel(
+      notifications: [],
+      totalCount: 0,
+      todayCount: 0,
+      broadcastCount: 0,
+      targetedCount: 0,
+    );
+  }
+}
+
+/// دالة Isolate لتحليل كائن الإشعار الواحد عند الإنشاء
+AdminNotificationModel parseAdminNotificationCompute(dynamic rawJson) {
+  try {
+    if (rawJson is Map<String, dynamic>) {
+      final data = rawJson['data'] is Map ? (rawJson['data'] as Map) : rawJson;
+      return AdminNotificationModel.fromJson(Map<String, dynamic>.from(data));
+    } else if (rawJson is Map) {
+      final data = rawJson['data'] is Map ? (rawJson['data'] as Map) : rawJson;
+      return AdminNotificationModel.fromJson(Map<String, dynamic>.from(data));
+    }
+    return const AdminNotificationModel(
+      id: '',
+      title: '',
+      body: '',
+      type: 'general',
+      targetType: 'all',
+    );
+  } catch (e) {
+    debugPrint('parseAdminNotificationCompute fallback: $e');
+    return const AdminNotificationModel(
+      id: '',
+      title: '',
+      body: '',
+      type: 'general',
+      targetType: 'all',
     );
   }
 }
