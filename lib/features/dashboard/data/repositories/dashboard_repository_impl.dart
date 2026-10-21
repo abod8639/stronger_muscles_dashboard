@@ -1,3 +1,8 @@
+import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:stronger_muscles_dashboard/core/error/failures.dart';
+import 'package:stronger_muscles_dashboard/core/error/network_error_handler.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/repositories/category_repository.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/entities/dashboard_stats_entity.dart';
@@ -26,92 +31,140 @@ class DashboardRepositoryImpl implements DashboardRepository {
         _userRepository = userRepository;
 
   @override
-  Future<DashboardStatsEntity> getDashboardStats() async {
-    final results = await Future.wait([
-      _orderRepository.getOrders(),
-      _productRepository.getProducts(),
-      _categoryRepository.getCategories(),
-      _userRepository.getUsersStats(),
-    ]);
+  Future<Either<Failure, DashboardStatsEntity>> getDashboardStats({
+    CancelToken? cancelToken,
+  }) async {
+    try {
+      final results = await Future.wait([
+        _orderRepository.getOrders(),
+        _productRepository.getProducts(),
+        _categoryRepository.getCategories(cancelToken: cancelToken),
+        _userRepository.getUsersStats(),
+      ]);
 
-    // results[0] is Future<List<OrderEntity>>
-    final List<OrderEntity> orders = results[0] as List<OrderEntity>;
-    
-    // results[1] is Future<List<ProductEntity>>
-    final List<ProductEntity> products = results[1] as List<ProductEntity>;
-    
-    // results[2] is Future<List<CategoryEntity>>
-    final List<CategoryEntity> categories = results[2] as List<CategoryEntity>;
-    
-    // results[3] is Future<UsersStatsEntity>
-    final UsersStatsEntity usersStats = results[3] as UsersStatsEntity;
+      final orders = (results[0] as List<OrderEntity>?) ?? const <OrderEntity>[];
+      final products = (results[1] as List<ProductEntity>?) ?? const <ProductEntity>[];
 
-    // 1. Order Status Counts
-    int pending = 0;
-    int processing = 0;
-    int shipped = 0;
-    int delivered = 0;
-    int cancelled = 0;
-
-    for (var o in orders) {
-      switch (o.status) {
-        case OrderStatus.pending:
-          pending++;
-          break;
-        case OrderStatus.processing:
-          processing++;
-          break;
-        case OrderStatus.shipped:
-          shipped++;
-          break;
-        case OrderStatus.delivered:
-          delivered++;
-          break;
-        case OrderStatus.cancelled:
-          cancelled++;
-          break;
+      final categoriesResult = results[2];
+      List<CategoryEntity> categories = const <CategoryEntity>[];
+      if (categoriesResult is Either<Failure, List<CategoryEntity>>) {
+        categoriesResult.fold(
+          (failure) {
+            debugPrint('Dashboard: Categories fetch returned failure: ${failure.toMessage()}');
+          },
+          (cats) => categories = cats,
+        );
+      } else if (categoriesResult is List<CategoryEntity>) {
+        categories = categoriesResult;
       }
+
+      final usersStats = results[3] as UsersStatsEntity?;
+      final totalUsers = usersStats?.totalUsers ?? 0;
+
+      // عزل العمليات الحسابية والتجميعية الكبيرة في Isolate خلفي لمنع تجميد الشاشة
+      final stats = await compute(
+        _computeDashboardStats,
+        _DashboardComputationParams(
+          orders: orders,
+          products: products,
+          categories: categories,
+          totalUsers: totalUsers,
+        ),
+      );
+
+      return Right(stats);
+    } catch (e, stackTrace) {
+      debugPrint('DashboardRepositoryImpl Exception: $e');
+      final failure = NetworkErrorHandler.handleException(e, stackTrace);
+      return Left(failure);
     }
-
-    // 2. Financials
-    double revenue = 0.0;
-    for (var o in orders) {
-      if (o.status != OrderStatus.cancelled) {
-        revenue += o.totalAmount;
-      }
-    }
-
-    // 3. Stock stats
-    int inStock = 0;
-    int lowStock = 0;
-    int outOfStock = 0;
-
-    for (var p in products) {
-      if (p.stockQuantity > 10) {
-        inStock++;
-      } else if (p.stockQuantity > 0) {
-        lowStock++;
-      } else {
-        outOfStock++;
-      }
-    }
-
-    return DashboardStatsEntity(
-      totalRevenue: revenue,
-      totalOrders: orders.length,
-      totalUsers: usersStats.totalUsers, 
-      totalProducts: products.length,
-      orders: orders,
-      products: products,
-      categories: categories,
-      pendingOrders: pending,
-      processingOrders: processing,
-      shippedOrders: shipped,
-      deliveredOrders: delivered,
-      cancelledOrders: cancelled,
-      inStock: inStock,
-      lowStock: lowStock,
-      outOfStock: outOfStock,
-    );
   }
+}
+
+/// كلاس معاملات الحساب لعزله في Isolate
+class _DashboardComputationParams {
+  final List<OrderEntity> orders;
+  final List<ProductEntity> products;
+  final List<CategoryEntity> categories;
+  final int totalUsers;
+
+  const _DashboardComputationParams({
+    required this.orders,
+    required this.products,
+    required this.categories,
+    required this.totalUsers,
+  });
+}
+
+/// دالة الحساب المنفصلة التي تعمل في Isolate خلفي
+DashboardStatsEntity _computeDashboardStats(_DashboardComputationParams params) {
+  final orders = params.orders;
+  final products = params.products;
+  final categories = params.categories;
+  final totalUsers = params.totalUsers;
+
+  // 1. حساب حالات الطلبات والإيرادات
+  int pending = 0;
+  int processing = 0;
+  int shipped = 0;
+  int delivered = 0;
+  int cancelled = 0;
+  double revenue = 0.0;
+
+  for (final o in orders) {
+    switch (o.status) {
+      case OrderStatus.pending:
+        pending++;
+        break;
+      case OrderStatus.processing:
+        processing++;
+        break;
+      case OrderStatus.shipped:
+        shipped++;
+        break;
+      case OrderStatus.delivered:
+        delivered++;
+        break;
+      case OrderStatus.cancelled:
+        cancelled++;
+        break;
+    }
+
+    if (o.status != OrderStatus.cancelled) {
+      revenue += o.totalAmount;
+    }
+  }
+
+  // 2. إحصائيات المخزون
+  int inStock = 0;
+  int lowStock = 0;
+  int outOfStock = 0;
+
+  for (final p in products) {
+    if (p.stockQuantity > 10) {
+      inStock++;
+    } else if (p.stockQuantity > 0) {
+      lowStock++;
+    } else {
+      outOfStock++;
+    }
+  }
+
+  return DashboardStatsEntity(
+    totalRevenue: revenue,
+    totalOrders: orders.length,
+    totalUsers: totalUsers,
+    totalProducts: products.length,
+    orders: orders,
+    products: products,
+    categories: categories,
+    pendingOrders: pending,
+    processingOrders: processing,
+    shippedOrders: shipped,
+    deliveredOrders: delivered,
+    cancelledOrders: cancelled,
+    inStock: inStock,
+    lowStock: lowStock,
+    outOfStock: outOfStock,
+  );
 }
