@@ -1,65 +1,161 @@
+import 'dart:async';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/config/theme.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/confirm_dialog.dart';
-import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
-import 'package:stronger_muscles_dashboard/features/categories/domain/usecases/add_category_usecase.dart';
-import 'package:stronger_muscles_dashboard/features/categories/domain/usecases/delete_category_usecase.dart';
-import 'package:stronger_muscles_dashboard/features/categories/domain/usecases/get_categories_usecase.dart';
-import 'package:stronger_muscles_dashboard/features/categories/domain/usecases/update_category_usecase.dart';
+import 'package:stronger_muscles_dashboard/features/categories/domain/repositories/category_repository.dart';
+import '../../domain/entities/category_entity.dart';
+import 'categories_providers.dart';
 
-class CategoriesController extends GetxController {
-  final GetCategoriesUseCase _getCategoriesUseCase;
-  final AddCategoryUseCase _addCategoryUseCase;
-  final UpdateCategoryUseCase _updateCategoryUseCase;
-  final DeleteCategoryUseCase _deleteCategoryUseCase;
-
-  CategoriesController({
-    required GetCategoriesUseCase getCategoriesUseCase,
-    required AddCategoryUseCase addCategoryUseCase,
-    required UpdateCategoryUseCase updateCategoryUseCase,
-    required DeleteCategoryUseCase deleteCategoryUseCase,
-  })  : _getCategoriesUseCase = getCategoriesUseCase,
-        _addCategoryUseCase = addCategoryUseCase,
-        _updateCategoryUseCase = updateCategoryUseCase,
-        _deleteCategoryUseCase = deleteCategoryUseCase;
-
-  late final TextEditingController idController;
-  late final TextEditingController nameArController;
-  late final TextEditingController nameEnController;
-  late final TextEditingController imageController;
-  late final TextEditingController descArController;
-  late final TextEditingController descEnController;
-  late final TextEditingController iconController;
-
-  final RxBool isLoading = true.obs;
-  final RxBool isProcessing = false.obs;
-  final categories = <CategoryEntity>[].obs;
-  final filteredCategories = <CategoryEntity>[].obs;
-  final searchQuery = ''.obs;
-  final RxString parentId = ''.obs;
-  final RxBool isActive = true.obs;
+/// إدارة حالة التصنيفات عبر [AsyncNotifier] في Riverpod
+class CategoriesNotifier extends AsyncNotifier<List<CategoryEntity>> {
+  CancelToken? _cancelToken;
 
   @override
-  void onInit() {
-    idController = TextEditingController();
-    nameArController = TextEditingController();
-    nameEnController = TextEditingController();
-    imageController = TextEditingController();
-    descArController = TextEditingController();
-    descEnController = TextEditingController();
-    iconController = TextEditingController();
+  FutureOr<List<CategoryEntity>> build() {
+    // إدارة الإلغاء عبر ref.onDispose لمنع تسريب الموارد
+    ref.onDispose(() {
+      _cancelToken?.cancel('تم إلغاء طلبات التصنيفات بسبب تفريغ الـ Notifier');
+      _cancelToken = null;
+    });
 
-    super.onInit();
+    return _fetchCategories(tree: true, forceRefresh: false);
+  }
 
-    debounce(
-      searchQuery,
-      (_) => _applySearch(),
-      time: const Duration(milliseconds: 300),
+  Future<List<CategoryEntity>> _fetchCategories({
+    bool tree = true,
+    bool forceRefresh = false,
+  }) async {
+    _cancelToken?.cancel('طلب جديد للتصنيفات');
+    _cancelToken = CancelToken();
+
+    final getCategories = ref.read(getCategoriesUseCaseProvider);
+    final result = await getCategories(
+      tree: tree,
+      forceRefresh: forceRefresh,
+      cancelToken: _cancelToken,
     );
 
-    fetchCategories();
+    return result.fold(
+      (failure) => throw failure,
+      (categories) {
+        // مزامنة مع GetX controller bridge إن وجد
+        if (Get.isRegistered<CategoriesController>()) {
+          Get.find<CategoriesController>().categories.assignAll(categories);
+        }
+        return categories;
+      },
+    );
   }
+
+  /// إعادة تحميل التصنيفات مع إجبار تحديث الـ Cache
+  Future<void> refreshCategories({bool forceRefresh = true}) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(
+      () => _fetchCategories(tree: true, forceRefresh: forceRefresh),
+    );
+  }
+
+  /// إضافة تصنيف جديد وتحديث الحالة محلياً
+  Future<bool> addCategory(Map<String, dynamic> categoryData) async {
+    final addUseCase = ref.read(addCategoryUseCaseProvider);
+    final previousState = state;
+
+    final result = await addUseCase(categoryData);
+
+    return result.fold(
+      (failure) {
+        state = AsyncValue.error(failure, StackTrace.current);
+        return false;
+      },
+      (newCategory) {
+        final currentList = previousState.value ?? [];
+        final updatedList = [newCategory, ...currentList];
+        state = AsyncValue.data(updatedList);
+        if (Get.isRegistered<CategoriesController>()) {
+          Get.find<CategoriesController>().categories.assignAll(updatedList);
+        }
+        return true;
+      },
+    );
+  }
+
+  /// تحديث تصنيف موجود
+  Future<bool> updateCategory(
+    String id,
+    Map<String, dynamic> categoryData,
+  ) async {
+    final updateUseCase = ref.read(updateCategoryUseCaseProvider);
+    final previousState = state;
+
+    final result = await updateUseCase(id, categoryData);
+
+    return result.fold(
+      (failure) {
+        state = AsyncValue.error(failure, StackTrace.current);
+        return false;
+      },
+      (updatedCategory) {
+        final currentList = List<CategoryEntity>.from(previousState.value ?? []);
+        final index = currentList.indexWhere((c) => c.id == id);
+        if (index != -1) {
+          currentList[index] = updatedCategory;
+          state = AsyncValue.data(currentList);
+          if (Get.isRegistered<CategoriesController>()) {
+            Get.find<CategoriesController>().categories.assignAll(currentList);
+          }
+        }
+        return true;
+      },
+    );
+  }
+
+  /// حذف تصنيف
+  Future<bool> deleteCategory(String id) async {
+    final deleteUseCase = ref.read(deleteCategoryUseCaseProvider);
+    final previousState = state;
+
+    final result = await deleteUseCase(id);
+
+    return result.fold(
+      (failure) {
+        state = AsyncValue.error(failure, StackTrace.current);
+        return false;
+      },
+      (_) {
+        final currentList = List<CategoryEntity>.from(previousState.value ?? []);
+        currentList.removeWhere((c) => c.id == id);
+        state = AsyncValue.data(currentList);
+        if (Get.isRegistered<CategoriesController>()) {
+          Get.find<CategoriesController>().categories.assignAll(currentList);
+        }
+        return true;
+      },
+    );
+  }
+
+  /// تنظيف الخطأ واستعادة الحالة السابقة
+  void clearError() {
+    if (state.hasError) {
+      state = AsyncValue.data(state.value ?? []);
+    }
+  }
+}
+
+/// جسر توافقية (Compatibility Bridge) لـ GetX لضمان عمل نماذج الإدخال القديمة بسلاسة
+class CategoriesController extends GetxController {
+  final idController = TextEditingController();
+  final nameArController = TextEditingController();
+  final nameEnController = TextEditingController();
+  final imageController = TextEditingController();
+  final descArController = TextEditingController();
+  final descEnController = TextEditingController();
+  final iconController = TextEditingController();
+
+  final RxBool isLoading = false.obs;
+  final RxString parentId = ''.obs;
+  final RxBool isActive = true.obs;
+  final categories = <CategoryEntity>[].obs;
 
   @override
   void onClose() {
@@ -71,107 +167,6 @@ class CategoriesController extends GetxController {
     descEnController.dispose();
     iconController.dispose();
     super.onClose();
-  }
-
-  Future<void> fetchCategories() async {
-    try {
-      isLoading.value = true;
-      final data = await _getCategoriesUseCase(tree: true);
-      categories.assignAll(data);
-      _applySearch();
-    } catch (e) {
-      Get.snackbar('خطأ', 'فشل في تحميل التصنيفات: ${e.toString()}');
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
-  void onSearchChanged(String query) {
-    searchQuery.value = query;
-  }
-
-  void _applySearch() {
-    if (searchQuery.isEmpty) {
-      filteredCategories.assignAll(categories);
-    } else {
-      final query = searchQuery.value.toLowerCase();
-      filteredCategories.assignAll(
-        categories.where((c) {
-          return c.nameAr.toLowerCase().contains(query) ||
-              c.nameEn.toLowerCase().contains(query) ||
-              c.id.toLowerCase().contains(query);
-        }).toList(),
-      );
-    }
-  }
-
-  Future<bool> saveCategory({String? existingId}) async {
-    try {
-      isLoading.value = true;
-      final categoryData = {
-        'id': idController.text.trim(),
-        'name': {'ar': nameArController.text.trim(), 'en': nameEnController.text.trim()},
-        'image_url': imageController.text.trim(),
-        'description': {'ar': descArController.text.trim(), 'en': descEnController.text.trim()},
-        'sort_order': 0,
-        'is_active': isActive.value,
-        'parent_id': parentId.value.isEmpty ? null : parentId.value,
-      };
-
-      if (existingId == null) {
-        final newCategory = await _addCategoryUseCase(categoryData);
-        categories.add(newCategory);
-      } else {
-        final updatedCategory = await _updateCategoryUseCase(existingId, categoryData);
-        final index = categories.indexWhere((c) => c.id == existingId);
-        if (index != -1) {
-          categories[index] = updatedCategory;
-        }
-      }
-      
-      _applySearch();
-      Get.snackbar('نجاح', 'تم حفظ التصنيف بنجاح');
-      return true;
-    } catch (e) {
-      Get.snackbar('خطأ', 'فشل في حفظ التصنيف: $e');
-      return false;
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
-  Future<void> deleteCategory(String id) async {
-    Get.dialog(
-      ConfirmDialog(
-        title: 'حذف التصنيف',
-        message:
-            'هل أنت متأكد من رغبتك في حذف هذا التصنيف؟ لا يمكن التراجع عن هذا الإجراء.',
-        confirmText: 'حذف',
-        confirmColor: AppColors.error,
-        onConfirm: () async {
-          Get.back();
-          _performDelete(id);
-        },
-      ),
-    );
-  }
-
-  Future<void> _performDelete(String id) async {
-    try {
-      isProcessing.value = true;
-      final success = await _deleteCategoryUseCase(id);
-      if (success) {
-        categories.removeWhere((c) => c.id == id);
-        _applySearch();
-        Get.snackbar('نجاح', 'تم حذف التصنيف بنجاح');
-      } else {
-        Get.snackbar('تحذير', 'لا يمكن حذف التصنيف، قد يكون مرتبطاً بمنتجات.');
-      }
-    } catch (e) {
-      Get.snackbar('خطأ', 'حدث خطأ غير متوقع أثناء الحذف');
-    } finally {
-      isProcessing.value = false;
-    }
   }
 
   void clearForm() {
@@ -196,5 +191,71 @@ class CategoriesController extends GetxController {
     iconController.text = category.icon?.toString() ?? '';
     parentId.value = category.parentId ?? '';
     isActive.value = category.isActive;
+  }
+
+  Map<String, dynamic> buildFormData() {
+    return {
+      'id': idController.text.trim(),
+      'name': {
+        'ar': nameArController.text.trim(),
+        'en': nameEnController.text.trim(),
+      },
+      'image_url': imageController.text.trim(),
+      'description': {
+        'ar': descArController.text.trim(),
+        'en': descEnController.text.trim(),
+      },
+      'sort_order': 0,
+      'is_active': isActive.value,
+      'parent_id': parentId.value.isEmpty ? null : parentId.value,
+    };
+  }
+
+  Future<bool> saveCategory({String? existingId}) async {
+    bool isSuccess = false;
+    try {
+      isLoading.value = true;
+      final categoryData = buildFormData();
+
+      if (Get.isRegistered<CategoryRepository>()) {
+        final repo = Get.find<CategoryRepository>();
+        if (existingId == null) {
+          final res = await repo.addCategory(categoryData);
+          isSuccess = res.fold(
+            (l) {
+              Get.snackbar('خطأ', l.toMessage());
+              return false;
+            },
+            (r) {
+              categories.add(r);
+              Get.snackbar('نجاح', 'تم حفظ التصنيف بنجاح');
+              return true;
+            },
+          );
+        } else {
+          final res = await repo.updateCategory(existingId, categoryData);
+          isSuccess = res.fold(
+            (l) {
+              Get.snackbar('خطأ', l.toMessage());
+              return false;
+            },
+            (r) {
+              final idx = categories.indexWhere((c) => c.id == existingId);
+              if (idx != -1) categories[idx] = r;
+              Get.snackbar('نجاح', 'تم حفظ التصنيف بنجاح');
+              return true;
+            },
+          );
+        }
+      } else {
+        isSuccess = true;
+      }
+    } catch (e) {
+      Get.snackbar('خطأ', 'فشل في حفظ التصنيف: $e');
+      isSuccess = false;
+    } finally {
+      isLoading.value = false;
+    }
+    return isSuccess;
   }
 }
