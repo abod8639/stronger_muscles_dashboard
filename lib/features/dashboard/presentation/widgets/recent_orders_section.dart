@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
+import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/base_data_view.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_controller.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
-import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/order_details_screen/order_details_screen.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/widgets/order_list_tile.dart';
 
 class RecentOrdersSection extends GetView<DashboardController> {
@@ -31,7 +32,7 @@ class RecentOrdersSection extends GetView<DashboardController> {
           return OrderListTile(
             order: order,
             index: index,
-            onTap: () => Get.to(() => OrderDetailsScreen(order: order)),
+            onTap: () => context.push(AppRoutes.orderDetails, extra: order),
           );
         },
       );
