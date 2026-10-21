@@ -1,3 +1,6 @@
+import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
+import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import '../entities/product_entity.dart';
 import '../repositories/product_repository.dart';
 
@@ -6,7 +9,10 @@ class AddProductUseCase {
 
   AddProductUseCase(this.repository);
 
-  Future<ProductEntity> call(Map<String, dynamic> productData) async {
-    return await repository.addProduct(productData);
+  Future<Either<Failure, ProductEntity>> call(
+    Map<String, dynamic> productData, {
+    CancelToken? cancelToken,
+  }) async {
+    return await repository.addProduct(productData, cancelToken: cancelToken);
   }
 }
