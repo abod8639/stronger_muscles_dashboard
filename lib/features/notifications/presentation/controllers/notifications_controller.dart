@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../domain/entities/admin_notification_entity.dart';
+import '../../domain/entities/notifications_result_entity.dart';
 import '../../domain/usecases/notification_usecases.dart';
 
 class NotificationsController extends GetxController {
@@ -40,24 +41,40 @@ class NotificationsController extends GetxController {
 
   void onFilterTypeChanged(String type) => selectedFilterType.value = type;
 
+  /// مزامنة البيانات مباشرة من موفر Riverpod لتفادي تكرار الطلبات وتضارب البيانات
+  void syncWithRiverpod(NotificationsResultEntity data) {
+    notifications.assignAll(data.notifications);
+    totalCount.value = data.totalCount;
+    todayCount.value = data.todayCount;
+    broadcastCount.value = data.broadcastCount;
+    targetedCount.value = data.targetedCount;
+    isLoading.value = false;
+    _applyFilter();
+  }
+
   Future<void> fetchNotifications() async {
     try {
       isLoading.value = true;
       final result = await getNotificationsUseCase();
-      final List<AdminNotificationEntity> items = result['notifications'] ?? [];
-      notifications.assignAll(items);
 
-      final stats = result['stats'] ?? {};
-      totalCount.value = (stats['total'] as num?)?.toInt() ?? items.length;
-      todayCount.value = (stats['sent_today'] as num?)?.toInt() ?? 0;
-      broadcastCount.value = (stats['broadcast'] as num?)?.toInt() ?? 0;
-      targetedCount.value = (stats['targeted'] as num?)?.toInt() ?? 0;
-
-      _applyFilter();
+      result.fold(
+        (failure) {
+          Get.snackbar(
+            'خطأ في الاتصال',
+            failure.toMessage(),
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red.withValues(alpha: 0.8),
+            colorText: Colors.white,
+          );
+        },
+        (data) {
+          syncWithRiverpod(data);
+        },
+      );
     } catch (e) {
       Get.snackbar(
-        'خطأ',
-        'حدث خطأ أثناء جلب قائمة الإشعارات: ${e.toString()}',
+        'خطأ غير متوقع',
+        'حدث خطأ غير متوقع: $e',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
@@ -106,29 +123,45 @@ class NotificationsController extends GetxController {
         if (imageUrl != null && imageUrl.isNotEmpty) 'image_url': imageUrl,
       };
 
-      final newNotification = await sendNotificationUseCase(payload);
-      notifications.insert(0, newNotification);
-      totalCount.value++;
-      todayCount.value++;
-      if (targetType == 'all') {
-        broadcastCount.value++;
-      } else {
-        targetedCount.value++;
-      }
-      _applyFilter();
+      final result = await sendNotificationUseCase(payload);
 
-      Get.snackbar(
-        'نجاح',
-        'تم إرسال الإشعار بنجاح',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.withValues(alpha: 0.8),
-        colorText: Colors.white,
+      final isSuccess = result.fold(
+        (failure) {
+          Get.snackbar(
+            'فشل الإرسال',
+            failure.toMessage(),
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red.withValues(alpha: 0.8),
+            colorText: Colors.white,
+          );
+          return false;
+        },
+        (newNotification) {
+          notifications.insert(0, newNotification);
+          totalCount.value++;
+          todayCount.value++;
+          if (targetType == 'all') {
+            broadcastCount.value++;
+          } else {
+            targetedCount.value++;
+          }
+          _applyFilter();
+
+          Get.snackbar(
+            'نجاح',
+            'تم إرسال الإشعار بنجاح',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.green.withValues(alpha: 0.8),
+            colorText: Colors.white,
+          );
+          return true;
+        },
       );
-      return true;
+      return isSuccess;
     } catch (e) {
       Get.snackbar(
-        'فشل الإرسال',
-        e.toString().replaceAll('Exception: ', ''),
+        'خطأ',
+        'حدث خطأ غير متوقع أثناء الإرسال: $e',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
@@ -141,20 +174,34 @@ class NotificationsController extends GetxController {
 
   Future<void> deleteNotification(String id) async {
     try {
-      await deleteNotificationUseCase(id);
-      notifications.removeWhere((n) => n.id == id);
-      totalCount.value = (totalCount.value - 1).clamp(0, 999999);
-      _applyFilter();
+      final result = await deleteNotificationUseCase(id);
 
-      Get.snackbar(
-        'تم الحذف',
-        'تم حذف الإشعار بنجاح',
-        snackPosition: SnackPosition.BOTTOM,
+      result.fold(
+        (failure) {
+          Get.snackbar(
+            'خطأ',
+            failure.toMessage(),
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red.withValues(alpha: 0.8),
+            colorText: Colors.white,
+          );
+        },
+        (_) {
+          notifications.removeWhere((n) => n.id == id);
+          totalCount.value = (totalCount.value - 1).clamp(0, 999999);
+          _applyFilter();
+
+          Get.snackbar(
+            'تم الحذف',
+            'تم حذف الإشعار بنجاح',
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        },
       );
     } catch (e) {
       Get.snackbar(
         'خطأ',
-        'فشل في حذف الإشعار: ${e.toString()}',
+        'فشل في حذف الإشعار: $e',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
