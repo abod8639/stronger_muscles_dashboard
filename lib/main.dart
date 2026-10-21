@@ -22,7 +22,7 @@ Future<void> main() async {
 
   runApp(const StrongerMusclesDashboard());
 }
-
+ 
 class StrongerMusclesDashboard extends StatelessWidget {
   const StrongerMusclesDashboard({super.key});
 
