@@ -25,7 +25,7 @@ class ProductsBinding extends Bindings {
     Get.lazyPut<ProductRemoteDataSource>(() => ProductRemoteDataSourceImpl(dio), fenix: true);
 
     // Repositories
-    Get.lazyPut<ProductRepository>(() => ProductRepositoryImpl(Get.find<ProductRemoteDataSource>()), fenix: true);
+    Get.lazyPut<ProductRepository>(() => ProductRepositoryImpl(remoteDataSource: Get.find<ProductRemoteDataSource>()), fenix: true);
     if (!Get.isRegistered<CategoryRemoteDataSource>()) {
       Get.lazyPut<CategoryRemoteDataSource>(() => CategoryRemoteDataSourceImpl(dio), fenix: true);
     }
