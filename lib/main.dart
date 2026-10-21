@@ -4,11 +4,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:stronger_muscles_dashboard/core/network/auth_service.dart';
-import 'package:stronger_muscles_dashboard/features/auth/presentation/controllers/auth_binding.dart';
-import 'package:stronger_muscles_dashboard/features/auth/presentation/pages/login_screen.dart';
-import 'package:stronger_muscles_dashboard/features/auth/presentation/pages/signup_screen.dart';
-import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/main_navigation_binding.dart';
-import 'package:stronger_muscles_dashboard/features/navigation/presentation/page/main_navigation_screen.dart';
+import 'package:stronger_muscles_dashboard/core/router/app_router.dart';
 import 'package:stronger_muscles_dashboard/functions/getx_init.dart';
 import 'package:stronger_muscles_dashboard/functions/hive_init.dart';
 import 'config/theme_extended.dart';
@@ -21,50 +17,32 @@ Future<void> main() async {
   await hiveInit();
   initializeServices();
 
+  // تهيئة خدمة التوثيق مبكراً
+  if (!Get.isRegistered<AuthService>()) {
+    Get.put(AuthService(), permanent: true);
+  }
+
   runApp(
     const ProviderScope(
       child: StrongerMusclesDashboard(),
     ),
   );
 }
- 
-class StrongerMusclesDashboard extends StatelessWidget {
+
+class StrongerMusclesDashboard extends ConsumerWidget {
   const StrongerMusclesDashboard({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final authService = Get.isRegistered<AuthService>()
-        ? Get.find<AuthService>()
-        : Get.put(AuthService(), permanent: true);
-    final isLoggedIn = authService.isLoggedIn();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
 
-    return GetMaterialApp(
+    return MaterialApp.router(
+      routerConfig: router,
       debugShowCheckedModeBanner: false,
       title: 'لوحة تحكم Stronger Muscles',
       theme: AppThemeExtended.getLightTheme(),
       darkTheme: AppThemeExtended.getDarkTheme(),
       themeMode: ThemeMode.dark,
-      initialRoute: isLoggedIn ? '/dashboard' : '/login',
-      getPages: [
-        GetPage(
-          name: '/dashboard', 
-          page: () => const MainNavigationScreen(),
-          binding: MainNavigationBinding(),
-          ),
-        GetPage(
-          name: '/login',
-          page: () => const LoginScreen(),
-          binding: AuthBinding(),
-        ),
-        GetPage(
-          name: '/signup',
-          page: () => const SignupScreen(),
-          binding: AuthBinding(),
-        ),
-      ],
     );
   }
-
-
 }
-
