@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/base_app_bar.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
 import 'package:stronger_muscles_dashboard/features/categories/presentation/controllers/categories_controller.dart';
+import 'package:stronger_muscles_dashboard/features/categories/presentation/controllers/categories_providers.dart';
 import 'widget/category_basic_info_section.dart';
 import 'widget/category_image_section.dart';
 import 'widget/category_parent_section.dart';
@@ -14,23 +17,25 @@ import 'widget/category_top_banner.dart';
 
 /// صفحة إنشاء وتعديل التصنيفات المحدثة بالكامل بنمط Material Design 3
 /// وبتنظيم تركيبي معياري متجاوب مع جميع أحجام الشاشات.
-class CategoryFormPage extends StatefulWidget {
+class CategoryFormPage extends ConsumerStatefulWidget {
   final CategoryEntity? category;
 
   const CategoryFormPage({super.key, this.category});
 
   @override
-  State<CategoryFormPage> createState() => _CategoryFormPageState();
+  ConsumerState<CategoryFormPage> createState() => _CategoryFormPageState();
 }
 
-class _CategoryFormPageState extends State<CategoryFormPage> {
+class _CategoryFormPageState extends ConsumerState<CategoryFormPage> {
   late final CategoriesController controller;
   final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
-    controller = Get.find<CategoriesController>();
+    controller = Get.isRegistered<CategoriesController>()
+        ? Get.find<CategoriesController>()
+        : Get.put(CategoriesController());
     if (widget.category != null) {
       controller.prepareFormForEdit(widget.category!);
     } else {
@@ -53,12 +58,30 @@ class _CategoryFormPageState extends State<CategoryFormPage> {
 
     HapticFeedback.mediumImpact();
 
-    final success = await controller.saveCategory(
-      existingId: widget.category?.id,
-    );
+    final categoryData = controller.buildFormData();
+    bool success;
+    controller.isLoading.value = true;
+    try {
+      if (widget.category != null) {
+        success = await ref
+            .read(categoriesControllerProvider.notifier)
+            .updateCategory(widget.category!.id, categoryData);
+      } else {
+        success = await ref
+            .read(categoriesControllerProvider.notifier)
+            .addCategory(categoryData);
+      }
+    } finally {
+      controller.isLoading.value = false;
+    }
 
     if (success) {
       HapticFeedback.heavyImpact();
+      _showSnackbar(
+        widget.category != null
+            ? 'تم حفظ تعديلات التصنيف بنجاح'
+            : 'تم إنشاء التصنيف الجديد بنجاح',
+      );
       Get.back();
     }
   }
@@ -85,6 +108,16 @@ class _CategoryFormPageState extends State<CategoryFormPage> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(categoriesControllerProvider, (previous, next) {
+      next.whenOrNull(
+        error: (error, _) {
+          final message =
+              error is Failure ? error.toMessage() : error.toString();
+          _showSnackbar(message, isError: true);
+        },
+      );
+    });
+
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isEditing = widget.category != null;
