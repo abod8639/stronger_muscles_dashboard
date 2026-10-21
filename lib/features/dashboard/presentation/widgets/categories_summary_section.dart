@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
+import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/base_data_view.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/category_card.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
-import 'package:stronger_muscles_dashboard/features/categories/presentation/page/category_form_page/category_form_page.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_controller.dart';
 
@@ -29,7 +30,7 @@ class CategoriesSummarySection extends GetView<DashboardController> {
           return CategoryCard(
             category: category,
             index: index,
-            onTap: () => Get.to(() => CategoryFormPage(category: category)),
+            onTap: () => context.push(AppRoutes.categoryForm, extra: category),
           );
         },
       );
