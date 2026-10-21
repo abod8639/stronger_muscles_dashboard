@@ -109,7 +109,7 @@ class __$$DashboardResponseImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$DashboardResponseImpl implements _DashboardResponse {
   const _$DashboardResponseImpl(
-      {required this.totalUsers, required final List<DashboardUser> users})
+      {required this.totalUsers, required List<DashboardUser> users})
       : _users = users;
 
   factory _$DashboardResponseImpl.fromJson(Map<String, dynamic> json) =>
@@ -162,8 +162,8 @@ class _$DashboardResponseImpl implements _DashboardResponse {
 
 abstract class _DashboardResponse implements DashboardResponse {
   const factory _DashboardResponse(
-      {required final int totalUsers,
-      required final List<DashboardUser> users}) = _$DashboardResponseImpl;
+      {required int totalUsers,
+      required List<DashboardUser> users}) = _$DashboardResponseImpl;
 
   factory _DashboardResponse.fromJson(Map<String, dynamic> json) =
       _$DashboardResponseImpl.fromJson;
@@ -429,7 +429,7 @@ class _$DashboardUserImpl extends _DashboardUser {
       @HiveField(7) this.totalSpent = 0.0,
       @HiveField(8) this.createdAt,
       @HiveField(9) this.lastLogin,
-      @HiveField(10) final List<UserAddress> addresses = const [],
+      @HiveField(10) List<UserAddress> addresses = const [],
       @HiveField(11) this.ordersCount = 0})
       : _addresses = addresses,
         super._();
@@ -550,18 +550,18 @@ class _$DashboardUserImpl extends _DashboardUser {
 
 abstract class _DashboardUser extends DashboardUser {
   const factory _DashboardUser(
-      {@HiveField(0) required final int id,
-      @HiveField(1) final String name,
-      @HiveField(2) final String? email,
-      @HiveField(3) final String? phone,
-      @HiveField(4) final String role,
-      @HiveField(5) final bool isActive,
-      @HiveField(6) final String? photoUrl,
-      @HiveField(7) final double totalSpent,
-      @HiveField(8) final DateTime? createdAt,
-      @HiveField(9) final DateTime? lastLogin,
-      @HiveField(10) final List<UserAddress> addresses,
-      @HiveField(11) final int ordersCount}) = _$DashboardUserImpl;
+      {@HiveField(0) required int id,
+      @HiveField(1) String name,
+      @HiveField(2) String? email,
+      @HiveField(3) String? phone,
+      @HiveField(4) String role,
+      @HiveField(5) bool isActive,
+      @HiveField(6) String? photoUrl,
+      @HiveField(7) double totalSpent,
+      @HiveField(8) DateTime? createdAt,
+      @HiveField(9) DateTime? lastLogin,
+      @HiveField(10) List<UserAddress> addresses,
+      @HiveField(11) int ordersCount}) = _$DashboardUserImpl;
   const _DashboardUser._() : super._();
 
   factory _DashboardUser.fromJson(Map<String, dynamic> json) =
