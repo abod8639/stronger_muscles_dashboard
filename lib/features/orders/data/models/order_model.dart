@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive/hive.dart';
 import 'package:stronger_muscles_dashboard/data/models/address_model.dart';
@@ -56,11 +57,36 @@ class OrderModel with _$OrderModel {
         trackingNumber: trackingNumber,
         notes: notes,
         orderDate: orderDate,
-        items: items?.map((e) => e.toEntity()).toList() ?? [],
+        items: items?.map((e) => e.toEntity()).toList() ?? const [],
       );
 
   factory OrderModel.fromJson(Map<String, dynamic> json) =>
       _$OrderModelFromJson(_mapOrderJson(json));
+
+  factory OrderModel.empty() => OrderModel(
+        id: '',
+        userId: '',
+        orderDate: DateTime.now(),
+        status: OrderStatus.pending,
+        paymentStatus: PaymentStatus.pending,
+        paymentMethod: 'card',
+        addressId: '',
+        subtotal: 0.0,
+        shippingCost: 0.0,
+        discount: 0.0,
+        totalAmount: 0.0,
+        items: const [],
+      );
+
+  /// تحليل كائن طلب منفرد بأمان في Isolate خلفي لمنع تجميد واجهة المستخدم
+  static Future<OrderModel> fromJsonAsync(dynamic json) async {
+    return await compute(_parseOrderIsolate, json);
+  }
+
+  /// تحليل قائمة طلبات كاملة في Isolate خلفي لمنع تجميد الشاشة أثناء استلام الحمولات الكبيرة
+  static Future<List<OrderModel>> fromJsonListAsync(dynamic data) async {
+    return await compute(_parseOrderListIsolate, data);
+  }
 }
 
 @freezed
@@ -98,7 +124,40 @@ class OrderItemModel with _$OrderItemModel {
       _$OrderItemModelFromJson(_mapItemJson(json));
 }
 
-// Data mapping helpers...
+// ==========================================
+// Isolate Functions (Top-Level)
+// ==========================================
+
+OrderModel _parseOrderIsolate(dynamic data) {
+  if (data is Map) {
+    try {
+      return OrderModel.fromJson(Map<String, dynamic>.from(data));
+    } catch (e) {
+      debugPrint('⚠️ Error parsing single order in Isolate: $e');
+    }
+  }
+  return OrderModel.empty();
+}
+
+List<OrderModel> _parseOrderListIsolate(dynamic data) {
+  final list = <OrderModel>[];
+  if (data is! List) return list;
+  for (final item in data) {
+    if (item is Map) {
+      try {
+        list.add(OrderModel.fromJson(Map<String, dynamic>.from(item)));
+      } catch (e) {
+        debugPrint('⚠️ Error parsing order in Isolate: $e');
+      }
+    }
+  }
+  return list;
+}
+
+// ==========================================
+// Robust Safe Parsing & Data Mapping Helpers
+// ==========================================
+
 Map<String, dynamic> _mapOrderJson(Map<String, dynamic> rawJson) {
   Map<String, dynamic> json = Map<String, dynamic>.from(rawJson);
 
@@ -150,14 +209,65 @@ Map<String, dynamic> _mapOrderJson(Map<String, dynamic> rawJson) {
     return 'pending';
   }
 
-  dynamic rawAddress = json['shipping_address'] ?? json['shippingAddress'];
-  dynamic mappedAddress;
+  String sanitizeDate(dynamic val) {
+    if (val == null) return DateTime.now().toIso8601String();
+    if (val is DateTime) return val.toIso8601String();
+    final str = val.toString().trim();
+    if (str.isEmpty) return DateTime.now().toIso8601String();
+    final parsed = DateTime.tryParse(str);
+    if (parsed != null) return parsed.toIso8601String();
+    return DateTime.now().toIso8601String();
+  }
 
+  dynamic rawAddress = json['shipping_address'] ?? json['shippingAddress'];
+  final mappedAddress = _safeAddressMap(rawAddress);
+
+  final itemsList = _sanitizeItems(json['order_items'] ?? json['items']);
+
+  final subtotal = _parseDouble(json['subtotal']);
+  final shippingCost = _parseDouble(json['shippingCost'] ?? json['shipping_cost']);
+  final discount = _parseDouble(json['discount'] ?? json['discount_amount']);
+  var totalAmount = _parseDouble(json['total_amount'] ?? json['totalAmount']);
+  if (totalAmount == 0.0 && subtotal > 0.0) {
+    totalAmount = (subtotal + shippingCost - discount).clamp(0.0, double.infinity);
+  }
+
+  return {
+    ...json,
+    'id': (json['id'] ?? '').toString(),
+    'userId': extractUserId(),
+    'orderDate': sanitizeDate(json['order_date'] ?? json['orderDate']),
+    'status': sanitizeOrderStatus(json['status']),
+    'paymentStatus': sanitizePaymentStatus(
+      json['payment_status'] ?? json['paymentStatus'],
+    ),
+    'addressId': (json['address_id'] ?? json['addressId'] ?? '').toString(),
+    'shippingCost': shippingCost,
+    'totalAmount': totalAmount,
+    'subtotal': subtotal,
+    'discount': discount,
+    'items': itemsList,
+    'paymentMethod': (json['payment_method'] ?? json['paymentMethod'] ?? 'card').toString(),
+    'trackingNumber': json['tracking_number']?.toString() ?? json['trackingNumber']?.toString(),
+    'notes': json['notes']?.toString(),
+    'phoneNumber':
+        json['phone']?.toString() ??
+        json['phone_number']?.toString() ??
+        json['phoneNumber']?.toString() ??
+        mappedAddress?['phone']?.toString(),
+    'shippingAddress': mappedAddress,
+    'user': _mapUserJson(json['user'], extractUserId()),
+  };
+}
+
+Map<String, dynamic>? _safeAddressMap(dynamic rawAddress) {
+  if (rawAddress == null) return null;
+  dynamic mapped;
   if (rawAddress is String && rawAddress.isNotEmpty) {
     try {
-      mappedAddress = jsonDecode(rawAddress);
+      mapped = jsonDecode(rawAddress);
     } catch (_) {
-      mappedAddress = {
+      mapped = {
         'id': 0,
         'street': rawAddress,
         'city': 'Unknown',
@@ -167,56 +277,65 @@ Map<String, dynamic> _mapOrderJson(Map<String, dynamic> rawJson) {
       };
     }
   } else {
-    mappedAddress = rawAddress;
+    mapped = rawAddress;
+  }
+  if (mapped is! Map) return null;
+  final map = Map<String, dynamic>.from(mapped);
+  return {
+    ...map,
+    'id': _parseInt(map['id']),
+    'street': (map['street'] ?? map['address'] ?? 'Unknown').toString(),
+    'city': (map['city'] ?? 'Unknown').toString(),
+    'state': map['state']?.toString(),
+    'postal_code': (map['postal_code'] ?? map['postalCode'])?.toString(),
+    'country': map['country']?.toString(),
+    'phone': map['phone']?.toString(),
+  };
+}
+
+List<dynamic> _sanitizeItems(dynamic val) {
+  if (val == null || val is! List) return const [];
+  final validItems = <dynamic>[];
+  for (final item in val) {
+    if (item is Map) {
+      validItems.add(Map<String, dynamic>.from(item));
+    }
+  }
+  return validItems;
+}
+
+Map<String, dynamic>? _mapUserJson(dynamic json, [String fallbackUserId = '']) {
+  if (json == null) return null;
+  if (json is! Map) return null;
+  final map = Map<String, dynamic>.from(json);
+  final userId = _parseInt(map['id'] ?? fallbackUserId);
+  return {
+    ...map,
+    'id': userId,
+    'name': (map['name'] ?? (fallbackUserId.isNotEmpty ? 'User $fallbackUserId' : 'عميل')).toString(),
+    'email': map['email']?.toString(),
+    'photo_url': map['photo_url'] ?? map['photoUrl'],
+    'phone_number': map['phone_number'] ?? map['phoneNumber'] ?? map['phone'],
+  };
+}
+
+Map<String, dynamic> _mapItemJson(Map<String, dynamic> json) {
+  final unitPrice = _parseDouble(json['unit_price'] ?? json['unitPrice']);
+  final quantity = _parseInt(json['quantity'] ?? 1);
+  var subtotal = _parseDouble(json['subtotal']);
+  if (subtotal == 0.0 && unitPrice > 0.0) {
+    subtotal = unitPrice * quantity;
   }
 
   return {
     ...json,
     'id': (json['id'] ?? '').toString(),
-    'userId': extractUserId(),
-    'orderDate':
-        json['order_date'] ??
-        json['orderDate'] ??
-        DateTime.now().toIso8601String(),
-    'status': sanitizeOrderStatus(json['status']),
-    'paymentStatus': sanitizePaymentStatus(
-      json['payment_status'] ?? json['paymentStatus'],
-    ),
-    'addressId': (json['address_id'] ?? json['addressId'] ?? '').toString(),
-    'shippingCost': _parseDouble(json['shippingCost'] ?? json['shipping_cost']),
-    'totalAmount': _parseDouble(json['total_amount'] ?? json['totalAmount']),
-    'subtotal': _parseDouble(json['subtotal']),
-    'discount': _parseDouble(json['discount'] ?? json['discount_amount']),
-    'items': json['order_items'] ?? json['items'],
-    'paymentMethod': json['payment_method'] ?? json['paymentMethod'] ?? 'card',
-    'trackingNumber': json['tracking_number'] ?? json['trackingNumber'],
-    'phoneNumber':
-        json['phone'] ??
-        json['phone_number'] ??
-        json['phoneNumber'] ??
-        mappedAddress?['phone'],
-    'shippingAddress': mappedAddress,
-    'user': _mapUserJson(json['user']),
-  };
-}
-
-Map<String, dynamic>? _mapUserJson(dynamic json) {
-  if (json == null) return null;
-  if (json is! Map) return null;
-  return {...json, 'id': _parseInt(json['id'])};
-}
-
-Map<String, dynamic> _mapItemJson(Map<String, dynamic> json) {
-  return {
-    ...json,
-    'id': (json['id'] ?? '').toString(),
     'orderId': (json['order_id'] ?? json['orderId'] ?? '').toString(),
     'productId': (json['product_id'] ?? json['productId'] ?? '').toString(),
-    'productName': (json['product_name'] ?? json['productName'] ?? '')
-        .toString(),
-    'unitPrice': _parseDouble(json['unit_price'] ?? json['unitPrice']),
-    'quantity': _parseInt(json['quantity'] ?? 1),
-    'subtotal': _parseDouble(json['subtotal']),
+    'productName': (json['product_name'] ?? json['productName'] ?? 'منتج').toString(),
+    'unitPrice': unitPrice,
+    'quantity': quantity < 1 ? 1 : quantity,
+    'subtotal': subtotal,
     'imageUrl': json['image_url'] ?? json['imageUrl'],
     'selectedFlavor': json['selectedFlavor'] ?? json['flavor'],
     'selectedSize': json['selectedSize'] ?? json['size'],
