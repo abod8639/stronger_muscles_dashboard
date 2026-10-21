@@ -1,5 +1,7 @@
+import 'package:dartz/dartz.dart' hide State;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/repositories/category_repository.dart';
 import '../../domain/entities/product_entity.dart';
@@ -99,16 +101,35 @@ class ProductsController extends GetxController {
     ever(productSizes, (_) => syncSizeControllers());
   }
 
-  Future<void> fetchData() async {
+  Future<void> fetchData({bool forceRefresh = false}) async {
     try {
       isLoading.value = true;
       final results = await Future.wait([
         _categoryRepository.getCategories(tree: true),
-        _getProductsUseCase(),
+        _getProductsUseCase(forceRefresh: forceRefresh),
         _brandRepository.getBrands(),
       ]);
-      categories.assignAll(results[0] as List<CategoryEntity>);
-      products.assignAll(results[1] as List<ProductEntity>);
+
+      final catResult = results[0];
+      if (catResult is Either<Failure, List<CategoryEntity>>) {
+        catResult.fold(
+          (failure) => debugPrint('Error categories: ${failure.toMessage()}'),
+          (cats) => categories.assignAll(cats),
+        );
+      } else if (catResult is List<CategoryEntity>) {
+        categories.assignAll(catResult);
+      }
+
+      final prodResult = results[1];
+      if (prodResult is Either<Failure, List<ProductEntity>>) {
+        prodResult.fold(
+          (failure) => _showErrorSnackbar('فشل في تحميل المنتجات', failure.toMessage()),
+          (prods) => products.assignAll(prods),
+        );
+      } else if (prodResult is List<ProductEntity>) {
+        products.assignAll(prodResult);
+      }
+
       brands.assignAll(results[2] as List<BrandEntity>);
       _applyFiltering();
     } catch (e) {
@@ -116,6 +137,13 @@ class ProductsController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  /// مزامنة المنتجات مباشرة من Riverpod
+  void syncWithRiverpod(List<ProductEntity> newProducts) {
+    products.assignAll(newProducts);
+    _applyFiltering();
+    isLoading.value = false;
   }
 
   void onSearchChanged(String query) {
@@ -270,18 +298,29 @@ class ProductsController extends GetxController {
       debugPrint('Saving Product Payload: ${productData.toString()}');
 
       if (existingProduct == null) {
-        final newProduct = await _addProductUseCase(productData);
-        products.insert(0, newProduct);
-        _showSuccess('تم بنجاح', 'تم إضافة المنتج بنجاح');
-
+        final result = await _addProductUseCase(productData);
+        result.fold(
+          (failure) => _showErrorSnackbar('خطأ في الإضافة', failure.toMessage()),
+          (newProduct) {
+            products.insert(0, newProduct);
+            _showSuccess('تم بنجاح', 'تم إضافة المنتج بنجاح');
+            _applyFiltering();
+            Get.back();
+          },
+        );
       } else {
-        final updatedProduct = await _updateProductUseCase(existingProduct.id, productData);
-        final index = products.indexWhere((p) => p.id == existingProduct.id);
-        if (index != -1) products[index] = updatedProduct;
-        _showSuccess('تم بنجاح', 'تم تحديث المنتج بنجاح');
+        final result = await _updateProductUseCase(existingProduct.id, productData);
+        result.fold(
+          (failure) => _showErrorSnackbar('خطأ في التحديث', failure.toMessage()),
+          (updatedProduct) {
+            final index = products.indexWhere((p) => p.id == existingProduct.id);
+            if (index != -1) products[index] = updatedProduct;
+            _showSuccess('تم بنجاح', 'تم تحديث المنتج بنجاح');
+            _applyFiltering();
+            Get.back();
+          },
+        );
       }
-      _applyFiltering();
-      Get.back();
     } catch (e) {
       _showErrorSnackbar('خطأ في الحفظ', e.toString());
       debugPrint(e.toString());
@@ -306,13 +345,17 @@ class ProductsController extends GetxController {
 
   Future<void> _executeDelete(String id) async {
     try {
-      isLoading.value = true;
-      final success = await _deleteProductUseCase(id);
-      if (success) {
-        products.removeWhere((p) => p.id == id);
-        _applyFiltering();
-        _showSuccess('نجاح', 'تم حذف المنتج بنجاح');
-      }
+      final result = await _deleteProductUseCase(id);
+      result.fold(
+        (failure) => _showErrorSnackbar('خطأ في الحذف', failure.toMessage()),
+        (success) {
+          if (success) {
+            products.removeWhere((p) => p.id == id);
+            _applyFiltering();
+            _showSuccess('نجاح', 'تم حذف المنتج بنجاح');
+          }
+        },
+      );
     } catch (e) {
       _showErrorSnackbar('خطأ في الحذف', e.toString());
     } finally {
@@ -394,8 +437,9 @@ class ProductsController extends GetxController {
 
       for (final id in idsToDelete) {
         try {
-          final success = await _deleteProductUseCase(id);
-          if (success) {
+          final result = await _deleteProductUseCase(id);
+          final bool isSuccess = result.fold((l) => false, (r) => r);
+          if (isSuccess) {
             products.removeWhere((p) => p.id == id);
             selectedProductIds.remove(id);
             successCount++;
@@ -438,12 +482,17 @@ class ProductsController extends GetxController {
 
       for (final id in idsToUpdate) {
         try {
-          final updatedProduct = await _updateProductUseCase(id, {'is_active': activate});
-          final index = products.indexWhere((p) => p.id == id);
-          if (index != -1) {
-            products[index] = updatedProduct;
-          }
-          successCount++;
+          final result = await _updateProductUseCase(id, {'is_active': activate});
+          result.fold(
+            (l) => failCount++,
+            (updatedProduct) {
+              final index = products.indexWhere((p) => p.id == id);
+              if (index != -1) {
+                products[index] = updatedProduct;
+              }
+              successCount++;
+            },
+          );
         } catch (_) {
           failCount++;
         }
@@ -474,12 +523,17 @@ class ProductsController extends GetxController {
 
       for (final id in idsToUpdate) {
         try {
-          final updatedProduct = await _updateProductUseCase(id, {'category_id': newCategoryId});
-          final index = products.indexWhere((p) => p.id == id);
-          if (index != -1) {
-            products[index] = updatedProduct;
-          }
-          successCount++;
+          final result = await _updateProductUseCase(id, {'category_id': newCategoryId});
+          result.fold(
+            (l) => failCount++,
+            (updatedProduct) {
+              final index = products.indexWhere((p) => p.id == id);
+              if (index != -1) {
+                products[index] = updatedProduct;
+              }
+              successCount++;
+            },
+          );
         } catch (_) {
           failCount++;
         }
@@ -503,7 +557,14 @@ class ProductsController extends GetxController {
   Future<String?> uploadImage(String filePath) async {
     try {
       isUploadingImage.value = true;
-      return await _uploadProductImageUseCase(filePath);
+      final result = await _uploadProductImageUseCase(filePath);
+      return result.fold(
+        (failure) {
+          _showErrorSnackbar('خطأ في الرفع', failure.toMessage());
+          return null;
+        },
+        (url) => url,
+      );
     } catch (e) {
       _showErrorSnackbar('خطأ في الرفع', e.toString());
       return null;
