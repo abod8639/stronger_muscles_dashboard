@@ -50,26 +50,37 @@ class OrderDetailsController extends GetxController {
 
     try {
       isUpdatingStatus.value = true;
-      final updatedOrder = await _updateOrderStatusUseCase(order.value.id, newStatus);
-      order.value = updatedOrder;
+      final result = await _updateOrderStatusUseCase(order.value.id, newStatus);
 
-      // مزامنة التحديث مع قائمة الطلبات الرئيسية إن وجدت في الذاكرة
-      if (_ordersController != null) {
-        final index = _ordersController.paginatedOrders.indexWhere((o) => o.id == updatedOrder.id);
-        if (index != -1) {
-          // تحديث السجلات في controller
-          _ordersController.fetchOrders();
-        }
-      }
+      result.fold(
+        (failure) {
+          Get.snackbar(
+            'فشل التحديث',
+            failure.toMessage(),
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red.withValues(alpha: 0.85),
+            colorText: Colors.white,
+            margin: const EdgeInsets.all(16),
+          );
+        },
+        (updatedOrder) {
+          order.value = updatedOrder;
 
-      Get.snackbar(
-        'تم التحديث',
-        'تم تغيير حالة الطلب إلى "${getStatusText(newStatus)}" بنجاح',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.black87,
-        colorText: Colors.white,
-        margin: const EdgeInsets.all(16),
-        duration: const Duration(seconds: 3),
+          // مزامنة التحديث مع قائمة الطلبات الرئيسية إن وجدت في الذاكرة
+          if (_ordersController != null) {
+            _ordersController.fetchOrders();
+          }
+
+          Get.snackbar(
+            'تم التحديث',
+            'تم تغيير حالة الطلب إلى "${getStatusText(newStatus)}" بنجاح',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.black87,
+            colorText: Colors.white,
+            margin: const EdgeInsets.all(16),
+            duration: const Duration(seconds: 3),
+          );
+        },
       );
     } catch (e) {
       Get.snackbar(

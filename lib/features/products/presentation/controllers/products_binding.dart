@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/core/network/api_base.dart';
-import 'package:stronger_muscles_dashboard/core/network/api_service.dart';
+import 'package:stronger_muscles_dashboard/features/categories/data/datasources/category_remote_datasource.dart';
 import 'package:stronger_muscles_dashboard/features/categories/data/repositories/category_repository.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/repositories/category_repository.dart';
 import '../../data/datasources/product_remote_datasource.dart';
@@ -26,8 +26,11 @@ class ProductsBinding extends Bindings {
 
     // Repositories
     Get.lazyPut<ProductRepository>(() => ProductRepositoryImpl(Get.find<ProductRemoteDataSource>()), fenix: true);
+    if (!Get.isRegistered<CategoryRemoteDataSource>()) {
+      Get.lazyPut<CategoryRemoteDataSource>(() => CategoryRemoteDataSourceImpl(dio), fenix: true);
+    }
     if (!Get.isRegistered<CategoryRepository>()) {
-      Get.lazyPut<CategoryRepository>(() => CategoryRepositoryImpl(Get.find<ApiService>()), fenix: true);
+      Get.lazyPut<CategoryRepository>(() => CategoryRepositoryImpl(remoteDataSource: Get.find<CategoryRemoteDataSource>()), fenix: true);
     }
     
     if (!Get.isRegistered<BrandRepository>()) {

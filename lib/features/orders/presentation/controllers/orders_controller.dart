@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/usecases/get_orders_usecase.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/usecases/get_order_detail_usecase.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/usecases/update_order_status_usecase.dart';
 
+/// جسر التوافقية (Compatibility Bridge) لـ GetX لضمان عمل الواجهات المتصلة بـ GetView بسلاسة
 class OrdersController extends GetxController {
   final GetOrdersUseCase _getOrdersUseCase;
-  // final GetOrderDetailUseCase? _getOrderDetailUseCase;
+  final GetOrderDetailUseCase? _getOrderDetailUseCase;
   final UpdateOrderStatusUseCase? _updateOrderStatusUseCase;
 
   OrdersController({
@@ -15,7 +17,7 @@ class OrdersController extends GetxController {
     GetOrderDetailUseCase? getOrderDetailUseCase,
     UpdateOrderStatusUseCase? updateOrderStatusUseCase,
   })  : _getOrdersUseCase = getOrdersUseCase,
-        // _getOrderDetailUseCase = getOrderDetailUseCase,
+        _getOrderDetailUseCase = getOrderDetailUseCase,
         _updateOrderStatusUseCase = updateOrderStatusUseCase;
 
   final RxList<OrderEntity> _allOrders = <OrderEntity>[].obs;
@@ -24,6 +26,7 @@ class OrdersController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxBool isUpdatingStatus = false.obs;
   final RxString errorMessage = ''.obs;
+  final Rx<Failure?> currentFailure = Rx<Failure?>(null);
   final RxString searchQuery = ''.obs;
 
   // Pagination
@@ -40,11 +43,14 @@ class OrdersController extends GetxController {
     return filteredOrders.sublist(start, end);
   }
 
-  int get totalPages => (filteredOrders.length / itemsPerPage.value).ceil();
+  int get totalPages {
+    if (filteredOrders.isEmpty) return 1;
+    return (filteredOrders.length / itemsPerPage.value).ceil();
+  }
 
   // Statistics
   int get totalOrders => _allOrders.length;
-  double get totalRevenue => _allOrders.fold(0, (sum, order) => sum + order.totalAmount);
+  double get totalRevenue => _allOrders.fold(0.0, (sum, order) => sum + order.totalAmount);
   int get pendingOrders => _allOrders.where((o) => o.status == OrderStatus.pending).length;
   int get deliveredOrders => _allOrders.where((o) => o.status == OrderStatus.delivered).length;
 
@@ -56,15 +62,37 @@ class OrdersController extends GetxController {
     fetchOrders();
   }
 
-  Future<void> fetchOrders() async {
+  /// مزامنة البيانات مباشرة من Riverpod لمنع تعارض الحالات
+  void syncWithRiverpod(List<OrderEntity> orders) {
+    _allOrders.assignAll(orders);
+    _applyFilters();
+    errorMessage.value = '';
+    currentFailure.value = null;
+    isLoading.value = false;
+  }
+
+  Future<void> fetchOrders({bool forceRefresh = false}) async {
     try {
       isLoading.value = true;
       errorMessage.value = '';
-      final orders = await _getOrdersUseCase();
-      _allOrders.assignAll(orders);
-      _applyFilters();
+      currentFailure.value = null;
+
+      final result = await _getOrdersUseCase(forceRefresh: forceRefresh);
+
+      result.fold(
+        (failure) {
+          currentFailure.value = failure;
+          errorMessage.value = failure.toMessage();
+        },
+        (orders) {
+          _allOrders.assignAll(orders);
+          _applyFilters();
+        },
+      );
     } catch (e) {
-      errorMessage.value = 'فشل في تحميل الطلبات: $e';
+      final failure = UnknownFailure(message: e.toString());
+      currentFailure.value = failure;
+      errorMessage.value = failure.toMessage();
     } finally {
       isLoading.value = false;
     }
@@ -79,6 +107,7 @@ class OrdersController extends GetxController {
   void onStatusChanged(String statusId) {
     selectedStatusId.value = statusId;
     currentPage.value = 1;
+    _applyFilters();
   }
 
   void nextPage() {
@@ -105,11 +134,11 @@ class OrdersController extends GetxController {
           selectedStatusId.value == 'all' ||
           order.status.name == selectedStatusId.value;
 
-      final String query = searchQuery.value.toLowerCase();
+      final String query = searchQuery.value.toLowerCase().trim();
       final bool matchesSearch =
           query.isEmpty ||
-          order.id.toString().toLowerCase().contains(query) ||
-          order.userId.toString().toLowerCase().contains(query) ||
+          order.id.toLowerCase().contains(query) ||
+          order.userId.toLowerCase().contains(query) ||
           order.userName.toLowerCase().contains(query) ||
           order.userEmail.toLowerCase().contains(query) ||
           (order.phoneNumber?.toLowerCase().contains(query) ?? false);
@@ -142,6 +171,19 @@ class OrdersController extends GetxController {
     }
   }
 
+  /// جلب تفاصيل طلب مفرد
+  Future<OrderEntity?> getOrderDetail(String id) async {
+    if (_getOrderDetailUseCase == null) return null;
+    final result = await _getOrderDetailUseCase(id);
+    return result.fold(
+      (failure) {
+        Get.snackbar('خطأ', failure.toMessage());
+        return null;
+      },
+      (order) => order,
+    );
+  }
+
   /// تحديث حالة الطلب مع معالجة الأخطاء والتحديث التفاعلي
   Future<OrderEntity?> updateOrderStatus(
     String orderId,
@@ -154,26 +196,42 @@ class OrdersController extends GetxController {
 
     try {
       isUpdatingStatus.value = true;
-      final updatedOrder = await _updateOrderStatusUseCase(orderId, newStatus);
+      final result = await _updateOrderStatusUseCase(orderId, newStatus);
 
-      // تحديث الطلب في القوائم المحلية
-      final index = _allOrders.indexWhere((o) => o.id == orderId);
-      if (index != -1) {
-        _allOrders[index] = updatedOrder;
-        _applyFilters();
-      }
+      final OrderEntity? updated = result.fold(
+        (failure) {
+          Get.snackbar(
+            'فشل التحديث',
+            failure.toMessage(),
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red.withValues(alpha: 0.85),
+            colorText: Colors.white,
+            margin: const EdgeInsets.all(16),
+          );
+          return null;
+        },
+        (updatedOrder) {
+          final index = _allOrders.indexWhere((o) => o.id == orderId);
+          if (index != -1) {
+            _allOrders[index] = updatedOrder;
+            _applyFilters();
+          }
 
-      Get.snackbar(
-        'تم التحديث',
-        'تم تحديث حالة الطلب إلى "${getStatusText(newStatus)}" بنجاح',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.black87,
-        colorText: Colors.white,
-        margin: const EdgeInsets.all(16),
-        duration: const Duration(seconds: 3),
+          Get.snackbar(
+            'تم التحديث',
+            'تم تحديث حالة الطلب إلى "${getStatusText(newStatus)}" بنجاح',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.black87,
+            colorText: Colors.white,
+            margin: const EdgeInsets.all(16),
+            duration: const Duration(seconds: 3),
+          );
+
+          return updatedOrder;
+        },
       );
 
-      return updatedOrder;
+      return updated;
     } catch (e) {
       Get.snackbar(
         'فشل التحديث',
