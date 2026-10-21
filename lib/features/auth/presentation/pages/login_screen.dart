@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
+import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/build_background.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
@@ -68,7 +69,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         );
 
     if (success && mounted) {
-      Get.offAllNamed('/dashboard');
+      context.go(AppRoutes.dashboard);
     }
   }
 
@@ -344,7 +345,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           style: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
         ),
         TextButton(
-          onPressed: () => Get.toNamed('/signup'),
+          onPressed: () => context.push(AppRoutes.signup),
           child: const Text(
             'إنشاء حساب جديد',
             style: TextStyle(
