@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/custom_search_bar.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/status_badge.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/controllers/orders_controller.dart';
-import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/order_details_screen/order_details_screen.dart';
-
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/widgets/build_recent_orders.dart';
@@ -224,7 +224,7 @@ class OrdersTable extends StatelessWidget {
       builder: (context) {
         bool isMobile = MediaQuery.of(context).size.width < 600;
         return InkWell(
-          onTap: () => Get.to(() => OrderDetailsScreen(order: order)),
+          onTap: () => context.push(AppRoutes.orderDetails, extra: order),
           hoverColor: Colors.white.withValues(alpha: 0.02),
           child: Container(
             padding: EdgeInsets.symmetric(
