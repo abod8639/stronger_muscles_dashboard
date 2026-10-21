@@ -18,6 +18,25 @@ import 'package:stronger_muscles_dashboard/features/users/presentation/pages/use
 class MainNavigationScreen extends StatelessWidget {
   const MainNavigationScreen({super.key});
 
+  Widget _buildContent(NavigationController controller) {
+    return Obx(
+      () => IndexedStack(
+        index: controller.selectedIndex.value,
+        children: const [
+          DashboardPage(),
+          CategoriesScreen(),
+          ProductsScreen(),
+          PromosScreen(),
+          OrdersPage(),
+          UsersPage(),
+          NotificationsScreen(),
+          SettingsScreen(),
+          SupportScreen(),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<NavigationController>();
@@ -28,7 +47,8 @@ class MainNavigationScreen extends StatelessWidget {
         final isDesktop = constraints.maxWidth >= 900;
 
         return Scaffold(
-          extendBodyBehindAppBar: true,
+          key: controller.scaffoldKey,
+          extendBodyBehindAppBar: isDesktop,
           backgroundColor: colorScheme.surface,
           drawer: isDesktop ? null : myDrawer(),
           body: Stack(
@@ -40,33 +60,20 @@ class MainNavigationScreen extends StatelessWidget {
                 children: [
                   if (isDesktop) const Sidebar(),
                   Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        top: 10,
-                        bottom: 20,
-                        right: 10,
-                        left: 10,
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(32),
-                        child: Obx(
-                          () => IndexedStack(
-                            index: controller.selectedIndex.value,
-                            children: const [
-                              DashboardPage(),
-                              CategoriesScreen(),
-                              ProductsScreen(),
-                              PromosScreen(),
-                              OrdersPage(),
-                              UsersPage(),
-                              NotificationsScreen(),
-                              SettingsScreen(),
-                              SupportScreen(),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
+                    child: isDesktop
+                        ? Padding(
+                            padding: const EdgeInsets.only(
+                              top: 10,
+                              bottom: 20,
+                              right: 10,
+                              left: 10,
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(32),
+                              child: _buildContent(controller),
+                            ),
+                          )
+                        : _buildContent(controller),
                   ),
                 ],
               ),
@@ -78,3 +85,4 @@ class MainNavigationScreen extends StatelessWidget {
     );
   }
 }
+
