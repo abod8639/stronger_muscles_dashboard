@@ -1,10 +1,27 @@
+import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
+import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import '../entities/auth_entity.dart';
 
 abstract class AuthRepository {
-  Future<AuthEntity> login(String email, String password);
-  Future<AuthEntity> signup(String name, String email, String password);
-  Future<void> logout();
+  Future<Either<Failure, AuthEntity>> login(
+    String email,
+    String password, {
+    CancelToken? cancelToken,
+  });
+
+  Future<Either<Failure, AuthEntity>> signup(
+    String name,
+    String email,
+    String password, {
+    CancelToken? cancelToken,
+  });
+
+  Future<Either<Failure, Unit>> logout();
+
   bool isLoggedIn();
+
   String? getToken();
-  AuthEntity? getCurrentUser();
+
+  Either<Failure, AuthEntity?> getCurrentUser();
 }
