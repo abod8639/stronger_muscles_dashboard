@@ -1,6 +1,10 @@
 import 'dart:async';
+import 'package:dart_pusher_channels/dart_pusher_channels.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../config/api_config.dart';
+import '../../data/models/support_message_model.dart';
+import '../../data/models/support_ticket_model.dart';
 import '../../domain/entities/support_message_entity.dart';
 import '../../domain/entities/support_stats_entity.dart';
 import '../../domain/entities/support_ticket_entity.dart';
@@ -49,8 +53,10 @@ class SupportController extends GetxController {
   final isInternalNote = false.obs;
   final replyStatus = 'waiting_user'.obs;
 
-  // Polling Timer for Real-Time Sync
-  Timer? _pollingTimer;
+  // WebSockets Client & Subscriptions
+  PusherChannelsClient? _pusherClient;
+  PublicChannel? _supportChannel;
+  final List<StreamSubscription> _wsSubscriptions = [];
 
   // Canned Responses
   final List<String> cannedResponses = const [
@@ -65,7 +71,7 @@ class SupportController extends GetxController {
   void onInit() {
     super.onInit();
     fetchTickets();
-    _startPolling();
+    _initRealtimeWebSockets();
 
     ever(selectedStatus, (_) => fetchTickets(showLoading: false));
     ever(selectedPriority, (_) => fetchTickets(showLoading: false));
@@ -75,45 +81,169 @@ class SupportController extends GetxController {
 
   @override
   void onClose() {
-    _pollingTimer?.cancel();
+    for (final sub in _wsSubscriptions) {
+      sub.cancel();
+    }
+    _wsSubscriptions.clear();
+    _supportChannel?.unsubscribe();
+    _pusherClient?.disconnect();
     replyController.dispose();
     super.onClose();
   }
 
-  void _startPolling() {
-    _pollingTimer?.cancel();
-    // Periodically sync tickets and currently open conversation every 12 seconds
-    _pollingTimer = Timer.periodic(const Duration(seconds: 12), (_) {
-      _silentRefresh();
-    });
-  }
-
-  Future<void> _silentRefresh() async {
+  void _initRealtimeWebSockets() {
     try {
-      final result = await getTicketsUseCase(
-        status: selectedStatus.value,
-        priority: selectedPriority.value,
-        category: selectedCategory.value,
-        search: searchQuery.value,
+      final ipController = Get.isRegistered<ApiConfigController>()
+          ? Get.find<ApiConfigController>()
+          : null;
+      final host = ipController?.ip ?? '127.0.0.1';
+      final options = PusherChannelsOptions.fromHost(
+        scheme: 'ws',
+        host: host,
+        port: 8085,
+        key: 'r5srrlrufruxbdrppf6x',
       );
 
-      final List<SupportTicketEntity> items = result['tickets'] ?? [];
-      tickets.assignAll(items);
-      filteredTickets.assignAll(items);
+      _pusherClient = PusherChannelsClient.websocket(
+        options: options,
+        connectionErrorHandler: (exception, trace, refresh) async {
+          refresh();
+        },
+      );
 
-      if (result['stats'] is SupportStatsEntity) {
-        stats.value = result['stats'];
-      }
+      _supportChannel = _pusherClient!.publicChannel('support.tickets');
 
-      // If a ticket is currently selected, refresh its messages thread
-      if (selectedTicket.value != null) {
-        final currentId = selectedTicket.value!.id;
-        final updatedDetail = await getTicketDetailUseCase(currentId);
-        selectedTicket.value = updatedDetail;
-      }
-    } catch (_) {
-      // Background sync failures are silent
+      // 1. الاستماع لإنشاء تذكرة جديدة
+      final subCreate = _supportChannel!.bind('SupportTicketCreated').listen((event) {
+        final map = event.tryGetDataAsMap();
+        if (map != null && map['ticket'] != null) {
+          final ticketData = map['ticket'] is Map ? Map<String, dynamic>.from(map['ticket'] as Map) : null;
+          if (ticketData != null) {
+            final newTicket = SupportTicketModel.fromJson(ticketData).toEntity();
+            final existingIndex = tickets.indexWhere((t) => t.id == newTicket.id);
+            if (existingIndex == -1) {
+              tickets.insert(0, newTicket);
+              if (_matchesFilters(newTicket)) {
+                filteredTickets.insert(0, newTicket);
+              }
+            } else {
+              tickets[existingIndex] = newTicket;
+              final fIndex = filteredTickets.indexWhere((t) => t.id == newTicket.id);
+              if (fIndex != -1) {
+                if (_matchesFilters(newTicket)) {
+                  filteredTickets[fIndex] = newTicket;
+                } else {
+                  filteredTickets.removeAt(fIndex);
+                }
+              } else if (_matchesFilters(newTicket)) {
+                filteredTickets.insert(0, newTicket);
+              }
+            }
+          }
+        }
+      });
+
+      // 2. الاستماع لتحديث تذكرة (حالة / أولوية / تعيين)
+      final subUpdate = _supportChannel!.bind('SupportTicketUpdated').listen((event) {
+        final map = event.tryGetDataAsMap();
+        if (map != null && map['ticket'] != null) {
+          final ticketData = map['ticket'] is Map ? Map<String, dynamic>.from(map['ticket'] as Map) : null;
+          if (ticketData != null) {
+            final updated = SupportTicketModel.fromJson(ticketData).toEntity();
+            final index = tickets.indexWhere((t) => t.id == updated.id);
+            if (index != -1) {
+              tickets[index] = updated;
+            }
+
+            final fIndex = filteredTickets.indexWhere((t) => t.id == updated.id);
+            if (fIndex != -1) {
+              if (_matchesFilters(updated)) {
+                filteredTickets[fIndex] = updated;
+              } else {
+                filteredTickets.removeAt(fIndex);
+              }
+            } else if (_matchesFilters(updated)) {
+              filteredTickets.insert(0, updated);
+            }
+
+            if (selectedTicket.value?.id == updated.id) {
+              selectedTicket.value = updated.copyWith(
+                messages: updated.messages.isNotEmpty
+                    ? updated.messages
+                    : selectedTicket.value!.messages,
+              );
+            }
+          }
+        }
+      });
+
+      // 3. الاستماع للرسائل الفورية الجديدة
+      final subMessage = _supportChannel!.bind('SupportMessageSent').listen((event) {
+        final map = event.tryGetDataAsMap();
+        if (map != null && map['message'] != null) {
+          final ticketId = map['ticket_id'] is int
+              ? map['ticket_id'] as int
+              : int.tryParse(map['ticket_id']?.toString() ?? '0') ?? 0;
+          final msgData = map['message'] is Map ? Map<String, dynamic>.from(map['message'] as Map) : null;
+          if (msgData != null) {
+            final newMsg = SupportMessageModel.fromJson(msgData).toEntity();
+
+            // تحديث محادثة التذكرة المفتوحة حالياً فوراً
+            if (selectedTicket.value != null && selectedTicket.value!.id == ticketId) {
+              final exists = selectedTicket.value!.messages.any((m) => m.id == newMsg.id);
+              if (!exists) {
+                final updatedMessages = List<SupportMessageEntity>.from(selectedTicket.value!.messages)..add(newMsg);
+                selectedTicket.value = selectedTicket.value!.copyWith(
+                  messages: updatedMessages,
+                  messagesCount: selectedTicket.value!.messagesCount + 1,
+                  lastReplyAt: newMsg.createdAt,
+                  latestMessage: newMsg,
+                );
+              }
+            }
+
+            // تحديث البطاقة في قائمة التذاكر
+            final tIndex = tickets.indexWhere((t) => t.id == ticketId);
+            if (tIndex != -1) {
+              final current = tickets[tIndex];
+              final updated = current.copyWith(
+                messagesCount: current.messagesCount + 1,
+                lastReplyAt: newMsg.createdAt,
+                latestMessage: newMsg,
+              );
+              tickets[tIndex] = updated;
+              final fIndex = filteredTickets.indexWhere((t) => t.id == ticketId);
+              if (fIndex != -1) {
+                filteredTickets[fIndex] = updated;
+              }
+            }
+          }
+        }
+      });
+
+      _wsSubscriptions.addAll([subCreate, subUpdate, subMessage]);
+      _wsSubscriptions.add(_pusherClient!.onConnectionEstablished.listen((_) {
+        _supportChannel!.subscribeIfNotUnsubscribed();
+      }));
+
+      _pusherClient!.connect();
+    } catch (e) {
+      debugPrint('WebSocket initialization error: $e');
     }
+  }
+
+  bool _matchesFilters(SupportTicketEntity ticket) {
+    if (selectedStatus.value != 'all' && ticket.status != selectedStatus.value) return false;
+    if (selectedPriority.value != 'all' && ticket.priority != selectedPriority.value) return false;
+    if (selectedCategory.value != 'all' && ticket.category != selectedCategory.value) return false;
+    if (searchQuery.value.trim().isNotEmpty) {
+      final q = searchQuery.value.trim().toLowerCase();
+      final matchSubject = ticket.subject.toLowerCase().contains(q);
+      final matchUser = ticket.userName.toLowerCase().contains(q);
+      final matchNumber = ticket.ticketNumber.toLowerCase().contains(q);
+      if (!matchSubject && !matchUser && !matchNumber) return false;
+    }
+    return true;
   }
 
   Future<void> fetchTickets({bool showLoading = true}) async {
