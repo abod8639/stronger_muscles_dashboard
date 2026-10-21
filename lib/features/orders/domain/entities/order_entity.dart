@@ -57,6 +57,50 @@ class OrderEntity {
     required this.orderDate,
     required this.items,
   });
+
+  OrderEntity copyWith({
+    String? id,
+    String? userId,
+    String? userName,
+    String? userEmail,
+    String? userPhoto,
+    String? phoneNumber,
+    double? totalAmount,
+    double? subtotal,
+    double? shippingCost,
+    double? discount,
+    OrderStatus? status,
+    PaymentStatus? paymentStatus,
+    String? paymentMethod,
+    String? addressId,
+    AddressEntity? shippingAddress,
+    String? trackingNumber,
+    String? notes,
+    DateTime? orderDate,
+    List<OrderItemEntity>? items,
+  }) {
+    return OrderEntity(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      userName: userName ?? this.userName,
+      userEmail: userEmail ?? this.userEmail,
+      userPhoto: userPhoto ?? this.userPhoto,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      totalAmount: totalAmount ?? this.totalAmount,
+      subtotal: subtotal ?? this.subtotal,
+      shippingCost: shippingCost ?? this.shippingCost,
+      discount: discount ?? this.discount,
+      status: status ?? this.status,
+      paymentStatus: paymentStatus ?? this.paymentStatus,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
+      addressId: addressId ?? this.addressId,
+      shippingAddress: shippingAddress ?? this.shippingAddress,
+      trackingNumber: trackingNumber ?? this.trackingNumber,
+      notes: notes ?? this.notes,
+      orderDate: orderDate ?? this.orderDate,
+      items: items ?? this.items,
+    );
+  }
 }
 
 class OrderItemEntity {
@@ -81,4 +125,28 @@ class OrderItemEntity {
     this.selectedFlavor,
     this.selectedSize,
   });
+
+  OrderItemEntity copyWith({
+    String? id,
+    String? productId,
+    String? productName,
+    int? quantity,
+    double? unitPrice,
+    double? subtotal,
+    String? imageUrl,
+    String? selectedFlavor,
+    String? selectedSize,
+  }) {
+    return OrderItemEntity(
+      id: id ?? this.id,
+      productId: productId ?? this.productId,
+      productName: productName ?? this.productName,
+      quantity: quantity ?? this.quantity,
+      unitPrice: unitPrice ?? this.unitPrice,
+      subtotal: subtotal ?? this.subtotal,
+      imageUrl: imageUrl ?? this.imageUrl,
+      selectedFlavor: selectedFlavor ?? this.selectedFlavor,
+      selectedSize: selectedSize ?? this.selectedSize,
+    );
+  }
 }
