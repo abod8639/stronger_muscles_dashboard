@@ -100,8 +100,11 @@ class PromoFormController extends GetxController {
 
     if (products.isEmpty && getProductsUseCase != null) {
       try {
-        final fetched = await getProductsUseCase!.call();
-        products.assignAll(fetched);
+        final result = await getProductsUseCase!.call();
+        result.fold(
+          (failure) {},
+          (fetched) => products.assignAll(fetched),
+        );
       } catch (_) {}
     }
 
