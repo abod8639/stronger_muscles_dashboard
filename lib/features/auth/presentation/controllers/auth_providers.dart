@@ -1,0 +1,73 @@
+import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:stronger_muscles_dashboard/config/api_config.dart';
+import '../../data/datasources/auth_local_datasource.dart';
+import '../../data/datasources/auth_remote_datasource.dart';
+import '../../data/repositories/auth_repository_impl.dart';
+import '../../domain/entities/auth_entity.dart';
+import '../../domain/repositories/auth_repository.dart';
+import '../../domain/usecases/check_auth_status_usecase.dart';
+import '../../domain/usecases/login_usecase.dart';
+import '../../domain/usecases/logout_usecase.dart';
+import '../../domain/usecases/signup_usecase.dart';
+import 'auth_controller.dart';
+
+/// موفر [Dio] الأساسي مع تعيين المهلات الزمنية (Timeouts)
+final dioProvider = Provider<Dio>((ref) {
+  final apiConfig = ApiConfigController();
+  return Dio(
+    BaseOptions(
+      baseUrl: apiConfig.baseUrl.value,
+      connectTimeout: const Duration(seconds: 15),
+      receiveTimeout: const Duration(seconds: 15),
+      sendTimeout: const Duration(seconds: 15),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    ),
+  );
+});
+
+/// موفر مصدر البيانات المحلي (GetStorage)
+final authLocalDataSourceProvider = Provider<AuthLocalDataSource>((ref) {
+  return AuthLocalDataSourceImpl(GetStorage());
+});
+
+/// موفر مصدر البيانات البعيد عبر الشبكة
+final authRemoteDataSourceProvider = Provider<AuthRemoteDataSource>((ref) {
+  final dio = ref.watch(dioProvider);
+  return AuthRemoteDataSourceImpl(dio);
+});
+
+/// موفر مستودع المصادقة
+final authRepositoryProvider = Provider<AuthRepository>((ref) {
+  return AuthRepositoryImpl(
+    remoteDataSource: ref.watch(authRemoteDataSourceProvider),
+    localDataSource: ref.watch(authLocalDataSourceProvider),
+  );
+});
+
+/// موفرات حالات الاستخدام (UseCases)
+final loginUseCaseProvider = Provider<LoginUseCase>((ref) {
+  return LoginUseCase(ref.watch(authRepositoryProvider));
+});
+
+final signupUseCaseProvider = Provider<SignupUseCase>((ref) {
+  return SignupUseCase(ref.watch(authRepositoryProvider));
+});
+
+final logoutUseCaseProvider = Provider<LogoutUseCase>((ref) {
+  return LogoutUseCase(ref.watch(authRepositoryProvider));
+});
+
+final checkAuthStatusUseCaseProvider = Provider<CheckAuthStatusUseCase>((ref) {
+  return CheckAuthStatusUseCase(ref.watch(authRepositoryProvider));
+});
+
+/// موفر حالة المصادقة الرئيسي عبر [AsyncNotifier]
+final authControllerProvider =
+    AsyncNotifierProvider<AuthController, AuthEntity?>(
+  AuthController.new,
+);
