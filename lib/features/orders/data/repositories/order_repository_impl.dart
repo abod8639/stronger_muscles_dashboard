@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import 'package:stronger_muscles_dashboard/core/error/network_error_handler.dart';
 import 'package:stronger_muscles_dashboard/core/storage/cache_service.dart';
@@ -12,15 +11,14 @@ import 'package:stronger_muscles_dashboard/features/orders/domain/repositories/o
 
 class OrderRepositoryImpl implements OrderRepository {
   final OrderRemoteDataSource remoteDataSource;
-  CacheService? _cacheService;
+  final CacheService? _cacheService;
 
   static const String _cacheKeyOrders = 'orders_list';
 
-  OrderRepositoryImpl({required this.remoteDataSource}) {
-    if (Get.isRegistered<CacheService>()) {
-      _cacheService = Get.find<CacheService>();
-    }
-  }
+  OrderRepositoryImpl({
+    required this.remoteDataSource,
+    CacheService? cacheService,
+  }) : _cacheService = cacheService ?? CacheService.instance;
 
   @override
   Future<Either<Failure, List<OrderEntity>>> getOrders({
