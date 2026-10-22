@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/base_app_bar.dart';
-import 'package:stronger_muscles_dashboard/features/products/domain/usecases/get_products_usecase.dart';
 import 'package:stronger_muscles_dashboard/features/promos/domain/entities/promo_entity.dart';
-import 'package:stronger_muscles_dashboard/features/promos/domain/usecases/promo_usecases.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/controllers/promo_form_controller.dart';
-import 'package:stronger_muscles_dashboard/features/promos/presentation/controllers/promos_controller.dart';
+import 'package:stronger_muscles_dashboard/features/promos/presentation/controllers/promos_providers.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/widgets/form/promo_appearance_section.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/widgets/form/promo_image_section.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/widgets/form/promo_language_section.dart';
@@ -18,28 +16,14 @@ import 'package:stronger_muscles_dashboard/features/promos/presentation/widgets/
 import 'package:stronger_muscles_dashboard/features/promos/presentation/widgets/form/promo_top_banner.dart';
 
 /// صفحة إنشاء وتعديل الإعلانات الترويجية المتوافقة مع معايير Clean Architecture و Material Design 3
-class PromoFormScreen extends StatelessWidget {
+class PromoFormScreen extends ConsumerWidget {
   final PromoEntity? promo;
 
   const PromoFormScreen({super.key, this.promo});
 
   @override
-  Widget build(BuildContext context) {
-    final controller = Get.put(
-      PromoFormController(
-        initialPromo: promo,
-        addPromoUseCase: Get.find<AddPromoUseCase>(),
-        updatePromoUseCase: Get.find<UpdatePromoUseCase>(),
-        uploadPromoImageUseCase: Get.find<UploadPromoImageUseCase>(),
-        promosController: Get.isRegistered<PromosController>()
-            ? Get.find<PromosController>()
-            : null,
-        getProductsUseCase: Get.isRegistered<GetProductsUseCase>()
-            ? Get.find<GetProductsUseCase>()
-            : null,
-      ),
-      tag: promo?.id ?? 'new_promo',
-    );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final controller = ref.watch(promoFormControllerProvider(promo));
 
     final colorScheme = Theme.of(context).colorScheme;
     final isEditing = controller.isEditing;
@@ -53,8 +37,9 @@ class PromoFormScreen extends StatelessWidget {
         title: isEditing ? 'تعديل الإعلان' : 'إنشاء إعلان جديد',
         centerTitle: true,
         extraActions: [
-          Obx(
-            () => controller.isLoading.value
+          ListenableBuilder(
+            listenable: controller,
+            builder: (context, _) => controller.isLoading
                 ? const Center(
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16),
@@ -68,7 +53,7 @@ class PromoFormScreen extends StatelessWidget {
                 : Padding(
                     padding: const EdgeInsets.only(left: 8),
                     child: FilledButton.icon(
-                      onPressed: () => controller.savePromo(),
+                      onPressed: () => controller.savePromo(context),
                       icon: Icon(
                         isEditing
                             ? Icons.save_rounded
@@ -282,24 +267,25 @@ class PromoFormScreen extends StatelessWidget {
                           title: 'حالة النشر',
                           icon: Icons.sensors_rounded,
                           contentPadding: const EdgeInsets.all(14),
-                          trailing: Obx(
-                            () => Container(
+                          trailing: ListenableBuilder(
+                            listenable: controller,
+                            builder: (context, _) => Container(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 6,
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: controller.isActive.value
+                                color: controller.isActive
                                     ? Colors.green.withValues(alpha: 0.15)
                                     : Colors.grey.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
-                                controller.isActive.value ? 'مباشر' : 'مسودة',
+                                controller.isActive ? 'مباشر' : 'مسودة',
                                 style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
-                                  color: controller.isActive.value
+                                  color: controller.isActive
                                       ? Colors.green
                                       : Colors.grey,
                                 ),
