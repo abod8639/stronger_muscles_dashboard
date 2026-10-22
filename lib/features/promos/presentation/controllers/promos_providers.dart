@@ -52,7 +52,7 @@ final uploadPromoImageUseCaseProvider = Provider<UploadPromoImageUseCase>((ref) 
 // ==========================================
 
 /// موفر متحكم الإعلانات الرئيسي
-final promosControllerProvider = ChangeNotifierProvider<PromosController>((ref) {
+final promosControllerProvider = Provider<PromosController>((ref) {
   final controller = PromosController(
     getPromosUseCase: ref.watch(getPromosUseCaseProvider),
     addPromoUseCase: ref.watch(addPromoUseCaseProvider),
@@ -63,11 +63,12 @@ final promosControllerProvider = ChangeNotifierProvider<PromosController>((ref) 
     brandRepository: ref.watch(brandRepositoryProvider),
   );
   controller.init();
+  ref.onDispose(controller.dispose);
   return controller;
 });
 
 /// موفر متحكم نموذج إنشاء/تعديل الإعلان
-final promoFormControllerProvider = ChangeNotifierProvider.autoDispose.family<PromoFormController, PromoEntity?>((ref, initialPromo) {
+final promoFormControllerProvider = Provider.autoDispose.family<PromoFormController, PromoEntity?>((ref, initialPromo) {
   final controller = PromoFormController(
     initialPromo: initialPromo,
     addPromoUseCase: ref.watch(addPromoUseCaseProvider),
@@ -78,5 +79,6 @@ final promoFormControllerProvider = ChangeNotifierProvider.autoDispose.family<Pr
     promosController: ref.read(promosControllerProvider),
   );
   controller.init();
+  ref.onDispose(controller.dispose);
   return controller;
 });
