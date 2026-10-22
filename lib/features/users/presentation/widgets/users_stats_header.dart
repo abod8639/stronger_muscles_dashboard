@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../config/responsive.dart';
-import '../controllers/users_controller.dart';
+import '../controllers/users_providers.dart';
 
-/// رأس إحصائيات المستخدمين بتصميم Neumorphism / Soft UI (بدون أنيميشن)
-/// يعرض إجمالي المسجلين في بطاقة مجسمة ناعمة متوافقة مع سمة التطبيق في الوضعين الفاتح والداكن.
-class UsersStatsHeader extends GetView<UsersController> {
+/// رأس إحصائيات المستخدمين بتصميم Neumorphism / Soft UI
+class UsersStatsHeader extends ConsumerWidget {
   const UsersStatsHeader({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final responsive = context.responsive;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
-
     final borderRadius = BorderRadius.circular(20);
 
-    return Obx(() => Padding(
+    final totalUsers =
+        ref.watch(usersNotifierProvider).valueOrNull?.totalUsers ?? 0;
+
+    return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: responsive.defaultPadding.left,
         vertical: 4,
@@ -39,7 +40,6 @@ class UsersStatsHeader extends GetView<UsersController> {
                   ],
           ),
           boxShadow: [
-            // الظل السفلي الغامق (Drop Shadow)
             BoxShadow(
               color: isDark
                   ? Colors.black.withValues(alpha: 0.55)
@@ -47,11 +47,10 @@ class UsersStatsHeader extends GetView<UsersController> {
               offset: const Offset(4, 6),
               blurRadius: 14,
             ),
-            // الظل العلوي الفاتح العاكس للضوء (Highlight Glow)
             BoxShadow(
               color: isDark
-                ? Colors.white.withValues(alpha: 0.04)
-                : Colors.white.withValues(alpha: 0.95),
+                  ? Colors.white.withValues(alpha: 0.04)
+                  : Colors.white.withValues(alpha: 0.95),
               offset: const Offset(-3, -3),
               blurRadius: 10,
             ),
@@ -66,7 +65,6 @@ class UsersStatsHeader extends GetView<UsersController> {
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
         child: Row(
           children: [
-            // أيقونة مجسمة بتصميم Neumorphic
             Container(
               padding: const EdgeInsets.all(13),
               decoration: BoxDecoration(
@@ -127,7 +125,7 @@ class UsersStatsHeader extends GetView<UsersController> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  controller.totalUsers.value.toString(),
+                  totalUsers.toString(),
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontSize: responsive.getTitleFontSize(),
                     fontWeight: FontWeight.bold,
@@ -140,6 +138,6 @@ class UsersStatsHeader extends GetView<UsersController> {
           ],
         ),
       ),
-    ));
+    );
   }
 }
