@@ -1,6 +1,6 @@
-class _BaseUrlString {
+class BaseUrlString {
   final String value;
-  const _BaseUrlString(this.value);
+  const BaseUrlString(this.value);
 
   @override
   String toString() => value;
@@ -13,7 +13,7 @@ class ApiConfigController {
   final String port = "8080";
   final String url = "strongermusclesdatabase-production.up.railway.app";
 
-  _BaseUrlString get baseUrl => _BaseUrlString('http://$ip:$port/api/v1');
+  BaseUrlString get baseUrl => BaseUrlString('http://$ip:$port/api/v1');
 }
 
 class ApiConfig {
