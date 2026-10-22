@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
 import 'form_section_card.dart';
 import 'modern_form_field.dart';
@@ -24,7 +23,9 @@ class ProductPricingStockSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Pricing Row
-          Obx(() {
+          ListenableBuilder(
+            listenable: controller,
+            builder: (context, _) {
             final hasSizes = controller.productSizes.isNotEmpty;
             if (hasSizes) {
               return Column(
@@ -228,7 +229,8 @@ class ProductPricingStockSection extends StatelessWidget {
                 ),
               ],
             );
-          }),
+          },
+        ),
 
           const SizedBox(height: 18),
 
