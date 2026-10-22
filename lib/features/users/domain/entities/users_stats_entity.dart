@@ -12,4 +12,18 @@ class UsersStatsEntity {
     required this.inactiveUsers,
     required this.users,
   });
+
+  UsersStatsEntity copyWith({
+    int? totalUsers,
+    int? activeUsers,
+    int? inactiveUsers,
+    List<UserEntity>? users,
+  }) {
+    return UsersStatsEntity(
+      totalUsers: totalUsers ?? this.totalUsers,
+      activeUsers: activeUsers ?? this.activeUsers,
+      inactiveUsers: inactiveUsers ?? this.inactiveUsers,
+      users: users ?? this.users,
+    );
+  }
 }
