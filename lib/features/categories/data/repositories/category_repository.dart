@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import 'package:stronger_muscles_dashboard/core/error/network_error_handler.dart';
 import 'package:stronger_muscles_dashboard/core/storage/cache_service.dart';
@@ -12,16 +11,15 @@ import 'package:stronger_muscles_dashboard/features/categories/domain/repositori
 
 class CategoryRepositoryImpl implements CategoryRepository {
   final CategoryRemoteDataSource remoteDataSource;
-  CacheService? _cacheService;
+  final CacheService? _cacheService;
 
   static const String _cacheKeyCategories = 'categories_list';
   static const String _cacheKeyCategoriesTree = 'categories_tree';
 
-  CategoryRepositoryImpl({required this.remoteDataSource}) {
-    if (Get.isRegistered<CacheService>()) {
-      _cacheService = Get.find<CacheService>();
-    }
-  }
+  CategoryRepositoryImpl({
+    required this.remoteDataSource,
+    CacheService? cacheService,
+  }) : _cacheService = cacheService ?? CacheService.instance;
 
   @override
   Future<Either<Failure, List<CategoryEntity>>> getCategories({
