@@ -1,28 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/address_entity.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/usecases/update_order_status_usecase.dart';
-import 'package:stronger_muscles_dashboard/features/orders/presentation/controllers/orders_controller.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/services/invoice_pdf_service.dart';
 
-class OrderDetailsController extends GetxController {
+/// متحكم تفاصيل وإجراءات الطلب كـ [ChangeNotifier] نقي
+class OrderDetailsController extends ChangeNotifier {
   final UpdateOrderStatusUseCase _updateOrderStatusUseCase;
-  final OrdersController? _ordersController;
+  final VoidCallback? _onStatusUpdated;
 
-  final Rx<OrderEntity> order;
-  final RxBool isUpdatingStatus = false.obs;
-  final RxBool isGeneratingPdf = false.obs;
+  OrderEntity order;
+  bool _isUpdatingStatus = false;
+  bool get isUpdatingStatus => _isUpdatingStatus;
+
+  bool _isGeneratingPdf = false;
+  bool get isGeneratingPdf => _isGeneratingPdf;
 
   OrderDetailsController({
     required OrderEntity initialOrder,
     required UpdateOrderStatusUseCase updateOrderStatusUseCase,
-    OrdersController? ordersController,
-  })  : order = Rx<OrderEntity>(initialOrder),
+    VoidCallback? onStatusUpdated,
+  })  : order = initialOrder,
         _updateOrderStatusUseCase = updateOrderStatusUseCase,
-        _ordersController = ordersController;
+        _onStatusUpdated = onStatusUpdated;
 
   /// تأكيد الطلب بنقله إلى حالة "قيد المعالجة"
   Future<void> confirmOrder() async {
@@ -44,112 +47,73 @@ class OrderDetailsController extends GetxController {
     await updateOrderStatus(OrderStatus.cancelled);
   }
 
-  /// تحديث حالة الطلب ومزامنتها مع الـ OrdersController والواجهة
+  /// تحديث حالة الطلب ومزامنتها مع الواجهة
   Future<void> updateOrderStatus(OrderStatus newStatus) async {
-    if (isUpdatingStatus.value) return;
+    if (_isUpdatingStatus) return;
 
     try {
-      isUpdatingStatus.value = true;
-      final result = await _updateOrderStatusUseCase(order.value.id, newStatus);
+      _isUpdatingStatus = true;
+      notifyListeners();
+
+      final result = await _updateOrderStatusUseCase(order.id, newStatus);
 
       result.fold(
         (failure) {
-          Get.snackbar(
-            'فشل التحديث',
-            failure.toMessage(),
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.red.withValues(alpha: 0.85),
-            colorText: Colors.white,
-            margin: const EdgeInsets.all(16),
-          );
+          AppFeedback.showError(failure.toMessage());
         },
         (updatedOrder) {
-          order.value = updatedOrder;
-
-          // مزامنة التحديث مع قائمة الطلبات الرئيسية إن وجدت في الذاكرة
-          if (_ordersController != null) {
-            _ordersController.fetchOrders();
-          }
-
-          Get.snackbar(
-            'تم التحديث',
+          order = updatedOrder;
+          notifyListeners();
+          _onStatusUpdated?.call();
+          AppFeedback.showSuccess(
             'تم تغيير حالة الطلب إلى "${getStatusText(newStatus)}" بنجاح',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.black87,
-            colorText: Colors.white,
-            margin: const EdgeInsets.all(16),
-            duration: const Duration(seconds: 3),
           );
         },
       );
     } catch (e) {
-      Get.snackbar(
-        'فشل التحديث',
-        'تعذر تحديث حالة الطلب: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.85),
-        colorText: Colors.white,
-        margin: const EdgeInsets.all(16),
-      );
+      AppFeedback.showError('تعذر تحديث حالة الطلب: $e');
     } finally {
-      isUpdatingStatus.value = false;
+      _isUpdatingStatus = false;
+      notifyListeners();
     }
   }
 
   /// طباعة الفاتورة أو حفظها كـ PDF
   Future<void> printInvoice() async {
-    if (isGeneratingPdf.value) return;
+    if (_isGeneratingPdf) return;
 
     try {
-      isGeneratingPdf.value = true;
-      await InvoicePdfService.printInvoice(order.value);
+      _isGeneratingPdf = true;
+      notifyListeners();
+      await InvoicePdfService.printInvoice(order);
     } catch (e) {
-      Get.snackbar(
-        'خطأ في الطباعة',
-        'تعذر إنشاء الفاتورة: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.85),
-        colorText: Colors.white,
-        margin: const EdgeInsets.all(16),
-      );
+      AppFeedback.showError('تعذر إنشاء الفاتورة: $e');
     } finally {
-      isGeneratingPdf.value = false;
+      _isGeneratingPdf = false;
+      notifyListeners();
     }
   }
 
   /// مشاركة ملف الفاتورة PDF
   Future<void> shareInvoice() async {
-    if (isGeneratingPdf.value) return;
+    if (_isGeneratingPdf) return;
 
     try {
-      isGeneratingPdf.value = true;
-      await InvoicePdfService.shareInvoice(order.value);
+      _isGeneratingPdf = true;
+      notifyListeners();
+      await InvoicePdfService.shareInvoice(order);
     } catch (e) {
-      Get.snackbar(
-        'خطأ في المشاركة',
-        'تعذر مشاركة ملف الفاتورة: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.85),
-        colorText: Colors.white,
-        margin: const EdgeInsets.all(16),
-      );
+      AppFeedback.showError('تعذر مشاركة ملف الفاتورة: $e');
     } finally {
-      isGeneratingPdf.value = false;
+      _isGeneratingPdf = false;
+      notifyListeners();
     }
   }
 
   /// نسخ رقم الطلب إلى الحافظة
   void copyOrderId() {
-    Clipboard.setData(ClipboardData(text: order.value.id));
-    Get.snackbar(
-      'تم النسخ',
-      'تم نسخ رقم الطلب إلى الحافظة',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.black87,
-      colorText: Colors.white,
-      margin: const EdgeInsets.all(16),
-      duration: const Duration(seconds: 2),
-    );
+    Clipboard.setData(ClipboardData(text: order.id));
+    AppFeedback.showSuccess('تم نسخ رقم الطلب إلى الحافظة');
   }
 
   /// الاتصال بالعميل
@@ -159,10 +123,10 @@ class OrderDetailsController extends GetxController {
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri);
       } else {
-        Get.snackbar('تعذر الاتصال', 'لا يمكن فتح تطبيق الهاتف على هذا الجهاز');
+        AppFeedback.showWarning('لا يمكن فتح تطبيق الهاتف على هذا الجهاز');
       }
     } catch (e) {
-      Get.snackbar('خطأ', 'فشل في محاولة إجراء المكالمة');
+      AppFeedback.showError('فشل في محاولة إجراء المكالمة');
     }
   }
 
@@ -173,10 +137,10 @@ class OrderDetailsController extends GetxController {
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri);
       } else {
-        Get.snackbar('تعذر الإرسال', 'لا يمكن فتح تطبيق البريد على هذا الجهاز');
+        AppFeedback.showWarning('لا يمكن فتح تطبيق البريد على هذا الجهاز');
       }
     } catch (e) {
-      Get.snackbar('خطأ', 'فشل في محاولة فتح تطبيق البريد');
+      AppFeedback.showError('فشل في محاولة فتح تطبيق البريد');
     }
   }
 
@@ -187,7 +151,7 @@ class OrderDetailsController extends GetxController {
         : address.fullAddress;
 
     if (query.trim().isEmpty) {
-      Get.snackbar('تنبيه', 'عنوان الشحن غير متوفر');
+      AppFeedback.showWarning('عنوان الشحن غير متوفر');
       return;
     }
 
@@ -206,7 +170,7 @@ class OrderDetailsController extends GetxController {
         await launchUrl(mapUri);
       }
     } catch (e) {
-      Get.snackbar('خطأ', 'تعذر فتح خرائط Google: $e');
+      AppFeedback.showError('تعذر فتح خرائط Google: $e');
     }
   }
 
