@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
 import 'package:stronger_muscles_dashboard/features/brands/domain/entities/brand_entity.dart';
 import 'package:stronger_muscles_dashboard/features/brands/domain/repositories/brand_repository.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
@@ -12,13 +12,14 @@ import 'package:stronger_muscles_dashboard/features/promos/domain/usecases/promo
 import 'package:stronger_muscles_dashboard/features/promos/presentation/controllers/promos_controller.dart';
 
 /// متحكم مخصص لإدارة نموذج إنشاء وتعديل الإعلانات الترويجية وفق معايير Clean Architecture
-class PromoFormController extends GetxController {
+class PromoFormController extends ChangeNotifier {
   final PromoEntity? initialPromo;
   final AddPromoUseCase addPromoUseCase;
   final UpdatePromoUseCase updatePromoUseCase;
   final UploadPromoImageUseCase uploadPromoImageUseCase;
   final PromosController? promosController;
   final GetProductsUseCase? getProductsUseCase;
+  final BrandRepository? brandRepository;
 
   PromoFormController({
     this.initialPromo,
@@ -27,6 +28,7 @@ class PromoFormController extends GetxController {
     required this.uploadPromoImageUseCase,
     this.promosController,
     this.getProductsUseCase,
+    this.brandRepository,
   });
 
   bool get isEditing => initialPromo != null;
@@ -40,28 +42,69 @@ class PromoFormController extends GetxController {
   final buttonEnController = TextEditingController();
   final backgroundColorController = TextEditingController();
 
-  // Reactive State
-  final backgroundColorHex = '#FFFFFF'.obs;
-  final selectedTargetType = 'none'.obs;
-  final selectedTargetId = Rxn<String>();
-  final isActive = true.obs;
-  final selectedImage = Rxn<File>();
-  final existingImageUrl = ''.obs;
-  final isLoading = false.obs;
-  final isBrandsLoading = false.obs;
+  // State
+  String _backgroundColorHex = '#FFFFFF';
+  String get backgroundColorHex => _backgroundColorHex;
+  set backgroundColorHex(String val) {
+    _backgroundColorHex = val;
+    notifyListeners();
+  }
+
+  String _selectedTargetType = 'none';
+  String get selectedTargetType => _selectedTargetType;
+  set selectedTargetType(String val) {
+    _selectedTargetType = val;
+    notifyListeners();
+  }
+
+  String? _selectedTargetId;
+  String? get selectedTargetId => _selectedTargetId;
+  set selectedTargetId(String? val) {
+    _selectedTargetId = val;
+    notifyListeners();
+  }
+
+  bool _isActive = true;
+  bool get isActive => _isActive;
+  set isActive(bool val) {
+    _isActive = val;
+    notifyListeners();
+  }
+
+  File? _selectedImage;
+  File? get selectedImage => _selectedImage;
+  set selectedImage(File? val) {
+    _selectedImage = val;
+    notifyListeners();
+  }
+
+  String _existingImageUrl = '';
+  String get existingImageUrl => _existingImageUrl;
+  set existingImageUrl(String val) {
+    _existingImageUrl = val;
+    notifyListeners();
+  }
+
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
+  bool _isBrandsLoading = false;
+  bool get isBrandsLoading => _isBrandsLoading;
 
   // Cache & Reference Lists
-  final products = <ProductEntity>[].obs;
-  final brands = <BrandEntity>[].obs;
+  List<ProductEntity> _products = [];
+  List<ProductEntity> get products => _products;
 
-  @override
-  void onInit() {
-    super.onInit();
+  List<BrandEntity> _brands = [];
+  List<BrandEntity> get brands => _brands;
+
+  void init() {
     _initFormValues();
     _loadDependencies();
 
     backgroundColorController.addListener(() {
-      backgroundColorHex.value = backgroundColorController.text;
+      _backgroundColorHex = backgroundColorController.text;
+      notifyListeners();
     });
   }
 
@@ -75,47 +118,52 @@ class PromoFormController extends GetxController {
       buttonArController.text = promo.buttonText?['ar']?.toString() ?? '';
       buttonEnController.text = promo.buttonText?['en']?.toString() ?? '';
       backgroundColorController.text = promo.backgroundColor;
-      backgroundColorHex.value = promo.backgroundColor;
+      _backgroundColorHex = promo.backgroundColor;
 
-      selectedTargetType.value = promo.targetType;
-      selectedTargetId.value = promo.targetId;
-      isActive.value = promo.isActive;
-      existingImageUrl.value = promo.imageUrl;
+      _selectedTargetType = promo.targetType;
+      _selectedTargetId = promo.targetId;
+      _isActive = promo.isActive;
+      _existingImageUrl = promo.imageUrl;
     } else {
       backgroundColorController.text = '#FFFFFF';
-      backgroundColorHex.value = '#FFFFFF';
-      selectedTargetType.value = 'none';
-      selectedTargetId.value = null;
-      isActive.value = true;
+      _backgroundColorHex = '#FFFFFF';
+      _selectedTargetType = 'none';
+      _selectedTargetId = null;
+      _isActive = true;
     }
   }
 
   Future<void> _loadDependencies() async {
-    // مزامنة المنتجات والماركات من المتحكم الرئيسي إن وجد، أو جلبها مباشرة
     if (promosController != null) {
-      products.assignAll(promosController!.products);
-      brands.assignAll(promosController!.brands);
-      isBrandsLoading.value = promosController!.isBrandsLoading.value;
+      _products = List.from(promosController!.products);
+      _brands = List.from(promosController!.brands);
+      _isBrandsLoading = promosController!.isBrandsLoading;
+      notifyListeners();
     }
 
-    if (products.isEmpty && getProductsUseCase != null) {
+    if (_products.isEmpty && getProductsUseCase != null) {
       try {
         final result = await getProductsUseCase!.call();
         result.fold(
           (failure) {},
-          (fetched) => products.assignAll(fetched),
+          (fetched) {
+            _products = fetched;
+            notifyListeners();
+          },
         );
       } catch (_) {}
     }
 
-    if (brands.isEmpty && Get.isRegistered<BrandRepository>()) {
-      isBrandsLoading.value = true;
+    if (_brands.isEmpty && brandRepository != null) {
+      _isBrandsLoading = true;
+      notifyListeners();
       try {
-        final fetched = await Get.find<BrandRepository>().getBrands();
-        brands.assignAll(fetched);
+        final fetched = await brandRepository!.getBrands();
+        _brands = fetched;
       } catch (_) {
       } finally {
-        isBrandsLoading.value = false;
+        _isBrandsLoading = false;
+        notifyListeners();
       }
     }
   }
@@ -124,74 +172,54 @@ class PromoFormController extends GetxController {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      selectedImage.value = File(pickedFile.path);
+      _selectedImage = File(pickedFile.path);
+      notifyListeners();
     }
   }
 
   void setPresetColor(String hex) {
     backgroundColorController.text = hex;
-    backgroundColorHex.value = hex;
+    _backgroundColorHex = hex;
+    notifyListeners();
   }
 
-  Future<void> savePromo() async {
-    if (existingImageUrl.value.isEmpty && selectedImage.value == null) {
-      Get.snackbar(
-        'خطأ',
-        'يجب اختيار صورة للإعلان',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.8),
-        colorText: Colors.white,
-      );
+  Future<void> savePromo([BuildContext? context]) async {
+    if (_existingImageUrl.isEmpty && _selectedImage == null) {
+      AppFeedback.showError('يجب اختيار صورة للإعلان');
       return;
     }
 
     // التحقق من صحة توجيه الإعلان
-    if (selectedTargetType.value == 'product' &&
-        (selectedTargetId.value == null || selectedTargetId.value!.isEmpty)) {
-      Get.snackbar(
-        'خطأ',
-        'يجب اختيار منتج للإعلان',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.8),
-        colorText: Colors.white,
-      );
+    if (_selectedTargetType == 'product' &&
+        (_selectedTargetId == null || _selectedTargetId!.isEmpty)) {
+      AppFeedback.showError('يجب اختيار منتج للإعلان');
       return;
     }
 
-    if (selectedTargetType.value == 'brand' &&
-        (selectedTargetId.value == null || selectedTargetId.value!.isEmpty)) {
-      Get.snackbar(
-        'خطأ',
-        'يجب اختيار ماركة للإعلان',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.8),
-        colorText: Colors.white,
-      );
+    if (_selectedTargetType == 'brand' &&
+        (_selectedTargetId == null || _selectedTargetId!.isEmpty)) {
+      AppFeedback.showError('يجب اختيار ماركة للإعلان');
       return;
     }
 
-    isLoading.value = true;
+    _isLoading = true;
+    notifyListeners();
 
-    String finalImageUrl = existingImageUrl.value;
+    String finalImageUrl = _existingImageUrl;
     try {
-      if (selectedImage.value != null) {
+      if (_selectedImage != null) {
         finalImageUrl =
-            await uploadPromoImageUseCase.call(selectedImage.value!.path);
+            await uploadPromoImageUseCase.call(_selectedImage!.path);
       }
     } catch (e) {
-      isLoading.value = false;
-      Get.snackbar(
-        'خطأ',
-        'فشل في رفع الصورة: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.8),
-        colorText: Colors.white,
-      );
+      _isLoading = false;
+      notifyListeners();
+      AppFeedback.showError('فشل في رفع الصورة: ${e.toString()}');
       return;
     }
 
     final targetId =
-        selectedTargetType.value == 'none' ? null : selectedTargetId.value;
+        _selectedTargetType == 'none' ? null : _selectedTargetId;
 
     final promoData = PromoEntity(
       id: initialPromo?.id ?? '',
@@ -211,60 +239,34 @@ class PromoFormController extends GetxController {
       backgroundColor: backgroundColorController.text.isNotEmpty
           ? backgroundColorController.text
           : '#FFFFFF',
-      targetType: selectedTargetType.value,
+      targetType: _selectedTargetType,
       targetId: targetId,
-      isActive: isActive.value,
+      isActive: _isActive,
     );
 
     try {
       if (isEditing) {
         final updated = await updatePromoUseCase.call(promoData);
-        if (promosController != null) {
-          final index =
-              promosController!.promos.indexWhere((p) => p.id == updated.id);
-          if (index != -1) {
-            promosController!.promos[index] = updated;
-            promosController!.onSearchChanged(promosController!.searchQuery.value);
-          }
-        }
-        Get.back();
-        Get.snackbar(
-          'نجاح',
-          'تم تحديث الإعلان بنجاح',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green.withValues(alpha: 0.8),
-          colorText: Colors.white,
-        );
+        promosController?.updatePromoLocally(updated);
+        AppFeedback.showSuccess('تم تحديث الإعلان بنجاح');
       } else {
         final added = await addPromoUseCase.call(promoData);
-        if (promosController != null) {
-          promosController!.promos.insert(0, added);
-          promosController!.onSearchChanged(promosController!.searchQuery.value);
-        }
-        Get.back();
-        Get.snackbar(
-          'نجاح',
-          'تمت إضافة الإعلان بنجاح',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green.withValues(alpha: 0.8),
-          colorText: Colors.white,
-        );
+        promosController?.updatePromoLocally(added);
+        AppFeedback.showSuccess('تمت إضافة الإعلان بنجاح');
+      }
+      if (context != null && context.mounted) {
+        Navigator.of(context).pop();
       }
     } catch (e) {
-      Get.snackbar(
-        'خطأ',
-        e.toString().replaceAll('Exception: ', ''),
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.8),
-        colorText: Colors.white,
-      );
+      AppFeedback.showError(e.toString().replaceAll('Exception: ', ''));
     } finally {
-      isLoading.value = false;
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
   @override
-  void onClose() {
+  void dispose() {
     titleArController.dispose();
     titleEnController.dispose();
     subtitleArController.dispose();
@@ -272,6 +274,6 @@ class PromoFormController extends GetxController {
     buttonArController.dispose();
     buttonEnController.dispose();
     backgroundColorController.dispose();
-    super.onClose();
+    super.dispose();
   }
 }
