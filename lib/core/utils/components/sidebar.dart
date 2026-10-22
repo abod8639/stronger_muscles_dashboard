@@ -1,26 +1,24 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stronger_muscles_dashboard/core/network/auth_service.dart';
 import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/build_nav_item.dart';
-import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_controller.dart';
 import 'package:stronger_muscles_dashboard/functions/cache_manager.dart';
 
 /// الشريط الجانبي المصمم بأسلوب Neumorphism / Soft UI
-class Sidebar extends StatelessWidget {
+class Sidebar extends ConsumerWidget {
   final bool isDrawer;
   const Sidebar({super.key, this.isDrawer = false});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
-    final NavigationController controller = Get.find<NavigationController>();
-    final authService = Get.isRegistered<AuthService>() ? Get.find<AuthService>() : null;
-    final userRole = authService?.getUserRole() ?? 'admin';
+    final authService = ref.watch(authServiceProvider);
+    final userRole = authService.getUserRole();
     final isSuperOrAdmin = userRole == 'super_admin' || userRole == 'admin';
     final isSupport = userRole == 'customer_support';
 
@@ -172,7 +170,6 @@ class Sidebar extends StatelessWidget {
                   const _SidebarSectionTitle(title: 'MAIN MENU'),
                   NavItemTile(
                     isDrawer: isDrawer,
-                    controller: controller,
                     index: 0,
                     icon: Icons.dashboard_outlined,
                     activeIcon: Icons.dashboard_rounded,
@@ -181,7 +178,6 @@ class Sidebar extends StatelessWidget {
                   if (!isSupport)
                     NavItemTile(
                       isDrawer: isDrawer,
-                      controller: controller,
                       index: 2,
                       icon: Icons.inventory_2_outlined,
                       activeIcon: Icons.inventory_2_rounded,
@@ -190,7 +186,6 @@ class Sidebar extends StatelessWidget {
                   if (isSuperOrAdmin)
                     NavItemTile(
                       isDrawer: isDrawer,
-                      controller: controller,
                       index: 3,
                       icon: Icons.add_business_outlined,
                       activeIcon: Icons.add_business_rounded,
@@ -199,7 +194,6 @@ class Sidebar extends StatelessWidget {
                   if (isSuperOrAdmin)
                     NavItemTile(
                       isDrawer: isDrawer,
-                      controller: controller,
                       index: 5,
                       icon: Icons.people_outline,
                       activeIcon: Icons.people_rounded,
@@ -211,7 +205,6 @@ class Sidebar extends StatelessWidget {
                   if (!isSupport)
                     NavItemTile(
                       isDrawer: isDrawer,
-                      controller: controller,
                       index: 1,
                       icon: Icons.category_outlined,
                       activeIcon: Icons.category_rounded,
@@ -219,7 +212,6 @@ class Sidebar extends StatelessWidget {
                     ),
                   NavItemTile(
                     isDrawer: isDrawer,
-                    controller: controller,
                     index: 4,
                     icon: Icons.local_shipping_outlined,
                     activeIcon: Icons.local_shipping_rounded,
@@ -227,7 +219,6 @@ class Sidebar extends StatelessWidget {
                   ),
                   NavItemTile(
                     isDrawer: isDrawer,
-                    controller: controller,
                     index: 8,
                     icon: Icons.support_agent_outlined,
                     activeIcon: Icons.support_agent_rounded,
@@ -236,7 +227,6 @@ class Sidebar extends StatelessWidget {
                   if (isSuperOrAdmin)
                     NavItemTile(
                       isDrawer: isDrawer,
-                      controller: controller,
                       index: 6,
                       icon: Icons.notifications_outlined,
                       activeIcon: Icons.notifications_rounded,
@@ -245,7 +235,6 @@ class Sidebar extends StatelessWidget {
                   if (isSuperOrAdmin)
                     NavItemTile(
                       isDrawer: isDrawer,
-                      controller: controller,
                       index: 7,
                       icon: Icons.settings_outlined,
                       activeIcon: Icons.settings_rounded,
