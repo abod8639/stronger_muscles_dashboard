@@ -23,7 +23,7 @@ class DashboardIndicatorsSection extends ConsumerWidget {
         ? 1.5
         : (res.screenWidth < 1400 ? 1.1 : 2.1);
 
-    final s = ref.watch(dashboardStatsNotifierProvider).valueOrNull ??
+    final s = ref.watch(dashboardStatsNotifierProvider).value ??
         DashboardStatsEntity.initial();
     final pendingTrend = ref.watch(statusTrendDataProvider(OrderStatus.pending));
     final deliveredTrend =
