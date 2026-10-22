@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 import '../../../../config/responsive.dart';
 import '../../../../core/utils/components/base_app_bar.dart';
 import '../../../../core/utils/components/custom_search_bar.dart';
@@ -9,31 +8,16 @@ import '../../../../core/utils/components/generic_empty_state.dart';
 import '../../../../core/utils/components/my_refresh_indicator.dart';
 import '../../../../core/utils/components/top_section.dart';
 import '../../../auth/presentation/widgets/auth_error_card.dart';
-import '../controllers/notifications_binding.dart';
-import '../controllers/notifications_controller.dart';
 import '../controllers/notifications_providers.dart';
 import '../widgets/notification_item_card.dart';
 import '../widgets/notifications_stats_header.dart';
 import '../widgets/send_notification_dialog.dart';
 
-class NotificationsScreen extends ConsumerStatefulWidget {
+class NotificationsScreen extends ConsumerWidget {
   const NotificationsScreen({super.key});
 
   @override
-  ConsumerState<NotificationsScreen> createState() => _NotificationsScreenState();
-}
-
-class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
-  @override
-  void initState() {
-    super.initState();
-    if (!Get.isRegistered<NotificationsController>()) {
-      NotificationsBinding().dependencies();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final responsive = context.responsive;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -76,10 +60,9 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                     hintText: 'ابحث في عنوان أو نص الإشعار...',
                     padding: responsive.defaultPadding,
                     onSearch: (value) {
-                      ref.read(notificationsSearchQueryProvider.notifier).setQuery(value);
-                      if (Get.isRegistered<NotificationsController>()) {
-                        Get.find<NotificationsController>().onSearchChanged(value);
-                      }
+                      ref
+                          .read(notificationsSearchQueryProvider.notifier)
+                          .setQuery(value);
                     },
                   ),
                   const NotificationsStatsHeader(),
@@ -94,15 +77,20 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
-                          _buildFilterChip('all', 'الكل (${data.notifications.length})', currentFilter),
+                          _buildFilterChip(
+                            ref,
+                            'all',
+                            'الكل (${data.notifications.length})',
+                            currentFilter,
+                          ),
                           const SizedBox(width: 8),
-                          _buildFilterChip('general', 'عام', currentFilter),
+                          _buildFilterChip(ref, 'general', 'عام', currentFilter),
                           const SizedBox(width: 8),
-                          _buildFilterChip('promo', 'إعلانات', currentFilter),
+                          _buildFilterChip(ref, 'promo', 'إعلانات', currentFilter),
                           const SizedBox(width: 8),
-                          _buildFilterChip('order', 'طلبات', currentFilter),
+                          _buildFilterChip(ref, 'order', 'طلبات', currentFilter),
                           const SizedBox(width: 8),
-                          _buildFilterChip('system', 'نظام', currentFilter),
+                          _buildFilterChip(ref, 'system', 'نظام', currentFilter),
                         ],
                       ),
                     ),
@@ -149,16 +137,18 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     );
   }
 
-  Widget _buildFilterChip(String value, String label, String currentFilter) {
+  Widget _buildFilterChip(
+    WidgetRef ref,
+    String value,
+    String label,
+    String currentFilter,
+  ) {
     final isSelected = currentFilter == value;
     return ChoiceChip(
       label: Text(label),
       selected: isSelected,
       onSelected: (_) {
         ref.read(notificationsFilterTypeProvider.notifier).setType(value);
-        if (Get.isRegistered<NotificationsController>()) {
-          Get.find<NotificationsController>().onFilterTypeChanged(value);
-        }
       },
     );
   }
