@@ -1,24 +1,82 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import '../controllers/notifications_controller.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
+import '../controllers/notifications_providers.dart';
 
 void showSendNotificationDialog(BuildContext context) {
-  final controller = Get.find<NotificationsController>();
-  final titleController = TextEditingController();
-  final bodyController = TextEditingController();
-  final userIdController = TextEditingController();
-  final imageUrlController = TextEditingController();
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (ctx) => const SendNotificationDialog(),
+  );
+}
 
-  final selectedType = 'general'.obs;
-  final targetType = 'all'.obs;
-  final formKey = GlobalKey<FormState>();
+class SendNotificationDialog extends ConsumerStatefulWidget {
+  const SendNotificationDialog({super.key});
 
-  final theme = Theme.of(context);
-  final colorScheme = theme.colorScheme;
-  final isDark = theme.brightness == Brightness.dark;
+  @override
+  ConsumerState<SendNotificationDialog> createState() =>
+      _SendNotificationDialogState();
+}
 
-  Get.dialog(
-    Dialog(
+class _SendNotificationDialogState extends ConsumerState<SendNotificationDialog> {
+  final _titleController = TextEditingController();
+  final _bodyController = TextEditingController();
+  final _userIdController = TextEditingController();
+  final _imageUrlController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  String _selectedType = 'general';
+  String _targetType = 'all';
+  bool _isSending = false;
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _bodyController.dispose();
+    _userIdController.dispose();
+    _imageUrlController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleSubmit() async {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+
+    setState(() => _isSending = true);
+
+    final payload = <String, dynamic>{
+      'title': _titleController.text.trim(),
+      'body': _bodyController.text.trim(),
+      'type': _selectedType,
+      'target_type': _targetType,
+      if (_targetType == 'user') 'user_id': _userIdController.text.trim(),
+      if (_imageUrlController.text.trim().isNotEmpty)
+        'image_url': _imageUrlController.text.trim(),
+    };
+
+    final result = await ref
+        .read(notificationsControllerProvider.notifier)
+        .sendNotification(payload);
+
+    if (mounted) {
+      setState(() => _isSending = false);
+      result.fold(
+        (failure) => AppFeedback.showError(failure.message),
+        (_) {
+          AppFeedback.showSuccess('تم إرسال الإشعار بنجاح');
+          Navigator.of(context).pop();
+        },
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       child: Container(
@@ -57,7 +115,7 @@ void showSendNotificationDialog(BuildContext context) {
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Form(
-            key: formKey,
+            key: _formKey,
             child: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -85,7 +143,7 @@ void showSendNotificationDialog(BuildContext context) {
                         ),
                       ),
                       IconButton(
-                        onPressed: () => Get.back(),
+                        onPressed: () => Navigator.of(context).pop(),
                         icon: const Icon(Icons.close_rounded),
                         color: colorScheme.onSurfaceVariant,
                       ),
@@ -102,42 +160,39 @@ void showSendNotificationDialog(BuildContext context) {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Obx(
-                    () => Row(
-                      children: [
-                        Expanded(
-                          child: ChoiceChip(
-                            label: const Center(child: Text('جميع المستخدمين (عام)')),
-                            selected: targetType.value == 'all',
-                            avatar: const Icon(Icons.public_rounded, size: 18),
-                            onSelected: (val) {
-                              if (val) targetType.value = 'all';
-                            },
-                          ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ChoiceChip(
+                          label: const Center(child: Text('جميع المستخدمين (عام)')),
+                          selected: _targetType == 'all',
+                          avatar: const Icon(Icons.public_rounded, size: 18),
+                          onSelected: (val) {
+                            if (val) setState(() => _targetType = 'all');
+                          },
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: ChoiceChip(
-                            label: const Center(child: Text('مستخدم محدد')),
-                            selected: targetType.value == 'user',
-                            avatar: const Icon(Icons.person_rounded, size: 18),
-                            onSelected: (val) {
-                              if (val) targetType.value = 'user';
-                            },
-                          ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ChoiceChip(
+                          label: const Center(child: Text('مستخدم محدد')),
+                          selected: _targetType == 'user',
+                          avatar: const Icon(Icons.person_rounded, size: 18),
+                          onSelected: (val) {
+                            if (val) setState(() => _targetType = 'user');
+                          },
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 14),
 
-                  // User ID (if targetType == 'user')
-                  Obx(() {
-                    if (targetType.value != 'user') return const SizedBox.shrink();
-                    return Padding(
+                  // User ID (if _targetType == 'user')
+                  if (_targetType == 'user')
+                    Padding(
                       padding: const EdgeInsets.only(bottom: 14),
                       child: TextFormField(
-                        controller: userIdController,
+                        controller: _userIdController,
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           labelText: 'معرف المستخدم (User ID) *',
@@ -148,14 +203,13 @@ void showSendNotificationDialog(BuildContext context) {
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
                         ),
                         validator: (value) {
-                          if (targetType.value == 'user' && (value == null || value.trim().isEmpty)) {
+                          if (_targetType == 'user' && (value == null || value.trim().isEmpty)) {
                             return 'يرجى إدخال معرف المستخدم';
                           }
                           return null;
                         },
                       ),
-                    );
-                  }),
+                    ),
 
                   // Notification Type
                   Text(
@@ -166,39 +220,37 @@ void showSendNotificationDialog(BuildContext context) {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Obx(
-                    () => Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        ChoiceChip(
-                          label: const Text('عام'),
-                          selected: selectedType.value == 'general',
-                          onSelected: (v) => selectedType.value = 'general',
-                        ),
-                        ChoiceChip(
-                          label: const Text('إعلان / عرض'),
-                          selected: selectedType.value == 'promo',
-                          onSelected: (v) => selectedType.value = 'promo',
-                        ),
-                        ChoiceChip(
-                          label: const Text('طلب'),
-                          selected: selectedType.value == 'order',
-                          onSelected: (v) => selectedType.value = 'order',
-                        ),
-                        ChoiceChip(
-                          label: const Text('نظام / تنبيه'),
-                          selected: selectedType.value == 'system',
-                          onSelected: (v) => selectedType.value = 'system',
-                        ),
-                      ],
-                    ),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      ChoiceChip(
+                        label: const Text('عام'),
+                        selected: _selectedType == 'general',
+                        onSelected: (v) => setState(() => _selectedType = 'general'),
+                      ),
+                      ChoiceChip(
+                        label: const Text('إعلان / عرض'),
+                        selected: _selectedType == 'promo',
+                        onSelected: (v) => setState(() => _selectedType = 'promo'),
+                      ),
+                      ChoiceChip(
+                        label: const Text('طلب'),
+                        selected: _selectedType == 'order',
+                        onSelected: (v) => setState(() => _selectedType = 'order'),
+                      ),
+                      ChoiceChip(
+                        label: const Text('نظام / تنبيه'),
+                        selected: _selectedType == 'system',
+                        onSelected: (v) => setState(() => _selectedType = 'system'),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 16),
 
                   // Title Field
                   TextFormField(
-                    controller: titleController,
+                    controller: _titleController,
                     decoration: InputDecoration(
                       labelText: 'عنوان الإشعار *',
                       hintText: 'مثال: عرض نهاية الأسبوع!',
@@ -218,7 +270,7 @@ void showSendNotificationDialog(BuildContext context) {
 
                   // Body Field
                   TextFormField(
-                    controller: bodyController,
+                    controller: _bodyController,
                     maxLines: 4,
                     decoration: InputDecoration(
                       labelText: 'نص الرسالة *',
@@ -243,7 +295,7 @@ void showSendNotificationDialog(BuildContext context) {
 
                   // Image URL (Optional)
                   TextFormField(
-                    controller: imageUrlController,
+                    controller: _imageUrlController,
                     decoration: InputDecoration(
                       labelText: 'رابط الصورة (اختياري)',
                       hintText: 'https://example.com/image.jpg',
@@ -260,42 +312,20 @@ void showSendNotificationDialog(BuildContext context) {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
-                        onPressed: () => Get.back(),
+                        onPressed: _isSending ? null : () => Navigator.of(context).pop(),
                         child: const Text('إلغاء'),
                       ),
                       const SizedBox(width: 12),
-                      Obx(
-                        () => FilledButton.icon(
-                          onPressed: controller.isSending.value
-                              ? null
-                              : () async {
-                                  if (formKey.currentState?.validate() ?? false) {
-                                    final success = await controller.sendNotification(
-                                      title: titleController.text.trim(),
-                                      body: bodyController.text.trim(),
-                                      type: selectedType.value,
-                                      targetType: targetType.value,
-                                      userId: targetType.value == 'user'
-                                          ? userIdController.text.trim()
-                                          : null,
-                                      imageUrl: imageUrlController.text.trim().isNotEmpty
-                                          ? imageUrlController.text.trim()
-                                          : null,
-                                    );
-                                    if (success) {
-                                      Get.back();
-                                    }
-                                  }
-                                },
-                          icon: controller.isSending.value
-                              ? const SizedBox(
-                                  width: 18,
-                                  height: 18,
-                                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                                )
-                              : const Icon(Icons.send_rounded, size: 18),
-                          label: Text(controller.isSending.value ? 'جاري الإرسال...' : 'إرسال الإشعار'),
-                        ),
+                      FilledButton.icon(
+                        onPressed: _isSending ? null : _handleSubmit,
+                        icon: _isSending
+                            ? const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                              )
+                            : const Icon(Icons.send_rounded, size: 18),
+                        label: Text(_isSending ? 'جاري الإرسال...' : 'إرسال الإشعار'),
                       ),
                     ],
                   ),
@@ -305,7 +335,6 @@ void showSendNotificationDialog(BuildContext context) {
           ),
         ),
       ),
-    ),
-    barrierDismissible: false,
-  );
+    );
+  }
 }
