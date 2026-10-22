@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/build_background.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/drawer.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/enhanced_loading_widget.dart';
@@ -8,8 +7,6 @@ import 'package:stronger_muscles_dashboard/core/utils/components/my_bottomnaviga
 import 'package:stronger_muscles_dashboard/core/utils/components/sidebar.dart';
 import 'package:stronger_muscles_dashboard/features/categories/presentation/page/categories_screen/categories_screen.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/presentation/pages/dashboard_page.dart';
-import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/main_navigation_binding.dart';
-import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_controller.dart';
 import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_providers.dart';
 import 'package:stronger_muscles_dashboard/features/navigation/presentation/widget/navigation_error_fallback.dart';
 import 'package:stronger_muscles_dashboard/features/notifications/presentation/pages/notifications_screen.dart';
@@ -28,14 +25,7 @@ class MainNavigationScreen extends ConsumerStatefulWidget {
 }
 
 class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // ضمان تسجيل NavigationController والـ Bindings التابعة لجميع التبويبات
-    if (!Get.isRegistered<NavigationController>()) {
-      MainNavigationBinding().dependencies();
-    }
-  }
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   Widget _buildContent(int activeIndex) {
     const pages = [
@@ -63,12 +53,10 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
   Widget build(BuildContext context) {
     final navAsync = ref.watch(navigationControllerProvider);
     final colorScheme = Theme.of(context).colorScheme;
-    final controller = Get.isRegistered<NavigationController>()
-        ? Get.find<NavigationController>()
-        : Get.put<NavigationController>(NavigationController(), permanent: true);
 
     return navAsync.when(
-      loading: () => const Scaffold(
+      loading: () => const Scaffold(  // final String ip = "localhost";
+
         body: EnhancedLoadingWidget(
           message: 'جاري تهيئة لوحة التحكم...',
         ),
@@ -78,17 +66,12 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
         onRetry: () => ref.read(navigationControllerProvider.notifier).build(),
       ),
       data: (navState) {
-        // مزامنة المؤشر مع GetX لضمان تحديث الشريط السفلي والقائمة الجانبية
-        if (controller.selectedIndex.value != navState.selectedIndex) {
-          controller.selectedIndex.value = navState.selectedIndex;
-        }
-
         return LayoutBuilder(
           builder: (context, constraints) {
             final isDesktop = constraints.maxWidth >= 900;
 
             return Scaffold(
-              key: controller.scaffoldKey,
+              key: _scaffoldKey,
               extendBodyBehindAppBar: isDesktop,
               backgroundColor: colorScheme.surface,
               drawer: isDesktop ? null : myDrawer(),
@@ -111,14 +94,10 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
                                 ),
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(32),
-                                  child: Obx(
-                                    () => _buildContent(controller.selectedIndex.value),
-                                  ),
+                                  child: _buildContent(navState.selectedIndex),
                                 ),
                               )
-                            : Obx(
-                                () => _buildContent(controller.selectedIndex.value),
-                              ),
+                            : _buildContent(navState.selectedIndex),
                       ),
                     ],
                   ),
