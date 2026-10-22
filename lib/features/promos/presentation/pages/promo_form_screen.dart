@@ -71,12 +71,14 @@ class PromoFormScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(
-          horizontal: isWide ? 28.0 : (isMobile ? 12.0 : 18.0),
-          vertical: isMobile ? 12.0 : 20.0,
-        ),
-        child: Center(
+      body: ListenableBuilder(
+        listenable: controller,
+        builder: (context, _) => SingleChildScrollView(
+          padding: EdgeInsets.symmetric(
+            horizontal: isWide ? 28.0 : (isMobile ? 12.0 : 18.0),
+            vertical: isMobile ? 12.0 : 20.0,
+          ),
+          child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 1400),
             child: Column(
@@ -116,6 +118,7 @@ class PromoFormScreen extends ConsumerWidget {
             ),
           ),
         ),
+      ),
       ),
     );
   }
