@@ -5,7 +5,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:stronger_muscles_dashboard/core/router/app_router.dart';
 import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
 import 'package:stronger_muscles_dashboard/functions/hive_init.dart';
-import 'config/theme_extended.dart';
+import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
+import 'package:stronger_muscles_dashboard/features/theme/presentation/controllers/theme_controller.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,6 +28,7 @@ class StrongerMusclesDashboard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
+    final themeMode = ref.watch(themeControllerProvider);
 
     return MaterialApp.router(
       routerConfig: router,
@@ -35,7 +37,7 @@ class StrongerMusclesDashboard extends ConsumerWidget {
       title: 'لوحة تحكم Stronger Muscles',
       theme: AppThemeExtended.getLightTheme(),
       darkTheme: AppThemeExtended.getDarkTheme(),
-      themeMode: ThemeMode.dark,
+      themeMode: themeMode,
     );
   }
 }
