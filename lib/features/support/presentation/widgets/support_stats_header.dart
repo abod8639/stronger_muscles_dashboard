@@ -1,35 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../config/responsive.dart';
-import '../controllers/support_controller.dart';
+import '../controllers/support_providers.dart';
 
-class SupportStatsHeader extends GetView<SupportController> {
+class SupportStatsHeader extends ConsumerWidget {
   const SupportStatsHeader({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final controller = ref.watch(supportControllerProvider);
     final responsive = context.responsive;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
     final isNarrow = responsive.screenWidth < 1100;
 
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: responsive.defaultPadding.left,
-        vertical: 4,
-      ),
-      child: Obx(() {
-        final stats = controller.stats.value;
-        final total = stats.total.toString();
-        final open = stats.open.toString();
-        final inProgress = stats.inProgress.toString();
-        final urgent = stats.urgent.toString();
-        final resolved = stats.resolved.toString();
+    final stats = controller.stats;
+    final total = stats.total.toString();
+    final open = stats.open.toString();
+    final inProgress = stats.inProgress.toString();
+    final urgent = stats.urgent.toString();
+    final resolved = stats.resolved.toString();
 
-        if (responsive.isMobile) {
-          return SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
+    Widget content;
+    if (responsive.isMobile) {
+      content = SingleChildScrollView(
             child: Row(
               children: [
                 SizedBox(
@@ -94,11 +89,8 @@ class SupportStatsHeader extends GetView<SupportController> {
                 ),
               ],
             ),
-          );
-        }
-
-        if (isNarrow) {
-          return Column(
+    } else if (isNarrow) {
+      content = Column(
             children: [
               Row(
                 children: [
@@ -164,10 +156,8 @@ class SupportStatsHeader extends GetView<SupportController> {
                 ],
               ),
             ],
-          );
-        }
-
-        return Row(
+    } else {
+      content = Row(
           children: [
             Expanded(
               child: _buildStatCard(
@@ -226,7 +216,14 @@ class SupportStatsHeader extends GetView<SupportController> {
             ),
           ],
         );
-      }),
+    }
+
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: responsive.defaultPadding.left,
+        vertical: 4,
+      ),
+      child: content,
     );
   }
 
