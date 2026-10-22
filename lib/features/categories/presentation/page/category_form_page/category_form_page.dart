@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
+import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/base_app_bar.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
 import 'package:stronger_muscles_dashboard/features/categories/presentation/controllers/categories_controller.dart';
@@ -33,14 +32,18 @@ class _CategoryFormPageState extends ConsumerState<CategoryFormPage> {
   @override
   void initState() {
     super.initState();
-    controller = Get.isRegistered<CategoriesController>()
-        ? Get.find<CategoriesController>()
-        : Get.put(CategoriesController());
+    controller = CategoriesController();
     if (widget.category != null) {
       controller.prepareFormForEdit(widget.category!);
     } else {
       controller.clearForm();
     }
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   void _submitForm() async {
@@ -60,7 +63,7 @@ class _CategoryFormPageState extends ConsumerState<CategoryFormPage> {
 
     final categoryData = controller.buildFormData();
     bool success;
-    controller.isLoading.value = true;
+    controller.isLoading = true;
     try {
       if (widget.category != null) {
         success = await ref
@@ -72,7 +75,7 @@ class _CategoryFormPageState extends ConsumerState<CategoryFormPage> {
             .addCategory(categoryData);
       }
     } finally {
-      controller.isLoading.value = false;
+      controller.isLoading = false;
     }
 
     if (success) {
@@ -82,28 +85,19 @@ class _CategoryFormPageState extends ConsumerState<CategoryFormPage> {
             ? 'تم حفظ تعديلات التصنيف بنجاح'
             : 'تم إنشاء التصنيف الجديد بنجاح',
       );
-      Get.back();
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
     }
   }
 
   void _showSnackbar(String message, {bool isError = false}) {
     HapticFeedback.vibrate();
-    final colorScheme = Theme.of(context).colorScheme;
-
-    Get.snackbar(
-      isError ? 'تنبيه' : 'تم بنجاح',
-      message,
-      backgroundColor: isError ? colorScheme.errorContainer : colorScheme.primaryContainer,
-      colorText: isError ? colorScheme.onErrorContainer : colorScheme.onPrimaryContainer,
-      icon: Icon(
-        isError ? Icons.error_outline_rounded : Icons.check_circle_outline_rounded,
-        color: isError ? colorScheme.error : colorScheme.primary,
-      ),
-      snackPosition: SnackPosition.BOTTOM,
-      margin: const EdgeInsets.all(16),
-      borderRadius: 16,
-      duration: const Duration(seconds: 3),
-    );
+    if (isError) {
+      AppFeedback.showError(message);
+    } else {
+      AppFeedback.showSuccess(message);
+    }
   }
 
   @override
@@ -130,8 +124,9 @@ class _CategoryFormPageState extends ConsumerState<CategoryFormPage> {
         title: isEditing ? 'تعديل التصنيف' : 'تصنيف جديد',
         centerTitle: true,
         extraActions: [
-          Obx(
-            () => controller.isLoading.value
+          ListenableBuilder(
+            listenable: controller,
+            builder: (context, _) => controller.isLoading
                 ? const Center(
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16),
