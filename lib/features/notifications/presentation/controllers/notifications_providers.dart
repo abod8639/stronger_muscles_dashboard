@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import 'package:stronger_muscles_dashboard/features/auth/presentation/controllers/auth_providers.dart';
 import '../../data/datasources/notification_remote_data_source.dart';
@@ -10,7 +9,6 @@ import '../../domain/entities/admin_notification_entity.dart';
 import '../../domain/entities/notifications_result_entity.dart';
 import '../../domain/repositories/notification_repository.dart';
 import '../../domain/usecases/notification_usecases.dart';
-import 'notifications_controller.dart';
 
 /// موفر مصدر بيانات الإشعارات البعيد
 final notificationRemoteDataSourceProvider =
@@ -83,13 +81,7 @@ class NotificationsNotifier extends AsyncNotifier<NotificationsResultEntity> {
 
     return result.fold(
       (failure) => throw failure,
-      (data) {
-        // مزامنة فورية مع GetX Controller للحفاظ على توافق الويدجتس القائمة
-        if (Get.isRegistered<NotificationsController>()) {
-          Get.find<NotificationsController>().syncWithRiverpod(data);
-        }
-        return data;
-      },
+      (data) => data,
     );
   }
 
@@ -103,17 +95,10 @@ class NotificationsNotifier extends AsyncNotifier<NotificationsResultEntity> {
     final useCase = ref.read(getNotificationsUseCaseProvider);
     final result = await useCase(cancelToken: cancelToken);
 
-    if (ref.exists(notificationsControllerProvider)) {
-      state = result.fold(
-        (failure) => AsyncValue.error(failure, StackTrace.current),
-        (data) {
-          if (Get.isRegistered<NotificationsController>()) {
-            Get.find<NotificationsController>().syncWithRiverpod(data);
-          }
-          return AsyncValue.data(data);
-        },
-      );
-    }
+    state = result.fold(
+      (failure) => AsyncValue.error(failure, StackTrace.current),
+      (data) => AsyncValue.data(data),
+    );
   }
 
   /// إرسال إشعار جديد وتحديث الحالة محلياً وفورياً
@@ -143,9 +128,6 @@ class NotificationsNotifier extends AsyncNotifier<NotificationsResultEntity> {
         );
 
         state = AsyncValue.data(updated);
-        if (Get.isRegistered<NotificationsController>()) {
-          Get.find<NotificationsController>().syncWithRiverpod(updated);
-        }
       },
     );
 
@@ -170,9 +152,6 @@ class NotificationsNotifier extends AsyncNotifier<NotificationsResultEntity> {
         );
 
         state = AsyncValue.data(updated);
-        if (Get.isRegistered<NotificationsController>()) {
-          Get.find<NotificationsController>().syncWithRiverpod(updated);
-        }
       },
     );
 
