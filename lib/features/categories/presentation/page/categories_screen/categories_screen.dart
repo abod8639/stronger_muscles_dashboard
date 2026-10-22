@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
+import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
@@ -24,22 +24,23 @@ class CategoriesScreen extends ConsumerWidget {
   const CategoriesScreen({super.key});
 
   void _confirmDelete(BuildContext context, WidgetRef ref, String categoryId) {
-    Get.dialog(
-      ConfirmDialog(
+    showDialog(
+      context: context,
+      builder: (ctx) => ConfirmDialog(
         title: 'حذف التصنيف',
         message:
             'هل أنت متأكد من رغبتك في حذف هذا التصنيف؟ لا يمكن التراجع عن هذا الإجراء.',
         confirmText: 'حذف',
         confirmColor: AppColors.error,
         onConfirm: () async {
-          Get.back();
+          Navigator.of(ctx).pop();
           final success = await ref
               .read(categoriesControllerProvider.notifier)
               .deleteCategory(categoryId);
           if (success) {
-            Get.snackbar('نجاح', 'تم حذف التصنيف بنجاح');
+            AppFeedback.showSuccess('تم حذف التصنيف بنجاح');
           } else {
-            Get.snackbar('خطأ', 'تعذر حذف التصنيف. قد يكون مرتبطاً بمنتجات.');
+            AppFeedback.showError('تعذر حذف التصنيف. قد يكون مرتبطاً بمنتجات.');
           }
         },
       ),
