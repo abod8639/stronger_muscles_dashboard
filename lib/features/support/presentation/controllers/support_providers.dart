@@ -56,8 +56,7 @@ final getSupportStatsUseCaseProvider = Provider<GetSupportStatsUseCase>((ref) {
   return GetSupportStatsUseCase(ref.watch(supportRepositoryProvider));
 });
 
-final supportControllerProvider =
-    ChangeNotifierProvider<SupportController>((ref) {
+final supportControllerProvider = Provider<SupportController>((ref) {
   final controller = SupportController(
     getTicketsUseCase: ref.watch(getSupportTicketsUseCaseProvider),
     getTicketDetailUseCase: ref.watch(getSupportTicketDetailUseCaseProvider),
