@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
@@ -12,37 +11,21 @@ import 'package:stronger_muscles_dashboard/core/utils/components/generic_empty_s
 import 'package:stronger_muscles_dashboard/core/utils/components/horizontal_chips_selector.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/my_refresh_indicator.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/top_section.dart';
-import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_binding.dart';
-import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_providers.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_bulk_actions_bar.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_list_item.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/products_error_card.dart';
 
 /// شاشة عرض وإدارة المنتجات
-/// ترتبط بـ Riverpod [productsControllerProvider] عبر [ConsumerStatefulWidget]
-/// وتستخدم [AsyncValue.when] لعرض حالات التحميل، الأخطاء والواجهة البديلة لمنع تجميد أو انهيار التطبيق
-class ProductsScreen extends ConsumerStatefulWidget {
+/// ترتبط بـ Riverpod [productsControllerProvider] و [productsUIControllerProvider]
+/// وتستخدم [AsyncValue.when] لعرض حالات التحميل والأخطاء بأمان
+class ProductsScreen extends ConsumerWidget {
   const ProductsScreen({super.key});
 
   @override
-  ConsumerState<ProductsScreen> createState() => _ProductsScreenState();
-}
-
-class _ProductsScreenState extends ConsumerState<ProductsScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // تهيئة الـ GetX Controller Bridge إن لم يكن مسجلاً
-    if (!Get.isRegistered<ProductsController>()) {
-      ProductsBinding().dependencies();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final productsAsync = ref.watch(productsControllerProvider);
-    final controller = Get.find<ProductsController>();
+    final controller = ref.watch(productsUIControllerProvider);
     final responsive = context.responsive;
 
     return Scaffold(
@@ -62,17 +45,18 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
               controller.fetchData(forceRefresh: true);
             },
           ),
-          Obx(
-            () => IconButton(
+          ListenableBuilder(
+            listenable: controller,
+            builder: (context, _) => IconButton(
               icon: Icon(
-                controller.isSelectionMode.value
+                controller.isSelectionMode
                     ? Icons.checklist_rounded
                     : Icons.checklist_outlined,
-                color: controller.isSelectionMode.value
+                color: controller.isSelectionMode
                     ? Theme.of(context).colorScheme.primary
                     : Theme.of(context).colorScheme.onSurfaceVariant,
               ),
-              tooltip: controller.isSelectionMode.value
+              tooltip: controller.isSelectionMode
                   ? 'إلغاء وضع التحديد'
                   : 'تحديد متعدد',
               onPressed: () => controller.toggleSelectionMode(),
@@ -89,10 +73,11 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
                 padding: responsive.defaultPadding,
                 onSearch: (value) => controller.onSearchChanged(value),
               ),
-              Obx(
-                () => HorizontalChipsSelector(
+              ListenableBuilder(
+                listenable: controller,
+                builder: (context, _) => HorizontalChipsSelector(
                   items: controller.categories,
-                  selectedId: controller.selectedCategoryId.value,
+                  selectedId: controller.selectedCategoryId,
                   onSelect: (id) => controller.setCategory(id),
                   labelBuilder: (item) => item.displayName,
                   idKey: 'id',
@@ -104,12 +89,15 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
           ),
 
           // شريط الإجراءات الجماعية يظهر بسلاسة عند تفعيل وضع التحديد
-          Obx(() {
-            if (controller.isSelectionMode.value) {
-              return const ProductBulkActionsBar();
-            }
-            return const SizedBox.shrink();
-          }),
+          ListenableBuilder(
+            listenable: controller,
+            builder: (context, _) {
+              if (controller.isSelectionMode) {
+                return const ProductBulkActionsBar();
+              }
+              return const SizedBox.shrink();
+            },
+          ),
 
           const SizedBox(height: 4),
 
@@ -137,54 +125,54 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
                   ),
                 ),
               ),
-              data: (productsList) {
-                return Obx(() {
-                  if (controller.isLoading.value && controller.products.isEmpty) {
-                    return const EnhancedLoadingWidget(
-                      message: 'جاري تحميل المنتجات...',
-                    );
-                  }
+              data: (_) {
+                return ListenableBuilder(
+                  listenable: controller,
+                  builder: (context, _) {
+                    if (controller.isLoading && controller.products.isEmpty) {
+                      return const EnhancedLoadingWidget(
+                        message: 'جاري تحميل المنتجات...',
+                      );
+                    }
 
-                  if (controller.filteredProducts.isEmpty) {
-                    return GenericEmptyState(
-                      title: 'لا توجد نتائج',
-                      message:
-                          controller.searchQuery.value.isEmpty &&
-                                  controller.selectedCategoryId.value == 'all'
-                              ? 'قائمة المنتجات فارغة حالياً'
-                              : 'لم نجد أي منتج يطابق بحثك: "${controller.searchQuery.value}"',
-                      icon: Icons.search_off_rounded,
-                      onAction: () {
-                        ref
+                    if (controller.filteredProducts.isEmpty) {
+                      return GenericEmptyState(
+                        title: 'لا توجد نتائج',
+                        message:
+                            controller.searchQuery.isEmpty &&
+                                    controller.selectedCategoryId == 'all'
+                                ? 'قائمة المنتجات فارغة حالياً'
+                                : 'لم نجد أي منتج يطابق بحثك: "${controller.searchQuery}"',
+                        icon: Icons.search_off_rounded,
+                        onAction: () {
+                          ref
+                              .read(productsControllerProvider.notifier)
+                              .refreshProducts(forceRefresh: true);
+                          controller.fetchData(forceRefresh: true);
+                        },
+                        actionLabel: 'إعادة المحاولة',
+                      );
+                    }
+
+                    return MyRefreshIndicator(
+                      onRefresh: () async {
+                        await ref
                             .read(productsControllerProvider.notifier)
                             .refreshProducts(forceRefresh: true);
-                        controller.fetchData(forceRefresh: true);
+                        await controller.fetchData(forceRefresh: true);
                       },
-                      actionLabel: 'إعادة المحاولة',
-                    );
-                  }
-
-                  return MyRefreshIndicator(
-                    onRefresh: () async {
-                      await ref
-                          .read(productsControllerProvider.notifier)
-                          .refreshProducts(forceRefresh: true);
-                      await controller.fetchData(forceRefresh: true);
-                    },
-                    child: ListView.separated(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: responsive.defaultPadding.left,
-                        vertical: 10,
-                      ),
-                      itemCount: controller.filteredProducts.length,
-                      separatorBuilder: (_, _) => const SizedBox(height: 12),
-                      itemBuilder: (context, index) {
-                        final product = controller.filteredProducts[index];
-                        return Obx(() {
+                      child: ListView.separated(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: responsive.defaultPadding.left,
+                          vertical: 10,
+                        ),
+                        itemCount: controller.filteredProducts.length,
+                        separatorBuilder: (_, _) => const SizedBox(height: 12),
+                        itemBuilder: (context, index) {
+                          final product = controller.filteredProducts[index];
                           final isSelected =
                               controller.isProductSelected(product.id);
-                          final isSelectionMode =
-                              controller.isSelectionMode.value;
+                          final isSelectionMode = controller.isSelectionMode;
 
                           return ProductListItem(
                             product: product,
@@ -204,15 +192,16 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
                               product: product,
                             ),
                             onDelete: () => controller.confirmDelete(
+                              context,
                               product.id,
                               product.displayName,
                             ),
                           );
-                        });
-                      },
-                    ),
-                  );
-                });
+                        },
+                      ),
+                    );
+                  },
+                );
               },
             ),
           ),
