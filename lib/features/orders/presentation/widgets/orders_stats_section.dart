@@ -1,67 +1,68 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/premium_indicator_card.dart';
-import 'package:stronger_muscles_dashboard/features/orders/presentation/controllers/orders_controller.dart';
+import 'package:stronger_muscles_dashboard/features/orders/presentation/controllers/orders_providers.dart';
 
-class OrdersStatsSection extends GetView<OrdersController> {
+class OrdersStatsSection extends ConsumerWidget {
   const OrdersStatsSection({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    double aspectRatio = MediaQuery.of(context).size.width /1000;
-    return Obx(() {
-      if (controller.isLoading.value && controller.totalOrders == 0) {
-        return const SizedBox.shrink();
-      }
-      final res = context.responsive ;
-      return GridView.count(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        crossAxisCount: res.isDesktop ? 4 : 2,
-        crossAxisSpacing: 14,
-        mainAxisSpacing: 14,
-        childAspectRatio: res.isDesktop ?aspectRatio : aspectRatio*2.2,
-        children: [
-          PremiumIndicatorCard(
-            title: 'إجمالي الطلبات',
-            value: controller.totalOrders.toString(),
-            trend: '+12%',
-            trendUp: true,
-            accentColor: Colors.blue,
-            chartColor: Colors.blueAccent,
-            icon: Icons.shopping_basket_rounded,
-          ),
-          PremiumIndicatorCard(
-            title: 'قيد الانتظار',
-            value: controller.pendingOrders.toString(),
-            trend: '-2%',
-            trendUp: false,
-            accentColor: Colors.orange,
-            chartColor: Colors.orangeAccent,
-            icon: Icons.timer_rounded,
-          ),
-          PremiumIndicatorCard(
-            title: 'تم التوصيل',
-            value: controller.deliveredOrders.toString(),
-            trend: '+5%',
-            trendUp: true,
-            accentColor: Colors.green,
-            chartColor: Colors.greenAccent,
-            icon: Icons.check_circle_rounded,
-          ),
-          PremiumIndicatorCard(
-            title: 'الإيرادات',
-            value: controller.totalRevenue.toStringAsFixed(0),
-            // subtitle: 'SAR',
-            trend: '+18%',
-            trendUp: true,
-            accentColor: Colors.purple,
-            chartColor: Colors.purpleAccent,
-            icon: Icons.payments_rounded,
-          ),
-        ],
-      );
-    });
+  Widget build(BuildContext context, WidgetRef ref) {
+    final stats = ref.watch(ordersStatsProvider);
+    final ordersAsync = ref.watch(ordersControllerProvider);
+
+    if (ordersAsync.isLoading && stats.totalOrders == 0) {
+      return const SizedBox.shrink();
+    }
+    final res = context.responsive;
+    final aspectRatio = MediaQuery.of(context).size.width / 1000;
+
+    return GridView.count(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: res.isDesktop ? 4 : 2,
+      crossAxisSpacing: 14,
+      mainAxisSpacing: 14,
+      childAspectRatio: res.isDesktop ? aspectRatio : aspectRatio * 2.2,
+      children: [
+        PremiumIndicatorCard(
+          title: 'إجمالي الطلبات',
+          value: stats.totalOrders.toString(),
+          trend: '+12%',
+          trendUp: true,
+          accentColor: Colors.blue,
+          chartColor: Colors.blueAccent,
+          icon: Icons.shopping_basket_rounded,
+        ),
+        PremiumIndicatorCard(
+          title: 'قيد الانتظار',
+          value: stats.pendingOrders.toString(),
+          trend: '-2%',
+          trendUp: false,
+          accentColor: Colors.orange,
+          chartColor: Colors.orangeAccent,
+          icon: Icons.timer_rounded,
+        ),
+        PremiumIndicatorCard(
+          title: 'تم التوصيل',
+          value: stats.deliveredOrders.toString(),
+          trend: '+5%',
+          trendUp: true,
+          accentColor: Colors.green,
+          chartColor: Colors.greenAccent,
+          icon: Icons.check_circle_rounded,
+        ),
+        PremiumIndicatorCard(
+          title: 'الإيرادات',
+          value: stats.totalRevenue.toStringAsFixed(0),
+          trend: '+18%',
+          trendUp: true,
+          accentColor: Colors.purple,
+          chartColor: Colors.purpleAccent,
+          icon: Icons.payments_rounded,
+        ),
+      ],
+    );
   }
 }
