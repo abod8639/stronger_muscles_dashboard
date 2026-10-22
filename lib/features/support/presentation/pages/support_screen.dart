@@ -13,81 +13,87 @@ class SupportScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final controller = ref.watch(supportControllerProvider);
-    final responsive = context.responsive;
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final isDesktop = responsive.screenWidth >= 950;
 
-    final hasSelectedTicket = !isDesktop && controller.selectedTicket != null;
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (context, _) {
+        final responsive = context.responsive;
+        final theme = Theme.of(context);
+        final isDark = theme.brightness == Brightness.dark;
+        final isDesktop = responsive.screenWidth >= 950;
 
-    return PopScope(
-      canPop: !hasSelectedTicket,
-      onPopInvokedWithResult: (didPop, result) {
-        if (!didPop && hasSelectedTicket) {
-          controller.setSelectedTicket(null);
-        }
-      },
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: SafeArea(
-          child: hasSelectedTicket
-              ? const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                  child: SupportChatView(),
-                )
-              : Column(
-                  children: [
-                    _buildHeader(context, controller, isDark),
-                    const SupportStatsHeader(),
-                    const SizedBox(height: 8),
-                    _buildFiltersBar(context, controller, isDark),
-                    const SizedBox(height: 10),
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: responsive.defaultPadding.left,
+        final hasSelectedTicket = !isDesktop && controller.selectedTicket != null;
+
+        return PopScope(
+          canPop: !hasSelectedTicket,
+          onPopInvokedWithResult: (didPop, result) {
+            if (!didPop && hasSelectedTicket) {
+              controller.setSelectedTicket(null);
+            }
+          },
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            body: SafeArea(
+              child: hasSelectedTicket
+                  ? const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                      child: SupportChatView(),
+                    )
+                  : Column(
+                      children: [
+                        _buildHeader(context, controller, isDark),
+                        const SupportStatsHeader(),
+                        const SizedBox(height: 8),
+                        _buildFiltersBar(context, controller, isDark),
+                        const SizedBox(height: 10),
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: responsive.defaultPadding.left,
+                            ),
+                            child: Builder(
+                              builder: (context) {
+                                if (controller.isLoading &&
+                                    controller.tickets.isEmpty) {
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                }
+
+                                if (controller.tickets.isEmpty) {
+                                  return _buildNoTicketsState(context, isDark);
+                                }
+
+                                if (isDesktop) {
+                                  return Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(
+                                        width: 380,
+                                        child: _buildTicketsList(
+                                            context, controller, isDark),
+                                      ),
+                                      const SizedBox(width: 14),
+                                      const Expanded(
+                                        child: SupportChatView(),
+                                      ),
+                                    ],
+                                  );
+                                } else {
+                                  return _buildTicketsList(
+                                      context, controller, isDark);
+                                }
+                              },
+                            ),
+                          ),
                         ),
-                        child: Builder(
-                          builder: (context) {
-                            if (controller.isLoading &&
-                                controller.tickets.isEmpty) {
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            }
-
-                            if (controller.tickets.isEmpty) {
-                              return _buildNoTicketsState(context, isDark);
-                            }
-
-                            if (isDesktop) {
-                              return Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(
-                                    width: 380,
-                                    child: _buildTicketsList(
-                                        context, controller, isDark),
-                                  ),
-                                  const SizedBox(width: 14),
-                                  const Expanded(
-                                    child: SupportChatView(),
-                                  ),
-                                ],
-                              );
-                            } else {
-                              return _buildTicketsList(
-                                  context, controller, isDark);
-                            }
-                          },
-                        ),
-                      ),
+                        const SizedBox(height: 14),
+                      ],
                     ),
-                    const SizedBox(height: 14),
-                  ],
-                ),
-        ),
-      ),
+            ),
+          ),
+        );
+      },
     );
   }
 
