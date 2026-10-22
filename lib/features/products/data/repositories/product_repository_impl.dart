@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import 'package:stronger_muscles_dashboard/core/error/network_error_handler.dart';
 import 'package:stronger_muscles_dashboard/core/storage/cache_service.dart';
@@ -12,15 +11,14 @@ import '../models/product_model.dart';
 
 class ProductRepositoryImpl implements ProductRepository {
   final ProductRemoteDataSource remoteDataSource;
-  CacheService? _cacheService;
+  final CacheService? _cacheService;
 
   static const String _cacheKeyProducts = 'products_list';
 
-  ProductRepositoryImpl({required this.remoteDataSource}) {
-    if (Get.isRegistered<CacheService>()) {
-      _cacheService = Get.find<CacheService>();
-    }
-  }
+  ProductRepositoryImpl({
+    required this.remoteDataSource,
+    CacheService? cacheService,
+  }) : _cacheService = cacheService ?? CacheService.instance;
 
   @override
   Future<Either<Failure, List<ProductEntity>>> getProducts({
