@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
 
 /// شريط الإجراءات السفلي المثبت لاستمارة المنتج بتصميم Neumorphism / Soft UI
@@ -65,13 +64,17 @@ class ProductStickyBottomBar extends StatelessWidget {
           ),
         ),
       ),
-      child: Row(
-        children: [
-          // Status Chip
-          Obx(
-            () {
-              final isActive = controller.isActive.value;
-              return Container(
+      child: ListenableBuilder(
+        listenable: controller,
+        builder: (context, _) {
+          final isActive = controller.isActive;
+          final isSaving = controller.isSaving;
+          final isLoading = controller.isLoading;
+
+          return Row(
+            children: [
+              // Status Chip
+              Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
@@ -112,7 +115,7 @@ class ProductStickyBottomBar extends StatelessWidget {
                   ),
                 ),
                 child: InkWell(
-                  onTap: () => controller.isActive.value = !isActive,
+                  onTap: () => controller.isActive = !isActive,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -143,58 +146,53 @@ class ProductStickyBottomBar extends StatelessWidget {
                     ],
                   ),
                 ),
-              );
-            },
-          ),
-          const Spacer(),
-
-          // Cancel Button
-          OutlinedButton(
-            style: OutlinedButton.styleFrom(
-              side: BorderSide(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.05)
-                    : colorScheme.outlineVariant,
               ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            onPressed: () => Get.back(),
-            child: const Text('إلغاء'),
-          ),
-          const SizedBox(width: 12),
+              const Spacer(),
 
-          // Save FilledButton
-          Obx(
-            () => FilledButton.icon(
-              style: FilledButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+              // Cancel Button
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.05)
+                        : colorScheme.outlineVariant,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('إلغاء'),
+              ),
+              const SizedBox(width: 12),
+
+              // Save FilledButton
+              FilledButton.icon(
+                style: FilledButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                onPressed: isLoading || isSaving ? null : onSave,
+                icon: isSaving
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Icon(Icons.check_circle_outline_rounded, size: 20),
+                label: Text(
+                  isSaving
+                      ? 'جاري الحفظ...'
+                      : (isEditing ? 'تحديث ونشر المنتج' : 'حفظ وإضافة المنتج'),
                 ),
               ),
-              onPressed:
-                  controller.isLoading.value || controller.isSaving.value
-                      ? null
-                      : onSave,
-              icon: controller.isSaving.value
-                  ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
-                  : const Icon(Icons.check_circle_outline_rounded, size: 20),
-              label: Text(
-                controller.isSaving.value
-                    ? 'جاري الحفظ...'
-                    : (isEditing ? 'تحديث ونشر المنتج' : 'حفظ وإضافة المنتج'),
-              ),
-            ),
-          ),
-        ],
+            ],
+          );
+        },
       ),
     );
   }
