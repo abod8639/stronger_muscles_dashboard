@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/icon_card_with_shadow.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/controllers/order_details_controller.dart';
@@ -18,152 +17,154 @@ class OrderActionsBar extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Obx(() {
-      final currentOrder = controller.order.value;
-      final currentStatus = currentOrder.status;
-      final isUpdating = controller.isUpdatingStatus.value;
-      final isGeneratingPdf = controller.isGeneratingPdf.value;
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (context, _) {
+        final currentOrder = controller.order;
+        final currentStatus = currentOrder.status;
+        final isUpdating = controller.isUpdatingStatus;
+        final isGeneratingPdf = controller.isGeneratingPdf;
 
-      final canCancel = currentStatus != OrderStatus.cancelled &&
-          currentStatus != OrderStatus.delivered;
+        final canCancel = currentStatus != OrderStatus.cancelled &&
+            currentStatus != OrderStatus.delivered;
 
-      return Card.outlined(
-        margin: EdgeInsets.zero,
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(
-            color: colorScheme.outlineVariant.withValues(alpha: 0.6),
+        return Card.outlined(
+          margin: EdgeInsets.zero,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(
+              color: colorScheme.outlineVariant.withValues(alpha: 0.6),
+            ),
           ),
-        ),
-        color: colorScheme.surfaceContainerLow,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Wrap(
-            alignment: WrapAlignment.spaceBetween,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: 12,
-            runSpacing: 10,
-            children: [
-              // عنوان الشريط والمؤشر
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  IconCardWithShadow(icon: Icons.bolt_rounded),
-                  const SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'إجراءات الطلب',
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.onSurface,
+          color: colorScheme.surfaceContainerLow,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 12,
+              runSpacing: 10,
+              children: [
+                // عنوان الشريط والمؤشر
+                Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    IconCardWithShadow(icon: Icons.bolt_rounded),
+                    const SizedBox(width: 10),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'إجراءات الطلب',
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: colorScheme.onSurface,
+                          ),
+                        ),
+                        Text(
+                          'إدارة الحالة والمستندات',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                // أزرار الإجراءات المتوافقة تماماً مع Material Design 3
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 8,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    // 1. زر الإجراء الأساسي الموجه لمرحلة الطلب
+                    _buildPrimaryActionButton(
+                      context: context,
+                      currentStatus: currentStatus,
+                      isUpdating: isUpdating,
+                      colorScheme: colorScheme,
+                    ),
+
+                    // 2. طباعة الفاتورة (M3 FilledButton.tonal)
+                    FilledButton.tonalIcon(
+                      onPressed: isGeneratingPdf ? null : controller.printInvoice,
+                      icon: isGeneratingPdf
+                          ? SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: colorScheme.primary,
+                              ),
+                            )
+                          : const Icon(Icons.print_outlined, size: 18),
+                      label: const Text('طباعة الفاتورة'),
+                      style: FilledButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      Text(
-                        'إدارة الحالة والمستندات',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                          fontSize: 11,
+                    ),
+
+                    // 3. تصدير ومشاركة PDF (M3 IconButton.filledTonal)
+                    IconButton.filledTonal(
+                      onPressed: isGeneratingPdf ? null : controller.shareInvoice,
+                      icon: const Icon(Icons.share_outlined, size: 18),
+                      tooltip: 'تصدير ومشاركة PDF',
+                      style: IconButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                    ],
-                  ),
-                ],
-              ),
-              // أزرار الإجراءات المتوافقة تماماً مع Material Design 3
-              Wrap(
-                
-                spacing: 10,
-                runSpacing: 8,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  // 1. زر الإجراء الأساسي الموجه لمرحلة الطلب
-                  _buildPrimaryActionButton(
-                    context: context,
-                    currentStatus: currentStatus,
-                    isUpdating: isUpdating,
-                    colorScheme: colorScheme,
-                  ),
-
-                  // 2. طباعة الفاتورة (M3 FilledButton.tonal)
-                  FilledButton.tonalIcon(
-                    onPressed: isGeneratingPdf ? null : controller.printInvoice,
-                    icon: isGeneratingPdf
-                        ? SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: colorScheme.primary,
-                            ),
-                          )
-                        : const Icon(Icons.print_outlined, size: 18),
-                    label: const Text('طباعة الفاتورة'),
-                    style: FilledButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
                     ),
-                  ),
 
-                  // 3. تصدير ومشاركة PDF (M3 IconButton.filledTonal)
-                  IconButton.filledTonal(
-                    onPressed: isGeneratingPdf ? null : controller.shareInvoice,
-                    icon: const Icon(Icons.share_outlined, size: 18),
-                    tooltip: 'تصدير ومشاركة PDF',
-                    style: IconButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-
-                  // 4. تغيير الحالة يدوياً (M3 OutlinedButton)
-                  OutlinedButton.icon(
-                    onPressed: isUpdating
-                        ? null
-                        : () => _showChangeStatusDialog(context),
-                    icon: const Icon(Icons.swap_horiz_rounded, size: 18),
-                    label: const Text('تغيير الحالة'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: colorScheme.onSurface,
-                      side: BorderSide(
-                        color: colorScheme.outlineVariant,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-
-                  // 5. إلغاء الطلب (M3 Destructive OutlinedButton)
-                  if (canCancel)
+                    // 4. تغيير الحالة يدوياً (M3 OutlinedButton)
                     OutlinedButton.icon(
                       onPressed: isUpdating
                           ? null
-                          : () => _showCancelConfirmationDialog(context),
-                      icon: const Icon(Icons.cancel_outlined, size: 18),
-                      label: const Text('إلغاء الطلب'),
+                          : () => _showChangeStatusDialog(context),
+                      icon: const Icon(Icons.swap_horiz_rounded, size: 18),
+                      label: const Text('تغيير الحالة'),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: colorScheme.error,
+                        foregroundColor: colorScheme.onSurface,
                         side: BorderSide(
-                          color: colorScheme.error.withValues(alpha: 0.5),
+                          color: colorScheme.outlineVariant,
                         ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
                     ),
-                ],
-              ),
-            ],
+
+                    // 5. إلغاء الطلب (M3 Destructive OutlinedButton)
+                    if (canCancel)
+                      OutlinedButton.icon(
+                        onPressed: isUpdating
+                            ? null
+                            : () => _showCancelConfirmationDialog(context),
+                        icon: const Icon(Icons.cancel_outlined, size: 18),
+                        label: const Text('إلغاء الطلب'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: colorScheme.error,
+                          side: BorderSide(
+                            color: colorScheme.error.withValues(alpha: 0.5),
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-      );
-    });
+        );
+      },
+    );
   }
 
   /// زر الإجراء الأساسي الموجه لمرحلة الطلب الحالية وفق معايير Material 3
@@ -309,7 +310,7 @@ class OrderActionsBar extends StatelessWidget {
   Future<void> _showChangeStatusDialog(BuildContext context) async {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final currentStatus = controller.order.value.status;
+    final currentStatus = controller.order.status;
     OrderStatus selectedStatus = currentStatus;
 
     final confirmed = await showDialog<OrderStatus>(
@@ -405,7 +406,7 @@ class OrderActionsBar extends StatelessWidget {
   Future<void> _showCancelConfirmationDialog(BuildContext context) async {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final orderId = controller.order.value.id;
+    final orderId = controller.order.id;
 
     final confirmed = await showDialog<bool>(
       context: context,
