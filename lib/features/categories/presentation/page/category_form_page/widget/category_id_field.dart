@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/build_modern_text_field.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/confirm_dialog.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
@@ -26,8 +25,9 @@ class _CategoryIdFieldState extends State<CategoryIdField> {
 
   void _toggleIdLock() {
     if (!_isIdFieldEnabled && widget.category != null) {
-      Get.dialog(
-        ConfirmDialog(
+      showDialog(
+        context: context,
+        builder: (ctx) => ConfirmDialog(
           title: '⚠️ تنبيه الأمان',
           message:
               'تعديل المعرف (ID) للتصنيف الحالي قد يؤدي إلى:\n• كسر الروابط القديمة\n• مشاكل في ربط المنتجات بالقاعدة\n• فقدان البيانات المرتبطة\n\nهل أنت متأكد من فك القفل والمتابعة؟',
@@ -35,7 +35,7 @@ class _CategoryIdFieldState extends State<CategoryIdField> {
           onConfirm: () {
             setState(() => _isIdFieldEnabled = true);
             HapticFeedback.mediumImpact();
-            Get.back();
+            Navigator.of(ctx).pop();
           },
         ),
       );
@@ -120,12 +120,15 @@ class _CategoryIdFieldState extends State<CategoryIdField> {
             child: Stack(
               alignment: Alignment.centerLeft,
               children: [
-                ModernTextField(
-                  controller: widget.controller.idController,
-                  label: 'المعرف: مثلاً supplements_creatine',
-                  icon: Icons.terminal_rounded,
-                  enabled: (!isEditing || _isIdFieldEnabled) &&
-                      !widget.controller.isLoading.value,
+                ListenableBuilder(
+                  listenable: widget.controller,
+                  builder: (context, _) => ModernTextField(
+                    controller: widget.controller.idController,
+                    label: 'المعرف: مثلاً supplements_creatine',
+                    icon: Icons.terminal_rounded,
+                    enabled: (!isEditing || _isIdFieldEnabled) &&
+                        !widget.controller.isLoading,
+                  ),
                 ),
                 if (isEditing)
                   Positioned(
