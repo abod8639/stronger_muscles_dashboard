@@ -14,17 +14,21 @@ class SupportChatView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final controller = ref.watch(supportControllerProvider);
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final isDark = theme.brightness == Brightness.dark;
 
-    final ticket = controller.selectedTicket;
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (context, _) {
+        final theme = Theme.of(context);
+        final colorScheme = theme.colorScheme;
+        final isDark = theme.brightness == Brightness.dark;
 
-    if (ticket == null) {
-      return _buildEmptyState(context, isDark);
-    }
+        final ticket = controller.selectedTicket;
 
-    return Container(
+        if (ticket == null) {
+          return _buildEmptyState(context, isDark);
+        }
+
+        return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         gradient: LinearGradient(
@@ -72,6 +76,8 @@ class SupportChatView extends ConsumerWidget {
           _buildReplyComposer(context, controller, ticket, isDark),
         ],
       ),
+    );
+      },
     );
   }
 
