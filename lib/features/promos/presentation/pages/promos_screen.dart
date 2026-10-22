@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/base_app_bar.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/custom_search_bar.dart';
@@ -8,17 +9,16 @@ import 'package:stronger_muscles_dashboard/core/utils/components/enhanced_loadin
 import 'package:stronger_muscles_dashboard/core/utils/components/generic_empty_state.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/my_refresh_indicator.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/top_section.dart';
-import 'package:stronger_muscles_dashboard/features/promos/presentation/controllers/promos_controller.dart';
+import 'package:stronger_muscles_dashboard/features/promos/presentation/controllers/promos_providers.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/widgets/promo_app_banner_preview.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/widgets/promo_list_item.dart';
-import 'package:stronger_muscles_dashboard/config/responsive.dart';
 
-class PromosScreen extends StatelessWidget {
+class PromosScreen extends ConsumerWidget {
   const PromosScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final controller = Get.find<PromosController>();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final controller = ref.watch(promosControllerProvider);
     final responsive = context.responsive;
 
     return Scaffold(
@@ -43,14 +43,14 @@ class PromosScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Expanded(
-            child: Obx(() {
-              if (controller.isLoading.value && controller.promos.isEmpty) {
+            child: Builder(builder: (context) {
+              if (controller.isLoading && controller.promos.isEmpty) {
                 return const EnhancedLoadingWidget(
                   message: 'جاري تحميل الإعلانات...',
                 );
               }
 
-              if (controller.promos.isEmpty && !controller.isLoading.value) {
+              if (controller.promos.isEmpty && !controller.isLoading) {
                 return GenericEmptyState(
                   title: 'لا توجد إعلانات',
                   message: 'لا توجد إعلانات مسجلة حالياً في النظام',
@@ -128,7 +128,7 @@ class PromosScreen extends StatelessWidget {
                               ),
                             ],
                           ),
-                          if (controller.searchQuery.value.isNotEmpty)
+                          if (controller.searchQuery.isNotEmpty)
                             TextButton.icon(
                               onPressed: () => controller.onSearchChanged(''),
                               icon: const Icon(Icons.clear_rounded, size: 16),
@@ -149,7 +149,7 @@ class PromosScreen extends StatelessWidget {
                         child: GenericEmptyState(
                           title: 'لا توجد نتائج',
                           message:
-                              'لم نجد أي إعلان يطابق بحثك: "${controller.searchQuery.value}"',
+                              'لم نجد أي إعلان يطابق بحثك: "${controller.searchQuery}"',
                           icon: Icons.search_off_rounded,
                           onAction: () => controller.onSearchChanged(''),
                           actionLabel: 'مسح البحث',
@@ -167,6 +167,7 @@ class PromosScreen extends StatelessWidget {
                               context.push(AppRoutes.promoForm, extra: promo);
                             },
                             onDelete: () => controller.confirmDelete(
+                              context,
                               promo.id,
                               promo.displayTitle,
                             ),
