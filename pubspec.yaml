@@ -16,7 +16,6 @@ dependencies:
 
   cupertino_icons: ^1.0.8
 
-  get: ^4.6.6
 
   # Charts and Graphs
   fl_chart: ^1.1.1
