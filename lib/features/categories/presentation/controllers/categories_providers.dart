@@ -78,7 +78,7 @@ final filteredCategoriesProvider = Provider<List<CategoryEntity>>((ref) {
 });
 
 /// موفر متحكم نموذج التصنيف (CategoryFormController)
-final categoryFormControllerProvider = ChangeNotifierProvider.autoDispose.family<CategoriesController, CategoryEntity?>((ref, category) {
+final categoryFormControllerProvider = Provider.autoDispose.family<CategoriesController, CategoryEntity?>((ref, category) {
   final controller = CategoriesController();
   final allCategories = ref.watch(categoriesControllerProvider).value ?? [];
   controller.categories = allCategories;
@@ -87,5 +87,6 @@ final categoryFormControllerProvider = ChangeNotifierProvider.autoDispose.family
   } else {
     controller.clearForm();
   }
+  ref.onDispose(controller.dispose);
   return controller;
 });
