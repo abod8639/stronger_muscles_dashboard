@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/base_app_bar.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/enhanced_loading_widget.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/my_refresh_indicator.dart';
-import 'package:stronger_muscles_dashboard/features/orders/presentation/controllers/orders_binding.dart';
-import 'package:stronger_muscles_dashboard/features/orders/presentation/controllers/orders_controller.dart';
+import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/controllers/orders_providers.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/orders_screen/widgets/orders_table.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/widgets/orders_error_card.dart';
@@ -14,25 +12,11 @@ import 'package:stronger_muscles_dashboard/features/orders/presentation/widgets/
 
 /// صفحة إدارة الطلبات المحدثة بالكامل والمحمية بنمط Clean Architecture
 /// وتعتمد على Riverpod [AsyncValue.when] لمنع أي تجميد للواجهة أو انهيار للتطبيق
-class OrdersPage extends ConsumerStatefulWidget {
+class OrdersPage extends ConsumerWidget {
   const OrdersPage({super.key});
 
   @override
-  ConsumerState<OrdersPage> createState() => _OrdersPageState();
-}
-
-class _OrdersPageState extends ConsumerState<OrdersPage> {
-  @override
-  void initState() {
-    super.initState();
-    // تهيئة الـ GetX Controller Bridge إن لم يكن موجوداً
-    if (!Get.isRegistered<OrdersController>()) {
-      OrdersBinding().dependencies();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final ordersAsync = ref.watch(ordersControllerProvider);
     final responsive = context.responsive;
     final theme = Theme.of(context);
@@ -51,15 +35,8 @@ class _OrdersPageState extends ConsumerState<OrdersPage> {
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: FilledButton.tonalIcon(
               onPressed: () {
-                Get.snackbar(
-                  'تصدير الطلبات',
+                AppFeedback.showSuccess(
                   'جاري إعداد وتحميل ملف البيانات بصيغة CSV...',
-                  backgroundColor: colorScheme.primaryContainer,
-                  colorText: colorScheme.onPrimaryContainer,
-                  icon: Icon(Icons.download_rounded, color: colorScheme.primary),
-                  snackPosition: SnackPosition.BOTTOM,
-                  margin: const EdgeInsets.all(16),
-                  borderRadius: 16,
                 );
               },
               icon: const Icon(Icons.download_rounded, size: 18),
