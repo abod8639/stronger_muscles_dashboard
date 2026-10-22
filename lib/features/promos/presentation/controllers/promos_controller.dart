@@ -1,22 +1,23 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
 import 'package:stronger_muscles_dashboard/features/brands/domain/entities/brand_entity.dart';
 import 'package:stronger_muscles_dashboard/features/brands/domain/repositories/brand_repository.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/usecases/get_products_usecase.dart';
 import 'package:stronger_muscles_dashboard/features/promos/domain/entities/promo_entity.dart';
 import 'package:stronger_muscles_dashboard/features/promos/domain/usecases/promo_usecases.dart';
-import 'package:image_picker/image_picker.dart';
 
-class PromosController extends GetxController {
+class PromosController extends ChangeNotifier {
   final GetPromosUseCase getPromosUseCase;
   final AddPromoUseCase addPromoUseCase;
   final UpdatePromoUseCase updatePromoUseCase;
   final DeletePromoUseCase deletePromoUseCase;
   final GetProductsUseCase getProductsUseCase;
   final UploadPromoImageUseCase uploadPromoImageUseCase;
+  final BrandRepository brandRepository;
 
   PromosController({
     required this.getPromosUseCase,
@@ -25,15 +26,29 @@ class PromosController extends GetxController {
     required this.deletePromoUseCase,
     required this.getProductsUseCase,
     required this.uploadPromoImageUseCase,
+    required this.brandRepository,
   });
 
-  final promos = <PromoEntity>[].obs;
-  final filteredPromos = <PromoEntity>[].obs;
-  final products = <ProductEntity>[].obs;
-  final brands = <BrandEntity>[].obs;
-  final isLoading = true.obs;
-  final isBrandsLoading = false.obs;
-  final searchQuery = ''.obs;
+  List<PromoEntity> _promos = [];
+  List<PromoEntity> get promos => _promos;
+
+  List<PromoEntity> _filteredPromos = [];
+  List<PromoEntity> get filteredPromos => _filteredPromos;
+
+  List<ProductEntity> _products = [];
+  List<ProductEntity> get products => _products;
+
+  List<BrandEntity> _brands = [];
+  List<BrandEntity> get brands => _brands;
+
+  bool _isLoading = true;
+  bool get isLoading => _isLoading;
+
+  bool _isBrandsLoading = false;
+  bool get isBrandsLoading => _isBrandsLoading;
+
+  String _searchQuery = '';
+  String get searchQuery => _searchQuery;
 
   // Form state — text fields
   final titleArController = TextEditingController();
@@ -43,53 +58,84 @@ class PromosController extends GetxController {
   final buttonArController = TextEditingController();
   final buttonEnController = TextEditingController();
   final backgroundColorController = TextEditingController();
-  final backgroundColorHex = '#FFFFFF'.obs;
 
+  String _backgroundColorHex = '#FFFFFF';
+  String get backgroundColorHex => _backgroundColorHex;
+  set backgroundColorHex(String val) {
+    _backgroundColorHex = val;
+    notifyListeners();
+  }
 
   // Form state — target
-  /// 'none' | 'product' | 'category'
-  final selectedTargetType = 'none'.obs;
-  final selectedTargetId = Rxn<String>();
+  String _selectedTargetType = 'none';
+  String get selectedTargetType => _selectedTargetType;
+  set selectedTargetType(String val) {
+    _selectedTargetType = val;
+    notifyListeners();
+  }
+
+  String? _selectedTargetId;
+  String? get selectedTargetId => _selectedTargetId;
+  set selectedTargetId(String? val) {
+    _selectedTargetId = val;
+    notifyListeners();
+  }
 
   // Form state — other
-  final isActive = true.obs;
-  final selectedImage = Rxn<File>();
-  final existingImageUrl = ''.obs;
+  bool _isActive = true;
+  bool get isActive => _isActive;
+  set isActive(bool val) {
+    _isActive = val;
+    notifyListeners();
+  }
 
-  @override
-  void onInit() {
-    super.onInit();
+  File? _selectedImage;
+  File? get selectedImage => _selectedImage;
+  set selectedImage(File? val) {
+    _selectedImage = val;
+    notifyListeners();
+  }
+
+  String _existingImageUrl = '';
+  String get existingImageUrl => _existingImageUrl;
+  set existingImageUrl(String val) {
+    _existingImageUrl = val;
+    notifyListeners();
+  }
+
+  void init() {
     fetchPromos();
     fetchProducts();
     fetchBrands();
-    
-    // Listen to color hex changes for UI preview
+
     backgroundColorController.addListener(() {
-      backgroundColorHex.value = backgroundColorController.text;
+      _backgroundColorHex = backgroundColorController.text;
+      notifyListeners();
     });
   }
 
   String getBrandName(String? id) {
     if (id == null || id.isEmpty) return 'غير محدد';
-    final brand = brands.firstWhereOrNull((b) => b.id == id);
-    return brand?.displayName ?? 'ماركة #$id';
+    try {
+      final brand = _brands.firstWhere((b) => b.id == id);
+      return brand.displayName;
+    } catch (_) {
+      return 'ماركة #$id';
+    }
   }
 
   Future<void> fetchPromos() async {
-    isLoading.value = true;
+    _isLoading = true;
+    notifyListeners();
     try {
       final data = await getPromosUseCase.call();
-      promos.value = data;
+      _promos = data;
       _applyFilters();
     } catch (e) {
-      Get.snackbar(
-        'خطأ', e.toString().replaceAll('Exception: ', ''),
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.8),
-        colorText: Colors.white,
-      );
+      AppFeedback.showError(e.toString().replaceAll('Exception: ', ''));
     } finally {
-      isLoading.value = false;
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
@@ -98,40 +144,40 @@ class PromosController extends GetxController {
       final result = await getProductsUseCase.call();
       result.fold(
         (failure) {},
-        (data) => products.assignAll(data),
+        (data) {
+          _products = data;
+          notifyListeners();
+        },
       );
     } catch (_) {}
   }
 
   Future<void> fetchBrands() async {
-    isBrandsLoading.value = true;
+    _isBrandsLoading = true;
+    notifyListeners();
     try {
-      debugPrint('🔍 [PromosController] Fetching brands...');
-      if (Get.isRegistered<BrandRepository>()) {
-         final data = await Get.find<BrandRepository>().getBrands();
-         debugPrint('✅ [PromosController] Fetched ${data.length} brands');
-         brands.assignAll(data);
-      } else {
-        debugPrint('⚠️ [PromosController] BrandRepository is not registered!');
-      }
+      final data = await brandRepository.getBrands();
+      _brands = data;
     } catch (e) {
       debugPrint('❌ [PromosController] Error fetching brands: $e');
     } finally {
-      isBrandsLoading.value = false;
+      _isBrandsLoading = false;
+      notifyListeners();
     }
   }
 
   void onSearchChanged(String query) {
-    searchQuery.value = query;
+    _searchQuery = query;
     _applyFilters();
+    notifyListeners();
   }
 
   void _applyFilters() {
-    if (searchQuery.value.isEmpty) {
-      filteredPromos.value = promos;
+    if (_searchQuery.isEmpty) {
+      _filteredPromos = List.from(_promos);
     } else {
-      final query = searchQuery.value.toLowerCase();
-      filteredPromos.value = promos.where((promo) {
+      final query = _searchQuery.toLowerCase();
+      _filteredPromos = _promos.where((promo) {
         final matchesTitle = promo.displayTitle.toLowerCase().contains(query);
         final matchesSubtitle = promo.displaySubtitle.toLowerCase().contains(query);
         return matchesTitle || matchesSubtitle;
@@ -143,7 +189,8 @@ class PromosController extends GetxController {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      selectedImage.value = File(pickedFile.path);
+      _selectedImage = File(pickedFile.path);
+      notifyListeners();
     }
   }
 
@@ -155,12 +202,13 @@ class PromosController extends GetxController {
     buttonArController.clear();
     buttonEnController.clear();
     backgroundColorController.text = '#FFFFFF';
-    backgroundColorHex.value = '#FFFFFF';
-    selectedTargetType.value = 'none';
-    selectedTargetId.value = null;
-    isActive.value = true;
-    selectedImage.value = null;
-    existingImageUrl.value = '';
+    _backgroundColorHex = '#FFFFFF';
+    _selectedTargetType = 'none';
+    _selectedTargetId = null;
+    _isActive = true;
+    _selectedImage = null;
+    _existingImageUrl = '';
+    notifyListeners();
   }
 
   void populateForm(PromoEntity promo) {
@@ -171,157 +219,65 @@ class PromosController extends GetxController {
     buttonArController.text = promo.buttonText?['ar']?.toString() ?? '';
     buttonEnController.text = promo.buttonText?['en']?.toString() ?? '';
     backgroundColorController.text = promo.backgroundColor;
-    backgroundColorHex.value = promo.backgroundColor;
+    _backgroundColorHex = promo.backgroundColor;
 
-    selectedTargetType.value = promo.targetType;
-    selectedTargetId.value = promo.targetId ?? '';
-    isActive.value = promo.isActive;
-    existingImageUrl.value = promo.imageUrl;
-    selectedImage.value = null;
+    _selectedTargetType = promo.targetType;
+    _selectedTargetId = promo.targetId ?? '';
+    _isActive = promo.isActive;
+    _existingImageUrl = promo.imageUrl;
+    _selectedImage = null;
+    notifyListeners();
   }
 
-  Future<void> savePromo({PromoEntity? existingPromo}) async {
-    if (existingImageUrl.value.isEmpty && selectedImage.value == null) {
-      Get.snackbar(
-        'خطأ', 'يجب اختيار صورة للإعلان',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.8),
-        colorText: Colors.white,
-      );
-      return;
-    }
-
-    // Validate target selection
-    if (selectedTargetType.value == 'product' && (selectedTargetId.value == null || selectedTargetId.value!.isEmpty)) {
-      Get.snackbar(
-        'خطأ', 'يجب اختيار منتج للإعلان',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.8),
-        colorText: Colors.white,
-      );
-      return;
-    }
-    if (selectedTargetType.value == 'brand' && (selectedTargetId.value == null || selectedTargetId.value!.isEmpty)) {
-      Get.snackbar(
-        'خطأ', 'يجب اختيار ماركة للإعلان',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.8),
-        colorText: Colors.white,
-      );
-      return;
-    }
-
-    isLoading.value = true;
-
-    String finalImageUrl = existingImageUrl.value;
-    try {
-      if (selectedImage.value != null) {
-        finalImageUrl = await uploadPromoImageUseCase.call(selectedImage.value!.path);
-      }
-    } catch (e) {
-      isLoading.value = false;
-      Get.snackbar(
-        'خطأ', 'فشل في رفع الصورة: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.8),
-        colorText: Colors.white,
-      );
-      return;
-    }
-
-    final targetId = selectedTargetType.value == 'none' ? null : selectedTargetId.value;
-
-    final newPromo = PromoEntity(
-      id: existingPromo?.id ?? '',
-      title: {'ar': titleArController.text.trim(), 'en': titleEnController.text.trim()},
-      subtitle: {'ar': subtitleArController.text.trim(), 'en': subtitleEnController.text.trim()},
-      buttonText: {'ar': buttonArController.text.trim(), 'en': buttonEnController.text.trim()},
-      imageUrl: finalImageUrl,
-      backgroundColor: backgroundColorController.text.isNotEmpty ? backgroundColorController.text : '#FFFFFF',
-      targetType: selectedTargetType.value,
-      targetId: targetId,
-      isActive: isActive.value,
-    );
-
-    // isLoading.value is already true from before the image upload
-
-    try {
-      if (existingPromo != null) {
-        final updated = await updatePromoUseCase.call(newPromo);
-        final index = promos.indexWhere((p) => p.id == updated.id);
-        if (index != -1) {
-          promos[index] = updated;
-          _applyFilters();
-        }
-        Get.back();
-        Get.snackbar(
-          'نجاح', 'تم تحديث الإعلان بنجاح',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green.withValues(alpha: 0.8),
-          colorText: Colors.white,
-        );
-      } else {
-        final added = await addPromoUseCase.call(newPromo);
-        promos.insert(0, added);
-        _applyFilters();
-        Get.back();
-        Get.snackbar(
-          'نجاح', 'تمت إضافة الإعلان بنجاح',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green.withValues(alpha: 0.8),
-          colorText: Colors.white,
-        );
-      }
-    } catch (e) {
-      Get.snackbar(
-        'خطأ', e.toString().replaceAll('Exception: ', ''),
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.8),
-        colorText: Colors.white,
-      );
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
-  void confirmDelete(String id, String title) {
-    Get.defaultDialog(
-      title: 'تأكيد الحذف',
-      middleText: 'هل أنت متأكد أنك تريد حذف الإعلان "$title"؟',
-      textConfirm: 'حذف',
-      textCancel: 'إلغاء',
-      confirmTextColor: Colors.white,
-      buttonColor: Colors.red,
-      onConfirm: () {
-        Get.back();
-        _deletePromo(id);
-      },
+  void confirmDelete(BuildContext context, String id, String title) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('تأكيد الحذف'),
+        content: Text('هل أنت متأكد أنك تريد حذف الإعلان "$title"؟'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('إلغاء'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              _deletePromo(id);
+            },
+            child: const Text('حذف'),
+          ),
+        ],
+      ),
     );
   }
 
   Future<void> _deletePromo(String id) async {
     try {
       await deletePromoUseCase.call(id);
-      promos.removeWhere((p) => p.id == id);
+      _promos.removeWhere((p) => p.id == id);
       _applyFilters();
-      Get.snackbar(
-        'نجاح', 'تم حذف الإعلان بنجاح',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.withValues(alpha: 0.8),
-        colorText: Colors.white,
-      );
+      notifyListeners();
+      AppFeedback.showSuccess('تم حذف الإعلان بنجاح');
     } catch (e) {
-      Get.snackbar(
-        'خطأ', e.toString().replaceAll('Exception: ', ''),
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.8),
-        colorText: Colors.white,
-      );
+      AppFeedback.showError(e.toString().replaceAll('Exception: ', ''));
     }
   }
 
+  void updatePromoLocally(PromoEntity promo) {
+    final index = _promos.indexWhere((p) => p.id == promo.id);
+    if (index != -1) {
+      _promos[index] = promo;
+    } else {
+      _promos.insert(0, promo);
+    }
+    _applyFilters();
+    notifyListeners();
+  }
+
   @override
-  void onClose() {
+  void dispose() {
     titleArController.dispose();
     titleEnController.dispose();
     subtitleArController.dispose();
@@ -329,6 +285,6 @@ class PromosController extends GetxController {
     buttonArController.dispose();
     buttonEnController.dispose();
     backgroundColorController.dispose();
-    super.onClose();
+    super.dispose();
   }
 }
