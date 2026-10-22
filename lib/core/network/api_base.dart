@@ -1,12 +1,12 @@
 import 'package:dio/dio.dart';
-import 'package:get/get.dart' hide Response;
-import 'auth_service.dart';
 import '../../config/api_config.dart';
+import '../utils/ui_feedback.dart';
+import 'auth_service.dart';
 
 class ApiBase {
   late final Dio dio;
   static const int timeoutSeconds = 30;
-  final AuthService _authService = Get.find<AuthService>();
+  final AuthService _authService = AuthService.instance;
 
   ApiBase() {
     _initDio();
@@ -45,13 +45,9 @@ class ApiBase {
 
     if (e.response?.statusCode == 401 && !isAuthEndpoint) {
       _authService.logout();
-      Get.snackbar('انتهت الجلسة', 'يرجى تسجيل الدخول مرة أخرى');
+      AppFeedback.showWarning('انتهت الجلسة: يرجى تسجيل الدخول مرة أخرى');
     } else if (e.response?.statusCode == 403) {
-      Get.snackbar(
-        'خطأ',
-        'ليس لديك صلاحية للوصول إلى هذا المورد',
-        snackPosition: SnackPosition.TOP,
-      );
+      AppFeedback.showError('ليس لديك صلاحية للوصول إلى هذا المورد');
     }
   }
 
