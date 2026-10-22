@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/controllers/promo_form_controller.dart';
 
 /// قسم حالة نشر وظهور الإعلان متوافق مع نمط Bento Grid
@@ -13,8 +12,9 @@ class PromoPublishingSection extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Obx(
-      () => Row(
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (context, _) => Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
@@ -28,7 +28,7 @@ class PromoPublishingSection extends StatelessWidget {
                       width: 8,
                       height: 8,
                       decoration: BoxDecoration(
-                        color: controller.isActive.value
+                        color: controller.isActive
                             ? Colors.green
                             : Colors.grey,
                         shape: BoxShape.circle,
@@ -36,7 +36,7 @@ class PromoPublishingSection extends StatelessWidget {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      controller.isActive.value
+                      controller.isActive
                           ? 'الإعلان مفعّل ومنشور'
                           : 'مسودة متوقفة',
                       style: theme.textTheme.bodyMedium?.copyWith(
@@ -48,7 +48,7 @@ class PromoPublishingSection extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  controller.isActive.value
+                  controller.isActive
                       ? 'يظهر لجميع العملاء في التطبيق فوراً'
                       : 'محفوظ كمسودة داخل لوحة التحكم فقط',
                   style: theme.textTheme.bodySmall?.copyWith(
@@ -61,8 +61,8 @@ class PromoPublishingSection extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Switch.adaptive(
-            value: controller.isActive.value,
-            onChanged: (val) => controller.isActive.value = val,
+            value: controller.isActive,
+            onChanged: (val) => controller.isActive = val,
           ),
         ],
       ),
