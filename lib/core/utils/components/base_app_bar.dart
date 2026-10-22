@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
-import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_controller.dart';
-import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_controller.dart';
 
 class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final List<Widget>? extraActions;
   final bool showStatus;
+  final bool isConnected;
   final VoidCallback? onPressed;
   final bool centerTitle;
   final IconData icon;
@@ -19,6 +17,7 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.title,
     this.extraActions,
     this.showStatus = false,
+    this.isConnected = true,
     this.onPressed,
     this.centerTitle = true,
     this.icon = Icons.refresh_rounded,
@@ -32,18 +31,13 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
     final canPop = ModalRoute.of(context)?.canPop ?? false;
     final isDesktop = MediaQuery.sizeOf(context).width >= 900;
 
-    final DashboardController statusController =
-        Get.find<DashboardController>();
-
     Widget? effectiveLeading = leading;
     if (effectiveLeading == null && !canPop && !isDesktop) {
       effectiveLeading = IconButton(
         icon: const Icon(Icons.menu_rounded),
         tooltip: 'القائمة الرئيسية',
         onPressed: () {
-          if (Get.isRegistered<NavigationController>()) {
-            Get.find<NavigationController>().openDrawer();
-          }
+          Scaffold.of(context).openDrawer();
         },
       );
     }
@@ -53,19 +47,27 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
       surfaceTintColor: surfaceTintColor ?? Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.transparent,
-      centerTitle: centerTitle,
       title: Text(
         title,
         style: TextStyle(
-          color: isDark ? Colors.white : AppColors.textMuted,
-          fontWeight: FontWeight.w800,
-          fontSize: 20,
-          letterSpacing: 0.5,
+          color: isDark ? Colors.white : Colors.black,
+          fontSize: 22,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      centerTitle: centerTitle,
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(1.0),
+        child: Container(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.1)
+              : Colors.black.withValues(alpha: 0.05),
+          height: 1.0,
         ),
       ),
       actions: [
         // 1. مؤشر حالة الاتصال (يظهر فقط إذا تم تفعيل showStatus)
-        if (showStatus) _buildConnectionStatus(statusController),
+        if (showStatus) _buildConnectionStatus(),
 
         // 2. زر التحديث (يظهر فقط إذا تم تمرير دالة onRefresh)
         if (onPressed != null)
@@ -80,41 +82,38 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   // مكوّن حالة الاتصال المنفصل
-  Widget _buildConnectionStatus(DashboardController controller) {
-    return Obx(() {
-      final isConnected = controller.isConnected.value;
-      final statusColor = isConnected ? AppColors.success : AppColors.error;
+  Widget _buildConnectionStatus() {
+    final statusColor = isConnected ? AppColors.success : AppColors.error;
 
-      return Center(
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 8),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          decoration: BoxDecoration(
-            color: statusColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: statusColor.withValues(alpha: 0.2),
-              width: 1,
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _StatusPulseDot(color: statusColor),
-              const SizedBox(width: 6),
-              Text(
-                isConnected ? 'متصل' : 'قطع اتصال',
-                style: TextStyle(
-                  color: statusColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 11,
-                ),
-              ),
-            ],
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: statusColor.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: statusColor.withValues(alpha: 0.2),
+            width: 1,
           ),
         ),
-      );
-    });
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _StatusPulseDot(color: statusColor),
+            const SizedBox(width: 6),
+            Text(
+              isConnected ? 'متصل' : 'قطع اتصال',
+              style: TextStyle(
+                color: statusColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 11,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -131,12 +130,12 @@ class _StatusPulseDot extends StatefulWidget {
 
 class _StatusPulseDotState extends State<_StatusPulseDot>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+  late AnimationController _anim;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
+    _anim = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
@@ -144,19 +143,33 @@ class _StatusPulseDotState extends State<_StatusPulseDot>
 
   @override
   void dispose() {
-    _controller.dispose();
+    _anim.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: _controller.drive(CurveTween(curve: Curves.easeInOut)),
-      child: Container(
-        width: 8,
-        height: 8,
-        decoration: BoxDecoration(color: widget.color, shape: BoxShape.circle),
-      ),
+    return AnimatedBuilder(
+      animation: _anim,
+      builder: (context, child) {
+        return Container(
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(
+            color: widget.color,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: widget.color.withValues(
+                  alpha: 0.3 + (_anim.value * 0.4),
+                ),
+                blurRadius: 4 + (_anim.value * 4),
+                spreadRadius: _anim.value * 2,
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
