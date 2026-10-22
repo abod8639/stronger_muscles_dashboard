@@ -28,7 +28,7 @@ class ProductRepositoryImpl implements ProductRepository {
     // 1. فحص التخزين المؤقت (Cache)
     if (!forceRefresh && _cacheService != null) {
       try {
-        final cachedData = _cacheService!.get<dynamic>(_cacheKeyProducts);
+        final cachedData = _cacheService.get<dynamic>(_cacheKeyProducts);
         if (cachedData != null && cachedData is List && cachedData.isNotEmpty) {
           if (cachedData.first is ProductModel) {
             debugPrint('✓ تم استرجاع المنتجات من الـ Cache بنجاح');
@@ -36,12 +36,12 @@ class ProductRepositoryImpl implements ProductRepository {
               (cachedData as List<ProductModel>).map((m) => m.toEntity()).toList(),
             );
           } else {
-            _cacheService?.remove(_cacheKeyProducts);
+            _cacheService.remove(_cacheKeyProducts);
           }
         }
       } catch (e) {
         debugPrint('⚠️ خطأ في قراءة Cache المنتجات: $e');
-        _cacheService?.remove(_cacheKeyProducts);
+        _cacheService.remove(_cacheKeyProducts);
       }
     }
 
