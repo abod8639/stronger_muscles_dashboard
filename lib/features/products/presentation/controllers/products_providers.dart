@@ -2,9 +2,10 @@ import 'dart:async';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import 'package:stronger_muscles_dashboard/features/auth/presentation/controllers/auth_providers.dart';
+import 'package:stronger_muscles_dashboard/features/brands/presentation/controllers/brands_providers.dart';
+import 'package:stronger_muscles_dashboard/features/categories/presentation/controllers/categories_providers.dart';
 import '../../data/datasources/product_remote_datasource.dart';
 import '../../data/repositories/product_repository_impl.dart';
 import '../../domain/entities/product_entity.dart';
@@ -129,13 +130,7 @@ class ProductsNotifier extends AsyncNotifier<List<ProductEntity>> {
 
     return result.fold(
       (failure) => throw failure,
-      (products) {
-        // مزامنة فورية مع GetX controller bridge لضمان توافق الويدجتس القائمة
-        if (Get.isRegistered<ProductsController>()) {
-          Get.find<ProductsController>().syncWithRiverpod(products);
-        }
-        return products;
-      },
+      (products) => products,
     );
   }
 
@@ -160,9 +155,6 @@ class ProductsNotifier extends AsyncNotifier<List<ProductEntity>> {
         final current = List<ProductEntity>.from(previous.value ?? const []);
         final updated = [newProduct, ...current];
         state = AsyncValue.data(updated);
-        if (Get.isRegistered<ProductsController>()) {
-          Get.find<ProductsController>().syncWithRiverpod(updated);
-        }
       },
     );
 
@@ -184,9 +176,6 @@ class ProductsNotifier extends AsyncNotifier<List<ProductEntity>> {
         if (index != -1) {
           current[index] = updatedProduct;
           state = AsyncValue.data(current);
-          if (Get.isRegistered<ProductsController>()) {
-            Get.find<ProductsController>().syncWithRiverpod(current);
-          }
         }
       },
     );
@@ -208,9 +197,6 @@ class ProductsNotifier extends AsyncNotifier<List<ProductEntity>> {
           final current = List<ProductEntity>.from(previous.value ?? const []);
           current.removeWhere((p) => p.id == id);
           state = AsyncValue.data(current);
-          if (Get.isRegistered<ProductsController>()) {
-            Get.find<ProductsController>().syncWithRiverpod(current);
-          }
         }
       },
     );
@@ -230,6 +216,41 @@ final productsControllerProvider =
     AsyncNotifierProvider<ProductsNotifier, List<ProductEntity>>(
   ProductsNotifier.new,
 );
+
+/// موفر متحكم الواجهة والتفاعلات التفاعلي
+final productsUIControllerProvider = Provider<ProductsController>((ref) {
+  final getProductsUseCase = ref.watch(getProductsUseCaseProvider);
+  final addProductUseCase = ref.watch(addProductUseCaseProvider);
+  final updateProductUseCase = ref.watch(updateProductUseCaseProvider);
+  final deleteProductUseCase = ref.watch(deleteProductUseCaseProvider);
+  final uploadProductImageUseCase = ref.watch(uploadProductImageUseCaseProvider);
+  final categoryRepository = ref.watch(categoryRepositoryProvider);
+  final brandRepository = ref.watch(brandRepositoryProvider);
+
+  final controller = ProductsController(
+    getProductsUseCase: getProductsUseCase,
+    addProductUseCase: addProductUseCase,
+    updateProductUseCase: updateProductUseCase,
+    deleteProductUseCase: deleteProductUseCase,
+    uploadProductImageUseCase: uploadProductImageUseCase,
+    categoryRepository: categoryRepository,
+    brandRepository: brandRepository,
+  );
+
+  // مزامنة تلقائية عند تحديث بيانات قائمة المنتجات
+  ref.listen<AsyncValue<List<ProductEntity>>>(
+    productsControllerProvider,
+    (_, next) {
+      next.whenData((products) {
+        controller.syncWithRiverpod(products);
+      });
+    },
+    fireImmediately: true,
+  );
+
+  ref.onDispose(controller.dispose);
+  return controller;
+});
 
 // ==========================================
 // Computed Selectors / Providers
