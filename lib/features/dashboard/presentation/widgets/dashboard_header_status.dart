@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_controller.dart';
-import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_controller.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class DashboardHeaderStatus extends GetView<DashboardController> {
+class DashboardHeaderStatus extends ConsumerWidget {
   const DashboardHeaderStatus({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
     final isDesktop = MediaQuery.sizeOf(context).width >= 900;
 
     return Row(
@@ -28,18 +25,16 @@ class DashboardHeaderStatus extends GetView<DashboardController> {
               ),
             ),
             const SizedBox(height: 8),
-            Obx(() => ConnectionStatusWidget(
-              isConnected: controller.isConnected.value,
-              lastUpdated: DateTime.now(), // Fixed time for simple display
-            )),
+            ConnectionStatusWidget(
+              isConnected: true,
+              lastUpdated: DateTime.now(),
+            ),
           ],
         ),
         if (!isDesktop)
           IconButton.filledTonal(
             onPressed: () {
-              if (Get.isRegistered<NavigationController>()) {
-                Get.find<NavigationController>().openDrawer();
-              }
+              Scaffold.of(context).openDrawer();
             },
             icon: const Icon(Icons.menu_rounded),
             tooltip: 'القائمة الرئيسية',
