@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:stronger_muscles_dashboard/core/network/auth_service.dart';
@@ -17,8 +16,8 @@ import 'package:stronger_muscles_dashboard/features/products/presentation/widget
 import 'package:stronger_muscles_dashboard/features/promos/domain/entities/promo_entity.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/pages/promo_form_screen.dart';
 
-/// المفتاح العام للتنقل متوافق مع GoRouter و GetX Bridge
-final GlobalKey<NavigatorState> rootNavigatorKey = Get.key;
+/// المفتاح العام للتنقل في GoRouter
+final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
 /// تكوين GoRouter المركزي للتطبيق مع حماية المسارات (Auth Guards)
 final GoRouter appRouter = GoRouter(
@@ -82,9 +81,7 @@ final GoRouter appRouter = GoRouter(
     ),
   ],
   redirect: (BuildContext context, GoRouterState state) {
-    final authService =
-        Get.isRegistered<AuthService>() ? Get.find<AuthService>() : null;
-    final isLoggedIn = authService?.isLoggedIn() ?? false;
+    final isLoggedIn = AuthService.instance.isLoggedIn();
     final location = state.matchedLocation;
     final isAuthPath =
         location == AppRoutes.login || location == AppRoutes.signup;
