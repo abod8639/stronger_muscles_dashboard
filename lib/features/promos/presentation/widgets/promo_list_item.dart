@@ -74,7 +74,7 @@ class PromoListItem extends ConsumerWidget {
             _buildImagePreview(colorScheme, isDark),
             const SizedBox(width: 16),
             // بيانات الإعلان
-            Expanded(child: _buildInfo(context, colorScheme, isDark)),
+            Expanded(child: _buildInfo(context, ref, colorScheme, isDark)),
             const SizedBox(width: 12),
             // أزرار العمليات (تعديل وحذف)
             _buildActions(colorScheme, isDark),
@@ -146,7 +146,7 @@ class PromoListItem extends ConsumerWidget {
     );
   }
 
-  Widget _buildInfo(BuildContext context, ColorScheme colorScheme, bool isDark) {
+  Widget _buildInfo(BuildContext context, WidgetRef ref, ColorScheme colorScheme, bool isDark) {
     final theme = Theme.of(context);
 
     return Column(
