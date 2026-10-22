@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import 'package:stronger_muscles_dashboard/features/auth/presentation/controllers/auth_providers.dart';
 import '../../data/datasources/order_remote_datasource.dart';
@@ -12,7 +11,7 @@ import '../../domain/repositories/order_repository.dart';
 import '../../domain/usecases/get_order_detail_usecase.dart';
 import '../../domain/usecases/get_orders_usecase.dart';
 import '../../domain/usecases/update_order_status_usecase.dart';
-import 'orders_controller.dart';
+import 'order_details_controller.dart';
 
 // ==========================================
 // Data & Domain Providers
@@ -131,13 +130,7 @@ class OrdersNotifier extends AsyncNotifier<List<OrderEntity>> {
 
     return result.fold(
       (failure) => throw failure,
-      (orders) {
-        // مزامنة فورية مع GetX controller bridge لضمان توافق الويدجتس القائمة
-        if (Get.isRegistered<OrdersController>()) {
-          Get.find<OrdersController>().syncWithRiverpod(orders);
-        }
-        return orders;
-      },
+      (orders) => orders,
     );
   }
 
@@ -169,9 +162,6 @@ class OrdersNotifier extends AsyncNotifier<List<OrderEntity>> {
         if (index != -1) {
           currentList[index] = updatedOrder;
           state = AsyncValue.data(currentList);
-          if (Get.isRegistered<OrdersController>()) {
-            Get.find<OrdersController>().syncWithRiverpod(currentList);
-          }
         }
       },
     );
@@ -191,6 +181,24 @@ final ordersControllerProvider =
     AsyncNotifierProvider<OrdersNotifier, List<OrderEntity>>(
   OrdersNotifier.new,
 );
+
+// ==========================================
+// Order Details Controller Provider
+// ==========================================
+
+final orderDetailsControllerProvider = Provider.autoDispose
+    .family<OrderDetailsController, OrderEntity>((ref, initialOrder) {
+  final updateUseCase = ref.watch(updateOrderStatusUseCaseProvider);
+  final controller = OrderDetailsController(
+    initialOrder: initialOrder,
+    updateOrderStatusUseCase: updateUseCase,
+    onStatusUpdated: () {
+      ref.read(ordersControllerProvider.notifier).refreshOrders(forceRefresh: true);
+    },
+  );
+  ref.onDispose(controller.dispose);
+  return controller;
+});
 
 // ==========================================
 // Computed Selectors / Providers
