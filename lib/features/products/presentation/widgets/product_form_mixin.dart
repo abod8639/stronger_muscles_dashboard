@@ -1,4 +1,3 @@
-import 'package:get/get.dart';
 import '../controllers/products_controller.dart';
 import '../../domain/entities/product_entity.dart';
 
@@ -22,12 +21,15 @@ mixin ProductFormMixin {
       controller.textcontrollers['sessions']?.text =
           product!.servingsPerContainer?.toString() ?? '';
 
-      controller.productFlavors.assignAll(product!.flavors ?? []);
-      controller.isActive.value = product!.isActive;
-      controller.isFeatured.value = product!.isFeatured;
-      controller.isBackgroundWhite.value = product!.isBackgroundWhite ?? false;
-      controller.productSizes.assignAll(product!.productSizes ?? []);
-      controller.variants.assignAll(product!.variants ?? []);
+      controller.productFlavors.clear();
+      controller.productFlavors.addAll(product!.flavors ?? []);
+      controller.isActive = product!.isActive;
+      controller.isFeatured = product!.isFeatured;
+      controller.isBackgroundWhite = product!.isBackgroundWhite ?? false;
+      controller.productSizes.clear();
+      controller.productSizes.addAll(product!.productSizes ?? []);
+      controller.variants.clear();
+      controller.variants.addAll(product!.variants ?? []);
     } else {
       _clearFields();
     }
@@ -37,9 +39,9 @@ mixin ProductFormMixin {
     controller.textcontrollers.forEach((_, c) => c.clear());
     controller.productFlavors.clear();
     controller.imageUrls.clear();
-    controller.isActive.value = true;
-    controller.isFeatured.value = false;
-    controller.isBackgroundWhite.value = false;
+    controller.isActive = true;
+    controller.isFeatured = false;
+    controller.isBackgroundWhite = false;
     controller.productSizes.clear();
     controller.variants.clear();
     controller.clearSizeControllers();
@@ -48,8 +50,5 @@ mixin ProductFormMixin {
   List<String> getInitialImageUrls() => product?.imageUrls ?? [];
   String? getInitialCategoryId() => product?.categoryId;
 
-  void disposeProductControllers() {
-    // We don't necessarily want to dispose here if they are managed by the controller
-    // but we can clear them if needed.
-  }
+  void disposeProductControllers() {}
 }
