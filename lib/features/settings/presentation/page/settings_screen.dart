@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stronger_muscles_dashboard/config/app_colors.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
-import 'package:stronger_muscles_dashboard/features/auth/presentation/controllers/auth_controller.dart';
-import 'package:stronger_muscles_dashboard/features/users/presentation/controllers/users_controller.dart';
+import 'package:stronger_muscles_dashboard/features/auth/presentation/controllers/auth_providers.dart';
+import 'package:stronger_muscles_dashboard/features/users/presentation/controllers/users_providers.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final authController = Get.find<AuthController>();
-    final usersController = Get.find<UsersController>();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final usersAsync = ref.watch(usersNotifierProvider);
 
     return Scaffold(
       backgroundColor: AppColorsExtended.backgroundColor,
@@ -21,75 +20,80 @@ class SettingsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // قسم إدارة المشرفين
+            // قسم إدارة المشرفين والصلاحيات
             _buildSectionCard(
-              title: 'إدارة المشرفين الصلاحيات',
-              child: Obx(() {
-                if (usersController.isLoading.value) {
-                  return const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(20),
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
-                }
+              title: 'إدارة المشرفين والصلاحيات',
+              child: usersAsync.when(
+                loading: () => const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+                error: (error, _) => Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('خطأ في تحميل المستخدمين: $error'),
+                ),
+                data: (stats) {
+                  final admins = stats.users
+                      .where((user) => user.role.toLowerCase() == 'admin')
+                      .toList();
 
-                final admins = usersController.filteredUsers
-                    .where((user) => user.role.toLowerCase() == 'admin')
-                    .toList();
+                  if (admins.isEmpty) {
+                    return const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text('لا يوجد مسؤولين حالياً'),
+                    );
+                  }
 
-                if (admins.isEmpty) {
-                  return const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text('لا يوجد مسؤولين حالياً'),
-                  );
-                }
-
-                return ListView.separated(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: admins.length,
-                  separatorBuilder: (context, index) => const Divider(),
-                  itemBuilder: (context, index) {
-                    final admin = admins[index];
-                    return ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      leading: CircleAvatar(
-                        backgroundColor: AppColors.primary.withValues(
-                          alpha: 0.1,
-                        ),
-                        child: Text(
-                          admin.name[0].toUpperCase(),
-                          style: TextStyle(color: AppColors.primary),
-                        ),
-                      ),
-                      title: Text(
-                        admin.name,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text(admin.email ?? 'لا يوجد بريد'),
-                      trailing: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          admin.role.toUpperCase(),
-                          style: TextStyle(
-                            color: AppColors.primary,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
+                  return ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: admins.length,
+                    separatorBuilder: (context, index) => const Divider(),
+                    itemBuilder: (context, index) {
+                      final admin = admins[index];
+                      return ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: CircleAvatar(
+                          backgroundColor: AppColors.primary.withValues(
+                            alpha: 0.1,
+                          ),
+                          child: Text(
+                            admin.name.isNotEmpty
+                                ? admin.name[0].toUpperCase()
+                                : 'A',
+                            style: TextStyle(color: AppColors.primary),
                           ),
                         ),
-                      ),
-                    );
-                  },
-                );
-              }),
+                        title: Text(
+                          admin.name,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(admin.email ?? 'لا يوجد بريد'),
+                        trailing: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            admin.role.toUpperCase(),
+                            style: TextStyle(
+                              color: AppColors.primary,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
 
             const SizedBox(height: 16),
@@ -100,7 +104,7 @@ class SettingsScreen extends StatelessWidget {
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed: () => _showLogoutDialog(authController),
+                  onPressed: () => _showLogoutDialog(context, ref),
                   icon: const Icon(Icons.logout),
                   label: const Text('تسجيل الخروج'),
                   style: ElevatedButton.styleFrom(
@@ -139,17 +143,21 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  void _showLogoutDialog(AuthController authController) {
-    Get.dialog(
-      AlertDialog(
+  void _showLogoutDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
         title: const Text('تسجيل الخروج'),
         content: const Text('هل أنت متأكد من تسجيل الخروج؟'),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('إلغاء')),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('إلغاء'),
+          ),
           ElevatedButton(
             onPressed: () {
-              Get.back();
-              authController.logout();
+              Navigator.of(ctx).pop();
+              ref.read(authControllerProvider.notifier).logout();
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.error,
