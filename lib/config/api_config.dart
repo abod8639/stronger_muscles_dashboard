@@ -1,24 +1,19 @@
-import 'package:get/get.dart';
+class _BaseUrlString {
+  final String value;
+  const _BaseUrlString(this.value);
 
-class ApiConfigController extends GetxController {
-  // final String ip = "localhost";
+  @override
+  String toString() => value;
+}
+
+class ApiConfigController {
+   // final String ip = "localhost";
+
   final String ip = "192.168.1.17";
-  // final String ip = "192.168.1.17";
-
   final String port = "8080";
-
   final String url = "strongermusclesdatabase-production.up.railway.app";
 
-  // final String ip = "[IP_ADDRESS]";
-
-  // static const String baseUrl = 'http://10.0.2.2:8080/api/v1';
-  // RxString baseUrl = 'http://192.168.1.17:8080/api/v1'.obs;
-
-  RxString get baseUrl => 'http://$ip:$port/api/v1'.obs;
-  // RxString get baseUrl => 'https://$url/api/v1'.obs;
-  // RxString get baseUrl => 'http://stronger.rf.gd/api/v1'.obs;
-
-  // RxString baseUrl = 'http://localhost:8080/api/v1'.obs;
+  _BaseUrlString get baseUrl => _BaseUrlString('http://$ip:$port/api/v1');
 }
 
 class ApiConfig {
