@@ -32,7 +32,7 @@ class CategoryRepositoryImpl implements CategoryRepository {
     // 1. القراءة الآمنة من الذاكرة المؤقتة (Cache)
     if (!forceRefresh && _cacheService != null) {
       try {
-        final cachedData = _cacheService!.get<dynamic>(cacheKey);
+        final cachedData = _cacheService.get<dynamic>(cacheKey);
         if (cachedData is List && cachedData.isNotEmpty) {
           if (cachedData.first is CategoryModel) {
             final entities =
@@ -41,7 +41,7 @@ class CategoryRepositoryImpl implements CategoryRepository {
           }
         }
       } catch (e) {
-        _cacheService?.remove(cacheKey);
+        _cacheService.remove(cacheKey);
       }
     }
 
