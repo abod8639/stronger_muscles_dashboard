@@ -1,9 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:stronger_muscles_dashboard/core/network/auth_service.dart';
-import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/build_nav_item.dart';
 import 'package:stronger_muscles_dashboard/functions/cache_manager.dart';
 
@@ -492,11 +490,7 @@ class _SidebarUserProfile extends ConsumerWidget {
           ),
           _NeumorphicLogoutButton(
             onPressed: () {
-              if (authService != null) {
-                authService.logout();
-              } else {
-                context.go(AppRoutes.login);
-              }
+              authService.logout();
             },
           ),
         ],
