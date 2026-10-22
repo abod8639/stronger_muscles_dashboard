@@ -94,7 +94,7 @@ final dashboardStatsNotifierProvider =
 
 /// موفر بيانات الرسم البياني للطلبات بناءً على الفترة المحددة
 final ordersChartDataProvider = Provider<OrdersChartData>((ref) {
-  final stats = ref.watch(dashboardStatsNotifierProvider).valueOrNull ??
+  final stats = ref.watch(dashboardStatsNotifierProvider).value ??
       DashboardStatsEntity.initial();
   final period = ref.watch(dashboardPeriodProvider);
   return _calculateOrdersChartData(stats.orders, period);
@@ -103,7 +103,7 @@ final ordersChartDataProvider = Provider<OrdersChartData>((ref) {
 /// موفر بيانات مؤشر الاتجاه لكل حالة طلب
 final statusTrendDataProvider =
     Provider.family<IndicatorTrendData, OrderStatus>((ref, status) {
-  final stats = ref.watch(dashboardStatsNotifierProvider).valueOrNull ??
+  final stats = ref.watch(dashboardStatsNotifierProvider).value ??
       DashboardStatsEntity.initial();
   final period = ref.watch(dashboardPeriodProvider);
   return _calculateStatusTrendData(stats.orders, status, period);
