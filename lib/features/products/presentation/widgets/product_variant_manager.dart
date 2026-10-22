@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
 
@@ -15,8 +14,9 @@ class ProductVariantManager extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
 
-    return Obx(
-      () => Column(
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (context, _) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
