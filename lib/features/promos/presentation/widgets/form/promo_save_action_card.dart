@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/controllers/promo_form_controller.dart';
 
 /// بطاقة وزر حفظ ونشر الإعلان
@@ -14,18 +13,19 @@ class PromoSaveActionCard extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final isEditing = controller.isEditing;
 
-    return Obx(
-      () => SizedBox(
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (context, _) => SizedBox(
         width: double.infinity,
         child: FilledButton.icon(
-          onPressed: controller.isLoading.value ? null : () => controller.savePromo(),
+          onPressed: controller.isLoading ? null : () => controller.savePromo(context),
           style: FilledButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),
             ),
           ),
-          icon: controller.isLoading.value
+          icon: controller.isLoading
               ? SizedBox(
                   width: 20,
                   height: 20,
