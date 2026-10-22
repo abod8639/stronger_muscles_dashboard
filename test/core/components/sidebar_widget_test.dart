@@ -1,12 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:stronger_muscles_dashboard/core/network/auth_service.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/sidebar.dart';
-import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_controller.dart';
 
 class RoleMockAuthService extends AuthService {
   final String mockRole;
@@ -38,13 +37,7 @@ void main() {
   });
 
   setUp(() async {
-    Get.reset();
     await GetStorage.init();
-    Get.put<NavigationController>(NavigationController());
-  });
-
-  tearDown(() {
-    Get.reset();
   });
 
   testWidgets('Sidebar renders full menu for super_admin role', (WidgetTester tester) async {
@@ -52,15 +45,17 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
 
-    Get.put<AuthService>(
-      RoleMockAuthService(mockRole: 'super_admin', mockName: 'Master Admin'),
-      permanent: true,
-    );
-
     await tester.pumpWidget(
-      const GetMaterialApp(
-        home: Scaffold(
-          body: Sidebar(),
+      ProviderScope(
+        overrides: [
+          authServiceProvider.overrideWithValue(
+            RoleMockAuthService(mockRole: 'super_admin', mockName: 'Master Admin'),
+          ),
+        ],
+        child: const MaterialApp(
+          home: Scaffold(
+            body: Sidebar(),
+          ),
         ),
       ),
     );
@@ -79,15 +74,17 @@ void main() {
   });
 
   testWidgets('Sidebar hides restricted items for customer_support role', (WidgetTester tester) async {
-    Get.put<AuthService>(
-      RoleMockAuthService(mockRole: 'customer_support', mockName: 'Support Agent'),
-      permanent: true,
-    );
-
     await tester.pumpWidget(
-      const GetMaterialApp(
-        home: Scaffold(
-          body: Sidebar(),
+      ProviderScope(
+        overrides: [
+          authServiceProvider.overrideWithValue(
+            RoleMockAuthService(mockRole: 'customer_support', mockName: 'Support Agent'),
+          ),
+        ],
+        child: const MaterialApp(
+          home: Scaffold(
+            body: Sidebar(),
+          ),
         ),
       ),
     );
