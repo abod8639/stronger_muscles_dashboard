@@ -28,7 +28,7 @@ class OrderRepositoryImpl implements OrderRepository {
     // 1. محاولة القراءة من الذاكرة المؤقتة (Cache) لتسريع الأداء وتوفير الموارد
     if (!forceRefresh && _cacheService != null) {
       try {
-        final cachedData = _cacheService!.get<dynamic>(_cacheKeyOrders);
+        final cachedData = _cacheService.get<dynamic>(_cacheKeyOrders);
         if (cachedData is List && cachedData.isNotEmpty) {
           if (cachedData.first is OrderModel) {
             debugPrint('✓ تم استرجاع الطلبات من الـ Cache بنجاح');
@@ -40,7 +40,7 @@ class OrderRepositoryImpl implements OrderRepository {
         }
       } catch (e) {
         debugPrint('⚠️ فشل في قراءة Cache الطلبات: $e');
-        _cacheService?.remove(_cacheKeyOrders);
+        _cacheService.remove(_cacheKeyOrders);
       }
     }
 
