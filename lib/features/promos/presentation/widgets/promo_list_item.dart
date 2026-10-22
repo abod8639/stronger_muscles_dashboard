@@ -1,13 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/features/promos/domain/entities/promo_entity.dart';
-import 'package:stronger_muscles_dashboard/features/promos/presentation/controllers/promos_controller.dart';
+import 'package:stronger_muscles_dashboard/features/promos/presentation/controllers/promos_providers.dart';
 
 /// عنصر قائمة الإعلانات بتصميم Neumorphism / Soft UI
 /// يتميز بأسطح لمسية ناعمة، شارة حالة نقطية مجسمة، وأزرار تحكم بارزة بدون أنيميشن
-class PromoListItem extends StatelessWidget {
+class PromoListItem extends ConsumerWidget {
   final PromoEntity promo;
   final int index;
   final VoidCallback onEdit;
@@ -22,7 +22,7 @@ class PromoListItem extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
@@ -185,7 +185,7 @@ class PromoListItem extends StatelessWidget {
         ],
         const SizedBox(height: 8),
         // نوع التوجيه (Target chip)
-        _buildTargetChip(context, colorScheme, isDark),
+        _buildTargetChip(context, ref, colorScheme, isDark),
       ],
     );
   }
@@ -264,6 +264,7 @@ class PromoListItem extends StatelessWidget {
 
   Widget _buildTargetChip(
     BuildContext context,
+    WidgetRef ref,
     ColorScheme colorScheme,
     bool isDark,
   ) {
@@ -280,9 +281,8 @@ class PromoListItem extends StatelessWidget {
         break;
       case 'brand':
         icon = Icons.category_rounded;
-        final brandName = Get.isRegistered<PromosController>()
-            ? Get.find<PromosController>().getBrandName(promo.targetId)
-            : promo.targetId;
+        final brandName =
+            ref.watch(promosControllerProvider).getBrandName(promo.targetId);
         label = promo.targetId != null && promo.targetId!.isNotEmpty
             ? 'ماركة: $brandName'
             : 'ماركة: غير محددة';
