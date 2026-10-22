@@ -30,9 +30,11 @@ class PromosScreen extends ConsumerWidget {
         },
         icon: Icons.add,
       ),
-      body: Column(
-        children: [
-          TopSection(
+      body: ListenableBuilder(
+        listenable: controller,
+        builder: (context, _) => Column(
+          children: [
+            TopSection(
             children: [
               CustomSearchBar(
                 hintText: 'ابحث عن إعلان بالعنوان...',
@@ -180,6 +182,7 @@ class PromosScreen extends ConsumerWidget {
             }),
           ),
         ],
+      ),
       ),
     );
   }
