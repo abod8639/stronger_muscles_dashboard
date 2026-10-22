@@ -1,41 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/base_data_view.dart';
-import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_controller.dart';
-import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_controller.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/domain/entities/dashboard_stats_entity.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_providers.dart';
+import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_providers.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/widgets/order_list_tile.dart';
 
-class RecentOrdersSection extends GetView<DashboardController> {
+class RecentOrdersSection extends ConsumerWidget {
   const RecentOrdersSection({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final res = context.responsive;
-    final navigationController = Get.find<NavigationController>();
+    final stats = ref.watch(dashboardStatsNotifierProvider).valueOrNull ??
+        DashboardStatsEntity.initial();
+    final orders = stats.orders;
 
-    return Obx(() {
-      final orders = controller.stats.value.orders;
-      
-      return BaseDataView<OrderEntity>(
-        title: 'الطلبات الأخيرة',
-        crossAxisCount: res.isDesktop ? 2 : 1,
-        items: orders,
-        onSeeAll: () => navigationController.changeIndex(4), // Orders index
-        useListView: res.isTablet,
-        showCount: 4,
-        mainAxisExtent: 220, // Adjusted for new design
-        itemBuilder: (context, order, index) {
-          return OrderListTile(
-            order: order,
-            index: index,
-            onTap: () => context.push(AppRoutes.orderDetails, extra: order),
-          );
-        },
-      );
-    });
+    return BaseDataView<OrderEntity>(
+      title: 'الطلبات الأخيرة',
+      crossAxisCount: res.isDesktop ? 2 : 1,
+      items: orders,
+      onSeeAll: () =>
+          ref.read(navigationControllerProvider.notifier).selectTab(4),
+      useListView: res.isTablet,
+      showCount: 4,
+      mainAxisExtent: 220,
+      itemBuilder: (context, order, index) {
+        return OrderListTile(
+          order: order,
+          index: index,
+          onTap: () => context.push(AppRoutes.orderDetails, extra: order),
+        );
+      },
+    );
   }
 }
