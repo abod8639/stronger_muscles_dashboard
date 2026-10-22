@@ -333,7 +333,7 @@ class _SidebarSectionTitle extends StatelessWidget {
   }
 }
 
-class _SidebarUserProfile extends StatelessWidget {
+class _SidebarUserProfile extends ConsumerWidget {
   const _SidebarUserProfile();
 
   String _formatRole(String role) {
@@ -350,13 +350,13 @@ class _SidebarUserProfile extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
-    final authService = Get.isRegistered<AuthService>() ? Get.find<AuthService>() : null;
-    final adminName = authService?.getUserName() ?? 'Dexter';
-    final adminRole = authService?.getUserRole() ?? 'admin';
+    final authService = ref.watch(authServiceProvider);
+    final adminName = authService.getUserName();
+    final adminRole = authService.getUserRole();
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
