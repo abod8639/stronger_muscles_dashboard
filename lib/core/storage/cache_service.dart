@@ -1,7 +1,8 @@
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Cache Service for managing data caching with TTL (Time To Live)
-class CacheService extends GetxService {
+class CacheService {
+  static final CacheService instance = CacheService();
   static const int defaultCacheDurationSeconds = 300; // 5 minutes
 
   final Map<String, CacheEntry> _cache = {};
@@ -83,3 +84,5 @@ class CacheEntry {
 
   bool isExpired() => DateTime.now().isAfter(expiresAt);
 }
+
+final cacheServiceProvider = Provider<CacheService>((ref) => CacheService.instance);
