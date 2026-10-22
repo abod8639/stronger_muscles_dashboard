@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../domain/entities/admin_notification_entity.dart';
-import '../controllers/notifications_controller.dart';
+import '../controllers/notifications_providers.dart';
 
-class NotificationItemCard extends StatelessWidget {
+class NotificationItemCard extends ConsumerWidget {
   final AdminNotificationEntity notification;
 
   const NotificationItemCard({super.key, required this.notification});
@@ -36,12 +36,11 @@ class NotificationItemCard extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
     final typeColor = _getTypeColor(notification.type);
-    final controller = Get.find<NotificationsController>();
 
     final dateStr = notification.createdAt != null
         ? DateFormat('yyyy/MM/dd  •  hh:mm a').format(notification.createdAt!)
@@ -60,31 +59,31 @@ class NotificationItemCard extends StatelessWidget {
                   Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.09)!,
                 ]
               : [
-                  Color.lerp(colorScheme.surfaceContainer, Colors.white, 0.75)!,
-                  Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.03)!,
+                  Color.lerp(colorScheme.surface, Colors.white, 0.85)!,
+                  Color.lerp(colorScheme.surface, const Color(0xFFA3B1C6), 0.08)!,
                 ],
         ),
         boxShadow: [
           BoxShadow(
             color: isDark
-                ? Colors.black.withValues(alpha: 0.5)
-                : const Color(0xFFA3B1C6).withValues(alpha: 0.35),
+                ? Colors.black.withValues(alpha: 0.35)
+                : const Color(0xFFA3B1C6).withValues(alpha: 0.28),
             offset: const Offset(4, 5),
             blurRadius: 10,
           ),
           BoxShadow(
             color: isDark
-                ? Colors.white.withValues(alpha: 0.04)
-                : Colors.white.withValues(alpha: 0.95),
-            offset: const Offset(-2, -2),
-            blurRadius: 6,
+                ? Colors.white.withValues(alpha: 0.02)
+                : Colors.white.withValues(alpha: 0.9),
+            offset: const Offset(-3, -3),
+            blurRadius: 8,
           ),
         ],
         border: Border.all(
           color: isDark
               ? Colors.white.withValues(alpha: 0.06)
-              : Colors.white.withValues(alpha: 0.8),
-          width: 1,
+              : Colors.white.withValues(alpha: 0.9),
+          width: 1.2,
         ),
       ),
       child: Padding(
@@ -92,10 +91,10 @@ class NotificationItemCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Top row: Type badge, target chip, and delete action
+            // Header: Type badge + Target badge + Date
             Row(
               children: [
-                // Type badge
+                // Type Badge
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
@@ -120,22 +119,25 @@ class NotificationItemCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
 
-                // Audience chip
+                // Target Badge
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
+                    color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: colorScheme.outlineVariant.withValues(alpha: 0.3)),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
-                        notification.targetType == 'all' ? Icons.public_rounded : Icons.person_rounded,
+                        notification.targetType == 'all'
+                            ? Icons.public_rounded
+                            : Icons.person_rounded,
                         size: 13,
                         color: colorScheme.onSurfaceVariant,
                       ),
-                      const SizedBox(width: 5),
+                      const SizedBox(width: 4),
                       Text(
                         notification.targetLabel,
                         style: theme.textTheme.labelSmall?.copyWith(
@@ -155,17 +157,26 @@ class NotificationItemCard extends StatelessWidget {
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                   onPressed: () {
-                    Get.defaultDialog(
-                      title: 'تأكيد الحذف',
-                      middleText: 'هل أنت متأكد من رغبتك في حذف هذا الإشعار؟',
-                      textConfirm: 'حذف',
-                      textCancel: 'إلغاء',
-                      confirmTextColor: Colors.white,
-                      buttonColor: colorScheme.error,
-                      onConfirm: () {
-                        Get.back();
-                        controller.deleteNotification(notification.id);
-                      },
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('تأكيد الحذف'),
+                        content: const Text('هل أنت متأكد من رغبتك في حذف هذا الإشعار؟'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(ctx).pop(),
+                            child: const Text('إلغاء'),
+                          ),
+                          FilledButton(
+                            style: FilledButton.styleFrom(backgroundColor: colorScheme.error),
+                            onPressed: () {
+                              Navigator.of(ctx).pop();
+                              ref.read(notificationsControllerProvider.notifier).deleteNotification(notification.id);
+                            },
+                            child: const Text('حذف'),
+                          ),
+                        ],
+                      ),
                     );
                   },
                 ),
