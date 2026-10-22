@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/controllers/promo_form_controller.dart';
 import 'package:stronger_muscles_dashboard/functions/cache_manager.dart';
 
@@ -35,223 +34,225 @@ class _PromoLivePreviewState extends State<PromoLivePreview> {
   Widget build(BuildContext context) {
     final controller = widget.controller;
 
-    return Obx(() {
-      final bgColor = _parseColor(controller.backgroundColorHex.value);
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (context, _) {
+        final bgColor = _parseColor(controller.backgroundColorHex);
 
-      final isArabic = _previewLocale == 'ar';
-      final title = isArabic
-          ? (controller.titleArController.text.isNotEmpty
-              ? controller.titleArController.text
-              : controller.titleEnController.text)
-          : (controller.titleEnController.text.isNotEmpty
-              ? controller.titleEnController.text
-              : controller.titleArController.text);
+        final isArabic = _previewLocale == 'ar';
+        final title = isArabic
+            ? (controller.titleArController.text.isNotEmpty
+                ? controller.titleArController.text
+                : controller.titleEnController.text)
+            : (controller.titleEnController.text.isNotEmpty
+                ? controller.titleEnController.text
+                : controller.titleArController.text);
 
-      final subtitle = isArabic
-          ? (controller.subtitleArController.text.isNotEmpty
-              ? controller.subtitleArController.text
-              : controller.subtitleEnController.text)
-          : (controller.subtitleEnController.text.isNotEmpty
-              ? controller.subtitleEnController.text
-              : controller.subtitleArController.text);
+        final subtitle = isArabic
+            ? (controller.subtitleArController.text.isNotEmpty
+                ? controller.subtitleArController.text
+                : controller.subtitleEnController.text)
+            : (controller.subtitleEnController.text.isNotEmpty
+                ? controller.subtitleEnController.text
+                : controller.subtitleArController.text);
 
-      final buttonText = isArabic
-          ? (controller.buttonArController.text.trim().isNotEmpty
-              ? controller.buttonArController.text.trim()
-              : controller.buttonEnController.text.trim())
-          : (controller.buttonEnController.text.trim().isNotEmpty
-              ? controller.buttonEnController.text.trim()
-              : controller.buttonArController.text.trim());
+        final buttonText = isArabic
+            ? (controller.buttonArController.text.trim().isNotEmpty
+                ? controller.buttonArController.text.trim()
+                : controller.buttonEnController.text.trim())
+            : (controller.buttonEnController.text.trim().isNotEmpty
+                ? controller.buttonEnController.text.trim()
+                : controller.buttonArController.text.trim());
 
-      final hasLocalImage = controller.selectedImage.value != null;
-      final hasRemoteImage = controller.existingImageUrl.value.isNotEmpty;
+        final hasLocalImage = controller.selectedImage != null;
+        final hasRemoteImage = controller.existingImageUrl.isNotEmpty;
 
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // مفتاح تبديل لغة المعاينة
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: controller.isActive.value
-                          ? Colors.green
-                          : Colors.grey,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    controller.isActive.value
-                        ? 'الإعلان نشط بالتطبيق'
-                        : 'الإعلان متوقف (غير نشط)',
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: controller.isActive.value
-                          ? Colors.green
-                          : Colors.grey,
-                    ),
-                  ),
-                ],
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // مفتاح تبديل لغة المعاينة
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
                   children: [
-                    _buildPill('ar', 'عربي'),
-                    _buildPill('en', 'EN'),
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: controller.isActive
+                            ? Colors.green
+                            : Colors.grey,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      controller.isActive
+                          ? 'الإعلان نشط بالتطبيق'
+                          : 'الإعلان متوقف (غير نشط)',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: controller.isActive
+                            ? Colors.green
+                            : Colors.grey,
+                      ),
+                    ),
                   ],
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-
-          // كارد المحاكاة المباشر لمواصفات تطبيق المتجر
-          Container(
-            height: 370,
-            decoration: BoxDecoration(
-              color: bgColor,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: .15),
-                  blurRadius: 10,
-                  offset: const Offset(0, 5),
-                  blurStyle: BlurStyle.outer,
-                ),
-              ],
-            ),
-            // clipBehavior: Clip.antiAlias,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                // صورة الخلفية
-                if (hasLocalImage)
-                  Image.file(
-                    controller.selectedImage.value!,
-                    fit: BoxFit.cover,
-                  )
-                else if (hasRemoteImage)
-                  CachedNetworkImage(
-                    cacheManager: CustomCacheManager.instance,
-                    imageUrl: controller.existingImageUrl.value,
-                    fit: BoxFit.contain,
-                    errorWidget: (_, _, _) => Container(color: bgColor),
-                    placeholder: (_, _) => Container(
-                      color: bgColor,
-                      child: const Center(
-                        child: SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white70,
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
-                else
-                  Container(
-                    color: bgColor,
-                    child: Center(
-                      child: Icon(
-                        Icons.add_photo_alternate_outlined,
-                        size: 36,
-                        color: Colors.white.withValues(alpha: 0.3),
-                      ),
-                    ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(8),
                   ),
-
-                // تدرج لوني لضمان وضوح النصوص
-                if (title.isNotEmpty)
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.black.withValues(alpha: .8),
-                          Colors.black.withValues(alpha: .2),
-                        ],
-                        begin: AlignmentDirectional.centerStart,
-                        end: AlignmentDirectional.centerEnd,
-                      ),
-                    ),
-                  ),
-
-                // نصوص الإعلان وزر الإجراء
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        title.isNotEmpty ? title : 'عنوان الإعلان الترويجي',
-                        style: TextStyle(
-                          color: title.isNotEmpty
-                              ? Colors.white
-                              : Colors.white.withValues(alpha: 0.5),
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        subtitle.isNotEmpty
-                            ? subtitle
-                            : 'وصف جذاب يوضح تفاصيل العرض الترويجي',
-                        style: TextStyle(
-                          color: subtitle.isNotEmpty
-                              ? Colors.white.withValues(alpha: .9)
-                              : Colors.white.withValues(alpha: 0.4),
-                          fontSize: 14,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      if (buttonText.isNotEmpty) ...[
-                        const SizedBox(height: 16),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: appPrimaryColor,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            buttonText,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ),
-                      ],
+                      _buildPill('ar', 'عربي'),
+                      _buildPill('en', 'EN'),
                     ],
                   ),
                 ),
               ],
             ),
-          ),
-        ],
-      );
-    });
+            const SizedBox(height: 10),
+
+            // كارد المحاكاة المباشر لمواصفات تطبيق المتجر
+            Container(
+              height: 370,
+              decoration: BoxDecoration(
+                color: bgColor,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: .15),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                    blurStyle: BlurStyle.outer,
+                  ),
+                ],
+              ),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  // صورة الخلفية
+                  if (hasLocalImage)
+                    Image.file(
+                      controller.selectedImage!,
+                      fit: BoxFit.cover,
+                    )
+                  else if (hasRemoteImage)
+                    CachedNetworkImage(
+                      cacheManager: CustomCacheManager.instance,
+                      imageUrl: controller.existingImageUrl,
+                      fit: BoxFit.contain,
+                      errorWidget: (_, _, _) => Container(color: bgColor),
+                      placeholder: (_, _) => Container(
+                        color: bgColor,
+                        child: const Center(
+                          child: SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  else
+                    Container(
+                      color: bgColor,
+                      child: Center(
+                        child: Icon(
+                          Icons.add_photo_alternate_outlined,
+                          size: 36,
+                          color: Colors.white.withValues(alpha: 0.3),
+                        ),
+                      ),
+                    ),
+
+                  // تدرج لوني لضمان وضوح النصوص
+                  if (title.isNotEmpty)
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.black.withValues(alpha: .8),
+                            Colors.black.withValues(alpha: .2),
+                          ],
+                          begin: AlignmentDirectional.centerStart,
+                          end: AlignmentDirectional.centerEnd,
+                        ),
+                      ),
+                    ),
+
+                  // نصوص الإعلان وزر الإجراء
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          title.isNotEmpty ? title : 'عنوان الإعلان الترويجي',
+                          style: TextStyle(
+                            color: title.isNotEmpty
+                                ? Colors.white
+                                : Colors.white.withValues(alpha: 0.5),
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          subtitle.isNotEmpty
+                              ? subtitle
+                              : 'وصف جذاب يوضح تفاصيل العرض الترويجي',
+                          style: TextStyle(
+                            color: subtitle.isNotEmpty
+                                ? Colors.white.withValues(alpha: .9)
+                                : Colors.white.withValues(alpha: 0.4),
+                            fontSize: 14,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        if (buttonText.isNotEmpty) ...[
+                          const SizedBox(height: 16),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: appPrimaryColor,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              buttonText,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Widget _buildPill(String locale, String label) {
