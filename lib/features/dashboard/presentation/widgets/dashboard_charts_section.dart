@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/enhanced_line_chart.dart';
-import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_controller.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_providers.dart';
 
 /// قسم الرسوم البيانية للوحة التحكم بتصميم Neumorphism / Soft UI
-class DashboardChartsSection extends GetView<DashboardController> {
+class DashboardChartsSection extends ConsumerWidget {
   const DashboardChartsSection({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
@@ -52,22 +52,28 @@ class DashboardChartsSection extends GetView<DashboardController> {
           ),
         ),
         if (isSmallScreen)
-          _buildChartCard(context, res, isDark)
+          _buildChartCard(context, ref, res, isDark)
         else
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(child: _buildChartCard(context, res, isDark)),
+              Expanded(child: _buildChartCard(context, ref, res, isDark)),
             ],
           ),
       ],
     );
   }
 
-  Widget _buildChartCard(BuildContext context, ResponsiveLayout res, bool isDark) {
+  Widget _buildChartCard(
+    BuildContext context,
+    WidgetRef ref,
+    ResponsiveLayout res,
+    bool isDark,
+  ) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final accentCyan = isDark ? const Color(0xFF22D3EE) : const Color(0xFF0891B2);
+    final chartData = ref.watch(ordersChartDataProvider);
 
     return Container(
       padding: EdgeInsets.all(res.isMobile ? 18 : 24),
@@ -135,13 +141,11 @@ class DashboardChartsSection extends GetView<DashboardController> {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Obx(
-                      () => Text(
-                        controller.ordersChartData.periodSubtitle,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant.withValues(alpha: 0.75),
-                          fontSize: 12,
-                        ),
+                    Text(
+                      chartData.periodSubtitle,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant.withValues(alpha: 0.75),
+                        fontSize: 12,
                       ),
                     ),
                   ],
@@ -265,20 +269,17 @@ class DashboardChartsSection extends GetView<DashboardController> {
             ),
             child: SizedBox(
               height: 290,
-              child: Obx(() {
-                final chartData = controller.ordersChartData;
-                return EnhancedLineChartWidget(
-                  title: '',
-                  spots: chartData.spots,
-                  bottomTitles: chartData.bottomTitles,
-                  bottomTitleInterval: chartData.bottomTitleInterval,
-                  horizontalInterval: chartData.interval,
-                  lineColor: accentCyan,
-                  gradientColor: accentCyan,
-                  maxY: chartData.maxY,
-                  isEmbedded: true,
-                );
-              }),
+              child: EnhancedLineChartWidget(
+                title: '',
+                spots: chartData.spots,
+                bottomTitles: chartData.bottomTitles,
+                bottomTitleInterval: chartData.bottomTitleInterval,
+                horizontalInterval: chartData.interval,
+                lineColor: accentCyan,
+                gradientColor: accentCyan,
+                maxY: chartData.maxY,
+                isEmbedded: true,
+              ),
             ),
           ),
         ],
