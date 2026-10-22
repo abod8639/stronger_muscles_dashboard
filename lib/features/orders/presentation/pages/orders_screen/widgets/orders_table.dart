@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
@@ -7,17 +7,22 @@ import 'package:stronger_muscles_dashboard/core/utils/components/custom_search_b
 import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/status_badge.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
-import 'package:stronger_muscles_dashboard/features/orders/presentation/controllers/orders_controller.dart';
+import 'package:stronger_muscles_dashboard/features/orders/presentation/controllers/orders_providers.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/widgets/build_recent_orders.dart';
 
-class OrdersTable extends StatelessWidget {
+class OrdersTable extends ConsumerWidget {
   const OrdersTable({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final controller = Get.find<OrdersController>();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final paginatedOrders = ref.watch(paginatedOrdersProvider);
+    final totalFiltered = ref.watch(filteredOrdersProvider).length;
+    final currentPage = ref.watch(ordersCurrentPageProvider);
+    final totalPages = ref.watch(ordersTotalPagesProvider);
+    final selectedStatus = ref.watch(ordersSelectedStatusProvider);
+    final itemsPerPage = ref.watch(ordersItemsPerPageProvider);
     final responsive = context.responsive;
 
     return GlassContainer(
@@ -25,16 +30,21 @@ class OrdersTable extends StatelessWidget {
       borderRadius: BorderRadius.circular(20),
       child: Column(
         children: [
-          _buildTableHeader(context, controller, responsive),
+          _buildTableHeader(context, ref, responsive, selectedStatus),
 
           responsive.isDesktop
-              ? _buildTableContent(controller, responsive)
-              : Obx(
-                  () =>
-                      buildRecentOrders(responsive, controller.paginatedOrders),
-                ),
+              ? _buildTableContent(paginatedOrders, responsive)
+              : buildRecentOrders(responsive, paginatedOrders),
 
-          _buildTableFooter(controller, responsive),
+          _buildTableFooter(
+            ref: ref,
+            responsive: responsive,
+            currentPage: currentPage,
+            totalPages: totalPages,
+            itemsPerPage: itemsPerPage,
+            totalCount: totalFiltered,
+            currentCount: paginatedOrders.length,
+          ),
         ],
       ),
     );
@@ -42,8 +52,9 @@ class OrdersTable extends StatelessWidget {
 
   Widget _buildTableHeader(
     BuildContext context,
-    OrdersController controller,
+    WidgetRef ref,
     ResponsiveLayout responsive,
+    String selectedStatus,
   ) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -72,10 +83,13 @@ class OrdersTable extends StatelessWidget {
                 ),
                 if (responsive.isDesktop) const Spacer(),
               ],
-              SizedBox(width: 20),
+              const SizedBox(width: 20),
               Expanded(
                 child: CustomSearchBar(
-                  onSearch: controller.onSearchChanged,
+                  onSearch: (value) {
+                    ref.read(ordersSearchQueryProvider.notifier).setQuery(value);
+                    ref.read(ordersCurrentPageProvider.notifier).setPage(1);
+                  },
                   hintText: "    Search orders...",
                 ),
               ),
@@ -87,17 +101,15 @@ class OrdersTable extends StatelessWidget {
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               physics: const BouncingScrollPhysics(),
-              child: Obx(
-                () => Row(
-                  children: [
-                    _buildTab(context, controller, 'all', 'All Orders'),
-                    _buildTab(context, controller, 'pending', 'Pending'),
-                    _buildTab(context, controller, 'processing', 'Processing'),
-                    _buildTab(context, controller, 'shipped', 'Shipped'),
-                    _buildTab(context, controller, 'delivered', 'Delivered'),
-                    _buildTab(context, controller, 'cancelled', 'Cancelled'),
-                  ],
-                ),
+              child: Row(
+                children: [
+                  _buildTab(context, ref, 'all', 'All Orders', selectedStatus),
+                  _buildTab(context, ref, 'pending', 'Pending', selectedStatus),
+                  _buildTab(context, ref, 'processing', 'Processing', selectedStatus),
+                  _buildTab(context, ref, 'shipped', 'Shipped', selectedStatus),
+                  _buildTab(context, ref, 'delivered', 'Delivered', selectedStatus),
+                  _buildTab(context, ref, 'cancelled', 'Cancelled', selectedStatus),
+                ],
               ),
             ),
           ),
@@ -108,19 +120,23 @@ class OrdersTable extends StatelessWidget {
 
   Widget _buildTab(
     BuildContext context,
-    OrdersController controller,
+    WidgetRef ref,
     String id,
     String label,
+    String selectedStatus,
   ) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final isSelected = controller.selectedStatusId.value == id;
+    final isSelected = selectedStatus == id;
 
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: FilterChip(
         selected: isSelected,
-        onSelected: (_) => controller.onStatusChanged(id),
+        onSelected: (_) {
+          ref.read(ordersSelectedStatusProvider.notifier).setStatus(id);
+          ref.read(ordersCurrentPageProvider.notifier).setPage(1);
+        },
         label: Text(label),
         labelStyle: theme.textTheme.labelMedium?.copyWith(
           color: isSelected
@@ -142,60 +158,56 @@ class OrdersTable extends StatelessWidget {
   }
 
   Widget _buildTableContent(
-    OrdersController controller,
+    List<OrderEntity> orders,
     ResponsiveLayout responsive,
   ) {
-    return Obx(() {
-      final orders = controller.paginatedOrders;
+    Widget content = Column(
+      children: [
+        // Column Headers
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
+          color: Colors.white.withValues(alpha: 0.02),
+          child: Row(
+            children: [
+              _buildColumnHeader('ORDER ID', flex: 3),
+              _buildColumnHeader('CUSTOMER', flex: 2),
+              _buildColumnHeader('DATE', flex: 2),
+              _buildColumnHeader('TOTAL AMOUNT', flex: 2),
+              _buildColumnHeader('STATUS', flex: 2),
+            ],
+          ),
+        ),
 
-      Widget content = Column(
-        children: [
-          // Column Headers
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
-            color: Colors.white.withValues(alpha: 0.02),
-            child: Row(
-              children: [
-                _buildColumnHeader('ORDER ID', flex: 3),
-                _buildColumnHeader('CUSTOMER', flex: 2),
-                _buildColumnHeader('DATE', flex: 2),
-                _buildColumnHeader('TOTAL AMOUNT', flex: 2),
-                _buildColumnHeader('STATUS', flex: 2),
-              ],
+        // Rows
+        ...List.generate(orders.length, (index) {
+          return _buildOrderRow(
+            orders[index],
+            isLast: index == orders.length - 1,
+          );
+        }),
+
+        if (orders.isEmpty)
+          Padding(
+            padding: const EdgeInsets.all(40.0),
+            child: Text(
+              'No orders found',
+              style: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
             ),
           ),
+      ],
+    );
 
-          // Rows
-          ...List.generate(orders.length, (index) {
-            return _buildOrderRow(
-              orders[index],
-              isLast: index == orders.length - 1,
-            );
-          }),
-
-          if (orders.isEmpty)
-            Padding(
-              padding: const EdgeInsets.all(40.0),
-              child: Text(
-                'No orders found',
-                style: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
-              ),
-            ),
-        ],
+    if (responsive.isMobile || responsive.isTablet) {
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: SizedBox(
+          width: 800, // Minimum width for the table to remain readable
+          child: content,
+        ),
       );
+    }
 
-      if (responsive.isMobile || responsive.isTablet) {
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: SizedBox(
-            width: 800, // Minimum width for the table to remain readable
-            child: content,
-          ),
-        );
-      }
-
-      return content;
-    });
+    return content;
   }
 
   Widget _buildColumnHeader(
@@ -239,7 +251,6 @@ class OrdersTable extends StatelessWidget {
                 ),
               ),
             ),
-            // التبديل بين Column للهاتف و Row للكمبيوتر
             child: isMobile
                 ? _buildMobileLayout(order, dateFormat)
                 : _buildDesktopLayout(order, dateFormat),
@@ -249,7 +260,6 @@ class OrdersTable extends StatelessWidget {
     );
   }
 
-  // --- تصميم شاشات الكمبيوتر (الجدول الأصلي المحسن) ---
   Widget _buildDesktopLayout(OrderEntity order, DateFormat dateFormat) {
     return Row(
       children: [
@@ -267,10 +277,10 @@ class OrdersTable extends StatelessWidget {
     return Column(
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween, // توزيع العناصر
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildCustomerInfo(order), // صورة واسم العميل
-            OrderStatusBadge(status: order.status), // الحالة في الزاوية
+            _buildCustomerInfo(order),
+            OrderStatusBadge(status: order.status),
           ],
         ),
         const SizedBox(height: 12),
@@ -287,7 +297,7 @@ class OrdersTable extends StatelessWidget {
                 _buildDate(order, dateFormat),
               ],
             ),
-            _buildPrice(order), // السعر بخط واضح
+            _buildPrice(order),
           ],
         ),
       ],
@@ -406,10 +416,49 @@ class OrdersTable extends StatelessWidget {
     );
   }
 
-  Widget _buildTableFooter(
-    OrdersController controller,
-    ResponsiveLayout responsive,
-  ) {
+  Widget _buildTableFooter({
+    required WidgetRef ref,
+    required ResponsiveLayout responsive,
+    required int currentPage,
+    required int totalPages,
+    required int itemsPerPage,
+    required int totalCount,
+    required int currentCount,
+  }) {
+    final start = totalCount == 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
+    final end = (start + currentCount - 1).clamp(0, totalCount);
+
+    Widget statsText = Text(
+      'Showing $start to $end of $totalCount entries',
+      style: TextStyle(
+        color: Colors.white.withValues(alpha: 0.4),
+        fontSize: 12,
+      ),
+    );
+
+    Widget paginationControls = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildNavButton(
+          icon: Icons.chevron_left_rounded,
+          onPressed: currentPage > 1
+              ? () => ref.read(ordersCurrentPageProvider.notifier).previousPage()
+              : null,
+        ),
+        const SizedBox(width: 12),
+        ..._buildPageNumbers(ref, currentPage, totalPages),
+        const SizedBox(width: 12),
+        _buildNavButton(
+          icon: Icons.chevron_right_rounded,
+          onPressed: currentPage < totalPages
+              ? () => ref
+                  .read(ordersCurrentPageProvider.notifier)
+                  .nextPage(totalPages)
+              : null,
+        ),
+      ],
+    );
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -423,72 +472,29 @@ class OrdersTable extends StatelessWidget {
           top: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
         ),
       ),
-      child: Obx(() {
-        final start =
-            (controller.currentPage.value - 1) * controller.itemsPerPage.value +
-            1;
-        final end = (start + controller.paginatedOrders.length - 1).clamp(
-          0,
-          controller.filteredOrders.length,
-        );
-
-        // النص الإحصائي
-        Widget statsText = Text(
-          'Showing $start to $end of ${controller.filteredOrders.length} entries',
-          style: TextStyle(
-            color: Colors.white.withValues(alpha: 0.4),
-            fontSize: 12,
-          ),
-        );
-
-        // أزرار التنقل
-        Widget paginationControls = Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildNavButton(
-              icon: Icons.chevron_left_rounded,
-              onPressed: controller.currentPage.value > 1
-                  ? controller.previousPage
-                  : null,
+      child: responsive.isMobile
+          ? Column(
+              children: [
+                statsText,
+                const SizedBox(height: 16),
+                paginationControls,
+              ],
+            )
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [statsText, paginationControls],
             ),
-            const SizedBox(width: 12),
-            ..._buildPageNumbers(controller),
-            const SizedBox(width: 12),
-            _buildNavButton(
-              icon: Icons.chevron_right_rounded,
-              onPressed: controller.currentPage.value < controller.totalPages
-                  ? controller.nextPage
-                  : null,
-            ),
-          ],
-        );
-
-        // التبديل بين التصميم الأفقي والعمودي
-        return responsive.isMobile
-            ? Column(
-                children: [
-                  statsText,
-                  const SizedBox(height: 16),
-                  paginationControls,
-                ],
-              )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [statsText, paginationControls],
-              );
-      }),
     );
   }
 
-  List<Widget> _buildPageNumbers(OrdersController controller) {
+  List<Widget> _buildPageNumbers(WidgetRef ref, int currentPage, int totalPages) {
     List<Widget> pages = [];
-    for (int i = 1; i <= controller.totalPages; i++) {
-      if (controller.totalPages > 5) {
+    for (int i = 1; i <= totalPages; i++) {
+      if (totalPages > 5) {
         if (i != 1 &&
-            i != controller.totalPages &&
-            (i < controller.currentPage.value - 1 ||
-                i > controller.currentPage.value + 1)) {
-          if (i == 2 || i == controller.totalPages - 1) {
+            i != totalPages &&
+            (i < currentPage - 1 || i > currentPage + 1)) {
+          if (i == 2 || i == totalPages - 1) {
             pages.add(
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -502,15 +508,15 @@ class OrdersTable extends StatelessWidget {
           continue;
         }
       }
-      pages.add(_buildPageButton(i, controller));
+      pages.add(_buildPageButton(ref, i, currentPage));
     }
     return pages;
   }
 
-  Widget _buildPageButton(int pageNum, OrdersController controller) {
-    final isSelected = controller.currentPage.value == pageNum;
+  Widget _buildPageButton(WidgetRef ref, int pageNum, int currentPage) {
+    final isSelected = currentPage == pageNum;
     return GestureDetector(
-      onTap: () => controller.goToPage(pageNum),
+      onTap: () => ref.read(ordersCurrentPageProvider.notifier).setPage(pageNum),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         margin: const EdgeInsets.symmetric(horizontal: 3),
