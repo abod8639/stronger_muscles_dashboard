@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/image_gallery_editor.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/controllers/promo_form_controller.dart';
 
@@ -11,27 +10,30 @@ class PromoImageSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      final imageUrls = <String>[];
-      if (controller.selectedImage.value != null) {
-        imageUrls.add(controller.selectedImage.value!.path);
-      } else if (controller.existingImageUrl.value.isNotEmpty) {
-        imageUrls.add(controller.existingImageUrl.value);
-      }
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (context, _) {
+        final imageUrls = <String>[];
+        if (controller.selectedImage != null) {
+          imageUrls.add(controller.selectedImage!.path);
+        } else if (controller.existingImageUrl.isNotEmpty) {
+          imageUrls.add(controller.existingImageUrl);
+        }
 
-      return ImageGalleryEditor(
-        imageUrls: imageUrls,
-        onAddUrl: (url) {
-          controller.existingImageUrl.value = url;
-          controller.selectedImage.value = null;
-        },
-        onRemove: (index) {
-          controller.existingImageUrl.value = '';
-          controller.selectedImage.value = null;
-        },
-        onPickImage: () => controller.pickImage(),
-        onReorder: (oldIndex, newIndex) {},
-      );
-    });
+        return ImageGalleryEditor(
+          imageUrls: imageUrls,
+          onAddUrl: (url) {
+            controller.existingImageUrl = url;
+            controller.selectedImage = null;
+          },
+          onRemove: (index) {
+            controller.existingImageUrl = '';
+            controller.selectedImage = null;
+          },
+          onPickImage: () => controller.pickImage(),
+          onReorder: (oldIndex, newIndex) {},
+        );
+      },
+    );
   }
 }
