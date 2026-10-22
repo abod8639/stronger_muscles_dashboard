@@ -1,54 +1,58 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import '../controllers/products_controller.dart';
+import '../controllers/products_providers.dart';
 
-class ProductBulkActionsBar extends StatelessWidget {
+class ProductBulkActionsBar extends ConsumerWidget {
   const ProductBulkActionsBar({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final controller = Get.find<ProductsController>();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final controller = ref.watch(productsUIControllerProvider);
     final responsive = context.responsive;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Obx(() {
-      final selectedCount = controller.selectedCount;
-      final isOperating = controller.isBulkOperating.value;
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (context, _) {
+        final selectedCount = controller.selectedCount;
+        final isOperating = controller.isBulkOperating;
 
-      return Container(
-        margin: EdgeInsets.symmetric(
-          horizontal: responsive.defaultPadding.left,
-          vertical: 6,
-        ),
-        child: Card(
-          elevation: 2,
-          color: colorScheme.surfaceContainerHigh,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: BorderSide(
-              color: selectedCount > 0
-                  ? colorScheme.primary.withValues(alpha: 0.5)
-                  : colorScheme.outlineVariant.withValues(alpha: 0.6),
-              width: 1.2,
+        return Container(
+          margin: EdgeInsets.symmetric(
+            horizontal: responsive.defaultPadding.left,
+            vertical: 6,
+          ),
+          child: Card(
+            elevation: 2,
+            color: colorScheme.surfaceContainerHigh,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+              side: BorderSide(
+                color: selectedCount > 0
+                    ? colorScheme.primary.withValues(alpha: 0.5)
+                    : colorScheme.outlineVariant.withValues(alpha: 0.6),
+                width: 1.2,
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              child: isOperating
+                  ? _buildOperatingState(theme)
+                  : _buildActionBar(
+                      context,
+                      controller,
+                      responsive,
+                      selectedCount,
+                      theme,
+                    ),
             ),
           ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            child: isOperating
-                ? _buildOperatingState(theme)
-                : _buildActionBar(
-                    context,
-                    controller,
-                    responsive,
-                    selectedCount,
-                    theme,
-                  ),
-          ),
-        ),
-      );
-    });
+        );
+      },
+    );
   }
 
   Widget _buildOperatingState(ThemeData theme) {
@@ -181,7 +185,7 @@ class ProductBulkActionsBar extends StatelessWidget {
             bgColor: colorScheme.errorContainer,
             fgColor: colorScheme.onErrorContainer,
             label: responsive.isMobile ? null : 'حذف',
-            onTap: () => controller.confirmBulkDelete(),
+            onTap: () => controller.confirmBulkDelete(context),
           ),
           const SizedBox(width: 8),
         ],
@@ -254,8 +258,11 @@ class ProductBulkActionsBar extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    Get.bottomSheet(
-      Container(
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: colorScheme.surfaceContainer,
@@ -290,7 +297,7 @@ class ProductBulkActionsBar extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  onPressed: () => Get.back(),
+                  onPressed: () => Navigator.of(sheetContext).pop(),
                   icon: Icon(
                     Icons.close_rounded,
                     color: colorScheme.onSurfaceVariant,
@@ -331,8 +338,11 @@ class ProductBulkActionsBar extends StatelessWidget {
                       color: colorScheme.onSurfaceVariant,
                       size: 14,
                     ),
-                    onTap: () {
-                      controller.bulkChangeCategory(category.id);
+                    onTap: () async {
+                      await controller.bulkChangeCategory(category.id);
+                      if (sheetContext.mounted) {
+                        Navigator.of(sheetContext).pop();
+                      }
                     },
                   );
                 },
@@ -342,7 +352,6 @@ class ProductBulkActionsBar extends StatelessWidget {
           ],
         ),
       ),
-      isScrollControlled: true,
     );
   }
 }
