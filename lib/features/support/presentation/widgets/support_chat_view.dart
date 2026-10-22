@@ -1,78 +1,78 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../domain/entities/support_message_entity.dart';
 import '../../domain/entities/support_ticket_entity.dart';
 import '../../../../config/responsive.dart';
 import '../controllers/support_controller.dart';
+import '../controllers/support_providers.dart';
 
-class SupportChatView extends GetView<SupportController> {
+class SupportChatView extends ConsumerWidget {
   const SupportChatView({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final controller = ref.watch(supportControllerProvider);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
 
-    return Obx(() {
-      final ticket = controller.selectedTicket.value;
+    final ticket = controller.selectedTicket;
 
-      if (ticket == null) {
-        return _buildEmptyState(context, isDark);
-      }
+    if (ticket == null) {
+      return _buildEmptyState(context, isDark);
+    }
 
-      return Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: isDark
-                ? [
-                    Color.lerp(colorScheme.surfaceContainer, Colors.white, 0.02)!,
-                    Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.08)!,
-                  ]
-                : [
-                    Colors.white,
-                    Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.02)!,
-                  ],
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: isDark
-                  ? Colors.black.withValues(alpha: 0.5)
-                  : const Color(0xFFA3B1C6).withValues(alpha: 0.3),
-              offset: const Offset(4, 5),
-              blurRadius: 14,
-            ),
-          ],
-          border: Border.all(
-            color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.white.withValues(alpha: 0.8),
-            width: 1.2,
-          ),
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isDark
+              ? [
+                  Color.lerp(colorScheme.surfaceContainer, Colors.white, 0.02)!,
+                  Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.08)!,
+                ]
+              : [
+                  Colors.white,
+                  Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.02)!,
+                ],
         ),
-        child: Column(
-          children: [
-            // ── 1. Top Ticket Header & Toolbar ───────────────────────────────
-            _buildTopHeader(context, ticket, isDark),
-            const Divider(height: 1),
-
-            // ── 2. Messages List Thread ──────────────────────────────────────
-            Expanded(
-              child: controller.isLoadingDetail.value
-                  ? const Center(child: CircularProgressIndicator())
-                  : _buildMessagesList(context, ticket, isDark),
-            ),
-            const Divider(height: 1),
-
-            // ── 3. Canned Responses & Reply Composer ─────────────────────────
-            _buildReplyComposer(context, ticket, isDark),
-          ],
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.5)
+                : const Color(0xFFA3B1C6).withValues(alpha: 0.3),
+            offset: const Offset(4, 5),
+            blurRadius: 14,
+          ),
+        ],
+        border: Border.all(
+          color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.white.withValues(alpha: 0.8),
+          width: 1.2,
         ),
-      );
-    });
+      ),
+      child: Column(
+        children: [
+          // ── 1. Top Ticket Header & Toolbar ───────────────────────────────
+          _buildTopHeader(context, controller, ticket, isDark),
+          const Divider(height: 1),
+
+          // ── 2. Messages List Thread ──────────────────────────────────────
+          Expanded(
+            child: controller.isLoadingDetail
+                ? const Center(child: CircularProgressIndicator())
+                : _buildMessagesList(context, ticket, isDark),
+          ),
+          const Divider(height: 1),
+
+          // ── 3. Canned Responses & Reply Composer ─────────────────────────
+          _buildReplyComposer(context, controller, ticket, isDark),
+        ],
+      ),
+    );
   }
 
   Widget _buildEmptyState(BuildContext context, bool isDark) {
@@ -116,7 +116,12 @@ class SupportChatView extends GetView<SupportController> {
     );
   }
 
-  Widget _buildTopHeader(BuildContext context, SupportTicketEntity ticket, bool isDark) {
+  Widget _buildTopHeader(
+    BuildContext context,
+    SupportController controller,
+    SupportTicketEntity ticket,
+    bool isDark,
+  ) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isMobile = context.isMobile;
@@ -147,7 +152,7 @@ class SupportChatView extends GetView<SupportController> {
                         icon: const Icon(Icons.arrow_back_rounded, size: 20),
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                        onPressed: () => controller.selectedTicket.value = null,
+                        onPressed: () => controller.setSelectedTicket(null),
                       ),
                       const SizedBox(width: 6),
                     ],
@@ -223,7 +228,7 @@ class SupportChatView extends GetView<SupportController> {
                       icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 20),
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                      onPressed: () => _confirmDeleteTicket(ticket),
+                      onPressed: () => _confirmDeleteTicket(context, controller, ticket),
                     ),
                   ],
                 ),
@@ -472,7 +477,7 @@ class SupportChatView extends GetView<SupportController> {
                   IconButton(
                     tooltip: 'حذف التذكرة',
                     icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 20),
-                    onPressed: () => _confirmDeleteTicket(ticket),
+                    onPressed: () => _confirmDeleteTicket(context, controller, ticket),
                   ),
                 ],
               ),
@@ -524,15 +529,23 @@ class SupportChatView extends GetView<SupportController> {
     );
   }
 
-  Future<void> _confirmDeleteTicket(SupportTicketEntity ticket) async {
-    final confirmed = await Get.dialog<bool>(
-      AlertDialog(
+  Future<void> _confirmDeleteTicket(
+    BuildContext context,
+    SupportController controller,
+    SupportTicketEntity ticket,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
         title: const Text('حذف التذكرة'),
         content: Text('هل أنت متأكد من حذف التذكرة #${ticket.ticketNumber} نهائياً؟'),
         actions: [
-          TextButton(onPressed: () => Get.back(result: false), child: const Text('إلغاء')),
           TextButton(
-            onPressed: () => Get.back(result: true),
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('إلغاء'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
             child: const Text('حذف', style: TextStyle(color: Colors.redAccent)),
           ),
         ],
@@ -714,7 +727,12 @@ class SupportChatView extends GetView<SupportController> {
     );
   }
 
-  Widget _buildReplyComposer(BuildContext context, SupportTicketEntity ticket, bool isDark) {
+  Widget _buildReplyComposer(
+    BuildContext context,
+    SupportController controller,
+    SupportTicketEntity ticket,
+    bool isDark,
+  ) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isMobile = context.isMobile;
@@ -771,41 +789,40 @@ class SupportChatView extends GetView<SupportController> {
                     spacing: 8,
                     runSpacing: 6,
                     children: [
-                      Obx(() => ChoiceChip(
-                            label: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(Icons.send_rounded, size: 14),
-                                const SizedBox(width: 4),
-                                Text(isCompact ? 'رد للعميل' : 'رد رسمي للعميل (إشعار FCM)'),
-                              ],
-                            ),
-                            selected: !controller.isInternalNote.value,
-                            selectedColor: colorScheme.primary.withValues(alpha: 0.15),
-                            onSelected: (val) {
-                              if (val) controller.isInternalNote.value = false;
-                            },
-                          )),
-                      Obx(() => ChoiceChip(
-                            label: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(Icons.lock_outline_rounded, size: 14, color: Colors.amber),
-                                const SizedBox(width: 4),
-                                Text(isCompact ? 'ملاحظة داخلية' : 'ملاحظة داخلية للمشرفين فقط'),
-                              ],
-                            ),
-                            selected: controller.isInternalNote.value,
-                            selectedColor: Colors.amber.withValues(alpha: 0.18),
-                            onSelected: (val) {
-                              if (val) controller.isInternalNote.value = true;
-                            },
-                          )),
+                      ChoiceChip(
+                        label: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.send_rounded, size: 14),
+                            const SizedBox(width: 4),
+                            Text(isCompact ? 'رد للعميل' : 'رد رسمي للعميل (إشعار FCM)'),
+                          ],
+                        ),
+                        selected: !controller.isInternalNote,
+                        selectedColor: colorScheme.primary.withValues(alpha: 0.15),
+                        onSelected: (val) {
+                          if (val) controller.setInternalNote(false);
+                        },
+                      ),
+                      ChoiceChip(
+                        label: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.lock_outline_rounded, size: 14, color: Colors.amber),
+                            const SizedBox(width: 4),
+                            Text(isCompact ? 'ملاحظة داخلية' : 'ملاحظة داخلية للمشرفين فقط'),
+                          ],
+                        ),
+                        selected: controller.isInternalNote,
+                        selectedColor: Colors.amber.withValues(alpha: 0.18),
+                        onSelected: (val) {
+                          if (val) controller.setInternalNote(true);
+                        },
+                      ),
                     ],
                   ),
-                  Obx(() {
-                    if (controller.isInternalNote.value) return const SizedBox.shrink();
-                    return Container(
+                  if (!controller.isInternalNote)
+                    Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
                       decoration: BoxDecoration(
                         color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.03),
@@ -818,7 +835,7 @@ class SupportChatView extends GetView<SupportController> {
                           const Text('تغيير الحالة: ', style: TextStyle(fontSize: 11.5)),
                           DropdownButtonHideUnderline(
                             child: DropdownButton<String>(
-                              value: controller.replyStatus.value,
+                              value: controller.replyStatus,
                               isDense: true,
                               dropdownColor: isDark ? colorScheme.surfaceContainer : Colors.white,
                               items: const [
@@ -827,14 +844,13 @@ class SupportChatView extends GetView<SupportController> {
                                 DropdownMenuItem(value: 'resolved', child: Text('تم الحل بنجاح')),
                               ],
                               onChanged: (val) {
-                                if (val != null) controller.replyStatus.value = val;
+                                if (val != null) controller.setReplyStatus(val);
                               },
                             ),
                           ),
                         ],
                       ),
-                    );
-                  }),
+                    ),
                 ],
               );
             },
@@ -863,7 +879,7 @@ class SupportChatView extends GetView<SupportController> {
                       color: isDark ? Colors.white : Colors.black87,
                     ),
                     decoration: InputDecoration(
-                      hintText: controller.isInternalNote.value
+                      hintText: controller.isInternalNote
                           ? (isMobile ? 'اكتب ملاحظتك الداخلية هنا...' : 'اكتب ملاحظتك الداخلية هنا (ستكون مرئية لفرق الدعم فقط)...')
                           : (isMobile ? 'اكتب ردك للعميل...' : 'اكتب ردك للعميل (سيتم إرسال إشعار فوري عبر فايربيس على جواله)...'),
                       hintStyle: const TextStyle(fontSize: 12, color: Colors.grey),
@@ -874,40 +890,40 @@ class SupportChatView extends GetView<SupportController> {
                 ),
               ),
               const SizedBox(width: 8),
-              Obx(() => ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: controller.isInternalNote.value
-                          ? Colors.amber[800]
-                          : colorScheme.primary,
-                      foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: isMobile ? 14 : 20,
-                        vertical: 14,
-                      ),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                      elevation: 3,
-                    ),
-                    onPressed: controller.isSendingReply.value ? null : () => controller.sendReply(),
-                    child: controller.isSendingReply.value
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                          )
-                        : Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                controller.isInternalNote.value
-                                    ? Icons.lock_rounded
-                                    : Icons.send_rounded,
-                                size: 18,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(controller.isInternalNote.value ? 'حفظ' : 'إرسال'),
-                            ],
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: controller.isInternalNote
+                      ? Colors.amber[800]
+                      : colorScheme.primary,
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isMobile ? 14 : 20,
+                    vertical: 14,
+                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  elevation: 3,
+                ),
+                onPressed: controller.isSendingReply ? null : () => controller.sendReply(),
+                child: controller.isSendingReply
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      )
+                    : Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            controller.isInternalNote
+                                ? Icons.lock_rounded
+                                : Icons.send_rounded,
+                            size: 18,
                           ),
-                  )),
+                          const SizedBox(width: 4),
+                          Text(controller.isInternalNote ? 'حفظ' : 'إرسال'),
+                        ],
+                      ),
+              ),
             ],
           ),
         ],
