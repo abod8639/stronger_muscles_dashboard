@@ -16,7 +16,7 @@ class CategoriesSummarySection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final res = context.responsive;
-    final stats = ref.watch(dashboardStatsNotifierProvider).valueOrNull ??
+    final stats = ref.watch(dashboardStatsNotifierProvider).value ??
         DashboardStatsEntity.initial();
     final categories = stats.categories;
 
