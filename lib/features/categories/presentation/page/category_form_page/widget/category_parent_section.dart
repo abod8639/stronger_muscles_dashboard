@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/features/categories/presentation/controllers/categories_controller.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/category_tree_selector.dart';
 
@@ -14,20 +13,19 @@ class CategoryParentSection extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Obx(
-          () => CategoryTreeSelector(
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (context, _) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CategoryTreeSelector(
             categories: controller.categories,
-            selectedId: controller.parentId.value,
-            onSelected: (id) => controller.parentId.value = id,
+            selectedId: controller.parentId,
+            onSelected: (id) => controller.parentId = id,
             label: 'اختر التصنيف الرئيسي الأب (اختياري)',
           ),
-        ),
-        Obx(() {
-          if (controller.parentId.value.isNotEmpty) {
-            return Padding(
+          if (controller.parentId.isNotEmpty)
+            Padding(
               padding: const EdgeInsets.only(top: 10),
               child: Row(
                 children: [
@@ -46,7 +44,7 @@ class CategoryParentSection extends StatelessWidget {
                   ),
                   const Spacer(),
                   TextButton.icon(
-                    onPressed: () => controller.parentId.value = '',
+                    onPressed: () => controller.parentId = '',
                     icon: const Icon(Icons.close_rounded, size: 16),
                     label: const Text('إلغاء التبعية (تصنيف رئيسي)'),
                     style: TextButton.styleFrom(
@@ -56,11 +54,9 @@ class CategoryParentSection extends StatelessWidget {
                   ),
                 ],
               ),
-            );
-          }
-          return const SizedBox.shrink();
-        }),
-      ],
+            ),
+        ],
+      ),
     );
   }
 }
