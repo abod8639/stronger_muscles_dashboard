@@ -9,22 +9,27 @@ class SupportStatsHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final controller = ref.watch(supportControllerProvider);
-    final responsive = context.responsive;
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final isDark = theme.brightness == Brightness.dark;
-    final isNarrow = responsive.screenWidth < 1100;
 
-    final stats = controller.stats;
-    final total = stats.total.toString();
-    final open = stats.open.toString();
-    final inProgress = stats.inProgress.toString();
-    final urgent = stats.urgent.toString();
-    final resolved = stats.resolved.toString();
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (context, _) {
+        final responsive = context.responsive;
+        final theme = Theme.of(context);
+        final colorScheme = theme.colorScheme;
+        final isDark = theme.brightness == Brightness.dark;
+        final isNarrow = responsive.screenWidth < 1100;
 
-    Widget content;
-    if (responsive.isMobile) {
-      content = SingleChildScrollView(
+        final stats = controller.stats;
+        final total = stats.total.toString();
+        final open = stats.open.toString();
+        final inProgress = stats.inProgress.toString();
+        final urgent = stats.urgent.toString();
+        final resolved = stats.resolved.toString();
+
+        Widget content;
+        if (responsive.isMobile) {
+          content = SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
             child: Row(
               children: [
                 SizedBox(
@@ -89,8 +94,9 @@ class SupportStatsHeader extends ConsumerWidget {
                 ),
               ],
             ),
-    } else if (isNarrow) {
-      content = Column(
+          );
+        } else if (isNarrow) {
+          content = Column(
             children: [
               Row(
                 children: [
@@ -156,74 +162,77 @@ class SupportStatsHeader extends ConsumerWidget {
                 ],
               ),
             ],
-    } else {
-      content = Row(
-          children: [
-            Expanded(
-              child: _buildStatCard(
-                context,
-                title: 'إجمالي التذاكر',
-                value: total,
-                icon: Icons.confirmation_number_rounded,
-                iconColor: colorScheme.primary,
-                isDark: isDark,
+          );
+        } else {
+          content = Row(
+            children: [
+              Expanded(
+                child: _buildStatCard(
+                  context,
+                  title: 'إجمالي التذاكر',
+                  value: total,
+                  icon: Icons.confirmation_number_rounded,
+                  iconColor: colorScheme.primary,
+                  isDark: isDark,
+                ),
               ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _buildStatCard(
-                context,
-                title: 'بانتظار المعالجة',
-                value: open,
-                icon: Icons.mark_chat_unread_rounded,
-                iconColor: Colors.amber,
-                isDark: isDark,
+              const SizedBox(width: 10),
+              Expanded(
+                child: _buildStatCard(
+                  context,
+                  title: 'بانتظار المعالجة',
+                  value: open,
+                  icon: Icons.mark_chat_unread_rounded,
+                  iconColor: Colors.amber,
+                  isDark: isDark,
+                ),
               ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _buildStatCard(
-                context,
-                title: 'قيد المتابعة',
-                value: inProgress,
-                icon: Icons.sync_rounded,
-                iconColor: Colors.blue,
-                isDark: isDark,
+              const SizedBox(width: 10),
+              Expanded(
+                child: _buildStatCard(
+                  context,
+                  title: 'قيد المتابعة',
+                  value: inProgress,
+                  icon: Icons.sync_rounded,
+                  iconColor: Colors.blue,
+                  isDark: isDark,
+                ),
               ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _buildStatCard(
-                context,
-                title: 'شكاوى عاجلة',
-                value: urgent,
-                icon: Icons.warning_amber_rounded,
-                iconColor: Colors.redAccent,
-                isDark: isDark,
-                isAlert: stats.urgent > 0,
+              const SizedBox(width: 10),
+              Expanded(
+                child: _buildStatCard(
+                  context,
+                  title: 'شكاوى عاجلة',
+                  value: urgent,
+                  icon: Icons.warning_amber_rounded,
+                  iconColor: Colors.redAccent,
+                  isDark: isDark,
+                  isAlert: stats.urgent > 0,
+                ),
               ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _buildStatCard(
-                context,
-                title: 'تم حلها',
-                value: resolved,
-                icon: Icons.check_circle_outline_rounded,
-                iconColor: Colors.green,
-                isDark: isDark,
+              const SizedBox(width: 10),
+              Expanded(
+                child: _buildStatCard(
+                  context,
+                  title: 'تم حلها',
+                  value: resolved,
+                  icon: Icons.check_circle_outline_rounded,
+                  iconColor: Colors.green,
+                  isDark: isDark,
+                ),
               ),
-            ),
-          ],
-        );
-    }
+            ],
+          );
+        }
 
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: responsive.defaultPadding.left,
-        vertical: 4,
-      ),
-      child: content,
+        return Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: responsive.defaultPadding.left,
+            vertical: 4,
+          ),
+          child: content,
+        );
+      },
     );
   }
 
