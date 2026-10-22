@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
+import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_providers.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_form_mixin.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_form_sections.dart';
 
 /// صفحة نموذج إضافة / تعديل المنتج بتصميم Neumorphism / Soft UI
-class ProductFormPage extends StatefulWidget {
+class ProductFormPage extends ConsumerStatefulWidget {
   final ProductEntity? product;
   const ProductFormPage({super.key, this.product});
 
   @override
-  State<ProductFormPage> createState() => _ProductFormPageState();
+  ConsumerState<ProductFormPage> createState() => _ProductFormPageState();
 }
 
-class _ProductFormPageState extends State<ProductFormPage>
+class _ProductFormPageState extends ConsumerState<ProductFormPage>
     with ProductFormMixin {
   final _formKey = GlobalKey<FormState>();
 
   @override
-  final ProductsController controller = Get.find<ProductsController>();
+  ProductsController get controller => ref.read(productsUIControllerProvider);
 
   @override
   ProductEntity? get product => widget.product;
@@ -39,9 +40,15 @@ class _ProductFormPageState extends State<ProductFormPage>
   @override
   void initState() {
     super.initState();
-    initializeProductFields();
-    controller.imageUrls.assignAll(getInitialImageUrls());
-    _selectedCategoryId = getInitialCategoryId();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      initializeProductFields();
+      controller.imageUrls
+        ..clear()
+        ..addAll(getInitialImageUrls());
+      setState(() {
+        _selectedCategoryId = getInitialCategoryId();
+      });
+    });
   }
 
   @override
@@ -63,17 +70,21 @@ class _ProductFormPageState extends State<ProductFormPage>
     }
   }
 
-  void _onSave() {
-    controller.saveProduct(
+  void _onSave() async {
+    final success = await controller.saveProduct(
       existingProduct: widget.product,
       formKey: _formKey,
       categoryId: _selectedCategoryId ?? '',
       productImages: controller.imageUrls.toList(),
     );
+    if (success && mounted) {
+      Navigator.of(context).pop();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final ctrl = ref.watch(productsUIControllerProvider);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
@@ -98,19 +109,31 @@ class _ProductFormPageState extends State<ProductFormPage>
                 end: Alignment.bottomRight,
                 colors: isDark
                     ? [
-                        Color.lerp(colorScheme.surfaceContainer, Colors.white, 0.02)!,
-                        Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.08)!,
+                        Color.lerp(
+                          colorScheme.surfaceContainerHigh,
+                          Colors.white,
+                          0.03,
+                        )!,
+                        Color.lerp(
+                          colorScheme.surfaceContainerHigh,
+                          Colors.black,
+                          0.12,
+                        )!,
                       ]
                     : [
-                        Color.lerp(colorScheme.surface, Colors.white, 0.85)!,
-                        Color.lerp(colorScheme.surface, const Color(0xFFA3B1C6), 0.10)!,
+                        Colors.white,
+                        Color.lerp(
+                          colorScheme.surfaceContainerLow,
+                          Colors.black,
+                          0.04,
+                        )!,
                       ],
               ),
               boxShadow: [
                 BoxShadow(
                   color: isDark
                       ? Colors.black.withValues(alpha: 0.35)
-                      : const Color(0xFFA3B1C6).withValues(alpha: 0.28),
+                      : const Color(0xFFA3B1C6).withValues(alpha: 0.30),
                   offset: const Offset(1.5, 2),
                   blurRadius: 3,
                 ),
@@ -134,7 +157,7 @@ class _ProductFormPageState extends State<ProductFormPage>
               borderRadius: BorderRadius.circular(10),
               child: InkWell(
                 borderRadius: BorderRadius.circular(10),
-                onTap: () => Get.back(),
+                onTap: () => Navigator.of(context).pop(),
                 child: Center(
                   child: Icon(
                     Icons.arrow_back_ios_new_rounded,
@@ -194,7 +217,7 @@ class _ProductFormPageState extends State<ProductFormPage>
         ),
       ),
       bottomNavigationBar: ProductStickyBottomBar(
-        controller: controller,
+        controller: ctrl,
         onSave: _onSave,
         isEditing: isEditing,
       ),
@@ -205,7 +228,7 @@ class _ProductFormPageState extends State<ProductFormPage>
             horizontal: isWide ? 32 : 16,
             vertical: 24,
           ),
-          child: isWide ? _buildWideLayout() : _buildMobileLayout(),
+          child: isWide ? _buildWideLayout(ctrl) : _buildMobileLayout(ctrl),
         ),
       ),
     );
@@ -282,21 +305,21 @@ class _ProductFormPageState extends State<ProductFormPage>
           colors: isActive
               ? (isDark
                   ? [
-                      Color.lerp(colorScheme.primaryContainer, Colors.white, 0.02)!,
-                      Color.lerp(colorScheme.surfaceContainer, colorScheme.primary, 0.16)!,
+                      Color.lerp(colorScheme.primaryContainer, Colors.white, 0.03)!,
+                      Color.lerp(colorScheme.surfaceContainer, colorScheme.primary, 0.12)!,
                     ]
                   : [
-                      Color.lerp(colorScheme.primaryContainer, Colors.white, 0.45)!,
+                      Color.lerp(colorScheme.primaryContainer, Colors.white, 0.40)!,
                       Color.lerp(colorScheme.primaryContainer, Colors.black, 0.02)!,
                     ])
               : (isDark
                   ? [
-                      Color.lerp(colorScheme.surfaceContainer, Colors.white, 0.02)!,
-                      Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.06)!,
+                      Color.lerp(colorScheme.surfaceContainerHigh, Colors.white, 0.02)!,
+                      Color.lerp(colorScheme.surfaceContainerHigh, Colors.black, 0.10)!,
                     ]
                   : [
-                      Color.lerp(colorScheme.surface, Colors.white, 0.85)!,
-                      Color.lerp(colorScheme.surface, const Color(0xFFA3B1C6), 0.08)!,
+                      Colors.white,
+                      Color.lerp(colorScheme.surfaceContainerLow, Colors.black, 0.03)!,
                     ]),
         ),
         boxShadow: isActive
@@ -375,7 +398,7 @@ class _ProductFormPageState extends State<ProductFormPage>
   }
 
   // ── تخطيط الشاشات الكبيرة (Desktop / Tablet) ──────────────────────────────
-  Widget _buildWideLayout() {
+  Widget _buildWideLayout(ProductsController ctrl) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -387,14 +410,14 @@ class _ProductFormPageState extends State<ProductFormPage>
               Container(
                 key: _basicInfoKey,
                 child: ProductBasicInfoSection(
-                  controller: controller,
+                  controller: ctrl,
                 ),
               ),
               const SizedBox(height: 24),
               Container(
                 key: _categoryKey,
                 child: ProductCategorySection(
-                  controller: controller,
+                  controller: ctrl,
                   selectedCategoryId: _selectedCategoryId,
                   onCategorySelected: (id) =>
                       setState(() => _selectedCategoryId = id),
@@ -403,12 +426,12 @@ class _ProductFormPageState extends State<ProductFormPage>
               const SizedBox(height: 24),
               Container(
                 key: _pricingKey,
-                child: ProductPricingStockSection(controller: controller),
+                child: ProductPricingStockSection(controller: ctrl),
               ),
               const SizedBox(height: 24),
               Container(
                 key: _variantsKey,
-                child: ProductVariantsSection(controller: controller),
+                child: ProductVariantsSection(controller: ctrl),
               ),
               const SizedBox(height: 80),
             ],
@@ -423,23 +446,21 @@ class _ProductFormPageState extends State<ProductFormPage>
             children: [
               Container(
                 key: _mediaKey,
-                child: Obx(
-                  () => ProductMediaSection(
-                    controller: controller,
-                    imageUrls: controller.imageUrls.toList(),
-                    onAddImageUrl: (url) => controller.imageUrls.add(url),
-                    onRemoveImage: (i) => controller.imageUrls.removeAt(i),
-                    onReorderImage: (oldIdx, newIdx) {
-                      final item = controller.imageUrls.removeAt(oldIdx);
-                      controller.imageUrls.insert(newIdx, item);
-                    },
+                child: ListenableBuilder(
+                  listenable: ctrl,
+                  builder: (context, _) => ProductMediaSection(
+                    controller: ctrl,
+                    imageUrls: ctrl.imageUrls.toList(),
+                    onAddImageUrl: ctrl.addImageUrl,
+                    onRemoveImage: ctrl.removeImageUrl,
+                    onReorderImage: ctrl.reorderImageUrl,
                   ),
                 ),
               ),
               const SizedBox(height: 24),
               Container(
                 key: _settingsKey,
-                child: ProductSettingsSection(controller: controller),
+                child: ProductSettingsSection(controller: ctrl),
               ),
               const SizedBox(height: 80),
             ],
@@ -450,21 +471,19 @@ class _ProductFormPageState extends State<ProductFormPage>
   }
 
   // ── تخطيط الشاشات الصغيرة (Mobile) ─────────────────────────────────────────
-  Widget _buildMobileLayout() {
+  Widget _buildMobileLayout(ProductsController ctrl) {
     return Column(
       children: [
         Container(
           key: _mediaKey,
-          child: Obx(
-            () => ProductMediaSection(
-              controller: controller,
-              imageUrls: controller.imageUrls.toList(),
-              onAddImageUrl: (url) => controller.imageUrls.add(url),
-              onRemoveImage: (i) => controller.imageUrls.removeAt(i),
-              onReorderImage: (oldIdx, newIdx) {
-                final item = controller.imageUrls.removeAt(oldIdx);
-                controller.imageUrls.insert(newIdx, item);
-              },
+          child: ListenableBuilder(
+            listenable: ctrl,
+            builder: (context, _) => ProductMediaSection(
+              controller: ctrl,
+              imageUrls: ctrl.imageUrls.toList(),
+              onAddImageUrl: ctrl.addImageUrl,
+              onRemoveImage: ctrl.removeImageUrl,
+              onReorderImage: ctrl.reorderImageUrl,
             ),
           ),
         ),
@@ -472,14 +491,14 @@ class _ProductFormPageState extends State<ProductFormPage>
         Container(
           key: _basicInfoKey,
           child: ProductBasicInfoSection(
-            controller: controller,
+            controller: ctrl,
           ),
         ),
         const SizedBox(height: 20),
         Container(
           key: _categoryKey,
           child: ProductCategorySection(
-            controller: controller,
+            controller: ctrl,
             selectedCategoryId: _selectedCategoryId,
             onCategorySelected: (id) =>
                 setState(() => _selectedCategoryId = id),
@@ -488,17 +507,17 @@ class _ProductFormPageState extends State<ProductFormPage>
         const SizedBox(height: 20),
         Container(
           key: _pricingKey,
-          child: ProductPricingStockSection(controller: controller),
+          child: ProductPricingStockSection(controller: ctrl),
         ),
         const SizedBox(height: 20),
         Container(
           key: _variantsKey,
-          child: ProductVariantsSection(controller: controller),
+          child: ProductVariantsSection(controller: ctrl),
         ),
         const SizedBox(height: 20),
         Container(
           key: _settingsKey,
-          child: ProductSettingsSection(controller: controller),
+          child: ProductSettingsSection(controller: ctrl),
         ),
         const SizedBox(height: 90),
       ],
