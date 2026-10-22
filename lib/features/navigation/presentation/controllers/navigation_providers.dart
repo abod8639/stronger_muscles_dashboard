@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 import 'package:stronger_muscles_dashboard/core/network/auth_service.dart';
 import 'package:stronger_muscles_dashboard/features/auth/presentation/controllers/auth_providers.dart';
 import '../../data/datasources/navigation_remote_datasource.dart';
@@ -9,7 +8,6 @@ import '../../data/repositories/navigation_repository_impl.dart';
 import '../../domain/entities/navigation_badges_entity.dart';
 import '../../domain/repositories/navigation_repository.dart';
 import '../../domain/usecases/get_navigation_badges_usecase.dart';
-import 'navigation_controller.dart';
 
 /// موفر مصدر بيانات التنقل البعيد
 final navigationRemoteDataSourceProvider =
@@ -80,9 +78,7 @@ class NavigationNotifier extends AsyncNotifier<NavigationState> {
       cancelToken.cancel('Navigation page disposed');
     });
 
-    final authService =
-        Get.isRegistered<AuthService>() ? Get.find<AuthService>() : null;
-    final role = authService?.getUserRole() ?? 'admin';
+    final role = ref.read(authServiceProvider).getUserRole();
 
     final useCase = ref.watch(getNavigationBadgesUseCaseProvider);
     final badgesResult = await useCase(cancelToken: cancelToken);
@@ -108,11 +104,6 @@ class NavigationNotifier extends AsyncNotifier<NavigationState> {
     final current = state.value ?? NavigationState.initial();
     final safeIndex = index.clamp(0, 8);
     state = AsyncValue.data(current.copyWith(selectedIndex: safeIndex));
-
-    // مزامنة فورية مع GetX Controller للتوافق التام مع الويدجتس القائمة
-    if (Get.isRegistered<NavigationController>()) {
-      Get.find<NavigationController>().selectedIndex.value = safeIndex;
-    }
   }
 
   /// فتح / إغلاق القائمة الجانبية
