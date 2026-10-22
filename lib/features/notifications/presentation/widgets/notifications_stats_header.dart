@@ -1,136 +1,135 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../config/responsive.dart';
-import '../controllers/notifications_controller.dart';
+import '../controllers/notifications_providers.dart';
 
-class NotificationsStatsHeader extends GetView<NotificationsController> {
+class NotificationsStatsHeader extends ConsumerWidget {
   const NotificationsStatsHeader({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final responsive = context.responsive;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
     final isNarrow = responsive.screenWidth < 1000;
 
+    final asyncResult = ref.watch(notificationsControllerProvider);
+    final data = asyncResult.value;
+
+    final total = data?.totalCount.toString() ?? '0';
+    final today = data?.todayCount.toString() ?? '0';
+    final broadcast = data?.broadcastCount.toString() ?? '0';
+    final targeted = data?.targetedCount.toString() ?? '0';
+
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: responsive.defaultPadding.left,
         vertical: 4,
       ),
-      child: Obx(() {
-        final total = controller.totalCount.value.toString();
-        final today = controller.todayCount.value.toString();
-        final broadcast = controller.broadcastCount.value.toString();
-        final targeted = controller.targetedCount.value.toString();
-
-        if (isNarrow) {
-          return Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildStatCard(
-                      context,
-                      title: 'إجمالي الإشعارات',
-                      value: total,
-                      icon: Icons.notifications_active_rounded,
-                      iconColor: colorScheme.primary,
-                      isDark: isDark,
+      child: isNarrow
+          ? Column(
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildStatCard(
+                        context,
+                        title: 'إجمالي الإشعارات',
+                        value: total,
+                        icon: Icons.notifications_active_rounded,
+                        iconColor: colorScheme.primary,
+                        isDark: isDark,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _buildStatCard(
-                      context,
-                      title: 'أُرسلت اليوم',
-                      value: today,
-                      icon: Icons.today_rounded,
-                      iconColor: Colors.amber,
-                      isDark: isDark,
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildStatCard(
+                        context,
+                        title: 'أُرسلت اليوم',
+                        value: today,
+                        icon: Icons.today_rounded,
+                        iconColor: Colors.amber,
+                        isDark: isDark,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildStatCard(
-                      context,
-                      title: 'إشعارات عامة',
-                      value: broadcast,
-                      icon: Icons.campaign_rounded,
-                      iconColor: Colors.teal,
-                      isDark: isDark,
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildStatCard(
+                        context,
+                        title: 'إشعارات عامة',
+                        value: broadcast,
+                        icon: Icons.campaign_rounded,
+                        iconColor: Colors.teal,
+                        isDark: isDark,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _buildStatCard(
-                      context,
-                      title: 'إشعارات مخصصة',
-                      value: targeted,
-                      icon: Icons.person_pin_rounded,
-                      iconColor: Colors.purple,
-                      isDark: isDark,
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildStatCard(
+                        context,
+                        title: 'إشعارات مخصصة',
+                        value: targeted,
+                        icon: Icons.person_pin_rounded,
+                        iconColor: Colors.purple,
+                        isDark: isDark,
+                      ),
                     ),
+                  ],
+                ),
+              ],
+            )
+          : Row(
+              children: [
+                Expanded(
+                  child: _buildStatCard(
+                    context,
+                    title: 'إجمالي الإشعارات',
+                    value: total,
+                    icon: Icons.notifications_active_rounded,
+                    iconColor: colorScheme.primary,
+                    isDark: isDark,
                   ),
-                ],
-              ),
-            ],
-          );
-        }
-
-        return Row(
-          children: [
-            Expanded(
-              child: _buildStatCard(
-                context,
-                title: 'إجمالي الإشعارات',
-                value: total,
-                icon: Icons.notifications_active_rounded,
-                iconColor: colorScheme.primary,
-                isDark: isDark,
-              ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildStatCard(
+                    context,
+                    title: 'أُرسلت اليوم',
+                    value: today,
+                    icon: Icons.today_rounded,
+                    iconColor: Colors.amber,
+                    isDark: isDark,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildStatCard(
+                    context,
+                    title: 'إشعارات عامة',
+                    value: broadcast,
+                    icon: Icons.campaign_rounded,
+                    iconColor: Colors.teal,
+                    isDark: isDark,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildStatCard(
+                    context,
+                    title: 'إشعارات مخصصة',
+                    value: targeted,
+                    icon: Icons.person_pin_rounded,
+                    iconColor: Colors.purple,
+                    isDark: isDark,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildStatCard(
-                context,
-                title: 'أُرسلت اليوم',
-                value: today,
-                icon: Icons.today_rounded,
-                iconColor: Colors.amber,
-                isDark: isDark,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildStatCard(
-                context,
-                title: 'إشعارات عامة',
-                value: broadcast,
-                icon: Icons.campaign_rounded,
-                iconColor: Colors.teal,
-                isDark: isDark,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildStatCard(
-                context,
-                title: 'إشعارات مخصصة',
-                value: targeted,
-                icon: Icons.person_pin_rounded,
-                iconColor: Colors.purple,
-                isDark: isDark,
-              ),
-            ),
-          ],
-        );
-      }),
     );
   }
 
