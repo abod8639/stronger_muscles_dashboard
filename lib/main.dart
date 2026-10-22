@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:stronger_muscles_dashboard/core/network/auth_service.dart';
 import 'package:stronger_muscles_dashboard/core/router/app_router.dart';
-import 'package:stronger_muscles_dashboard/functions/getx_init.dart';
+import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
 import 'package:stronger_muscles_dashboard/functions/hive_init.dart';
 import 'config/theme_extended.dart';
 
@@ -15,12 +13,6 @@ Future<void> main() async {
   await Hive.initFlutter();
   await GetStorage.init();
   await hiveInit();
-  initializeServices();
-
-  // تهيئة خدمة التوثيق مبكراً
-  if (!Get.isRegistered<AuthService>()) {
-    Get.put(AuthService(), permanent: true);
-  }
 
   runApp(
     const ProviderScope(
@@ -38,6 +30,7 @@ class StrongerMusclesDashboard extends ConsumerWidget {
 
     return MaterialApp.router(
       routerConfig: router,
+      scaffoldMessengerKey: rootScaffoldMessengerKey,
       debugShowCheckedModeBanner: false,
       title: 'لوحة تحكم Stronger Muscles',
       theme: AppThemeExtended.getLightTheme(),
