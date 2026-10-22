@@ -1,10 +1,12 @@
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:stronger_muscles_dashboard/core/router/app_router.dart';
 import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
 
-/// Legacy Bridge for Auth Management
-class AuthService extends GetxService {
+/// خدمة إدارة المصادقة والتوثيق
+class AuthService {
+  static final AuthService instance = AuthService();
+
   final GetStorage _storage = GetStorage();
   static const String _tokenKey = 'admin_token';
   static const String _userKey = 'admin_user';
@@ -55,3 +57,8 @@ class AuthService extends GetxService {
     };
   }
 }
+
+/// موفر Riverpod لـ [AuthService]
+final authServiceProvider = Provider<AuthService>((ref) {
+  return AuthService.instance;
+});
