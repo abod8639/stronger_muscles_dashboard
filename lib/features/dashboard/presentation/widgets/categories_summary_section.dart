@@ -1,39 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/base_data_view.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/category_card.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
-import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_controller.dart';
-import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_controller.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/domain/entities/dashboard_stats_entity.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_providers.dart';
+import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_providers.dart';
 
-class CategoriesSummarySection extends GetView<DashboardController> {
+class CategoriesSummarySection extends ConsumerWidget {
   const CategoriesSummarySection({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final res = context.responsive;
-    final navigationController = Get.find<NavigationController>();
+    final stats = ref.watch(dashboardStatsNotifierProvider).valueOrNull ??
+        DashboardStatsEntity.initial();
+    final categories = stats.categories;
 
-    return Obx(() {
-      final categories = controller.stats.value.categories;
-      if (categories.isEmpty) return const SizedBox();
+    if (categories.isEmpty) return const SizedBox();
 
-      return BaseDataView<CategoryEntity>(
-        title: 'التصنيفات',
-        crossAxisCount: res.isDesktop ? 3 : 2,
-        items: categories,
-        onSeeAll: () => navigationController.changeIndex(1), // Categories index
-        itemBuilder: (context, category, index) {
-          return CategoryCard(
-            category: category,
-            index: index,
-            onTap: () => context.push(AppRoutes.categoryForm, extra: category),
-          );
-        },
-      );
-    });
+    return BaseDataView<CategoryEntity>(
+      title: 'التصنيفات',
+      crossAxisCount: res.isDesktop ? 3 : 2,
+      items: categories,
+      onSeeAll: () =>
+          ref.read(navigationControllerProvider.notifier).selectTab(1),
+      itemBuilder: (context, category, index) {
+        return CategoryCard(
+          category: category,
+          index: index,
+          onTap: () => context.push(AppRoutes.categoryForm, extra: category),
+        );
+      },
+    );
   }
 }
