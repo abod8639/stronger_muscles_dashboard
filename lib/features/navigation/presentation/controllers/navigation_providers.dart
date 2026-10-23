@@ -126,7 +126,7 @@ class NavigationNotifier extends AsyncNotifier<NavigationState> {
         debugPrint('Refresh navigation badges error: ${failure.toMessage()}');
       },
       (badges) {
-        if (ref.exists(navigationControllerProvider)) {
+        if (ref.mounted) {
           final current = state.value ?? NavigationState.initial();
           state = AsyncValue.data(current.copyWith(badges: badges));
         }
