@@ -16,7 +16,7 @@ class PromoRemoteDataSourceImpl implements PromoRemoteDataSource {
 
   PromoRemoteDataSourceImpl({required this.dio});
 
-  static const _timeout = Duration(seconds: 15);
+  static const _timeout = Duration(seconds: 30);
 
   @override
   Future<List<PromoModel>> getPromos({CancelToken? cancelToken}) async {
