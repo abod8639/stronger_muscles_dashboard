@@ -1,3 +1,6 @@
+import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
+import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import 'package:stronger_muscles_dashboard/features/promos/domain/entities/promo_entity.dart';
 import 'package:stronger_muscles_dashboard/features/promos/domain/repositories/promo_repository.dart';
 
@@ -6,8 +9,8 @@ class GetPromosUseCase {
 
   GetPromosUseCase(this.repository);
 
-  Future<List<PromoEntity>> call() async {
-    return await repository.getPromos();
+  Future<Either<Failure, List<PromoEntity>>> call({CancelToken? cancelToken}) async {
+    return await repository.getPromos(cancelToken: cancelToken);
   }
 }
 
@@ -16,8 +19,8 @@ class AddPromoUseCase {
 
   AddPromoUseCase(this.repository);
 
-  Future<PromoEntity> call(PromoEntity promo) async {
-    return await repository.addPromo(promo);
+  Future<Either<Failure, PromoEntity>> call(PromoEntity promo, {CancelToken? cancelToken}) async {
+    return await repository.addPromo(promo, cancelToken: cancelToken);
   }
 }
 
@@ -26,8 +29,8 @@ class UpdatePromoUseCase {
 
   UpdatePromoUseCase(this.repository);
 
-  Future<PromoEntity> call(PromoEntity promo) async {
-    return await repository.updatePromo(promo);
+  Future<Either<Failure, PromoEntity>> call(PromoEntity promo, {CancelToken? cancelToken}) async {
+    return await repository.updatePromo(promo, cancelToken: cancelToken);
   }
 }
 
@@ -36,8 +39,8 @@ class DeletePromoUseCase {
 
   DeletePromoUseCase(this.repository);
 
-  Future<void> call(String id) async {
-    return await repository.deletePromo(id);
+  Future<Either<Failure, void>> call(String id, {CancelToken? cancelToken}) async {
+    return await repository.deletePromo(id, cancelToken: cancelToken);
   }
 }
 
@@ -46,8 +49,7 @@ class UploadPromoImageUseCase {
 
   UploadPromoImageUseCase(this.repository);
 
-  Future<String> call(String filePath) async {
-    return await repository.uploadImage(filePath);
+  Future<Either<Failure, String>> call(String filePath, {CancelToken? cancelToken}) async {
+    return await repository.uploadImage(filePath, cancelToken: cancelToken);
   }
 }
-
