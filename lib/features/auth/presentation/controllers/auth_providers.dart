@@ -11,23 +11,51 @@ import '../../domain/usecases/check_auth_status_usecase.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/logout_usecase.dart';
 import '../../domain/usecases/signup_usecase.dart';
+import 'package:stronger_muscles_dashboard/core/network/auth_service.dart';
+import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
 import 'auth_controller.dart';
 
-/// موفر [Dio] الأساسي مع تعيين المهلات الزمنية (Timeouts)
+/// موفر [Dio] الأساسي مع تعيين المهلات الزمنية وتمرير رمز المصادقة (Auth Interceptor)
 final dioProvider = Provider<Dio>((ref) {
   final apiConfig = ApiConfigController();
-  return Dio(
+  final dio = Dio(
     BaseOptions(
       baseUrl: apiConfig.baseUrl.value,
-      connectTimeout: const Duration(seconds: 15),
-      receiveTimeout: const Duration(seconds: 15),
-      sendTimeout: const Duration(seconds: 15),
+      connectTimeout: const Duration(seconds: 30),
+      receiveTimeout: const Duration(seconds: 30),
+      sendTimeout: const Duration(seconds: 30),
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
     ),
   );
+
+  dio.interceptors.add(
+    InterceptorsWrapper(
+      onRequest: (options, handler) {
+        final token = AuthService.instance.getToken();
+        if (token != null && token.isNotEmpty) {
+          options.headers['Authorization'] = 'Bearer $token';
+        }
+        return handler.next(options);
+      },
+      onError: (DioException e, handler) {
+        final path = e.requestOptions.path;
+        final isAuthEndpoint =
+            path.contains('/login') || path.contains('/register');
+
+        if (e.response?.statusCode == 401 && !isAuthEndpoint) {
+          AuthService.instance.logout(sessionExpired: true);
+        } else if (e.response?.statusCode == 403) {
+          AppFeedback.showError('ليس لديك صلاحية للوصول إلى هذا المورد');
+        }
+        return handler.next(e);
+      },
+    ),
+  );
+
+  return dio;
 });
 
 /// موفر مصدر البيانات المحلي (GetStorage)
