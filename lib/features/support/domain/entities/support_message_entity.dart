@@ -23,6 +23,32 @@ class SupportMessageEntity {
     required this.createdAt,
   });
 
+  factory SupportMessageEntity.fromJson(Map<String, dynamic> json) {
+    List<String> parsedAttachments = [];
+    if (json['attachments'] is List) {
+      parsedAttachments = (json['attachments'] as List).map((e) => e.toString()).toList();
+    }
+
+    return SupportMessageEntity(
+      id: json['id'] is int ? json['id'] as int : int.tryParse(json['id']?.toString() ?? '0') ?? 0,
+      ticketId: json['ticket_id'] is int
+          ? json['ticket_id'] as int
+          : int.tryParse(json['ticket_id']?.toString() ?? '0') ?? 0,
+      senderType: json['sender_type']?.toString() ?? 'user',
+      senderId: json['sender_id'] is int
+          ? json['sender_id'] as int
+          : int.tryParse(json['sender_id']?.toString() ?? ''),
+      senderName: json['sender_name']?.toString() ?? 'مستخدم',
+      message: json['message']?.toString() ?? '',
+      attachments: parsedAttachments,
+      isInternalNote: json['is_internal_note'] == true || json['is_internal_note'] == 1,
+      isRead: json['is_read'] == true || json['is_read'] == 1,
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'].toString()) ?? DateTime.now()
+          : DateTime.now(),
+    );
+  }
+
   bool get isUser => senderType == 'user';
   bool get isAdmin => senderType == 'admin';
   bool get isSystem => senderType == 'system';
