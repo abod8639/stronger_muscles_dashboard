@@ -4,13 +4,14 @@ import 'package:flutter/foundation.dart';
 import 'package:stronger_muscles_dashboard/config/api_config.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import 'package:stronger_muscles_dashboard/core/error/network_error_handler.dart';
-import 'package:stronger_muscles_dashboard/core/network/api_base.dart';
 import 'package:stronger_muscles_dashboard/features/brands/data/models/brand_model.dart';
 import 'package:stronger_muscles_dashboard/features/brands/domain/entities/brand_entity.dart';
 import 'package:stronger_muscles_dashboard/features/brands/domain/repositories/brand_repository.dart';
 
-class BrandRepositoryImpl extends ApiBase implements BrandRepository {
-  BrandRepositoryImpl();
+class BrandRepositoryImpl implements BrandRepository {
+  final Dio dio;
+
+  BrandRepositoryImpl(this.dio);
 
   @override
   Future<Either<Failure, List<BrandEntity>>> getBrands({CancelToken? cancelToken}) async {
@@ -19,8 +20,8 @@ class BrandRepositoryImpl extends ApiBase implements BrandRepository {
         ApiConfig.adminBrands,
         cancelToken: cancelToken,
         options: Options(
-          sendTimeout: const Duration(seconds: 15),
-          receiveTimeout: const Duration(seconds: 15),
+          sendTimeout: const Duration(seconds: 35),
+          receiveTimeout: const Duration(seconds: 35),
         ),
       );
 
