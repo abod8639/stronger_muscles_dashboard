@@ -80,26 +80,28 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
                   const AppAmbientBackground(),
 
                   // التخطيط الرئيسي
-                  Row(
-                    children: [
-                      if (isDesktop) const Sidebar(),
-                      Expanded(
-                        child: isDesktop
-                            ? Padding(
-                                padding: const EdgeInsets.only(
-                                  top: 10,
-                                  bottom: 20,
-                                  right: 10,
-                                  left: 10,
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(32),
-                                  child: _buildContent(navState.selectedIndex),
-                                ),
-                              )
-                            : _buildContent(navState.selectedIndex),
-                      ),
-                    ],
+                  SafeArea(
+                    child: Row(
+                      children: [
+                        if (isDesktop) const Sidebar(),
+                        Expanded(
+                          child: isDesktop
+                              ? Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: 10,
+                                    bottom: 20,
+                                    right: 10,
+                                    left: 10,
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(32),
+                                    child: _buildContent(navState.selectedIndex),
+                                  ),
+                                )
+                              : _buildContent(navState.selectedIndex),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
