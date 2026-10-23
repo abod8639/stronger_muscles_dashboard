@@ -1,6 +1,6 @@
 import 'dart:async';
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/network/api/user_service.dart';
 import '../../data/datasources/user_remote_datasource.dart';
 import '../../data/repositories/user_repository_impl.dart';
 import '../../domain/entities/user_entity.dart';
@@ -9,10 +9,8 @@ import '../../domain/repositories/user_repository.dart';
 import '../../domain/usecases/get_users_stats_usecase.dart';
 import '../../domain/usecases/get_users_usecase.dart';
 
-final userServiceProvider = Provider<UserService>((ref) => UserService());
-
 final userRemoteDataSourceProvider = Provider<UserRemoteDataSource>((ref) {
-  return UserRemoteDataSourceImpl(ref.watch(userServiceProvider));
+  return UserRemoteDataSourceImpl();
 });
 
 final userRepositoryProvider = Provider<UserRepository>((ref) {
@@ -39,17 +37,42 @@ class UsersSearchQueryNotifier extends Notifier<String> {
 }
 
 class UsersNotifier extends AsyncNotifier<UsersStatsEntity> {
+  CancelToken? _cancelToken;
+
   @override
   FutureOr<UsersStatsEntity> build() async {
+    ref.onDispose(() {
+      _cancelToken?.cancel('cancelled by riverpod onDispose');
+    });
+    return _fetchStats();
+  }
+
+  Future<UsersStatsEntity> _fetchStats() async {
+    _cancelToken?.cancel('new request');
+    _cancelToken = CancelToken();
+
     final useCase = ref.watch(getUsersStatsUseCaseProvider);
-    return await useCase();
+    final result = await useCase(cancelToken: _cancelToken);
+
+    return result.fold(
+      (failure) => throw Exception(failure.toMessage()),
+      (stats) => stats,
+    );
   }
 
   Future<void> refresh() async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
+      _cancelToken?.cancel('new refresh request');
+      _cancelToken = CancelToken();
+
       final useCase = ref.read(getUsersStatsUseCaseProvider);
-      return await useCase();
+      final result = await useCase(cancelToken: _cancelToken);
+
+      return result.fold(
+        (failure) => throw Exception(failure.toMessage()),
+        (stats) => stats,
+      );
     });
   }
 
