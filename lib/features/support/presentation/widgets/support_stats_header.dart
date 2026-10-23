@@ -51,7 +51,7 @@ class SupportStatsHeader extends ConsumerWidget {
                     title: 'بانتظار المعالجة',
                     value: open,
                     icon: Icons.mark_chat_unread_rounded,
-                    iconColor: Colors.amber,
+                    iconColor: colorScheme.secondary,
                     isDark: isDark,
                   ),
                 ),
@@ -63,7 +63,7 @@ class SupportStatsHeader extends ConsumerWidget {
                     title: 'قيد المتابعة',
                     value: inProgress,
                     icon: Icons.sync_rounded,
-                    iconColor: Colors.blue,
+                    iconColor: colorScheme.tertiary,
                     isDark: isDark,
                   ),
                 ),
@@ -75,7 +75,7 @@ class SupportStatsHeader extends ConsumerWidget {
                     title: 'شكاوى عاجلة',
                     value: urgent,
                     icon: Icons.warning_amber_rounded,
-                    iconColor: Colors.redAccent,
+                    iconColor: colorScheme.error,
                     isDark: isDark,
                     isAlert: stats.urgent > 0,
                   ),
@@ -88,7 +88,7 @@ class SupportStatsHeader extends ConsumerWidget {
                     title: 'تم الحل',
                     value: resolved,
                     icon: Icons.check_circle_outline_rounded,
-                    iconColor: Colors.green,
+                    iconColor: colorScheme.primary,
                     isDark: isDark,
                   ),
                 ),
@@ -117,7 +117,7 @@ class SupportStatsHeader extends ConsumerWidget {
                       title: 'بانتظار المعالجة',
                       value: open,
                       icon: Icons.mark_chat_unread_rounded,
-                      iconColor: Colors.amber,
+                      iconColor: colorScheme.secondary,
                       isDark: isDark,
                     ),
                   ),
@@ -128,7 +128,7 @@ class SupportStatsHeader extends ConsumerWidget {
                       title: 'قيد المتابعة',
                       value: inProgress,
                       icon: Icons.sync_rounded,
-                      iconColor: Colors.blue,
+                      iconColor: colorScheme.tertiary,
                       isDark: isDark,
                     ),
                   ),
@@ -143,7 +143,7 @@ class SupportStatsHeader extends ConsumerWidget {
                       title: 'شكاوى عاجلة',
                       value: urgent,
                       icon: Icons.warning_amber_rounded,
-                      iconColor: Colors.redAccent,
+                      iconColor: colorScheme.error,
                       isDark: isDark,
                       isAlert: stats.urgent > 0,
                     ),
@@ -155,7 +155,7 @@ class SupportStatsHeader extends ConsumerWidget {
                       title: 'تم الحل والإغلاق',
                       value: resolved,
                       icon: Icons.check_circle_outline_rounded,
-                      iconColor: Colors.green,
+                      iconColor: colorScheme.primary,
                       isDark: isDark,
                     ),
                   ),
@@ -183,7 +183,7 @@ class SupportStatsHeader extends ConsumerWidget {
                   title: 'بانتظار المعالجة',
                   value: open,
                   icon: Icons.mark_chat_unread_rounded,
-                  iconColor: Colors.amber,
+                  iconColor: colorScheme.secondary,
                   isDark: isDark,
                 ),
               ),
@@ -194,7 +194,7 @@ class SupportStatsHeader extends ConsumerWidget {
                   title: 'قيد المتابعة',
                   value: inProgress,
                   icon: Icons.sync_rounded,
-                  iconColor: Colors.blue,
+                  iconColor: colorScheme.tertiary,
                   isDark: isDark,
                 ),
               ),
@@ -205,7 +205,7 @@ class SupportStatsHeader extends ConsumerWidget {
                   title: 'شكاوى عاجلة',
                   value: urgent,
                   icon: Icons.warning_amber_rounded,
-                  iconColor: Colors.redAccent,
+                  iconColor: colorScheme.error,
                   isDark: isDark,
                   isAlert: stats.urgent > 0,
                 ),
@@ -217,7 +217,7 @@ class SupportStatsHeader extends ConsumerWidget {
                   title: 'تم حلها',
                   value: resolved,
                   icon: Icons.check_circle_outline_rounded,
-                  iconColor: Colors.green,
+                  iconColor: colorScheme.primary,
                   isDark: isDark,
                 ),
               ),
@@ -251,44 +251,21 @@ class SupportStatsHeader extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isDark
-              ? [
-                  Color.lerp(colorScheme.surfaceContainer, Colors.white, 0.03)!,
-                  Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.09)!,
-                ]
-              : [
-                  Color.lerp(colorScheme.surfaceContainer, Colors.white, 0.70)!,
-                  Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.03)!,
-                ],
+        color: colorScheme.surfaceContainer,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isAlert
+              ? colorScheme.error.withValues(alpha: 0.5)
+              : colorScheme.outlineVariant,
+          width: isAlert ? 1.5 : 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: isDark
-                ? Colors.black.withValues(alpha: 0.5)
-                : const Color(0xFFA3B1C6).withValues(alpha: 0.35),
-            offset: const Offset(3, 4),
-            blurRadius: 10,
-          ),
-          BoxShadow(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.03)
-                : Colors.white.withValues(alpha: 0.9),
-            offset: const Offset(-2, -2),
+            color: colorScheme.shadow.withValues(alpha: isDark ? 0.25 : 0.04),
+            offset: const Offset(0, 2),
             blurRadius: 6,
           ),
         ],
-        border: Border.all(
-          color: isAlert
-              ? Colors.redAccent.withValues(alpha: 0.5)
-              : isDark
-                  ? Colors.white.withValues(alpha: 0.05)
-                  : Colors.white.withValues(alpha: 0.8),
-          width: isAlert ? 1.5 : 1,
-        ),
       ),
       child: Row(
         children: [
@@ -296,7 +273,7 @@ class SupportStatsHeader extends ConsumerWidget {
             padding: const EdgeInsets.all(9),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: iconColor.withValues(alpha: 0.15),
+              color: iconColor.withValues(alpha: 0.12),
             ),
             child: Icon(icon, color: iconColor, size: 19),
           ),
@@ -320,7 +297,7 @@ class SupportStatsHeader extends ConsumerWidget {
                   value,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: isAlert ? Colors.redAccent : colorScheme.onSurface,
+                    color: isAlert ? colorScheme.error : colorScheme.onSurface,
                   ),
                 ),
               ],
