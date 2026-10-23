@@ -1,3 +1,7 @@
+import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
+import 'package:stronger_muscles_dashboard/core/error/failures.dart';
+import 'package:stronger_muscles_dashboard/core/error/network_error_handler.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/entities/users_stats_entity.dart';
 import '../../domain/repositories/user_repository.dart';
@@ -9,14 +13,22 @@ class UserRepositoryImpl implements UserRepository {
   UserRepositoryImpl(this.remoteDataSource);
 
   @override
-  Future<UsersStatsEntity> getUsersStats() async {
-    final model = await remoteDataSource.getUsersStats();
-    return model.toEntity();
+  Future<Either<Failure, UsersStatsEntity>> getUsersStats({CancelToken? cancelToken}) async {
+    try {
+      final model = await remoteDataSource.getUsersStats(cancelToken: cancelToken);
+      return Right(model.toEntity());
+    } catch (e, stackTrace) {
+      return Left(NetworkErrorHandler.handleException(e, stackTrace));
+    }
   }
 
   @override
-  Future<List<UserEntity>> getUsers() async {
-    final models = await remoteDataSource.getUsers();
-    return models.map((model) => model.toEntity()).toList();
+  Future<Either<Failure, List<UserEntity>>> getUsers({CancelToken? cancelToken}) async {
+    try {
+      final models = await remoteDataSource.getUsers(cancelToken: cancelToken);
+      return Right(models.map((model) => model.toEntity()).toList());
+    } catch (e, stackTrace) {
+      return Left(NetworkErrorHandler.handleException(e, stackTrace));
+    }
   }
 }
