@@ -26,7 +26,7 @@ class SupportTicketCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
       child: Material(
-        color: Colors.transparent,
+        type: MaterialType.transparency,
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(18),
@@ -34,56 +34,25 @@ class SupportTicketCard extends StatelessWidget {
             duration: const Duration(milliseconds: 200),
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(18),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: isSelected
-                    ? (isDark
-                        ? [
-                            Color.lerp(colorScheme.primaryContainer, Colors.black, 0.4)!,
-                            Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.2)!,
-                          ]
-                        : [
-                            Color.lerp(colorScheme.primaryContainer, Colors.white, 0.7)!,
-                            Colors.white,
-                          ])
-                    : (isDark
-                        ? [
-                            Color.lerp(colorScheme.surfaceContainer, Colors.white, 0.02)!,
-                            Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.08)!,
-                          ]
-                        : [
-                            Colors.white,
-                            Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.02)!,
-                          ]),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: isDark
-                      ? Colors.black.withValues(alpha: isSelected ? 0.6 : 0.35)
-                      : const Color(0xFFA3B1C6).withValues(alpha: isSelected ? 0.45 : 0.25),
-                  offset: const Offset(3, 4),
-                  blurRadius: isSelected ? 12 : 8,
-                ),
-                BoxShadow(
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.03)
-                      : Colors.white.withValues(alpha: 0.9),
-                  offset: const Offset(-2, -2),
-                  blurRadius: 6,
-                ),
-              ],
+              color: isSelected
+                  ? colorScheme.primaryContainer.withValues(alpha: isDark ? 0.35 : 0.6)
+                  : colorScheme.surfaceContainer,
+              borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: isSelected
                     ? colorScheme.primary
                     : ticket.isUrgent
-                        ? Colors.redAccent.withValues(alpha: 0.4)
-                        : (isDark
-                            ? Colors.white.withValues(alpha: 0.06)
-                            : Colors.white.withValues(alpha: 0.8)),
-                width: isSelected ? 1.6 : 1,
+                        ? colorScheme.error.withValues(alpha: 0.5)
+                        : colorScheme.outlineVariant,
+                width: isSelected ? 1.5 : 1,
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: colorScheme.shadow.withValues(alpha: isSelected ? (isDark ? 0.35 : 0.08) : (isDark ? 0.2 : 0.03)),
+                  offset: const Offset(0, 2),
+                  blurRadius: isSelected ? 8 : 4,
+                ),
+              ],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -126,7 +95,7 @@ class SupportTicketCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 6),
-                    _buildPriorityBadge(ticket.priority),
+                    _buildPriorityBadge(context, ticket.priority),
                     const Spacer(),
                     Text(
                       dateStr,
@@ -187,15 +156,15 @@ class SupportTicketCard extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                         decoration: BoxDecoration(
-                          color: Colors.redAccent,
+                          color: colorScheme.error,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
                           '${ticket.unreadMessagesCount} جديد',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: colorScheme.onError,
                           ),
                         ),
                       ),
@@ -209,10 +178,9 @@ class SupportTicketCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
                       decoration: BoxDecoration(
-                        color: isDark
-                            ? Colors.white.withValues(alpha: 0.06)
-                            : Colors.black.withValues(alpha: 0.04),
+                        color: colorScheme.surfaceContainerHigh,
                         borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: colorScheme.outlineVariant.withValues(alpha: 0.6)),
                       ),
                       child: Text(
                         ticket.categoryArabic,
@@ -223,7 +191,7 @@ class SupportTicketCard extends StatelessWidget {
                       ),
                     ),
                     const Spacer(),
-                    _buildStatusPill(ticket.status, ticket.statusArabic),
+                    _buildStatusPill(context, ticket.status, ticket.statusArabic),
                   ],
                 ),
               ],
@@ -234,29 +202,30 @@ class SupportTicketCard extends StatelessWidget {
     );
   }
 
-  Widget _buildPriorityBadge(String priority) {
+  Widget _buildPriorityBadge(BuildContext context, String priority) {
+    final colorScheme = Theme.of(context).colorScheme;
     Color bg;
     Color fg;
     IconData? icon;
 
     switch (priority) {
       case 'urgent':
-        bg = Colors.redAccent.withValues(alpha: 0.15);
-        fg = Colors.redAccent;
+        bg = colorScheme.error.withValues(alpha: 0.15);
+        fg = colorScheme.error;
         icon = Icons.flash_on_rounded;
         break;
       case 'high':
-        bg = Colors.orange.withValues(alpha: 0.15);
-        fg = Colors.orange;
+        bg = colorScheme.tertiary.withValues(alpha: 0.15);
+        fg = colorScheme.tertiary;
         break;
       case 'normal':
-        bg = Colors.blueGrey.withValues(alpha: 0.12);
-        fg = Colors.blueGrey;
+        bg = colorScheme.secondary.withValues(alpha: 0.12);
+        fg = colorScheme.secondary;
         break;
       case 'low':
       default:
-        bg = Colors.grey.withValues(alpha: 0.12);
-        fg = Colors.grey;
+        bg = colorScheme.surfaceContainerHighest;
+        fg = colorScheme.onSurfaceVariant;
         break;
     }
 
@@ -292,31 +261,32 @@ class SupportTicketCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusPill(String status, String label) {
+  Widget _buildStatusPill(BuildContext context, String status, String label) {
+    final colorScheme = Theme.of(context).colorScheme;
     Color bg;
     Color fg;
 
     switch (status) {
       case 'open':
-        bg = Colors.amber.withValues(alpha: 0.15);
-        fg = Colors.amber[800]!;
+        bg = colorScheme.primaryContainer;
+        fg = colorScheme.onPrimaryContainer;
         break;
       case 'in_progress':
-        bg = Colors.blue.withValues(alpha: 0.15);
-        fg = Colors.blue[700]!;
+        bg = colorScheme.secondaryContainer;
+        fg = colorScheme.onSecondaryContainer;
         break;
       case 'waiting_user':
-        bg = Colors.purple.withValues(alpha: 0.15);
-        fg = Colors.purple[700]!;
+        bg = colorScheme.tertiaryContainer;
+        fg = colorScheme.onTertiaryContainer;
         break;
       case 'resolved':
-        bg = Colors.green.withValues(alpha: 0.15);
-        fg = Colors.green[700]!;
+        bg = colorScheme.surfaceContainerHighest;
+        fg = colorScheme.primary;
         break;
       case 'closed':
       default:
-        bg = Colors.grey.withValues(alpha: 0.15);
-        fg = Colors.grey[700]!;
+        bg = colorScheme.surfaceContainerHigh;
+        fg = colorScheme.onSurfaceVariant;
         break;
     }
 
