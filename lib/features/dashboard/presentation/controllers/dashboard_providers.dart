@@ -78,7 +78,7 @@ class DashboardStatsNotifier extends AsyncNotifier<DashboardStatsEntity> {
     final useCase = ref.read(getDashboardDataUseCaseProvider);
     final result = await useCase(cancelToken: cancelToken);
 
-    if (ref.exists(dashboardStatsNotifierProvider)) {
+    if (ref.mounted) {
       state = result.fold(
         (failure) => AsyncValue.error(failure, StackTrace.current),
         (stats) => AsyncValue.data(stats),
