@@ -1,36 +1,74 @@
-import '../../../../core/network/api/user_service.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:stronger_muscles_dashboard/config/api_config.dart';
+import 'package:stronger_muscles_dashboard/core/network/api_base.dart';
 import '../models/user_model.dart';
 import '../models/users_stats_model.dart';
 
 abstract class UserRemoteDataSource {
-  Future<UsersStatsModel> getUsersStats();
-  Future<List<UserModel>> getUsers();
+  Future<UsersStatsModel> getUsersStats({CancelToken? cancelToken});
+  Future<List<UserModel>> getUsers({CancelToken? cancelToken});
 }
 
-class UserRemoteDataSourceImpl implements UserRemoteDataSource {
-  final UserService _userService;
-
-  UserRemoteDataSourceImpl(this._userService);
+class UserRemoteDataSourceImpl extends ApiBase implements UserRemoteDataSource {
+  UserRemoteDataSourceImpl();
 
   @override
-  Future<UsersStatsModel> getUsersStats() async {
-    final data = await _userService.fetchUsersStats();
-    // In case the service returns the full response instead of just data
-    final statsData = (data.containsKey('data')) ? data['data'] : data;
-    return UsersStatsModel.fromJson(statsData as Map<String, dynamic>);
+  Future<UsersStatsModel> getUsersStats({CancelToken? cancelToken}) async {
+    final response = await dio.get(
+      ApiConfig.adminUsers,
+      cancelToken: cancelToken,
+      options: Options(
+        sendTimeout: const Duration(seconds: 15),
+        receiveTimeout: const Duration(seconds: 15),
+      ),
+    );
+    final decoded = response.data;
+    final Map<String, dynamic> rawMap;
+    if (decoded is Map<String, dynamic>) {
+      rawMap = (decoded.containsKey('data') && decoded['data'] is Map<String, dynamic>)
+          ? decoded['data'] as Map<String, dynamic>
+          : decoded;
+    } else {
+      rawMap = {};
+    }
+
+    return await compute(_parseUsersStatsCompute, rawMap);
   }
 
   @override
-  Future<List<UserModel>> getUsers() async {
-    final data = await _userService.fetchUsers();
-    // Consistently handle dynamic list or map-wrapped list
+  Future<List<UserModel>> getUsers({CancelToken? cancelToken}) async {
+    final response = await dio.get(
+      '/users',
+      cancelToken: cancelToken,
+      options: Options(
+        sendTimeout: const Duration(seconds: 15),
+        receiveTimeout: const Duration(seconds: 15),
+      ),
+    );
+    final data = response.data;
+    dynamic rawList;
     if (data is Map && data.containsKey('data')) {
-      final innerData = data['data'];
-      if (innerData is List) return innerData.map((e) => UserModel.fromJson(e)).toList();
+      rawList = data['data'];
+    } else if (data is List) {
+      rawList = data;
+    } else {
+      rawList = [];
     }
-    if (data is List) {
-      return data.map((e) => UserModel.fromJson(e)).toList();
-    }
-    return [];
+
+    return await compute(_parseUsersListCompute, rawList);
   }
+}
+
+UsersStatsModel _parseUsersStatsCompute(Map<String, dynamic> json) {
+  return UsersStatsModel.fromJson(json);
+}
+
+List<UserModel> _parseUsersListCompute(dynamic data) {
+  if (data is List) {
+    return data
+        .map((e) => UserModel.fromJson(Map<String, dynamic>.from(e as Map)))
+        .toList();
+  }
+  return [];
 }
