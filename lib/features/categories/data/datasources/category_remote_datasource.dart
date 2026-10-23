@@ -29,7 +29,7 @@ abstract class CategoryRemoteDataSource {
 class CategoryRemoteDataSourceImpl implements CategoryRemoteDataSource {
   final Dio dio;
 
-  static const Duration _defaultTimeout = Duration(seconds: 15);
+  static const Duration _defaultTimeout = Duration(seconds: 30);
 
   CategoryRemoteDataSourceImpl(this.dio);
 
