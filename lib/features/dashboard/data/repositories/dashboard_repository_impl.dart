@@ -12,7 +12,6 @@ import 'package:stronger_muscles_dashboard/features/orders/domain/repositories/o
 import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/repositories/product_repository.dart';
 import 'package:stronger_muscles_dashboard/features/users/domain/repositories/user_repository.dart';
-import 'package:stronger_muscles_dashboard/features/users/domain/entities/users_stats_entity.dart';
 
 class DashboardRepositoryImpl implements DashboardRepository {
   final OrderRepository _orderRepository;
@@ -35,54 +34,39 @@ class DashboardRepositoryImpl implements DashboardRepository {
     CancelToken? cancelToken,
   }) async {
     try {
-      final results = await Future.wait([
-        _orderRepository.getOrders(),
-        _productRepository.getProducts(),
-        _categoryRepository.getCategories(cancelToken: cancelToken),
-        _userRepository.getUsersStats(),
-      ]);
+      final ordersResult = await _orderRepository.getOrders();
+      final productsResult = await _productRepository.getProducts();
+      final categoriesResult = await _categoryRepository.getCategories(cancelToken: cancelToken);
+      final usersResult = await _userRepository.getUsersStats();
 
-      final ordersResult = results[0];
-      List<OrderEntity> orders = const <OrderEntity>[];
-      if (ordersResult is Either<Failure, List<OrderEntity>>) {
-        ordersResult.fold(
-          (failure) {
-            debugPrint('Dashboard: Orders fetch returned failure: ${failure.toMessage()}');
-          },
-          (ords) => orders = ords,
-        );
-      } else if (ordersResult is List<OrderEntity>) {
-        orders = ordersResult;
-      }
+      final orders = ordersResult.fold(
+        (failure) {
+          debugPrint('Dashboard: Orders fetch returned failure: ${failure.toMessage()}');
+          return <OrderEntity>[];
+        },
+        (ords) => ords,
+      );
 
-      final productsResult = results[1];
-      List<ProductEntity> products = const <ProductEntity>[];
-      if (productsResult is Either<Failure, List<ProductEntity>>) {
-        productsResult.fold(
-          (failure) {
-            debugPrint('Dashboard: Products fetch returned failure: ${failure.toMessage()}');
-          },
-          (prods) => products = prods,
-        );
-      } else if (productsResult is List<ProductEntity>) {
-        products = productsResult;
-      }
+      final products = productsResult.fold(
+        (failure) {
+          debugPrint('Dashboard: Products fetch returned failure: ${failure.toMessage()}');
+          return <ProductEntity>[];
+        },
+        (prods) => prods,
+      );
 
-      final categoriesResult = results[2];
-      List<CategoryEntity> categories = const <CategoryEntity>[];
-      if (categoriesResult is Either<Failure, List<CategoryEntity>>) {
-        categoriesResult.fold(
-          (failure) {
-            debugPrint('Dashboard: Categories fetch returned failure: ${failure.toMessage()}');
-          },
-          (cats) => categories = cats,
-        );
-      } else if (categoriesResult is List<CategoryEntity>) {
-        categories = categoriesResult;
-      }
+      final categories = categoriesResult.fold(
+        (failure) {
+          debugPrint('Dashboard: Categories fetch returned failure: ${failure.toMessage()}');
+          return <CategoryEntity>[];
+        },
+        (cats) => cats,
+      );
 
-      final usersStats = results[3] as UsersStatsEntity?;
-      final totalUsers = usersStats?.totalUsers ?? 0;
+      final totalUsers = usersResult.fold(
+        (failure) => 0,
+        (stats) => stats.totalUsers,
+      );
 
       // عزل العمليات الحسابية والتجميعية الكبيرة في Isolate خلفي لمنع تجميد الشاشة
       final stats = await compute(
