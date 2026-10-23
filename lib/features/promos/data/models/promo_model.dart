@@ -1,5 +1,33 @@
 import 'package:stronger_muscles_dashboard/features/promos/domain/entities/promo_entity.dart';
 
+List<PromoModel> parsePromoListCompute(dynamic data) {
+  if (data is List) {
+    return data
+        .whereType<Map>()
+        .map((json) => PromoModel.fromJson(Map<String, dynamic>.from(json)))
+        .toList();
+  } else if (data is Map && data['data'] is List) {
+    return (data['data'] as List)
+        .whereType<Map>()
+        .map((json) => PromoModel.fromJson(Map<String, dynamic>.from(json)))
+        .toList();
+  }
+  return const [];
+}
+
+PromoModel parsePromoCompute(dynamic data) {
+  if (data is Map) {
+    final map = data['data'] is Map ? data['data'] as Map : data;
+    return PromoModel.fromJson(Map<String, dynamic>.from(map));
+  }
+  return PromoModel(
+    id: '',
+    imageUrl: '',
+    backgroundColor: '#FFFFFF',
+    isActive: false,
+  );
+}
+
 class PromoModel {
   final String id;
   final Map<String, dynamic>? title;
@@ -31,12 +59,12 @@ class PromoModel {
       title: json['title'] is Map ? Map<String, dynamic>.from(json['title']) : null,
       subtitle: json['subtitle'] is Map ? Map<String, dynamic>.from(json['subtitle']) : null,
       buttonText: json['button_text'] is Map ? Map<String, dynamic>.from(json['button_text']) : null,
-      imageUrl: json['image_url'] ?? '',
-      backgroundColor: json['background_color'] ?? '#FFFFFF',
-      targetType: json['target_type'] ?? 'none',
+      imageUrl: json['image_url']?.toString() ?? '',
+      backgroundColor: json['background_color']?.toString() ?? '#FFFFFF',
+      targetType: json['target_type']?.toString() ?? 'none',
       targetId: json['target_id']?.toString(),
       isActive: json['is_active'] == 1 || json['is_active'] == true,
-      createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at']) : null,
+      createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at'].toString()) : null,
     );
   }
 
