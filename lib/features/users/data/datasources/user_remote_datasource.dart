@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:stronger_muscles_dashboard/config/api_config.dart';
-import 'package:stronger_muscles_dashboard/core/network/api_base.dart';
 import '../models/user_model.dart';
 import '../models/users_stats_model.dart';
 
@@ -10,8 +9,10 @@ abstract class UserRemoteDataSource {
   Future<List<UserModel>> getUsers({CancelToken? cancelToken});
 }
 
-class UserRemoteDataSourceImpl extends ApiBase implements UserRemoteDataSource {
-  UserRemoteDataSourceImpl();
+class UserRemoteDataSourceImpl implements UserRemoteDataSource {
+  final Dio dio;
+
+  UserRemoteDataSourceImpl(this.dio);
 
   @override
   Future<UsersStatsModel> getUsersStats({CancelToken? cancelToken}) async {
@@ -19,8 +20,8 @@ class UserRemoteDataSourceImpl extends ApiBase implements UserRemoteDataSource {
       ApiConfig.adminUsers,
       cancelToken: cancelToken,
       options: Options(
-        sendTimeout: const Duration(seconds: 15),
-        receiveTimeout: const Duration(seconds: 15),
+        sendTimeout: const Duration(seconds: 35),
+        receiveTimeout: const Duration(seconds: 35),
       ),
     );
     final decoded = response.data;
@@ -42,8 +43,8 @@ class UserRemoteDataSourceImpl extends ApiBase implements UserRemoteDataSource {
       '/users',
       cancelToken: cancelToken,
       options: Options(
-        sendTimeout: const Duration(seconds: 15),
-        receiveTimeout: const Duration(seconds: 15),
+        sendTimeout: const Duration(seconds: 35),
+        receiveTimeout: const Duration(seconds: 35),
       ),
     );
     final data = response.data;
