@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:stronger_muscles_dashboard/config/app_colors.dart';
-import 'package:stronger_muscles_dashboard/config/theme.dart';
+import 'package:stronger_muscles_dashboard/core/components/confirm_dialog.dart';
+import 'package:stronger_muscles_dashboard/core/components/enhanced_loading_widget.dart';
+import 'package:stronger_muscles_dashboard/core/theme/app_design_tokens.dart';
 import 'package:stronger_muscles_dashboard/features/auth/presentation/controllers/auth_providers.dart';
 import 'package:stronger_muscles_dashboard/features/users/presentation/controllers/users_providers.dart';
 
@@ -10,29 +11,36 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
     final usersAsync = ref.watch(usersNotifierProvider);
 
     return Scaffold(
-      backgroundColor: AppColorsExtended.backgroundColor,
-      appBar: AppBar(title: const Text('الإعدادات')),
+      backgroundColor: theme.colorScheme.surface,
+      appBar: AppBar(
+        title: const Text('الإعدادات'),
+      ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: AppDesignTokens.paddingScreen,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // قسم إدارة المشرفين والصلاحيات
             _buildSectionCard(
+              context: context,
               title: 'إدارة المشرفين والصلاحيات',
               child: usersAsync.when(
-                loading: () => const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(20),
-                    child: CircularProgressIndicator(),
+                loading: () => const Padding(
+                  padding: AppDesignTokens.paddingCard,
+                  child: EnhancedLoadingWidget(
+                    message: 'جاري تحميل المشرفين...',
                   ),
                 ),
                 error: (error, _) => Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text('خطأ في تحميل المستخدمين: $error'),
+                  child: Text(
+                    'خطأ في تحميل المستخدمين: $error',
+                    style: TextStyle(color: theme.colorScheme.error),
+                  ),
                 ),
                 data: (stats) {
                   final admins = stats.users
@@ -56,14 +64,17 @@ class SettingsScreen extends ConsumerWidget {
                       return ListTile(
                         contentPadding: EdgeInsets.zero,
                         leading: CircleAvatar(
-                          backgroundColor: AppColors.primary.withValues(
+                          backgroundColor: theme.colorScheme.primary.withValues(
                             alpha: 0.1,
                           ),
                           child: Text(
                             admin.name.isNotEmpty
                                 ? admin.name[0].toUpperCase()
                                 : 'A',
-                            style: TextStyle(color: AppColors.primary),
+                            style: TextStyle(
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                         title: Text(
@@ -77,13 +88,13 @@ class SettingsScreen extends ConsumerWidget {
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(12),
+                            color: theme.colorScheme.primary.withValues(alpha: 0.15),
+                            borderRadius: AppDesignTokens.borderRadiusSmall,
                           ),
                           child: Text(
                             admin.role.toUpperCase(),
                             style: TextStyle(
-                              color: AppColors.primary,
+                              color: theme.colorScheme.primary,
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
                             ),
@@ -100,6 +111,7 @@ class SettingsScreen extends ConsumerWidget {
 
             // قسم الحساب
             _buildSectionCard(
+              context: context,
               title: 'الحساب',
               child: SizedBox(
                 width: double.infinity,
@@ -108,11 +120,11 @@ class SettingsScreen extends ConsumerWidget {
                   icon: const Icon(Icons.logout),
                   label: const Text('تسجيل الخروج'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.error,
-                    foregroundColor: Colors.white,
+                    backgroundColor: theme.colorScheme.error,
+                    foregroundColor: theme.colorScheme.onError,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: AppDesignTokens.borderRadiusMedium,
                     ),
                   ),
                 ),
@@ -124,10 +136,21 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSectionCard({required String title, required Widget child}) {
+  Widget _buildSectionCard({
+    required BuildContext context,
+    required String title,
+    required Widget child,
+  }) {
     return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: AppDesignTokens.borderRadiusCard,
+        side: BorderSide(
+          color: Theme.of(context).dividerColor.withValues(alpha: 0.2),
+        ),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: AppDesignTokens.paddingCard,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -146,26 +169,16 @@ class SettingsScreen extends ConsumerWidget {
   void _showLogoutDialog(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('تسجيل الخروج'),
-        content: const Text('هل أنت متأكد من تسجيل الخروج؟'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('إلغاء'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              ref.read(authControllerProvider.notifier).logout();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text('تسجيل الخروج'),
-          ),
-        ],
+      builder: (ctx) => ConfirmDialog(
+        title: 'تسجيل الخروج',
+        message: 'هل أنت متأكد من رغبتك في تسجيل الخروج من لوحة التحكم؟',
+        confirmText: 'تسجيل الخروج',
+        confirmColor: Theme.of(context).colorScheme.error,
+        icon: Icons.logout_rounded,
+        onConfirm: () {
+          Navigator.of(ctx).pop();
+          ref.read(authControllerProvider.notifier).logout();
+        },
       ),
     );
   }
