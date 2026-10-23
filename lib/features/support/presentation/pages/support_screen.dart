@@ -32,7 +32,7 @@ class SupportScreen extends ConsumerWidget {
             }
           },
           child: Scaffold(
-            backgroundColor: Colors.transparent,
+            backgroundColor: theme.scaffoldBackgroundColor,
             body: SafeArea(
               child: hasSelectedTicket
                   ? const Padding(
@@ -155,9 +155,8 @@ class SupportScreen extends ConsumerWidget {
           IconButton(
             tooltip: 'تحديث البيانات',
             style: IconButton.styleFrom(
-              backgroundColor: isDark
-                  ? Colors.white10
-                  : Colors.black.withValues(alpha: 0.05),
+              backgroundColor: colorScheme.surfaceContainerHigh,
+              foregroundColor: colorScheme.onSurface,
               padding: const EdgeInsets.all(10),
             ),
             icon: const Icon(Icons.refresh_rounded, size: 20),
@@ -184,27 +183,30 @@ class SupportScreen extends ConsumerWidget {
                 child: Container(
                   height: 42,
                   decoration: BoxDecoration(
-                    color: isDark ? colorScheme.surfaceContainer : Colors.white,
+                    color: colorScheme.surfaceContainerHigh,
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
-                      color: isDark ? Colors.white12 : Colors.black12,
+                      color: colorScheme.outlineVariant,
                     ),
                   ),
                   child: TextField(
                     onChanged: (val) => controller.onSearchChanged(val),
                     style: TextStyle(
-                        fontSize: 13,
-                        color: isDark ? Colors.white : Colors.black87),
+                      fontSize: 13,
+                      color: colorScheme.onSurface,
+                    ),
                     decoration: InputDecoration(
                       hintText: responsive.isMobile
                           ? 'بحث بالتذاكر أو العميل...'
                           : 'ابحث برقم التذكرة، اسم العميل، البريد، أو الموضوع...',
-                      hintStyle:
-                          const TextStyle(fontSize: 12, color: Colors.grey),
-                      prefixIcon: const Icon(Icons.search_rounded, size: 18),
+                      hintStyle: TextStyle(
+                        fontSize: 12,
+                        color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                      ),
+                      prefixIcon: Icon(Icons.search_rounded, size: 18, color: colorScheme.onSurfaceVariant),
                       suffixIcon: controller.searchQuery.isNotEmpty
                           ? IconButton(
-                              icon: const Icon(Icons.clear_rounded, size: 16),
+                              icon: Icon(Icons.clear_rounded, size: 16, color: colorScheme.onSurfaceVariant),
                               onPressed: () => controller.onSearchChanged(''),
                             )
                           : const SizedBox.shrink(),
@@ -220,28 +222,29 @@ class SupportScreen extends ConsumerWidget {
                 height: 42,
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 decoration: BoxDecoration(
-                  color: isDark ? colorScheme.surfaceContainer : Colors.white,
+                  color: colorScheme.surfaceContainerHigh,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
-                    color: isDark ? Colors.white12 : Colors.black12,
+                    color: colorScheme.outlineVariant,
                   ),
                 ),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
                     value: controller.selectedPriority,
-                    dropdownColor:
-                        isDark ? colorScheme.surfaceContainer : Colors.white,
-                    items: const [
+                    dropdownColor: colorScheme.surfaceContainer,
+                    icon: Icon(Icons.arrow_drop_down, color: colorScheme.onSurfaceVariant),
+                    style: TextStyle(fontSize: 12.5, color: colorScheme.onSurface),
+                    items: [
                       DropdownMenuItem(
-                          value: 'all', child: Text('جميع الأولويات')),
+                          value: 'all', child: Text('جميع الأولويات', style: TextStyle(color: colorScheme.onSurface))),
                       DropdownMenuItem(
-                          value: 'urgent', child: Text('عاجلة جداً 🔥')),
+                          value: 'urgent', child: Text('عاجلة جداً 🔥', style: TextStyle(color: colorScheme.onSurface))),
                       DropdownMenuItem(
-                          value: 'high', child: Text('أولوية مرتفعة')),
+                          value: 'high', child: Text('أولوية مرتفعة', style: TextStyle(color: colorScheme.onSurface))),
                       DropdownMenuItem(
-                          value: 'normal', child: Text('أولوية عادية')),
+                          value: 'normal', child: Text('أولوية عادية', style: TextStyle(color: colorScheme.onSurface))),
                       DropdownMenuItem(
-                          value: 'low', child: Text('منخفضة')),
+                          value: 'low', child: Text('منخفضة', style: TextStyle(color: colorScheme.onSurface))),
                     ],
                     onChanged: (val) {
                       if (val != null) controller.updateSelectedPriority(val);
@@ -256,26 +259,26 @@ class SupportScreen extends ConsumerWidget {
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                _buildStatusChip(controller, 'all', 'جميع التذاكر'),
-                _buildStatusChip(controller, 'open', 'جديدة'),
-                _buildStatusChip(controller, 'in_progress', 'قيد المعالجة'),
-                _buildStatusChip(controller, 'waiting_user', 'بانتظار العميل'),
-                _buildStatusChip(controller, 'resolved', 'تم الحل'),
-                _buildStatusChip(controller, 'closed', 'مغلقة'),
+                _buildStatusChip(context, controller, 'all', 'جميع التذاكر'),
+                _buildStatusChip(context, controller, 'open', 'جديدة'),
+                _buildStatusChip(context, controller, 'in_progress', 'قيد المعالجة'),
+                _buildStatusChip(context, controller, 'waiting_user', 'بانتظار العميل'),
+                _buildStatusChip(context, controller, 'resolved', 'تم الحل'),
+                _buildStatusChip(context, controller, 'closed', 'مغلقة'),
                 const SizedBox(width: 12),
                 Container(
                     width: 1,
                     height: 20,
-                    color: Colors.grey.withValues(alpha: 0.3)),
+                    color: colorScheme.outlineVariant),
                 const SizedBox(width: 12),
-                _buildCategoryChip(controller, 'all', 'كل الأقسام'),
+                _buildCategoryChip(context, controller, 'all', 'كل الأقسام'),
                 _buildCategoryChip(
-                    controller, 'orders_shipping', 'الطلبات والشحن'),
-                _buildCategoryChip(controller, 'supplements', 'المكملات'),
+                    context, controller, 'orders_shipping', 'الطلبات والشحن'),
+                _buildCategoryChip(context, controller, 'supplements', 'المكملات'),
                 _buildCategoryChip(
-                    controller, 'payment_refunds', 'المدفوعات'),
-                _buildCategoryChip(controller, 'complaint', 'شكاوى رسمية'),
-                _buildCategoryChip(controller, 'technical', 'مشاكل تقنية'),
+                    context, controller, 'payment_refunds', 'المدفوعات'),
+                _buildCategoryChip(context, controller, 'complaint', 'شكاوى رسمية'),
+                _buildCategoryChip(context, controller, 'technical', 'مشاكل تقنية'),
               ],
             ),
           ),
@@ -285,26 +288,36 @@ class SupportScreen extends ConsumerWidget {
   }
 
   Widget _buildStatusChip(
-      SupportController controller, String value, String label) {
+      BuildContext context, SupportController controller, String value, String label) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final isSelected = controller.selectedStatus == value;
     return Padding(
       padding: const EdgeInsets.only(right: 6),
       child: FilterChip(
-        label: Text(label, style: const TextStyle(fontSize: 11)),
+        label: Text(label, style: TextStyle(fontSize: 11, color: isSelected ? colorScheme.onPrimaryContainer : colorScheme.onSurface)),
         selected: isSelected,
+        selectedColor: colorScheme.primaryContainer,
+        backgroundColor: colorScheme.surfaceContainerHigh,
+        side: BorderSide(color: isSelected ? colorScheme.primary : colorScheme.outlineVariant),
         onSelected: (_) => controller.updateSelectedStatus(value),
       ),
     );
   }
 
   Widget _buildCategoryChip(
-      SupportController controller, String value, String label) {
+      BuildContext context, SupportController controller, String value, String label) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final isSelected = controller.selectedCategory == value;
     return Padding(
       padding: const EdgeInsets.only(right: 6),
       child: ChoiceChip(
-        label: Text(label, style: const TextStyle(fontSize: 11)),
+        label: Text(label, style: TextStyle(fontSize: 11, color: isSelected ? colorScheme.onPrimaryContainer : colorScheme.onSurface)),
         selected: isSelected,
+        selectedColor: colorScheme.primaryContainer,
+        backgroundColor: colorScheme.surfaceContainerHigh,
+        side: BorderSide(color: isSelected ? colorScheme.primary : colorScheme.outlineVariant),
         onSelected: (_) => controller.updateSelectedCategory(value),
       ),
     );
