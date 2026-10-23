@@ -1,3 +1,6 @@
+import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
+import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import '../entities/user_entity.dart';
 import '../repositories/user_repository.dart';
 
@@ -6,7 +9,7 @@ class GetUsersUseCase {
 
   GetUsersUseCase(this.repository);
 
-  Future<List<UserEntity>> call() async {
-    return await repository.getUsers();
+  Future<Either<Failure, List<UserEntity>>> call({CancelToken? cancelToken}) async {
+    return await repository.getUsers(cancelToken: cancelToken);
   }
 }
