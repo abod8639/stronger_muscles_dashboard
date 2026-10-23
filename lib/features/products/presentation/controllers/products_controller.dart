@@ -1,7 +1,5 @@
-import 'package:dartz/dartz.dart' hide State;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/confirm_dialog.dart';
 import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
@@ -208,48 +206,35 @@ class ProductsController extends ChangeNotifier {
       _isLoading = true;
       notifyListeners();
 
-      final results = await Future.wait([
-        _categoryRepository.getCategories(tree: true),
-        _getProductsUseCase(forceRefresh: forceRefresh),
-        _brandRepository.getBrands(),
-      ]);
+      final catResult = await _categoryRepository.getCategories(tree: true);
+      catResult.fold(
+        (failure) => debugPrint('Error categories: ${failure.toMessage()}'),
+        (cats) {
+          categories
+            ..clear()
+            ..addAll(cats);
+        },
+      );
 
-      final catResult = results[0];
-      if (catResult is Either<Failure, List<CategoryEntity>>) {
-        catResult.fold(
-          (failure) => debugPrint('Error categories: ${failure.toMessage()}'),
-          (cats) {
-            categories
-              ..clear()
-              ..addAll(cats);
-          },
-        );
-      } else if (catResult is List<CategoryEntity>) {
-        categories
-          ..clear()
-          ..addAll(catResult);
-      }
+      final prodResult = await _getProductsUseCase(forceRefresh: forceRefresh);
+      prodResult.fold(
+        (failure) => AppFeedback.showError(failure.toMessage()),
+        (prods) {
+          products
+            ..clear()
+            ..addAll(prods);
+        },
+      );
 
-      final prodResult = results[1];
-      if (prodResult is Either<Failure, List<ProductEntity>>) {
-        prodResult.fold(
-          (failure) => AppFeedback.showError(failure.toMessage()),
-          (prods) {
-            products
-              ..clear()
-              ..addAll(prods);
-          },
-        );
-      } else if (prodResult is List<ProductEntity>) {
-        products
-          ..clear()
-          ..addAll(prodResult);
-      }
-
-      final brandsResult = results[2] as List<BrandEntity>;
-      brands
-        ..clear()
-        ..addAll(brandsResult);
+      final brandsResult = await _brandRepository.getBrands();
+      brandsResult.fold(
+        (failure) => debugPrint('Error brands: ${failure.toMessage()}'),
+        (bList) {
+          brands
+            ..clear()
+            ..addAll(bList);
+        },
+      );
 
       _applyFiltering();
     } catch (e) {
