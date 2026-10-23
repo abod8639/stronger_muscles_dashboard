@@ -3,6 +3,8 @@ import 'package:get_storage/get_storage.dart';
 import 'package:stronger_muscles_dashboard/core/router/app_router.dart';
 import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
 
+import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
+
 /// خدمة إدارة المصادقة والتوثيق
 class AuthService {
   static final AuthService instance = AuthService();
@@ -10,13 +12,16 @@ class AuthService {
   final GetStorage _storage = GetStorage();
   static const String _tokenKey = 'admin_token';
   static const String _userKey = 'admin_user';
+  bool _isLoggingOut = false;
 
   bool isLoggedIn() {
-    return _storage.hasData(_tokenKey);
+    final token = getToken();
+    return token != null && token.trim().isNotEmpty;
   }
 
   String? getToken() {
-    return _storage.read(_tokenKey);
+    final token = _storage.read(_tokenKey);
+    return token?.toString();
   }
 
   Future<void> saveToken(String token) async {
@@ -43,10 +48,21 @@ class AuthService {
     return getUser()?['role']?.toString() ?? 'admin';
   }
 
-  Future<void> logout() async {
-    await _storage.remove(_tokenKey);
-    await _storage.remove(_userKey);
-    appRouter.go(AppRoutes.login);
+  Future<void> logout({bool sessionExpired = false}) async {
+    if (_isLoggingOut) return;
+    _isLoggingOut = true;
+    try {
+      await _storage.remove(_tokenKey);
+      await _storage.remove(_userKey);
+      if (sessionExpired) {
+        AppFeedback.showWarning('انتهت الجلسة: يرجى تسجيل الدخول مجدداً');
+      }
+      appRouter.go(AppRoutes.login);
+    } finally {
+      Future.delayed(const Duration(seconds: 1), () {
+        _isLoggingOut = false;
+      });
+    }
   }
 
   Map<String, String> getAuthHeaders() {
