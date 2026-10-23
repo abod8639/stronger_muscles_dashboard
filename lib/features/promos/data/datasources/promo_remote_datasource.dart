@@ -1,13 +1,14 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:stronger_muscles_dashboard/config/api_config.dart';
 import 'package:stronger_muscles_dashboard/features/promos/data/models/promo_model.dart';
 
 abstract class PromoRemoteDataSource {
-  Future<List<PromoModel>> getPromos();
-  Future<PromoModel> addPromo(Map<String, dynamic> promoData);
-  Future<PromoModel> updatePromo(String id, Map<String, dynamic> promoData);
-  Future<void> deletePromo(String id);
-  Future<String> uploadImage(String filePath);
+  Future<List<PromoModel>> getPromos({CancelToken? cancelToken});
+  Future<PromoModel> addPromo(Map<String, dynamic> promoData, {CancelToken? cancelToken});
+  Future<PromoModel> updatePromo(String id, Map<String, dynamic> promoData, {CancelToken? cancelToken});
+  Future<void> deletePromo(String id, {CancelToken? cancelToken});
+  Future<String> uploadImage(String filePath, {CancelToken? cancelToken});
 }
 
 class PromoRemoteDataSourceImpl implements PromoRemoteDataSource {
@@ -15,87 +16,89 @@ class PromoRemoteDataSourceImpl implements PromoRemoteDataSource {
 
   PromoRemoteDataSourceImpl({required this.dio});
 
+  static const _timeout = Duration(seconds: 15);
+
   @override
-  Future<List<PromoModel>> getPromos() async {
-    try {
-      final response = await dio.get(ApiConfig.adminPromos);
-      if (response.statusCode == 200) {
-        final List<dynamic> dataList = response.data;
-        return dataList.map((json) => PromoModel.fromJson(json)).toList();
-      } else {
-        throw Exception('فشل في جلب الإعلانات');
-      }
-    } catch (e) {
-      throw Exception(e.toString());
-    }
+  Future<List<PromoModel>> getPromos({CancelToken? cancelToken}) async {
+    final response = await dio.get(
+      ApiConfig.adminPromos,
+      cancelToken: cancelToken,
+      options: Options(
+        sendTimeout: _timeout,
+        receiveTimeout: _timeout,
+      ),
+    );
+    return await compute(parsePromoListCompute, response.data);
   }
 
   @override
-  Future<PromoModel> addPromo(Map<String, dynamic> promoData) async {
-    try {
-      final response = await dio.post(ApiConfig.adminPromos, data: promoData);
-      if (response.statusCode == 201 || response.statusCode == 200) {
-        final responseData = response.data['data'] ?? response.data;
-        return PromoModel.fromJson(responseData);
-      } else {
-        throw Exception('فشل في إضافة الإعلان');
-      }
-    } catch (e) {
-      throw Exception(e.toString());
-    }
+  Future<PromoModel> addPromo(Map<String, dynamic> promoData, {CancelToken? cancelToken}) async {
+    final response = await dio.post(
+      ApiConfig.adminPromos,
+      data: promoData,
+      cancelToken: cancelToken,
+      options: Options(
+        sendTimeout: _timeout,
+        receiveTimeout: _timeout,
+      ),
+    );
+    return await compute(parsePromoCompute, response.data);
   }
 
   @override
-  Future<PromoModel> updatePromo(String id, Map<String, dynamic> promoData) async {
-    try {
-      final response = await dio.put('${ApiConfig.adminPromos}/$id', data: promoData);
-      if (response.statusCode == 200) {
-        final responseData = response.data['data'] ?? response.data;
-        return PromoModel.fromJson(responseData);
-      } else {
-        throw Exception('فشل في تحديث الإعلان');
-      }
-    } catch (e) {
-      throw Exception(e.toString());
-    }
+  Future<PromoModel> updatePromo(String id, Map<String, dynamic> promoData, {CancelToken? cancelToken}) async {
+    final response = await dio.put(
+      '${ApiConfig.adminPromos}/$id',
+      data: promoData,
+      cancelToken: cancelToken,
+      options: Options(
+        sendTimeout: _timeout,
+        receiveTimeout: _timeout,
+      ),
+    );
+    return await compute(parsePromoCompute, response.data);
   }
 
   @override
-  Future<void> deletePromo(String id) async {
-    try {
-      final response = await dio.delete('${ApiConfig.adminPromos}/$id');
-      if (response.statusCode != 200 && response.statusCode != 204) {
-        throw Exception('فشل في حذف الإعلان');
-      }
-    } catch (e) {
-      throw Exception(e.toString());
-    }
+  Future<void> deletePromo(String id, {CancelToken? cancelToken}) async {
+    await dio.delete(
+      '${ApiConfig.adminPromos}/$id',
+      cancelToken: cancelToken,
+      options: Options(
+        sendTimeout: _timeout,
+        receiveTimeout: _timeout,
+      ),
+    );
   }
 
   @override
-  Future<String> uploadImage(String filePath) async {
-    try {
-      final formData = FormData.fromMap({
-        'image': await MultipartFile.fromFile(
-          filePath,
-          filename: filePath.split('/').last,
-        ),
-      });
+  Future<String> uploadImage(String filePath, {CancelToken? cancelToken}) async {
+    final formData = FormData.fromMap({
+      'image': await MultipartFile.fromFile(
+        filePath,
+        filename: filePath.split('/').last,
+      ),
+    });
 
-      final response = await dio.post(
-        ApiConfig.adminUploadProductImage, // Generic upload
-        data: formData,
-      );
+    final response = await dio.post(
+      ApiConfig.adminUploadProductImage,
+      data: formData,
+      cancelToken: cancelToken,
+      options: Options(
+        sendTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 30),
+      ),
+    );
 
-      if (response.statusCode == 200) {
-        final data = response.data;
-        final imageUrl = data['url'] ?? data['data']?['url'] ?? data['imageUrl'] ?? data['path'];
-        if (imageUrl != null) return imageUrl.toString();
-      }
-      throw Exception('فشل في رفع الصورة');
-    } catch (e) {
-      throw Exception('خطأ في الرفع: $e');
+    final data = response.data;
+    if (data is Map) {
+      final imageUrl = data['url'] ?? data['data']?['url'] ?? data['imageUrl'] ?? data['path'];
+      if (imageUrl != null) return imageUrl.toString();
     }
+    throw DioException(
+      requestOptions: response.requestOptions,
+      response: response,
+      error: 'فشل في رفع الصورة',
+    );
   }
 }
-
