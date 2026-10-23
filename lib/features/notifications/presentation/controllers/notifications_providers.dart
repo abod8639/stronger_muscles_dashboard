@@ -68,12 +68,16 @@ class NotificationsNotifier extends AsyncNotifier<NotificationsResultEntity> {
 
   @override
   Future<NotificationsResultEntity> build() async {
-    _cancelToken?.cancel('Notifications notifier rebuild');
+    if (_cancelToken != null && !_cancelToken!.isCancelled) {
+      _cancelToken!.cancel('Notifications notifier rebuild');
+    }
     final cancelToken = CancelToken();
     _cancelToken = cancelToken;
 
     ref.onDispose(() {
-      cancelToken.cancel('Notifications page disposed');
+      if (!cancelToken.isCancelled) {
+        cancelToken.cancel('Notifications page disposed');
+      }
     });
 
     final useCase = ref.watch(getNotificationsUseCaseProvider);
@@ -88,7 +92,9 @@ class NotificationsNotifier extends AsyncNotifier<NotificationsResultEntity> {
   /// إعادة جلب وتحديث قائمة الإشعارات
   Future<void> refreshNotifications() async {
     state = const AsyncValue.loading();
-    _cancelToken?.cancel('Refresh requested');
+    if (_cancelToken != null && !_cancelToken!.isCancelled) {
+      _cancelToken!.cancel('Refresh requested');
+    }
     final cancelToken = CancelToken();
     _cancelToken = cancelToken;
 
