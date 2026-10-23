@@ -158,8 +158,13 @@ class PromoFormController extends ChangeNotifier {
       _isBrandsLoading = true;
       notifyListeners();
       try {
-        final fetched = await brandRepository!.getBrands();
-        _brands = fetched;
+        final result = await brandRepository!.getBrands();
+        result.fold(
+          (failure) {},
+          (fetched) {
+            _brands = fetched;
+          },
+        );
       } catch (_) {
       } finally {
         _isBrandsLoading = false;
@@ -206,16 +211,24 @@ class PromoFormController extends ChangeNotifier {
     notifyListeners();
 
     String finalImageUrl = _existingImageUrl;
-    try {
-      if (_selectedImage != null) {
-        finalImageUrl =
-            await uploadPromoImageUseCase.call(_selectedImage!.path);
+    if (_selectedImage != null) {
+      final uploadResult =
+          await uploadPromoImageUseCase.call(_selectedImage!.path);
+      final bool uploadSucceeded = uploadResult.fold(
+        (failure) {
+          AppFeedback.showError(failure.toMessage());
+          return false;
+        },
+        (url) {
+          finalImageUrl = url;
+          return true;
+        },
+      );
+      if (!uploadSucceeded) {
+        _isLoading = false;
+        notifyListeners();
+        return;
       }
-    } catch (e) {
-      _isLoading = false;
-      notifyListeners();
-      AppFeedback.showError('فشل في رفع الصورة: ${e.toString()}');
-      return;
     }
 
     final targetId =
@@ -246,16 +259,29 @@ class PromoFormController extends ChangeNotifier {
 
     try {
       if (isEditing) {
-        final updated = await updatePromoUseCase.call(promoData);
-        promosController?.updatePromoLocally(updated);
-        AppFeedback.showSuccess('تم تحديث الإعلان بنجاح');
+        final result = await updatePromoUseCase.call(promoData);
+        result.fold(
+          (failure) => AppFeedback.showError(failure.toMessage()),
+          (updated) {
+            promosController?.updatePromoLocally(updated);
+            AppFeedback.showSuccess('تم تحديث الإعلان بنجاح');
+            if (context != null && context.mounted) {
+              Navigator.of(context).pop();
+            }
+          },
+        );
       } else {
-        final added = await addPromoUseCase.call(promoData);
-        promosController?.updatePromoLocally(added);
-        AppFeedback.showSuccess('تمت إضافة الإعلان بنجاح');
-      }
-      if (context != null && context.mounted) {
-        Navigator.of(context).pop();
+        final result = await addPromoUseCase.call(promoData);
+        result.fold(
+          (failure) => AppFeedback.showError(failure.toMessage()),
+          (added) {
+            promosController?.updatePromoLocally(added);
+            AppFeedback.showSuccess('تمت إضافة الإعلان بنجاح');
+            if (context != null && context.mounted) {
+              Navigator.of(context).pop();
+            }
+          },
+        );
       }
     } catch (e) {
       AppFeedback.showError(e.toString().replaceAll('Exception: ', ''));
