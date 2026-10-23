@@ -43,8 +43,8 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
       },
       cancelToken: cancelToken,
       options: Options(
-        sendTimeout: const Duration(seconds: 15),
-        receiveTimeout: const Duration(seconds: 15),
+        sendTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 30),
       ),
     );
 
@@ -63,8 +63,8 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
       data: data,
       cancelToken: cancelToken,
       options: Options(
-        sendTimeout: const Duration(seconds: 15),
-        receiveTimeout: const Duration(seconds: 15),
+        sendTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 30),
       ),
     );
 
@@ -81,8 +81,8 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
       ApiConfig.adminNotificationDetail(id),
       cancelToken: cancelToken,
       options: Options(
-        sendTimeout: const Duration(seconds: 15),
-        receiveTimeout: const Duration(seconds: 15),
+        sendTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 30),
       ),
     );
   }
