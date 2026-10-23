@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
@@ -124,13 +125,25 @@ class PromosController extends ChangeNotifier {
     }
   }
 
+  CancelToken? _cancelToken;
+
   Future<void> fetchPromos() async {
+    _cancelToken?.cancel('طلب جديد للإعلانات');
+    _cancelToken = CancelToken();
+
     _isLoading = true;
     notifyListeners();
     try {
-      final data = await getPromosUseCase.call();
-      _promos = data;
-      _applyFilters();
+      final result = await getPromosUseCase.call(cancelToken: _cancelToken);
+      result.fold(
+        (failure) {
+          AppFeedback.showError(failure.toMessage());
+        },
+        (data) {
+          _promos = data;
+          _applyFilters();
+        },
+      );
     } catch (e) {
       AppFeedback.showError(e.toString().replaceAll('Exception: ', ''));
     } finally {
@@ -156,8 +169,15 @@ class PromosController extends ChangeNotifier {
     _isBrandsLoading = true;
     notifyListeners();
     try {
-      final data = await brandRepository.getBrands();
-      _brands = data;
+      final result = await brandRepository.getBrands();
+      result.fold(
+        (failure) {
+          debugPrint('❌ [PromosController] Error fetching brands: ${failure.toMessage()}');
+        },
+        (data) {
+          _brands = data;
+        },
+      );
     } catch (e) {
       debugPrint('❌ [PromosController] Error fetching brands: $e');
     } finally {
@@ -255,11 +275,18 @@ class PromosController extends ChangeNotifier {
 
   Future<void> _deletePromo(String id) async {
     try {
-      await deletePromoUseCase.call(id);
-      _promos.removeWhere((p) => p.id == id);
-      _applyFilters();
-      notifyListeners();
-      AppFeedback.showSuccess('تم حذف الإعلان بنجاح');
+      final result = await deletePromoUseCase.call(id);
+      result.fold(
+        (failure) {
+          AppFeedback.showError(failure.toMessage());
+        },
+        (_) {
+          _promos.removeWhere((p) => p.id == id);
+          _applyFilters();
+          notifyListeners();
+          AppFeedback.showSuccess('تم حذف الإعلان بنجاح');
+        },
+      );
     } catch (e) {
       AppFeedback.showError(e.toString().replaceAll('Exception: ', ''));
     }
