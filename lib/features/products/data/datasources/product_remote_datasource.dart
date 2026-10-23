@@ -16,7 +16,7 @@ abstract class ProductRemoteDataSource {
 class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   final Dio dio;
 
-  static const Duration _defaultTimeout = Duration(seconds: 15);
+  static const Duration _defaultTimeout = Duration(seconds: 30);
   static const Duration _uploadTimeout = Duration(seconds: 60);
 
   ProductRemoteDataSourceImpl(this.dio);
