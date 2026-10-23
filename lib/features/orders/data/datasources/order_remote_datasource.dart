@@ -17,7 +17,7 @@ abstract class OrderRemoteDataSource {
 class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
   final Dio dio;
 
-  static const Duration _defaultTimeout = Duration(seconds: 15);
+  static const Duration _defaultTimeout = Duration(seconds: 30);
 
   OrderRemoteDataSourceImpl(this.dio);
 
