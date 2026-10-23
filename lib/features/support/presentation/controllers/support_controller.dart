@@ -3,8 +3,6 @@ import 'package:dart_pusher_channels/dart_pusher_channels.dart';
 import 'package:flutter/material.dart';
 import '../../../../config/api_config.dart';
 import '../../../../core/utils/ui_feedback.dart';
-import '../../data/models/support_message_model.dart';
-import '../../data/models/support_ticket_model.dart';
 import '../../domain/entities/support_message_entity.dart';
 import '../../domain/entities/support_stats_entity.dart';
 import '../../domain/entities/support_ticket_entity.dart';
@@ -113,7 +111,7 @@ class SupportController extends ChangeNotifier {
               : null;
           if (ticketData != null) {
             final newTicket =
-                SupportTicketModel.fromJson(ticketData).toEntity();
+                SupportTicketEntity.fromJson(ticketData);
             final existingIndex =
                 tickets.indexWhere((t) => t.id == newTicket.id);
             if (existingIndex == -1) {
@@ -150,7 +148,7 @@ class SupportController extends ChangeNotifier {
               : null;
           if (ticketData != null) {
             final updated =
-                SupportTicketModel.fromJson(ticketData).toEntity();
+                SupportTicketEntity.fromJson(ticketData);
             final index = tickets.indexWhere((t) => t.id == updated.id);
             if (index != -1) {
               tickets[index] = updated;
@@ -193,7 +191,7 @@ class SupportController extends ChangeNotifier {
               : null;
           if (msgData != null) {
             final newMsg =
-                SupportMessageModel.fromJson(msgData).toEntity();
+                SupportMessageEntity.fromJson(msgData);
 
             if (selectedTicket != null && selectedTicket!.id == ticketId) {
               final exists =
