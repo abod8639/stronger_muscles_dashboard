@@ -29,48 +29,34 @@ class SupportChatView extends ConsumerWidget {
         }
 
         return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isDark
-              ? [
-                  Color.lerp(colorScheme.surfaceContainer, Colors.white, 0.02)!,
-                  Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.08)!,
-                ]
-              : [
-                  Colors.white,
-                  Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.02)!,
-                ],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: isDark
-                ? Colors.black.withValues(alpha: 0.5)
-                : const Color(0xFFA3B1C6).withValues(alpha: 0.3),
-            offset: const Offset(4, 5),
-            blurRadius: 14,
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainerLow,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: colorScheme.outlineVariant,
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: colorScheme.shadow.withValues(alpha: isDark ? 0.3 : 0.08),
+                offset: const Offset(0, 4),
+                blurRadius: 14,
+              ),
+            ],
           ),
-        ],
-        border: Border.all(
-          color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.white.withValues(alpha: 0.8),
-          width: 1.2,
-        ),
-      ),
-      child: Column(
-        children: [
-          // ── 1. Top Ticket Header & Toolbar ───────────────────────────────
-          _buildTopHeader(context, controller, ticket, isDark),
-          const Divider(height: 1),
+          child: Column(
+            children: [
+              // ── 1. Top Ticket Header & Toolbar ───────────────────────────────
+              _buildTopHeader(context, controller, ticket, isDark),
+              Divider(height: 1, color: colorScheme.outlineVariant),
 
-          // ── 2. Messages List Thread ──────────────────────────────────────
-          Expanded(
-            child: controller.isLoadingDetail
-                ? const Center(child: CircularProgressIndicator())
-                : _buildMessagesList(context, ticket, isDark),
-          ),
-          const Divider(height: 1),
+              // ── 2. Messages List Thread ──────────────────────────────────────
+              Expanded(
+                child: controller.isLoadingDetail
+                    ? const Center(child: CircularProgressIndicator())
+                    : _buildMessagesList(context, ticket, isDark),
+              ),
+              Divider(height: 1, color: colorScheme.outlineVariant),
 
           // ── 3. Canned Responses & Reply Composer ─────────────────────────
           _buildReplyComposer(context, controller, ticket, isDark),
@@ -93,7 +79,7 @@ class SupportChatView extends ConsumerWidget {
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.04),
+              color: colorScheme.surfaceContainerHigh,
             ),
             child: Icon(
               Icons.mark_chat_read_outlined,
@@ -138,7 +124,7 @@ class SupportChatView extends ConsumerWidget {
         vertical: isMobile ? 10 : 14,
       ),
       decoration: BoxDecoration(
-        color: isDark ? Colors.black.withValues(alpha: 0.15) : Colors.grey.withValues(alpha: 0.04),
+        color: colorScheme.surfaceContainer,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: LayoutBuilder(
@@ -231,7 +217,7 @@ class SupportChatView extends ConsumerWidget {
                     ),
                     IconButton(
                       tooltip: 'حذف التذكرة',
-                      icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 20),
+                      icon: Icon(Icons.delete_outline_rounded, color: colorScheme.error, size: 20),
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                       onPressed: () => _confirmDeleteTicket(context, controller, ticket),
@@ -248,21 +234,21 @@ class SupportChatView extends ConsumerWidget {
                         height: 38,
                         padding: const EdgeInsets.symmetric(horizontal: 8),
                         decoration: BoxDecoration(
-                          color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.white,
+                          color: colorScheme.surfaceContainerHigh,
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: isDark ? Colors.white12 : Colors.black12),
+                          border: Border.all(color: colorScheme.outlineVariant),
                         ),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
                             value: ticket.status,
                             isExpanded: true,
-                            dropdownColor: isDark ? colorScheme.surfaceContainer : Colors.white,
-                            items: const [
-                              DropdownMenuItem(value: 'open', child: Text('جديدة', style: TextStyle(fontSize: 12))),
-                              DropdownMenuItem(value: 'in_progress', child: Text('قيد المعالجة', style: TextStyle(fontSize: 12))),
-                              DropdownMenuItem(value: 'waiting_user', child: Text('بانتظار العميل', style: TextStyle(fontSize: 12))),
-                              DropdownMenuItem(value: 'resolved', child: Text('تم الحل', style: TextStyle(fontSize: 12))),
-                              DropdownMenuItem(value: 'closed', child: Text('مغلقة', style: TextStyle(fontSize: 12))),
+                            dropdownColor: colorScheme.surfaceContainer,
+                            items: [
+                              DropdownMenuItem(value: 'open', child: Text('جديدة', style: TextStyle(fontSize: 12, color: colorScheme.onSurface))),
+                              DropdownMenuItem(value: 'in_progress', child: Text('قيد المعالجة', style: TextStyle(fontSize: 12, color: colorScheme.onSurface))),
+                              DropdownMenuItem(value: 'waiting_user', child: Text('بانتظار العميل', style: TextStyle(fontSize: 12, color: colorScheme.onSurface))),
+                              DropdownMenuItem(value: 'resolved', child: Text('تم الحل', style: TextStyle(fontSize: 12, color: colorScheme.onSurface))),
+                              DropdownMenuItem(value: 'closed', child: Text('مغلقة', style: TextStyle(fontSize: 12, color: colorScheme.onSurface))),
                             ],
                             onChanged: (val) {
                               if (val != null) controller.updateTicketStatus(val);
@@ -277,20 +263,20 @@ class SupportChatView extends ConsumerWidget {
                         height: 38,
                         padding: const EdgeInsets.symmetric(horizontal: 8),
                         decoration: BoxDecoration(
-                          color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.white,
+                          color: colorScheme.surfaceContainerHigh,
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: isDark ? Colors.white12 : Colors.black12),
+                          border: Border.all(color: colorScheme.outlineVariant),
                         ),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
                             value: ticket.priority,
                             isExpanded: true,
-                            dropdownColor: isDark ? colorScheme.surfaceContainer : Colors.white,
-                            items: const [
-                              DropdownMenuItem(value: 'urgent', child: Text('عاجلة 🔥', style: TextStyle(fontSize: 12))),
-                              DropdownMenuItem(value: 'high', child: Text('مرتفعة', style: TextStyle(fontSize: 12))),
-                              DropdownMenuItem(value: 'normal', child: Text('عادية', style: TextStyle(fontSize: 12))),
-                              DropdownMenuItem(value: 'low', child: Text('منخفضة', style: TextStyle(fontSize: 12))),
+                            dropdownColor: colorScheme.surfaceContainer,
+                            items: [
+                              DropdownMenuItem(value: 'urgent', child: Text('عاجلة 🔥', style: TextStyle(fontSize: 12, color: colorScheme.onSurface))),
+                              DropdownMenuItem(value: 'high', child: Text('مرتفعة', style: TextStyle(fontSize: 12, color: colorScheme.onSurface))),
+                              DropdownMenuItem(value: 'normal', child: Text('عادية', style: TextStyle(fontSize: 12, color: colorScheme.onSurface))),
+                              DropdownMenuItem(value: 'low', child: Text('منخفضة', style: TextStyle(fontSize: 12, color: colorScheme.onSurface))),
                             ],
                             onChanged: (val) {
                               if (val != null) controller.updateTicketPriority(val);
@@ -323,21 +309,21 @@ class SupportChatView extends ConsumerWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color: Colors.teal.withValues(alpha: 0.12),
+                          color: colorScheme.secondaryContainer.withValues(alpha: 0.6),
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.teal.withValues(alpha: 0.3)),
+                          border: Border.all(color: colorScheme.outlineVariant),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.shopping_bag_outlined, size: 12, color: Colors.teal),
+                            Icon(Icons.shopping_bag_outlined, size: 12, color: colorScheme.onSecondaryContainer),
                             const SizedBox(width: 4),
                             Text(
                               '#${ticket.orderNumber}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 10.5,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.teal,
+                                color: colorScheme.onSecondaryContainer,
                               ),
                             ),
                           ],
@@ -426,22 +412,22 @@ class SupportChatView extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     decoration: BoxDecoration(
-                      color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.white,
+                      color: colorScheme.surfaceContainerHigh,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: isDark ? Colors.white12 : Colors.black12,
+                        color: colorScheme.outlineVariant,
                       ),
                     ),
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
                         value: ticket.status,
-                        dropdownColor: isDark ? colorScheme.surfaceContainer : Colors.white,
-                        items: const [
-                          DropdownMenuItem(value: 'open', child: Text('تذكرة جديدة')),
-                          DropdownMenuItem(value: 'in_progress', child: Text('قيد المعالجة')),
-                          DropdownMenuItem(value: 'waiting_user', child: Text('بانتظار العميل')),
-                          DropdownMenuItem(value: 'resolved', child: Text('تم الحل بنجاح')),
-                          DropdownMenuItem(value: 'closed', child: Text('مغلقة')),
+                        dropdownColor: colorScheme.surfaceContainer,
+                        items: [
+                          DropdownMenuItem(value: 'open', child: Text('تذكرة جديدة', style: TextStyle(color: colorScheme.onSurface))),
+                          DropdownMenuItem(value: 'in_progress', child: Text('قيد المعالجة', style: TextStyle(color: colorScheme.onSurface))),
+                          DropdownMenuItem(value: 'waiting_user', child: Text('بانتظار العميل', style: TextStyle(color: colorScheme.onSurface))),
+                          DropdownMenuItem(value: 'resolved', child: Text('تم الحل بنجاح', style: TextStyle(color: colorScheme.onSurface))),
+                          DropdownMenuItem(value: 'closed', child: Text('مغلقة', style: TextStyle(color: colorScheme.onSurface))),
                         ],
                         onChanged: (val) {
                           if (val != null) controller.updateTicketStatus(val);
@@ -455,21 +441,21 @@ class SupportChatView extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     decoration: BoxDecoration(
-                      color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.white,
+                      color: colorScheme.surfaceContainerHigh,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: isDark ? Colors.white12 : Colors.black12,
+                        color: colorScheme.outlineVariant,
                       ),
                     ),
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
                         value: ticket.priority,
-                        dropdownColor: isDark ? colorScheme.surfaceContainer : Colors.white,
-                        items: const [
-                          DropdownMenuItem(value: 'urgent', child: Text('عاجلة جداً 🔥')),
-                          DropdownMenuItem(value: 'high', child: Text('أولوية مرتفعة')),
-                          DropdownMenuItem(value: 'normal', child: Text('أولوية عادية')),
-                          DropdownMenuItem(value: 'low', child: Text('منخفضة')),
+                        dropdownColor: colorScheme.surfaceContainer,
+                        items: [
+                          DropdownMenuItem(value: 'urgent', child: Text('عاجلة جداً 🔥', style: TextStyle(color: colorScheme.onSurface))),
+                          DropdownMenuItem(value: 'high', child: Text('أولوية مرتفعة', style: TextStyle(color: colorScheme.onSurface))),
+                          DropdownMenuItem(value: 'normal', child: Text('أولوية عادية', style: TextStyle(color: colorScheme.onSurface))),
+                          DropdownMenuItem(value: 'low', child: Text('منخفضة', style: TextStyle(color: colorScheme.onSurface))),
                         ],
                         onChanged: (val) {
                           if (val != null) controller.updateTicketPriority(val);
@@ -482,7 +468,7 @@ class SupportChatView extends ConsumerWidget {
                   // Delete button
                   IconButton(
                     tooltip: 'حذف التذكرة',
-                    icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 20),
+                    icon: Icon(Icons.delete_outline_rounded, color: colorScheme.error, size: 20),
                     onPressed: () => _confirmDeleteTicket(context, controller, ticket),
                   ),
                 ],
@@ -505,21 +491,21 @@ class SupportChatView extends ConsumerWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.teal.withValues(alpha: 0.12),
+                        color: colorScheme.secondaryContainer.withValues(alpha: 0.6),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.teal.withValues(alpha: 0.3)),
+                        border: Border.all(color: colorScheme.outlineVariant),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.shopping_bag_outlined, size: 14, color: Colors.teal),
+                          Icon(Icons.shopping_bag_outlined, size: 14, color: colorScheme.onSecondaryContainer),
                           const SizedBox(width: 4),
                           Text(
                             'طلب مرتبط: #${ticket.orderNumber}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
-                              color: Colors.teal,
+                              color: colorScheme.onSecondaryContainer,
                             ),
                           ),
                         ],
@@ -540,6 +526,8 @@ class SupportChatView extends ConsumerWidget {
     SupportController controller,
     SupportTicketEntity ticket,
   ) async {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -552,7 +540,7 @@ class SupportChatView extends ConsumerWidget {
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('حذف', style: TextStyle(color: Colors.redAccent)),
+            child: Text('حذف', style: TextStyle(color: colorScheme.error)),
           ),
         ],
       ),
@@ -584,15 +572,15 @@ class SupportChatView extends ConsumerWidget {
     final timeStr = DateFormat('yyyy/MM/dd • h:mm a').format(message.createdAt);
 
     if (message.isInternalNote) {
-      // Internal Note Bubble (Yellow/Amber Alert style)
+      // Internal Note Bubble (Uses app's theme container & outline)
       return Container(
         margin: const EdgeInsets.symmetric(vertical: 8),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF332A15) : const Color(0xFFFFFBEB),
+          color: colorScheme.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: Colors.amber.withValues(alpha: 0.4),
+            color: colorScheme.outlineVariant,
           ),
         ),
         child: Column(
@@ -600,15 +588,15 @@ class SupportChatView extends ConsumerWidget {
           children: [
             Row(
               children: [
-                const Icon(Icons.lock_rounded, size: 15, color: Colors.amber),
+                Icon(Icons.lock_rounded, size: 15, color: colorScheme.primary),
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
                     'ملاحظة داخلية للمشرفين • بواسطة ${message.senderName}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11.5,
                       fontWeight: FontWeight.bold,
-                      color: Colors.amber,
+                      color: colorScheme.primary,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -619,7 +607,7 @@ class SupportChatView extends ConsumerWidget {
                   timeStr,
                   style: TextStyle(
                     fontSize: 10,
-                    color: isDark ? Colors.amber[200] : Colors.amber[900],
+                    color: colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 ),
               ],
@@ -629,7 +617,7 @@ class SupportChatView extends ConsumerWidget {
               message.message,
               style: TextStyle(
                 fontSize: 13,
-                color: isDark ? Colors.white : Colors.black87,
+                color: colorScheme.onSurface,
               ),
             ),
           ],
@@ -649,27 +637,17 @@ class SupportChatView extends ConsumerWidget {
         ),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
+          color: isUser ? colorScheme.surfaceContainerHigh : colorScheme.primary,
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(18),
             topRight: const Radius.circular(18),
             bottomLeft: Radius.circular(isUser ? 2 : 18),
             bottomRight: Radius.circular(isUser ? 18 : 2),
           ),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: isUser
-                ? (isDark
-                    ? [const Color(0xFF262626), const Color(0xFF1E1E1E)]
-                    : [const Color(0xFFF3F4F6), const Color(0xFFE5E7EB)])
-                : [
-                    colorScheme.primary,
-                    Color.lerp(colorScheme.primary, Colors.black, 0.2)!,
-                  ],
-          ),
+          border: isUser ? Border.all(color: colorScheme.outlineVariant) : null,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08),
+              color: colorScheme.shadow.withValues(alpha: 0.08),
               offset: const Offset(2, 3),
               blurRadius: 6,
             ),
@@ -682,25 +660,33 @@ class SupportChatView extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (!isUser) ...[
-                  const Icon(Icons.support_agent_rounded, size: 14, color: Colors.white),
-                  const SizedBox(width: 4),
-                  Text(
-                    message.senderName,
-                    style: const TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                  Icon(
+                    Icons.support_agent_rounded,
+                    size: 14,
+                    color: colorScheme.onPrimary,
                   ),
-                ] else ...[
-                  const Icon(Icons.person_rounded, size: 14, color: Colors.grey),
                   const SizedBox(width: 4),
                   Text(
                     message.senderName,
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.grey[300] : Colors.grey[800],
+                      color: colorScheme.onPrimary,
+                    ),
+                  ),
+                ] else ...[
+                  Icon(
+                    Icons.person_rounded,
+                    size: 14,
+                    color: colorScheme.onSurface.withValues(alpha: 0.7),
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    message.senderName,
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.onSurface.withValues(alpha: 0.85),
                     ),
                   ),
                 ],
@@ -711,9 +697,7 @@ class SupportChatView extends ConsumerWidget {
               message.message,
               style: TextStyle(
                 fontSize: 13.5,
-                color: isUser
-                    ? (isDark ? Colors.white : Colors.black87)
-                    : Colors.white,
+                color: isUser ? colorScheme.onSurface : colorScheme.onPrimary,
                 height: 1.35,
               ),
             ),
@@ -723,8 +707,8 @@ class SupportChatView extends ConsumerWidget {
               style: TextStyle(
                 fontSize: 10,
                 color: isUser
-                    ? (isDark ? Colors.grey[400] : Colors.grey[600])
-                    : Colors.white.withValues(alpha: 0.7),
+                    ? colorScheme.onSurface.withValues(alpha: 0.6)
+                    : colorScheme.onPrimary.withValues(alpha: 0.75),
               ),
             ),
           ],
@@ -746,7 +730,7 @@ class SupportChatView extends ConsumerWidget {
     return Container(
       padding: EdgeInsets.all(isMobile ? 12 : 16),
       decoration: BoxDecoration(
-        color: isDark ? Colors.black.withValues(alpha: 0.15) : Colors.grey.withValues(alpha: 0.03),
+        color: colorScheme.surfaceContainer,
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
       ),
       child: Column(
@@ -757,20 +741,25 @@ class SupportChatView extends ConsumerWidget {
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                const Icon(Icons.auto_awesome_rounded, size: 15, color: Colors.amber),
+                Icon(Icons.auto_awesome_rounded, size: 15, color: colorScheme.primary),
                 const SizedBox(width: 6),
                 Text(
                   'ردود جاهزة وسريعة:',
-                  style: theme.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onSurface,
+                  ),
                 ),
                 const SizedBox(width: 8),
                 ...controller.cannedResponses.map((template) {
                   return Padding(
                     padding: const EdgeInsets.only(right: 6),
                     child: ActionChip(
+                      backgroundColor: colorScheme.surfaceContainerHigh,
+                      side: BorderSide(color: colorScheme.outlineVariant),
                       label: Text(
                         template.length > 35 ? '${template.substring(0, 35)}...' : template,
-                        style: const TextStyle(fontSize: 11),
+                        style: TextStyle(fontSize: 11, color: colorScheme.onSurface),
                       ),
                       onPressed: () => controller.insertCannedResponse(template),
                     ),
@@ -814,13 +803,13 @@ class SupportChatView extends ConsumerWidget {
                         label: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.lock_outline_rounded, size: 14, color: Colors.amber),
+                            Icon(Icons.lock_outline_rounded, size: 14, color: colorScheme.primary),
                             const SizedBox(width: 4),
                             Text(isCompact ? 'ملاحظة داخلية' : 'ملاحظة داخلية للمشرفين فقط'),
                           ],
                         ),
                         selected: controller.isInternalNote,
-                        selectedColor: Colors.amber.withValues(alpha: 0.18),
+                        selectedColor: colorScheme.primary.withValues(alpha: 0.15),
                         onSelected: (val) {
                           if (val) controller.setInternalNote(true);
                         },
@@ -831,19 +820,22 @@ class SupportChatView extends ConsumerWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
                       decoration: BoxDecoration(
-                        color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.03),
+                        color: colorScheme.surfaceContainerHigh,
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: isDark ? Colors.white12 : Colors.black12),
+                        border: Border.all(color: colorScheme.outlineVariant),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Text('تغيير الحالة: ', style: TextStyle(fontSize: 11.5)),
+                          Text(
+                            'تغيير الحالة: ',
+                            style: TextStyle(fontSize: 11.5, color: colorScheme.onSurface),
+                          ),
                           DropdownButtonHideUnderline(
                             child: DropdownButton<String>(
                               value: controller.replyStatus,
                               isDense: true,
-                              dropdownColor: isDark ? colorScheme.surfaceContainer : Colors.white,
+                              dropdownColor: colorScheme.surfaceContainer,
                               items: const [
                                 DropdownMenuItem(value: 'waiting_user', child: Text('بانتظار رد العميل')),
                                 DropdownMenuItem(value: 'in_progress', child: Text('قيد المعالجة')),
@@ -870,10 +862,10 @@ class SupportChatView extends ConsumerWidget {
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: isDark ? colorScheme.surfaceContainer : Colors.white,
+                    color: colorScheme.surfaceContainerHigh,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: isDark ? Colors.white12 : Colors.black12,
+                      color: colorScheme.outlineVariant,
                     ),
                   ),
                   child: TextField(
@@ -882,13 +874,16 @@ class SupportChatView extends ConsumerWidget {
                     maxLines: 4,
                     style: TextStyle(
                       fontSize: 13.5,
-                      color: isDark ? Colors.white : Colors.black87,
+                      color: colorScheme.onSurface,
                     ),
                     decoration: InputDecoration(
                       hintText: controller.isInternalNote
                           ? (isMobile ? 'اكتب ملاحظتك الداخلية هنا...' : 'اكتب ملاحظتك الداخلية هنا (ستكون مرئية لفرق الدعم فقط)...')
                           : (isMobile ? 'اكتب ردك للعميل...' : 'اكتب ردك للعميل (سيتم إرسال إشعار فوري عبر فايربيس على جواله)...'),
-                      hintStyle: const TextStyle(fontSize: 12, color: Colors.grey),
+                      hintStyle: TextStyle(
+                        fontSize: 12,
+                        color: colorScheme.onSurface.withValues(alpha: 0.5),
+                      ),
                       border: InputBorder.none,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                     ),
@@ -898,23 +893,24 @@ class SupportChatView extends ConsumerWidget {
               const SizedBox(width: 8),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: controller.isInternalNote
-                      ? Colors.amber[800]
-                      : colorScheme.primary,
-                  foregroundColor: Colors.white,
+                  backgroundColor: colorScheme.primary,
+                  foregroundColor: colorScheme.onPrimary,
                   padding: EdgeInsets.symmetric(
                     horizontal: isMobile ? 14 : 20,
                     vertical: 14,
                   ),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  elevation: 3,
+                  elevation: 0,
                 ),
                 onPressed: controller.isSendingReply ? null : () => controller.sendReply(),
                 child: controller.isSendingReply
-                    ? const SizedBox(
+                    ? SizedBox(
                         width: 20,
                         height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: colorScheme.onPrimary,
+                        ),
                       )
                     : Row(
                         mainAxisSize: MainAxisSize.min,
@@ -924,9 +920,16 @@ class SupportChatView extends ConsumerWidget {
                                 ? Icons.lock_rounded
                                 : Icons.send_rounded,
                             size: 18,
+                            color: colorScheme.onPrimary,
                           ),
                           const SizedBox(width: 4),
-                          Text(controller.isInternalNote ? 'حفظ' : 'إرسال'),
+                          Text(
+                            controller.isInternalNote ? 'حفظ' : 'إرسال',
+                            style: TextStyle(
+                              color: colorScheme.onPrimary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ],
                       ),
               ),
