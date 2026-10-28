@@ -1,5 +1,5 @@
-import '../../domain/entities/support_stats_entity.dart';
-
+/// Isolated Data Transfer Object (DTO) for support dashboard metrics.
+/// Strictly decoupled from Domain Entities with serialization / deserialization support.
 class SupportStatsModel {
   final int total;
   final int open;
@@ -12,23 +12,24 @@ class SupportStatsModel {
   final Map<String, int> byCategory;
   final Map<String, int> byPriority;
 
-  SupportStatsModel({
-    required this.total,
-    required this.open,
-    required this.inProgress,
-    required this.waitingUser,
-    required this.resolved,
-    required this.closed,
-    required this.urgent,
-    required this.resolvedToday,
-    required this.byCategory,
-    required this.byPriority,
+  const SupportStatsModel({
+    this.total = 0,
+    this.open = 0,
+    this.inProgress = 0,
+    this.waitingUser = 0,
+    this.resolved = 0,
+    this.closed = 0,
+    this.urgent = 0,
+    this.resolvedToday = 0,
+    this.byCategory = const {},
+    this.byPriority = const {},
   });
 
   factory SupportStatsModel.fromJson(Map<String, dynamic> json) {
     Map<String, int> parseMap(dynamic map) {
       if (map is Map) {
-        return map.map((key, value) => MapEntry(key.toString(), (value as num).toInt()));
+        return map.map((key, value) =>
+            MapEntry(key.toString(), (value as num?)?.toInt() ?? 0));
       }
       return {};
     }
@@ -47,18 +48,70 @@ class SupportStatsModel {
     );
   }
 
-  SupportStatsEntity toEntity() {
-    return SupportStatsEntity(
-      total: total,
-      open: open,
-      inProgress: inProgress,
-      waitingUser: waitingUser,
-      resolved: resolved,
-      closed: closed,
-      urgent: urgent,
-      resolvedToday: resolvedToday,
-      byCategory: byCategory,
-      byPriority: byPriority,
+  Map<String, dynamic> toJson() {
+    return {
+      'total': total,
+      'open': open,
+      'in_progress': inProgress,
+      'waiting_user': waitingUser,
+      'resolved': resolved,
+      'closed': closed,
+      'urgent': urgent,
+      'resolved_today': resolvedToday,
+      'by_category': byCategory,
+      'by_priority': byPriority,
+    };
+  }
+
+  SupportStatsModel copyWith({
+    int? total,
+    int? open,
+    int? inProgress,
+    int? waitingUser,
+    int? resolved,
+    int? closed,
+    int? urgent,
+    int? resolvedToday,
+    Map<String, int>? byCategory,
+    Map<String, int>? byPriority,
+  }) {
+    return SupportStatsModel(
+      total: total ?? this.total,
+      open: open ?? this.open,
+      inProgress: inProgress ?? this.inProgress,
+      waitingUser: waitingUser ?? this.waitingUser,
+      resolved: resolved ?? this.resolved,
+      closed: closed ?? this.closed,
+      urgent: urgent ?? this.urgent,
+      resolvedToday: resolvedToday ?? this.resolvedToday,
+      byCategory: byCategory ?? this.byCategory,
+      byPriority: byPriority ?? this.byPriority,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is SupportStatsModel &&
+        other.total == total &&
+        other.open == open &&
+        other.inProgress == inProgress &&
+        other.waitingUser == waitingUser &&
+        other.resolved == resolved &&
+        other.closed == closed &&
+        other.urgent == urgent &&
+        other.resolvedToday == resolvedToday;
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        total,
+        open,
+        inProgress,
+        waitingUser,
+        resolved,
+        closed,
+        urgent,
+        resolvedToday,
+      );
 }
