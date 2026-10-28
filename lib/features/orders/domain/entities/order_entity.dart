@@ -15,6 +15,8 @@ enum PaymentStatus {
   refunded,
 }
 
+/// Pure Dart Domain Entity representing a customer order.
+/// 100% pure Dart - decoupled from Flutter UI, Hive, and Dio.
 class OrderEntity {
   final String id;
   final String userId;
@@ -101,8 +103,43 @@ class OrderEntity {
       items: items ?? this.items,
     );
   }
+
+  static bool _itemsEquals(List<OrderItemEntity> a, List<OrderItemEntity> b) {
+    if (identical(a, b)) return true;
+    if (a.length != b.length) return false;
+    for (int i = 0; i < a.length; i++) {
+      if (a[i] != b[i]) return false;
+    }
+    return true;
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is OrderEntity &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          userId == other.userId &&
+          totalAmount == other.totalAmount &&
+          status == other.status &&
+          paymentStatus == other.paymentStatus &&
+          _itemsEquals(items, other.items);
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      userId.hashCode ^
+      totalAmount.hashCode ^
+      status.hashCode ^
+      paymentStatus.hashCode ^
+      items.length.hashCode;
+
+  @override
+  String toString() =>
+      'OrderEntity(id: $id, user: $userName, total: $totalAmount, status: ${status.name})';
 }
 
+/// Pure Dart Domain Entity representing a single purchased item in an order.
 class OrderItemEntity {
   final String id;
   final String productId;
@@ -149,4 +186,25 @@ class OrderItemEntity {
       selectedSize: selectedSize ?? this.selectedSize,
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is OrderItemEntity &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          productId == other.productId &&
+          quantity == other.quantity &&
+          unitPrice == other.unitPrice;
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      productId.hashCode ^
+      quantity.hashCode ^
+      unitPrice.hashCode;
+
+  @override
+  String toString() =>
+      'OrderItemEntity(id: $id, product: $productName, qty: $quantity, price: $unitPrice)';
 }
