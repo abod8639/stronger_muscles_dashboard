@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
-import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
+import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/base_app_bar.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/confirm_dialog.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/custom_search_bar.dart';
@@ -12,14 +11,17 @@ import 'package:stronger_muscles_dashboard/core/utils/components/enhanced_error_
 import 'package:stronger_muscles_dashboard/core/utils/components/enhanced_loading_widget.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/my_refresh_indicator.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/top_section.dart';
+import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
 import 'package:stronger_muscles_dashboard/features/auth/presentation/widgets/auth_error_card.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
+import 'package:stronger_muscles_dashboard/features/categories/presentation/controllers/categories_notifier.dart';
 import 'package:stronger_muscles_dashboard/features/categories/presentation/controllers/categories_providers.dart';
+import 'package:stronger_muscles_dashboard/features/categories/presentation/controllers/categories_state.dart';
 import 'package:stronger_muscles_dashboard/features/categories/presentation/page/categories_screen/widgets/category_grid_card.dart';
 import 'package:stronger_muscles_dashboard/features/categories/presentation/page/categories_screen/widgets/category_list_item.dart';
 
-/// شاشة استعراض وإدارة التصنيفات المتوافقة بالكامل مع Material Design 3
-/// والمعتمدة على Riverpod [AsyncValue.when] لمنع أي تجميد أو انهيار للشاشة
+/// Categories management and presentation screen.
+/// Uses selective Riverpod listening via `.select(...)` to eliminate redundant rebuilds.
 class CategoriesScreen extends ConsumerWidget {
   const CategoriesScreen({super.key});
 
@@ -35,7 +37,7 @@ class CategoriesScreen extends ConsumerWidget {
         onConfirm: () async {
           Navigator.of(ctx).pop();
           final success = await ref
-              .read(categoriesControllerProvider.notifier)
+              .read(categoriesNotifierProvider.notifier)
               .deleteCategory(categoryId);
           if (success) {
             AppFeedback.showSuccess('تم حذف التصنيف بنجاح');
@@ -49,9 +51,12 @@ class CategoriesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final categoriesAsync = ref.watch(categoriesControllerProvider);
-    final filteredCategories = ref.watch(filteredCategoriesProvider);
-    final searchQuery = ref.watch(categoriesSearchQueryProvider);
+    final status = ref.watch(categoriesNotifierProvider.select((s) => s.status));
+    final errorMessage = ref.watch(categoriesNotifierProvider.select((s) => s.errorMessage));
+    final filteredCategories =
+        ref.watch(categoriesNotifierProvider.select((s) => s.filteredCategories));
+    final searchQuery = ref.watch(categoriesNotifierProvider.select((s) => s.searchQuery));
+
     final responsive = context.responsive;
     final padding = responsive.defaultPadding;
     final theme = Theme.of(context);
@@ -71,129 +76,152 @@ class CategoriesScreen extends ConsumerWidget {
               CustomSearchBar(
                 hintText: 'ابحث عن تصنيف بالاسم أو الكود...',
                 padding: padding,
-                onSearch: (value) =>
-                    ref.read(categoriesSearchQueryProvider.notifier).setQuery(value),
+                onSearch: (value) => ref
+                    .read(categoriesNotifierProvider.notifier)
+                    .updateSearchQuery(value),
               ),
             ],
           ),
           Expanded(
-            child: categoriesAsync.when(
-              loading: () => const EnhancedLoadingWidget(
-                message: 'جاري تحميل التصنيفات...',
-              ),
-              error: (error, stackTrace) => Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 500),
-                    child: AuthErrorCard(
-                      error: error,
-                      onRetry: () => ref
-                          .read(categoriesControllerProvider.notifier)
-                          .refreshCategories(forceRefresh: true),
-                      onDismiss: () => ref
-                          .read(categoriesControllerProvider.notifier)
-                          .clearError(),
-                    ),
-                  ),
-                ),
-              ),
-              data: (_) {
-                if (filteredCategories.isEmpty) {
-                  return EnhancedErrorWidget(
-                    title: 'لا توجد تصنيفات',
-                    message: searchQuery.isEmpty
-                        ? 'لا يوجد تصنيفات متاحة حالياً'
-                        : 'لم يتم العثور على نتائج للبحث',
-                    icon: Icons.category_outlined,
-                    onRetry: () => ref
-                        .read(categoriesControllerProvider.notifier)
-                        .refreshCategories(forceRefresh: true),
-                  );
-                }
-
-                final screenWidth = MediaQuery.sizeOf(context).width;
-
-                if (responsive.isMobile) {
-                  return MyRefreshIndicator(
-                    onRefresh: () => ref
-                        .read(categoriesControllerProvider.notifier)
-                        .refreshCategories(forceRefresh: true),
-                    child: ListView.builder(
-                      physics: const BouncingScrollPhysics(),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: padding.left,
-                        vertical: padding.top / 2,
-                      ),
-                      itemCount: filteredCategories.length,
-                      itemBuilder: (context, index) {
-                        final category = filteredCategories[index];
-                        return CategoryListItem(
-                          category: category,
-                          onTap: () => context.push(
-                            AppRoutes.categoryForm,
-                            extra: category,
-                          ),
-                          onEdit: () => context.push(
-                            AppRoutes.categoryForm,
-                            extra: category,
-                          ),
-                          onDelete: () =>
-                              _confirmDelete(context, ref, category.id),
-                        );
-                      },
-                    ),
-                  );
-                }
-
-                final int crossAxisCount = screenWidth >= 1400
-                    ? 5
-                    : (screenWidth >= 1050
-                        ? 4
-                        : (screenWidth >= 700 ? 3 : 2));
-
-                return MyRefreshIndicator(
-                  onRefresh: () => ref
-                      .read(categoriesControllerProvider.notifier)
-                      .refreshCategories(forceRefresh: true),
-                  child: GridView.builder(
-                    physics: const BouncingScrollPhysics(),
-                    padding: padding,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: crossAxisCount,
-                      crossAxisSpacing: 14,
-                      mainAxisSpacing: 14,
-                      childAspectRatio: 1.05,
-                    ),
-                    itemCount: filteredCategories.length,
-                    itemBuilder: (context, index) {
-                      final category = filteredCategories[index];
-                      return CategoryGridCard(
-                        category: category,
-                        onTap: () => context.push(
-                          AppRoutes.categoryForm,
-                          extra: category,
-                        ),
-                        onEdit: () => context.push(
-                          AppRoutes.categoryForm,
-                          extra: category,
-                        ),
-                        onDelete: () =>
-                            _confirmDelete(context, ref, category.id),
-                      );
-                    },
-                  ),
-                );
-              },
+            child: _buildBody(
+              context: context,
+              ref: ref,
+              status: status,
+              errorMessage: errorMessage,
+              filteredCategories: filteredCategories,
+              searchQuery: searchQuery,
+              responsive: responsive,
+              padding: padding,
             ),
           ),
         ],
       ),
     );
   }
+
+  Widget _buildBody({
+    required BuildContext context,
+    required WidgetRef ref,
+    required CategoriesStatus status,
+    required String? errorMessage,
+    required List<CategoryEntity> filteredCategories,
+    required String searchQuery,
+    required Responsive responsive,
+    required EdgeInsets padding,
+  }) {
+    if (status == CategoriesStatus.loading && filteredCategories.isEmpty) {
+      return const EnhancedLoadingWidget(
+        message: 'جاري تحميل التصنيفات...',
+      );
+    }
+
+    if (status == CategoriesStatus.error && filteredCategories.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 500),
+            child: AuthErrorCard(
+              error: errorMessage ?? 'فشل في تحميل التصنيفات',
+              onRetry: () => ref
+                  .read(categoriesNotifierProvider.notifier)
+                  .fetchCategories(forceRefresh: true),
+              onDismiss: () => ref
+                  .read(categoriesNotifierProvider.notifier)
+                  .fetchCategories(forceRefresh: false),
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (filteredCategories.isEmpty) {
+      return EnhancedErrorWidget(
+        title: 'لا توجد تصنيفات',
+        message: searchQuery.isEmpty
+            ? 'لا يوجد تصنيفات متاحة حالياً'
+            : 'لم يتم العثور على نتائج للبحث',
+        icon: Icons.category_outlined,
+        onRetry: () => ref
+            .read(categoriesNotifierProvider.notifier)
+            .fetchCategories(forceRefresh: true),
+      );
+    }
+
+    final screenWidth = MediaQuery.sizeOf(context).width;
+
+    if (responsive.isMobile) {
+      return MyRefreshIndicator(
+        onRefresh: () => ref
+            .read(categoriesNotifierProvider.notifier)
+            .fetchCategories(forceRefresh: true),
+        child: ListView.builder(
+          physics: const BouncingScrollPhysics(),
+          padding: EdgeInsets.symmetric(
+            horizontal: padding.left,
+            vertical: padding.top / 2,
+          ),
+          itemCount: filteredCategories.length,
+          itemBuilder: (context, index) {
+            final category = filteredCategories[index];
+            return CategoryListItem(
+              category: category,
+              onTap: () => context.push(
+                AppRoutes.categoryForm,
+                extra: category,
+              ),
+              onEdit: () => context.push(
+                AppRoutes.categoryForm,
+                extra: category,
+              ),
+              onDelete: () => _confirmDelete(context, ref, category.id),
+            );
+          },
+        ),
+      );
+    }
+
+    final int crossAxisCount = screenWidth >= 1400
+        ? 5
+        : (screenWidth >= 1050
+            ? 4
+            : (screenWidth >= 700 ? 3 : 2));
+
+    return MyRefreshIndicator(
+      onRefresh: () => ref
+          .read(categoriesNotifierProvider.notifier)
+          .fetchCategories(forceRefresh: true),
+      child: GridView.builder(
+        physics: const BouncingScrollPhysics(),
+        padding: padding,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: crossAxisCount,
+          crossAxisSpacing: 14,
+          mainAxisSpacing: 14,
+          childAspectRatio: 1.05,
+        ),
+        itemCount: filteredCategories.length,
+        itemBuilder: (context, index) {
+          final category = filteredCategories[index];
+          return CategoryGridCard(
+            category: category,
+            onTap: () => context.push(
+              AppRoutes.categoryForm,
+              extra: category,
+            ),
+            onEdit: () => context.push(
+              AppRoutes.categoryForm,
+              extra: category,
+            ),
+            onDelete: () => _confirmDelete(context, ref, category.id),
+          );
+        },
+      ),
+    );
+  }
 }
 
-/// فتح نموذج إنشاء أو تعديل التصنيف في صفحة كاملة متخصصة
+/// Helper function to push CategoryFormPage.
 void showCategoryForm(
   BuildContext context, {
   CategoryEntity? category,
