@@ -14,6 +14,8 @@ import 'package:stronger_muscles_dashboard/features/products/products_feature.da
 import 'package:stronger_muscles_dashboard/features/promos/promos_feature.dart';
 import 'package:stronger_muscles_dashboard/features/settings/settings_feature.dart';
 import 'package:stronger_muscles_dashboard/features/theme/theme_feature.dart';
+import 'package:stronger_muscles_dashboard/features/support/support_feature.dart';
+import 'package:stronger_muscles_dashboard/features/users/users_feature.dart';
 
 /// المفتاح العام للتنقل في GoRouter
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -42,6 +44,8 @@ final GoRouter appRouter = GoRouter(
     ...OrdersRoutes.routes,
     ...SettingsRoutes.routes,
     ...ThemeRoutes.routes,
+    ...SupportRoutes.routes,
+    ...UsersRoutes.routes,
   ],
   redirect: (BuildContext context, GoRouterState state) {
     final isLoggedIn = AuthService.instance.isLoggedIn();
