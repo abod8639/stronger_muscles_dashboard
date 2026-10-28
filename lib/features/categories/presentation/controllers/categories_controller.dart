@@ -1,131 +1,8 @@
-import 'dart:async';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/category_entity.dart';
-import 'categories_providers.dart';
 
-/// إدارة حالة التصنيفات عبر [AsyncNotifier] في Riverpod
-class CategoriesNotifier extends AsyncNotifier<List<CategoryEntity>> {
-  CancelToken? _cancelToken;
-
-  @override
-  FutureOr<List<CategoryEntity>> build() {
-    // إدارة الإلغاء عبر ref.onDispose لمنع تسريب الموارد
-    ref.onDispose(() {
-      _cancelToken?.cancel('تم إلغاء طلبات التصنيفات بسبب تفريغ الـ Notifier');
-      _cancelToken = null;
-    });
-
-    return _fetchCategories(tree: true, forceRefresh: false);
-  }
-
-  Future<List<CategoryEntity>> _fetchCategories({
-    bool tree = true,
-    bool forceRefresh = false,
-  }) async {
-    _cancelToken?.cancel('طلب جديد للتصنيفات');
-    _cancelToken = CancelToken();
-
-    final getCategories = ref.read(getCategoriesUseCaseProvider);
-    final result = await getCategories(
-      tree: tree,
-      forceRefresh: forceRefresh,
-      cancelToken: _cancelToken,
-    );
-
-    return result.fold(
-      (failure) => throw failure,
-      (categories) => categories,
-    );
-  }
-
-  /// إعادة تحميل التصنيفات مع إجبار تحديث الـ Cache
-  Future<void> refreshCategories({bool forceRefresh = true}) async {
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(
-      () => _fetchCategories(tree: true, forceRefresh: forceRefresh),
-    );
-  }
-
-  /// إضافة تصنيف جديد وتحديث الحالة محلياً
-  Future<bool> addCategory(Map<String, dynamic> categoryData) async {
-    final addUseCase = ref.read(addCategoryUseCaseProvider);
-    final previousState = state;
-
-    final result = await addUseCase(categoryData);
-
-    return result.fold(
-      (failure) {
-        state = AsyncValue.error(failure, StackTrace.current);
-        return false;
-      },
-      (newCategory) {
-        final currentList = previousState.value ?? [];
-        final updatedList = [newCategory, ...currentList];
-        state = AsyncValue.data(updatedList);
-        return true;
-      },
-    );
-  }
-
-  /// تحديث تصنيف موجود
-  Future<bool> updateCategory(
-    String id,
-    Map<String, dynamic> categoryData,
-  ) async {
-    final updateUseCase = ref.read(updateCategoryUseCaseProvider);
-    final previousState = state;
-
-    final result = await updateUseCase(id, categoryData);
-
-    return result.fold(
-      (failure) {
-        state = AsyncValue.error(failure, StackTrace.current);
-        return false;
-      },
-      (updatedCategory) {
-        final currentList = List<CategoryEntity>.from(previousState.value ?? []);
-        final index = currentList.indexWhere((c) => c.id == id);
-        if (index != -1) {
-          currentList[index] = updatedCategory;
-          state = AsyncValue.data(currentList);
-        }
-        return true;
-      },
-    );
-  }
-
-  /// حذف تصنيف
-  Future<bool> deleteCategory(String id) async {
-    final deleteUseCase = ref.read(deleteCategoryUseCaseProvider);
-    final previousState = state;
-
-    final result = await deleteUseCase(id);
-
-    return result.fold(
-      (failure) {
-        state = AsyncValue.error(failure, StackTrace.current);
-        return false;
-      },
-      (_) {
-        final currentList = List<CategoryEntity>.from(previousState.value ?? []);
-        currentList.removeWhere((c) => c.id == id);
-        state = AsyncValue.data(currentList);
-        return true;
-      },
-    );
-  }
-
-  /// تنظيف الخطأ واستعادة الحالة السابقة
-  void clearError() {
-    if (state.hasError) {
-      state = AsyncValue.data(state.value ?? []);
-    }
-  }
-}
-
-/// متحكم إدارة نموذج إدخال التصنيف (Category Form Controller) كـ ChangeNotifier نقي
+/// Form controller for adding and editing categories.
+/// Manages TextEditingControllers, parent selection, active status, and resource disposal.
 class CategoriesController extends ChangeNotifier {
   final idController = TextEditingController();
   final nameArController = TextEditingController();
@@ -217,5 +94,18 @@ class CategoriesController extends ChangeNotifier {
       'is_active': _isActive,
       'parent_id': _parentId.isEmpty ? null : _parentId,
     };
+  }
+
+  CategoryEntity toEntity() {
+    return CategoryEntity(
+      id: idController.text.trim(),
+      nameAr: nameArController.text.trim(),
+      nameEn: nameEnController.text.trim(),
+      imageUrl: imageController.text.trim().isNotEmpty ? imageController.text.trim() : null,
+      descriptionAr: descArController.text.trim().isNotEmpty ? descArController.text.trim() : null,
+      descriptionEn: descEnController.text.trim().isNotEmpty ? descEnController.text.trim() : null,
+      parentId: _parentId.isNotEmpty ? _parentId : null,
+      isActive: _isActive,
+    );
   }
 }
