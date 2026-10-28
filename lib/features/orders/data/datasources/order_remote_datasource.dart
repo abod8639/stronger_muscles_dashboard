@@ -1,9 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:stronger_muscles_dashboard/config/api_config.dart';
 import 'package:stronger_muscles_dashboard/core/error/exceptions.dart';
-import '../models/order_model.dart';
 import '../../domain/entities/order_entity.dart';
+import '../models/order_model.dart';
 
+/// Contract for remote communication with orders endpoints via Dio.
 abstract class OrderRemoteDataSource {
   Future<List<OrderModel>> getOrders({CancelToken? cancelToken});
   Future<OrderModel> getOrderById(String id, {CancelToken? cancelToken});
@@ -14,12 +15,13 @@ abstract class OrderRemoteDataSource {
   });
 }
 
+/// Production implementation of [OrderRemoteDataSource] using [Dio] and Isolate computation.
 class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
-  final Dio dio;
+  final Dio _dio;
 
   static const Duration _defaultTimeout = Duration(seconds: 30);
 
-  OrderRemoteDataSourceImpl(this.dio);
+  OrderRemoteDataSourceImpl(Dio dio) : _dio = dio;
 
   Options get _options => Options(
         sendTimeout: _defaultTimeout,
@@ -30,7 +32,7 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
   @override
   Future<List<OrderModel>> getOrders({CancelToken? cancelToken}) async {
     try {
-      final response = await dio.get(
+      final response = await _dio.get(
         ApiConfig.adminOrders,
         cancelToken: cancelToken,
         options: _options,
@@ -54,7 +56,7 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
           return const [];
         }
 
-        // عزل معالجة وتحليل القائمة الكبيرة في مسار معالجة خلفي (Isolate عبر compute) لمنع تجميد الواجهة
+        // Process heavy payload parsing in background isolate
         return await OrderModel.fromJsonListAsync(data);
       }
 
@@ -76,8 +78,8 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
   @override
   Future<OrderModel> getOrderById(String id, {CancelToken? cancelToken}) async {
     try {
-      final response = await dio.get(
-        '${ApiConfig.adminOrders}/$id',
+      final response = await _dio.get(
+        ApiConfig.adminOrderDetail(id),
         cancelToken: cancelToken,
         options: _options,
       );
@@ -116,27 +118,27 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
     CancelToken? cancelToken,
   }) async {
     try {
-      final response = await dio.patch(
-        '${ApiConfig.adminOrders}/$id/status',
+      final response = await _dio.put(
+        ApiConfig.adminOrderDetail(id),
         data: {'status': status.name},
         cancelToken: cancelToken,
         options: _options,
       );
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      if (response.statusCode == 200) {
         final data = (response.data is Map && response.data.containsKey('data'))
             ? response.data['data']
             : response.data;
 
         if (data is! Map) {
-          throw const ParsingException(message: 'بنية استجابة تحديث الطلب غير صالحة');
+          throw const ParsingException(message: 'استجابة تعديل حالة الطلب غير صالحة');
         }
 
         return await OrderModel.fromJsonAsync(Map<String, dynamic>.from(data));
       }
 
       throw ServerException(
-        message: 'فشل في تحديث حالة الطلب إلى "${status.name}"',
+        message: 'فشل في تعديل حالة الطلب رقم: $id',
         statusCode: response.statusCode,
       );
     } on DioException {
@@ -144,7 +146,7 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
     } catch (e) {
       if (e is AppException) rethrow;
       throw ParsingException(
-        message: 'خطأ أثناء معالجة رد تحديث الطلب: $e',
+        message: 'خطأ أثناء تحليل بيانات الطلب المحدث: $e',
         originalError: e,
       );
     }
