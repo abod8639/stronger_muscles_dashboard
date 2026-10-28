@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stronger_muscles_dashboard/core/components/confirm_dialog.dart';
 import 'package:stronger_muscles_dashboard/core/components/enhanced_loading_widget.dart';
 import 'package:stronger_muscles_dashboard/core/theme/app_design_tokens.dart';
-import 'package:stronger_muscles_dashboard/features/auth/presentation/controllers/auth_providers.dart';
+import 'package:stronger_muscles_dashboard/features/auth/auth_feature.dart';
 import 'package:stronger_muscles_dashboard/features/users/presentation/controllers/users_providers.dart';
 
 class SettingsScreen extends ConsumerWidget {
