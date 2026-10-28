@@ -1,28 +1,30 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:stronger_muscles_dashboard/config/api_config.dart';
-import 'package:stronger_muscles_dashboard/features/promos/data/models/promo_model.dart';
+import '../models/promo_model.dart';
 
+/// Contract for remote operations regarding promotional banners via REST API.
 abstract class PromoRemoteDataSource {
-  Future<List<PromoModel>> getPromos({CancelToken? cancelToken});
-  Future<PromoModel> addPromo(Map<String, dynamic> promoData, {CancelToken? cancelToken});
-  Future<PromoModel> updatePromo(String id, Map<String, dynamic> promoData, {CancelToken? cancelToken});
-  Future<void> deletePromo(String id, {CancelToken? cancelToken});
-  Future<String> uploadImage(String filePath, {CancelToken? cancelToken});
+  Future<List<PromoModel>> getPromos();
+  Future<PromoModel> addPromo(Map<String, dynamic> promoData);
+  Future<PromoModel> updatePromo(String id, Map<String, dynamic> promoData);
+  Future<void> deletePromo(String id);
+  Future<String> uploadImage(String filePath);
 }
 
+/// Production implementation of [PromoRemoteDataSource] using [Dio].
+/// 100% testable through constructor dependency injection.
 class PromoRemoteDataSourceImpl implements PromoRemoteDataSource {
   final Dio dio;
 
-  PromoRemoteDataSourceImpl({required this.dio});
+  const PromoRemoteDataSourceImpl({required this.dio});
 
   static const _timeout = Duration(seconds: 30);
 
   @override
-  Future<List<PromoModel>> getPromos({CancelToken? cancelToken}) async {
+  Future<List<PromoModel>> getPromos() async {
     final response = await dio.get(
       ApiConfig.adminPromos,
-      cancelToken: cancelToken,
       options: Options(
         sendTimeout: _timeout,
         receiveTimeout: _timeout,
@@ -32,11 +34,10 @@ class PromoRemoteDataSourceImpl implements PromoRemoteDataSource {
   }
 
   @override
-  Future<PromoModel> addPromo(Map<String, dynamic> promoData, {CancelToken? cancelToken}) async {
+  Future<PromoModel> addPromo(Map<String, dynamic> promoData) async {
     final response = await dio.post(
       ApiConfig.adminPromos,
       data: promoData,
-      cancelToken: cancelToken,
       options: Options(
         sendTimeout: _timeout,
         receiveTimeout: _timeout,
@@ -46,11 +47,10 @@ class PromoRemoteDataSourceImpl implements PromoRemoteDataSource {
   }
 
   @override
-  Future<PromoModel> updatePromo(String id, Map<String, dynamic> promoData, {CancelToken? cancelToken}) async {
+  Future<PromoModel> updatePromo(String id, Map<String, dynamic> promoData) async {
     final response = await dio.put(
       '${ApiConfig.adminPromos}/$id',
       data: promoData,
-      cancelToken: cancelToken,
       options: Options(
         sendTimeout: _timeout,
         receiveTimeout: _timeout,
@@ -60,10 +60,9 @@ class PromoRemoteDataSourceImpl implements PromoRemoteDataSource {
   }
 
   @override
-  Future<void> deletePromo(String id, {CancelToken? cancelToken}) async {
+  Future<void> deletePromo(String id) async {
     await dio.delete(
       '${ApiConfig.adminPromos}/$id',
-      cancelToken: cancelToken,
       options: Options(
         sendTimeout: _timeout,
         receiveTimeout: _timeout,
@@ -72,7 +71,7 @@ class PromoRemoteDataSourceImpl implements PromoRemoteDataSource {
   }
 
   @override
-  Future<String> uploadImage(String filePath, {CancelToken? cancelToken}) async {
+  Future<String> uploadImage(String filePath) async {
     final formData = FormData.fromMap({
       'image': await MultipartFile.fromFile(
         filePath,
@@ -83,7 +82,6 @@ class PromoRemoteDataSourceImpl implements PromoRemoteDataSource {
     final response = await dio.post(
       ApiConfig.adminUploadProductImage,
       data: formData,
-      cancelToken: cancelToken,
       options: Options(
         sendTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
