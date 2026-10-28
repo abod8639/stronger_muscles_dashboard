@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
 import '../controllers/notifications_providers.dart';
 
+/// Helper function to display the notification creation modal dialog.
 void showSendNotificationDialog(BuildContext context) {
   showDialog(
     context: context,
@@ -11,6 +12,7 @@ void showSendNotificationDialog(BuildContext context) {
   );
 }
 
+/// Dialog allowing administrators to compose and dispatch broadcast or targeted notifications.
 class SendNotificationDialog extends ConsumerStatefulWidget {
   const SendNotificationDialog({super.key});
 
@@ -40,6 +42,7 @@ class _SendNotificationDialogState extends ConsumerState<SendNotificationDialog>
   }
 
   Future<void> _handleSubmit() async {
+    if (_isSending) return;
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
     setState(() => _isSending = true);
@@ -143,7 +146,7 @@ class _SendNotificationDialogState extends ConsumerState<SendNotificationDialog>
                         ),
                       ),
                       IconButton(
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: _isSending ? null : () => Navigator.of(context).pop(),
                         icon: const Icon(Icons.close_rounded),
                         color: colorScheme.onSurfaceVariant,
                       ),
@@ -168,7 +171,7 @@ class _SendNotificationDialogState extends ConsumerState<SendNotificationDialog>
                           selected: _targetType == 'all',
                           avatar: const Icon(Icons.public_rounded, size: 18),
                           onSelected: (val) {
-                            if (val) setState(() => _targetType = 'all');
+                            if (val && !_isSending) setState(() => _targetType = 'all');
                           },
                         ),
                       ),
@@ -179,7 +182,7 @@ class _SendNotificationDialogState extends ConsumerState<SendNotificationDialog>
                           selected: _targetType == 'user',
                           avatar: const Icon(Icons.person_rounded, size: 18),
                           onSelected: (val) {
-                            if (val) setState(() => _targetType = 'user');
+                            if (val && !_isSending) setState(() => _targetType = 'user');
                           },
                         ),
                       ),
@@ -193,6 +196,7 @@ class _SendNotificationDialogState extends ConsumerState<SendNotificationDialog>
                       padding: const EdgeInsets.only(bottom: 14),
                       child: TextFormField(
                         controller: _userIdController,
+                        enabled: !_isSending,
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           labelText: 'معرف المستخدم (User ID) *',
@@ -227,22 +231,30 @@ class _SendNotificationDialogState extends ConsumerState<SendNotificationDialog>
                       ChoiceChip(
                         label: const Text('عام'),
                         selected: _selectedType == 'general',
-                        onSelected: (v) => setState(() => _selectedType = 'general'),
+                        onSelected: (v) {
+                          if (v && !_isSending) setState(() => _selectedType = 'general');
+                        },
                       ),
                       ChoiceChip(
                         label: const Text('إعلان / عرض'),
                         selected: _selectedType == 'promo',
-                        onSelected: (v) => setState(() => _selectedType = 'promo'),
+                        onSelected: (v) {
+                          if (v && !_isSending) setState(() => _selectedType = 'promo');
+                        },
                       ),
                       ChoiceChip(
                         label: const Text('طلب'),
                         selected: _selectedType == 'order',
-                        onSelected: (v) => setState(() => _selectedType = 'order'),
+                        onSelected: (v) {
+                          if (v && !_isSending) setState(() => _selectedType = 'order');
+                        },
                       ),
                       ChoiceChip(
                         label: const Text('نظام / تنبيه'),
                         selected: _selectedType == 'system',
-                        onSelected: (v) => setState(() => _selectedType = 'system'),
+                        onSelected: (v) {
+                          if (v && !_isSending) setState(() => _selectedType = 'system');
+                        },
                       ),
                     ],
                   ),
@@ -251,6 +263,7 @@ class _SendNotificationDialogState extends ConsumerState<SendNotificationDialog>
                   // Title Field
                   TextFormField(
                     controller: _titleController,
+                    enabled: !_isSending,
                     decoration: InputDecoration(
                       labelText: 'عنوان الإشعار *',
                       hintText: 'مثال: عرض نهاية الأسبوع!',
@@ -271,6 +284,7 @@ class _SendNotificationDialogState extends ConsumerState<SendNotificationDialog>
                   // Body Field
                   TextFormField(
                     controller: _bodyController,
+                    enabled: !_isSending,
                     maxLines: 4,
                     decoration: InputDecoration(
                       labelText: 'نص الرسالة *',
@@ -296,6 +310,7 @@ class _SendNotificationDialogState extends ConsumerState<SendNotificationDialog>
                   // Image URL (Optional)
                   TextFormField(
                     controller: _imageUrlController,
+                    enabled: !_isSending,
                     decoration: InputDecoration(
                       labelText: 'رابط الصورة (اختياري)',
                       hintText: 'https://example.com/image.jpg',
@@ -322,7 +337,10 @@ class _SendNotificationDialogState extends ConsumerState<SendNotificationDialog>
                             ? const SizedBox(
                                 width: 18,
                                 height: 18,
-                                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
                               )
                             : const Icon(Icons.send_rounded, size: 18),
                         label: Text(_isSending ? 'جاري الإرسال...' : 'إرسال الإشعار'),
