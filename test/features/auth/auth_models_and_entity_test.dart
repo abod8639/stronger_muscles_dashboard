@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:stronger_muscles_dashboard/features/auth/data/mappers/auth_mapper.dart';
 import 'package:stronger_muscles_dashboard/features/auth/data/models/auth_model.dart';
 import 'package:stronger_muscles_dashboard/features/auth/domain/entities/auth_entity.dart';
 
@@ -50,8 +51,8 @@ void main() {
     });
   });
 
-  group('AuthModel Serialization Tests', () {
-    test('fromJson parses nested user object with role', () {
+  group('AuthModel Serialization & Mapping Tests', () {
+    test('fromJson parses nested user object with role and maps to entity', () {
       final json = {
         'token': 'secret-token-123',
         'user': {
@@ -71,10 +72,14 @@ void main() {
       expect(model.role, 'super_admin');
       expect(model.token, 'secret-token-123');
       expect(model.profileImage, 'https://example.com/photo.jpg');
-      expect(model.isSuperAdmin, true);
+
+      // Test mapper decoupling
+      final entity = model.toEntity();
+      expect(entity.isSuperAdmin, true);
+      expect(entity.canManageUsers, true);
     });
 
-    test('fromJson defaults role to admin if omitted', () {
+    test('fromJson defaults role to admin if omitted and maps to entity', () {
       final json = {
         'id': '5',
         'name': 'Fallback Admin',
@@ -84,7 +89,8 @@ void main() {
       final model = AuthModel.fromJson(json);
 
       expect(model.role, 'admin');
-      expect(model.canManageUsers, true);
+      final entity = model.toEntity();
+      expect(entity.canManageUsers, true);
     });
 
     test('toJson serializes all fields correctly', () {
@@ -105,6 +111,22 @@ void main() {
       expect(json['role'], 'inventory_manager');
       expect(json['token'], 'token-xyz');
       expect(json['profile_image'], 'avatar.png');
+    });
+
+    test('roundtrip mapping preserves all entity and model properties', () {
+      const originalEntity = AuthEntity(
+        id: '42',
+        name: 'Clean Architect',
+        email: 'architect@enterprise.io',
+        role: 'super_admin',
+        token: 'auth-jwt-token',
+        profileImage: 'photo.jpg',
+      );
+
+      final model = originalEntity.toModel();
+      final mappedEntity = model.toEntity();
+
+      expect(mappedEntity, equals(originalEntity));
     });
   });
 }
