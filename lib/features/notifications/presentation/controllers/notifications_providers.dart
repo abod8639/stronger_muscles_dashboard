@@ -1,42 +1,66 @@
-import 'package:dartz/dartz.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:stronger_muscles_dashboard/core/error/failures.dart';
-import 'package:stronger_muscles_dashboard/features/auth/presentation/controllers/auth_providers.dart';
-import '../../data/datasources/notification_remote_data_source.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:stronger_muscles_dashboard/core/network/dio_provider.dart';
+import '../../data/datasources/notification_local_datasource.dart';
+import '../../data/datasources/notification_remote_datasource.dart';
 import '../../data/repositories/notification_repository_impl.dart';
 import '../../domain/entities/admin_notification_entity.dart';
 import '../../domain/entities/notifications_result_entity.dart';
 import '../../domain/repositories/notification_repository.dart';
 import '../../domain/usecases/notification_usecases.dart';
+import 'notifications_notifier.dart';
 
-/// موفر مصدر بيانات الإشعارات البعيد
+export 'notifications_notifier.dart';
+
+// ==================== Data Layer Scoped Providers ====================
+
+/// Scoped provider for Notifications Hive Cache Box
+final notificationHiveBoxProvider = Provider<Box>((ref) {
+  return Hive.box('notifications_cache');
+});
+
+/// Scoped provider for [NotificationLocalDataSource]
+final notificationLocalDataSourceProvider =
+    Provider<NotificationLocalDataSource>((ref) {
+  final box = ref.watch(notificationHiveBoxProvider);
+  return NotificationLocalDataSourceImpl(box: box);
+});
+
+/// Scoped provider for [NotificationRemoteDataSource]
 final notificationRemoteDataSourceProvider =
     Provider<NotificationRemoteDataSource>((ref) {
   final dio = ref.watch(dioProvider);
   return NotificationRemoteDataSourceImpl(dio: dio);
 });
 
-/// موفر مستودع الإشعارات
+// ==================== Domain Layer Scoped Providers ====================
+
+/// Scoped provider for [NotificationRepository] acting as Single Source of Truth
 final notificationRepositoryProvider = Provider<NotificationRepository>((ref) {
-  final remoteDataSource = ref.watch(notificationRemoteDataSourceProvider);
-  return NotificationRepositoryImpl(remoteDataSource: remoteDataSource);
+  return NotificationRepositoryImpl(
+    remoteDataSource: ref.watch(notificationRemoteDataSourceProvider),
+    localDataSource: ref.watch(notificationLocalDataSourceProvider),
+  );
 });
 
-/// موفرات حالات الاستخدام
+/// Scoped provider for [GetNotificationsUseCase]
 final getNotificationsUseCaseProvider = Provider<GetNotificationsUseCase>((ref) {
   return GetNotificationsUseCase(ref.watch(notificationRepositoryProvider));
 });
 
+/// Scoped provider for [SendNotificationUseCase]
 final sendNotificationUseCaseProvider = Provider<SendNotificationUseCase>((ref) {
   return SendNotificationUseCase(ref.watch(notificationRepositoryProvider));
 });
 
+/// Scoped provider for [DeleteNotificationUseCase]
 final deleteNotificationUseCaseProvider = Provider<DeleteNotificationUseCase>((ref) {
   return DeleteNotificationUseCase(ref.watch(notificationRepositoryProvider));
 });
 
-/// موفر نص البحث في الإشعارات
+// ==================== Presentation Layer Scoped Providers ====================
+
+/// Notifier managing notification text search query
 class NotificationsSearchQueryNotifier extends Notifier<String> {
   @override
   String build() => '';
@@ -49,7 +73,7 @@ final notificationsSearchQueryProvider =
   NotificationsSearchQueryNotifier.new,
 );
 
-/// موفر نوع الفلترة المحدد (all, general, promo, order, system)
+/// Notifier managing active filter category ('all', 'general', 'promo', 'order', 'system')
 class NotificationsFilterTypeNotifier extends Notifier<String> {
   @override
   String build() => 'all';
@@ -62,119 +86,41 @@ final notificationsFilterTypeProvider =
   NotificationsFilterTypeNotifier.new,
 );
 
-/// موفر التحكم الرئيسي بحالة الإشعارات عبر [AsyncNotifier] مع إدارة الإلغاء ومنع تسريب الموارد
-class NotificationsNotifier extends AsyncNotifier<NotificationsResultEntity> {
-  CancelToken? _cancelToken;
-
-  @override
-  Future<NotificationsResultEntity> build() async {
-    if (_cancelToken != null && !_cancelToken!.isCancelled) {
-      _cancelToken!.cancel('Notifications notifier rebuild');
-    }
-    final cancelToken = CancelToken();
-    _cancelToken = cancelToken;
-
-    ref.onDispose(() {
-      if (!cancelToken.isCancelled) {
-        cancelToken.cancel('Notifications page disposed');
-      }
-    });
-
-    final useCase = ref.watch(getNotificationsUseCaseProvider);
-    final result = await useCase(cancelToken: cancelToken);
-
-    return result.fold(
-      (failure) => throw failure,
-      (data) => data,
-    );
-  }
-
-  /// إعادة جلب وتحديث قائمة الإشعارات
-  Future<void> refreshNotifications() async {
-    state = const AsyncValue.loading();
-    if (_cancelToken != null && !_cancelToken!.isCancelled) {
-      _cancelToken!.cancel('Refresh requested');
-    }
-    final cancelToken = CancelToken();
-    _cancelToken = cancelToken;
-
-    final useCase = ref.read(getNotificationsUseCaseProvider);
-    final result = await useCase(cancelToken: cancelToken);
-
-    state = result.fold(
-      (failure) => AsyncValue.error(failure, StackTrace.current),
-      (data) => AsyncValue.data(data),
-    );
-  }
-
-  /// إرسال إشعار جديد وتحديث الحالة محلياً وفورياً
-  Future<Either<Failure, AdminNotificationEntity>> sendNotification(
-    Map<String, dynamic> payload,
-  ) async {
-    final useCase = ref.read(sendNotificationUseCaseProvider);
-    final result = await useCase(payload);
-
-    result.fold(
-      (failure) {},
-      (newNotification) {
-        final current = state.value ?? NotificationsResultEntity.initial();
-        final updatedList = [newNotification, ...current.notifications];
-        final isBroadcast = newNotification.targetType == 'all';
-
-        final updated = current.copyWith(
-          notifications: updatedList,
-          totalCount: current.totalCount + 1,
-          todayCount: current.todayCount + 1,
-          broadcastCount: isBroadcast
-              ? current.broadcastCount + 1
-              : current.broadcastCount,
-          targetedCount: isBroadcast
-              ? current.targetedCount
-              : current.targetedCount + 1,
-        );
-
-        state = AsyncValue.data(updated);
-      },
-    );
-
-    return result;
-  }
-
-  /// حذف إشعار وتحديث الحالة
-  Future<Either<Failure, void>> deleteNotification(String id) async {
-    final useCase = ref.read(deleteNotificationUseCaseProvider);
-    final result = await useCase(id);
-
-    result.fold(
-      (failure) {},
-      (_) {
-        final current = state.value ?? NotificationsResultEntity.initial();
-        final updatedList =
-            current.notifications.where((n) => n.id != id).toList();
-
-        final updated = current.copyWith(
-          notifications: updatedList,
-          totalCount: (current.totalCount - 1).clamp(0, 999999),
-        );
-
-        state = AsyncValue.data(updated);
-      },
-    );
-
-    return result;
-  }
-}
-
+/// Main state controller provider managing notifications lifecycle
 final notificationsControllerProvider =
     AsyncNotifierProvider<NotificationsNotifier, NotificationsResultEntity>(
   NotificationsNotifier.new,
 );
 
-/// موفر قائمة الإشعارات المفلترة تلقائياً بحسب نوع التبويب والبحث
+/// Type definition for notification statistics counts
+typedef NotificationStatsRecord = ({
+  int total,
+  int today,
+  int broadcast,
+  int targeted,
+});
+
+/// Selective provider for notifications statistics, avoiding rebuilds when searching
+final notificationsStatsProvider = Provider<NotificationStatsRecord>((ref) {
+  return ref.watch(
+    notificationsControllerProvider.select((asyncVal) {
+      final val = asyncVal.value;
+      return (
+        total: val?.totalCount ?? 0,
+        today: val?.todayCount ?? 0,
+        broadcast: val?.broadcastCount ?? 0,
+        targeted: val?.targetedCount ?? 0,
+      );
+    }),
+  );
+});
+
+/// Provider filtering notification list in-memory based on query and selected category
 final filteredNotificationsListProvider =
     Provider<List<AdminNotificationEntity>>((ref) {
   final asyncState = ref.watch(notificationsControllerProvider);
-  final query = ref.watch(notificationsSearchQueryProvider).toLowerCase().trim();
+  final query =
+      ref.watch(notificationsSearchQueryProvider).toLowerCase().trim();
   final filterType = ref.watch(notificationsFilterTypeProvider);
 
   return asyncState.maybeWhen(
