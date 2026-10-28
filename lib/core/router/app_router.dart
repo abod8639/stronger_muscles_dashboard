@@ -9,8 +9,7 @@ import 'package:stronger_muscles_dashboard/features/brands/brands_feature.dart';
 import 'package:stronger_muscles_dashboard/features/categories/categories_feature.dart';
 import 'package:stronger_muscles_dashboard/features/navigation/navigation_feature.dart';
 import 'package:stronger_muscles_dashboard/features/notifications/notifications_feature.dart';
-import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
-import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/order_details_screen/order_details_screen.dart';
+import 'package:stronger_muscles_dashboard/features/orders/orders_feature.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_form_page.dart';
 import 'package:stronger_muscles_dashboard/features/promos/domain/entities/promo_entity.dart';
@@ -54,17 +53,7 @@ final GoRouter appRouter = GoRouter(
         return PromoFormScreen(promo: promo);
       },
     ),
-    GoRoute(
-      path: AppRoutes.orderDetails,
-      name: 'orderDetails',
-      builder: (context, state) {
-        final order = state.extra as OrderEntity?;
-        if (order == null) {
-          return const MainNavigationScreen();
-        }
-        return OrderDetailsScreen(order: order);
-      },
-    ),
+    ...OrdersRoutes.routes,
   ],
   redirect: (BuildContext context, GoRouterState state) {
     final isLoggedIn = AuthService.instance.isLoggedIn();
