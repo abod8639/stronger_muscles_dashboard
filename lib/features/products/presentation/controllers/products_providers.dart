@@ -3,7 +3,6 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
-import 'package:stronger_muscles_dashboard/features/auth/presentation/controllers/auth_providers.dart';
 import 'package:stronger_muscles_dashboard/features/brands/presentation/controllers/brands_providers.dart';
 import 'package:stronger_muscles_dashboard/features/categories/presentation/controllers/categories_providers.dart';
 import '../../data/datasources/product_remote_datasource.dart';
