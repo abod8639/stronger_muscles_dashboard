@@ -1,27 +1,30 @@
-import 'package:dartz/dartz.dart';
-import 'package:dio/dio.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import '../entities/auth_entity.dart';
 
+/// 100% Pure Dart Abstract Repository contract for Authentication.
+/// Enforces functional error handling via `fpdart`'s `Either<Failure, T>`.
+/// Contains zero imports from Flutter, Dio, or third-party storage libraries.
 abstract class AuthRepository {
-  Future<Either<Failure, AuthEntity>> login(
-    String email,
-    String password, {
-    CancelToken? cancelToken,
+  /// Authenticates an administrator with email and password.
+  Future<Either<Failure, AuthEntity>> login({
+    required String email,
+    required String password,
   });
 
-  Future<Either<Failure, AuthEntity>> signup(
-    String name,
-    String email,
-    String password, {
-    CancelToken? cancelToken,
+  /// Registers a new administrator account.
+  Future<Either<Failure, AuthEntity>> signup({
+    required String name,
+    required String email,
+    required String password,
   });
 
+  /// Terminates the current session and purges cached authentication tokens.
   Future<Either<Failure, Unit>> logout();
 
-  bool isLoggedIn();
+  /// Checks whether an active authentication token exists locally.
+  Future<Either<Failure, bool>> checkAuthStatus();
 
-  String? getToken();
-
-  Either<Failure, AuthEntity?> getCurrentUser();
+  /// Retrieves the currently cached administrator profile if available.
+  Future<Either<Failure, AuthEntity?>> getCurrentUser();
 }
