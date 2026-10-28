@@ -53,6 +53,9 @@ class ApiConfig {
   // Users Management
   static const String adminUsers = '/admin/users';
 
+  // Dashboard Stats
+  static const String adminDashboard = '/admin/dashboard';
+
   // Image Uploads
   static const String adminUploadProductImage = '/admin/upload/product-image';
   static const String adminUploadCategoryImage = '/admin/upload/category-image';
