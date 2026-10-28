@@ -24,7 +24,7 @@ void main() {
     await GetStorage.init('test_auth_storage');
     storage = GetStorage('test_auth_storage');
     await storage.erase();
-    dataSource = AuthLocalDataSourceImpl(storage);
+    dataSource = AuthLocalDataSourceImpl(storage: storage);
   });
 
   tearDown(() async {
@@ -33,22 +33,22 @@ void main() {
 
   group('AuthLocalDataSourceImpl Tests', () {
     test('token save, read, check, and clear cycle works properly', () async {
-      expect(dataSource.hasToken(), false);
-      expect(dataSource.getToken(), isNull);
+      expect(await dataSource.hasToken(), false);
+      expect(await dataSource.getToken(), isNull);
 
       await dataSource.saveToken('jwt-token-999');
 
-      expect(dataSource.hasToken(), true);
-      expect(dataSource.getToken(), 'jwt-token-999');
+      expect(await dataSource.hasToken(), true);
+      expect(await dataSource.getToken(), 'jwt-token-999');
 
       await dataSource.clearToken();
 
-      expect(dataSource.hasToken(), false);
-      expect(dataSource.getToken(), isNull);
+      expect(await dataSource.hasToken(), false);
+      expect(await dataSource.getToken(), isNull);
     });
 
     test('user save, read, and clear works properly', () async {
-      expect(dataSource.getUser(), isNull);
+      expect(await dataSource.getUser(), isNull);
 
       final userPayload = {
         'id': '1',
@@ -59,13 +59,13 @@ void main() {
 
       await dataSource.saveUser(userPayload);
 
-      final retrieved = dataSource.getUser();
+      final retrieved = await dataSource.getUser();
       expect(retrieved, isNotNull);
       expect(retrieved!['name'], 'Dexter Admin');
       expect(retrieved['role'], 'super_admin');
 
-      await dataSource.clearToken();
-      expect(dataSource.getUser(), isNull);
+      await dataSource.clearAll();
+      expect(await dataSource.getUser(), isNull);
     });
   });
 }
