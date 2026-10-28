@@ -1,0 +1,114 @@
+import 'dart:async';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fpdart/fpdart.dart';
+import 'package:stronger_muscles_dashboard/core/error/failures.dart';
+import '../../domain/entities/product_entity.dart';
+import '../../domain/usecases/add_product_usecase.dart';
+import '../../domain/usecases/delete_product_usecase.dart';
+import '../../domain/usecases/get_products_usecase.dart';
+import '../../domain/usecases/update_product_usecase.dart';
+
+/// AsyncNotifier managing the products list state, mutations, and caching lifecycle.
+/// 100% free of raw try-catch blocks via fpdart Either handling.
+class ProductsNotifier extends AsyncNotifier<List<ProductEntity>> {
+  final GetProductsUseCase _getProductsUseCase;
+  final AddProductUseCase _addProductUseCase;
+  final UpdateProductUseCase _updateProductUseCase;
+  final DeleteProductUseCase _deleteProductUseCase;
+
+  ProductsNotifier({
+    required GetProductsUseCase getProductsUseCase,
+    required AddProductUseCase addProductUseCase,
+    required UpdateProductUseCase updateProductUseCase,
+    required DeleteProductUseCase deleteProductUseCase,
+  })  : _getProductsUseCase = getProductsUseCase,
+        _addProductUseCase = addProductUseCase,
+        _updateProductUseCase = updateProductUseCase,
+        _deleteProductUseCase = deleteProductUseCase;
+
+  @override
+  FutureOr<List<ProductEntity>> build() {
+    return _fetchProducts(forceRefresh: false);
+  }
+
+  Future<List<ProductEntity>> _fetchProducts({bool forceRefresh = false}) async {
+    final result = await _getProductsUseCase(forceRefresh: forceRefresh);
+    return result.fold(
+      (failure) => throw failure,
+      (products) => products,
+    );
+  }
+
+  /// Reloads products forcing Hive cache invalidation
+  Future<void> refreshProducts({bool forceRefresh = true}) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(
+      () => _fetchProducts(forceRefresh: forceRefresh),
+    );
+  }
+
+  /// Adds a new product and prepends to the state immutably
+  Future<Either<Failure, ProductEntity>> addProduct(Map<String, dynamic> data) async {
+    final previous = state;
+    final result = await _addProductUseCase(data);
+
+    result.fold(
+      (failure) {},
+      (newProduct) {
+        final current = List<ProductEntity>.from(previous.value ?? const []);
+        state = AsyncValue.data([newProduct, ...current]);
+      },
+    );
+
+    return result;
+  }
+
+  /// Updates an existing product and updates state immutably
+  Future<Either<Failure, ProductEntity>> updateProduct(
+    String id,
+    Map<String, dynamic> data,
+  ) async {
+    final previous = state;
+    final result = await _updateProductUseCase(id, data);
+
+    result.fold(
+      (failure) {},
+      (updatedProduct) {
+        final current = List<ProductEntity>.from(previous.value ?? const []);
+        final index = current.indexWhere((p) => p.id == id);
+        if (index != -1) {
+          current[index] = updatedProduct;
+          state = AsyncValue.data(current);
+        }
+      },
+    );
+
+    return result;
+  }
+
+  /// Deletes a product and removes it from the state immutably
+  Future<Either<Failure, bool>> deleteProduct(String id) async {
+    final previous = state;
+    final result = await _deleteProductUseCase(id);
+
+    result.fold(
+      (failure) {},
+      (success) {
+        if (success) {
+          final current = List<ProductEntity>.from(previous.value ?? const []);
+          current.removeWhere((p) => p.id == id);
+          state = AsyncValue.data(current);
+        }
+      },
+    );
+
+    return result;
+  }
+
+  /// Clears error state safely
+  void clearError() {
+    if (state.hasError) {
+      state = AsyncValue.data(state.value ?? const []);
+    }
+  }
+}
