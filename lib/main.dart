@@ -6,7 +6,7 @@ import 'package:stronger_muscles_dashboard/core/router/app_router.dart';
 import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
 import 'package:stronger_muscles_dashboard/functions/hive_init.dart';
 import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
-import 'package:stronger_muscles_dashboard/features/theme/presentation/controllers/theme_controller.dart';
+import 'package:stronger_muscles_dashboard/features/theme/theme_feature.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
