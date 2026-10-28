@@ -29,4 +29,6 @@ Future<void> hiveInit() async {
   await Hive.openBox('dashboard_stats');
   await Hive.openBox('navigation_badges');
   await Hive.openBox('notifications_cache');
+  await Hive.openBox('promos_cache');
+  await Hive.openBox('settings_cache');
 }
