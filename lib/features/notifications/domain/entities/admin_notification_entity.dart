@@ -1,3 +1,5 @@
+/// Pure Dart Domain Entity representing an administrative notification.
+/// Free of any Flutter UI dependencies or 3rd-party networking/storage libraries.
 class AdminNotificationEntity {
   final String id;
   final String title;
@@ -94,8 +96,25 @@ class AdminNotificationEntity {
       identical(this, other) ||
       other is AdminNotificationEntity &&
           runtimeType == other.runtimeType &&
-          id == other.id;
+          id == other.id &&
+          title == other.title &&
+          body == other.body &&
+          type == other.type &&
+          targetType == other.targetType &&
+          userId == other.userId &&
+          isRead == other.isRead;
 
   @override
-  int get hashCode => id.hashCode;
+  int get hashCode =>
+      id.hashCode ^
+      title.hashCode ^
+      body.hashCode ^
+      type.hashCode ^
+      targetType.hashCode ^
+      (userId?.hashCode ?? 0) ^
+      isRead.hashCode;
+
+  @override
+  String toString() =>
+      'AdminNotificationEntity(id: $id, title: $title, type: $type, target: $targetType)';
 }
