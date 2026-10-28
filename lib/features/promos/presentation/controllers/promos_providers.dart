@@ -1,32 +1,60 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:stronger_muscles_dashboard/features/auth/presentation/controllers/auth_providers.dart';
-import 'package:stronger_muscles_dashboard/features/brands/presentation/controllers/brands_providers.dart';
+import 'package:hive/hive.dart';
+import 'package:stronger_muscles_dashboard/core/network/dio_provider.dart';
+import 'package:stronger_muscles_dashboard/features/brands/brands_feature.dart';
 import 'package:stronger_muscles_dashboard/features/products/products_feature.dart';
-import 'package:stronger_muscles_dashboard/features/promos/data/datasources/promo_remote_datasource.dart';
-import 'package:stronger_muscles_dashboard/features/promos/data/repositories/promo_repository_impl.dart';
-import 'package:stronger_muscles_dashboard/features/promos/domain/entities/promo_entity.dart';
-import 'package:stronger_muscles_dashboard/features/promos/domain/repositories/promo_repository.dart';
-import 'package:stronger_muscles_dashboard/features/promos/domain/usecases/promo_usecases.dart';
+import '../../data/datasources/promo_local_datasource.dart';
+import '../../data/datasources/promo_remote_datasource.dart';
+import '../../data/repositories/promo_repository_impl.dart';
+import '../../domain/entities/promo_entity.dart';
+import '../../domain/repositories/promo_repository.dart';
+import '../../domain/usecases/add_promo_usecase.dart';
+import '../../domain/usecases/delete_promo_usecase.dart';
+import '../../domain/usecases/get_promos_usecase.dart';
+import '../../domain/usecases/update_promo_usecase.dart';
+import '../../domain/usecases/upload_promo_image_usecase.dart';
 import 'promo_form_controller.dart';
 import 'promos_controller.dart';
 
 // ==========================================
-// Data & Domain Providers
+// Local & Remote Data Source Providers
 // ==========================================
 
-/// موفر مصدر بيانات الإعلانات الترويجية البعيد
+/// Hive Box provider for local promos cache
+final promosBoxProvider = Provider<Box>((ref) {
+  return Hive.box('promos_cache');
+});
+
+/// Local Data Source provider
+final promoLocalDataSourceProvider = Provider<PromoLocalDataSource>((ref) {
+  final box = ref.watch(promosBoxProvider);
+  return PromoLocalDataSourceImpl(box: box);
+});
+
+/// Remote Data Source provider
 final promoRemoteDataSourceProvider = Provider<PromoRemoteDataSource>((ref) {
   final dio = ref.watch(dioProvider);
   return PromoRemoteDataSourceImpl(dio: dio);
 });
 
-/// موفر مستودع الإعلانات
+// ==========================================
+// Repository Provider (Single Source of Truth)
+// ==========================================
+
+/// Repository provider
 final promoRepositoryProvider = Provider<PromoRepository>((ref) {
   final remoteDataSource = ref.watch(promoRemoteDataSourceProvider);
-  return PromoRepositoryImpl(remoteDataSource: remoteDataSource);
+  final localDataSource = ref.watch(promoLocalDataSourceProvider);
+  return PromoRepositoryImpl(
+    remoteDataSource: remoteDataSource,
+    localDataSource: localDataSource,
+  );
 });
 
-/// موفرات حالات الاستخدام
+// ==========================================
+// UseCase Providers
+// ==========================================
+
 final getPromosUseCaseProvider = Provider<GetPromosUseCase>((ref) {
   return GetPromosUseCase(ref.watch(promoRepositoryProvider));
 });
@@ -48,10 +76,10 @@ final uploadPromoImageUseCaseProvider = Provider<UploadPromoImageUseCase>((ref) 
 });
 
 // ==========================================
-// Presentation Controllers
+// Presentation Controller Providers
 // ==========================================
 
-/// موفر متحكم الإعلانات الرئيسي
+/// Main Promos list controller provider
 final promosControllerProvider = Provider<PromosController>((ref) {
   final controller = PromosController(
     getPromosUseCase: ref.watch(getPromosUseCaseProvider),
@@ -67,7 +95,7 @@ final promosControllerProvider = Provider<PromosController>((ref) {
   return controller;
 });
 
-/// موفر متحكم نموذج إنشاء/تعديل الإعلان
+/// Promo Form controller provider (autoDispose family)
 final promoFormControllerProvider = Provider.autoDispose.family<PromoFormController, PromoEntity?>((ref, initialPromo) {
   final controller = PromoFormController(
     initialPromo: initialPromo,
