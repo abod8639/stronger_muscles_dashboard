@@ -1,16 +1,24 @@
-import 'package:stronger_muscles_dashboard/features/brands/domain/entities/brand_entity.dart';
+/// Data Transfer Object (DTO) for Brands.
+/// Strictly decoupled from Domain Entities with no class inheritance.
+class BrandModel {
+  final String id;
+  final String nameAr;
+  final String nameEn;
+  final String? imageUrl;
+  final bool isActive;
 
-class BrandModel extends BrandEntity {
   const BrandModel({
-    required super.id,
-    required super.nameAr,
-    required super.nameEn,
-    super.imageUrl,
-    super.isActive = true,
+    required this.id,
+    required this.nameAr,
+    required this.nameEn,
+    this.imageUrl,
+    this.isActive = true,
   });
 
+  /// Resilient parsing safe against nested bilingual maps, null values, and type discrepancies
   factory BrandModel.fromJson(Map<String, dynamic> json) {
     final nameMap = json['name'] is Map ? json['name'] as Map : null;
+
     return BrandModel(
       id: json['id']?.toString() ?? '',
       nameAr: json['name_ar']?.toString() ??
@@ -37,14 +45,23 @@ class BrandModel extends BrandEntity {
       'is_active': isActive,
     };
   }
-}
 
-/// Compute isolate parsing for brand list
-List<BrandModel> parseBrandListCompute(dynamic data) {
-  if (data is List) {
-    return data
-        .map((item) => BrandModel.fromJson(Map<String, dynamic>.from(item as Map)))
-        .toList();
-  }
-  return [];
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BrandModel &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          nameAr == other.nameAr &&
+          nameEn == other.nameEn &&
+          imageUrl == other.imageUrl &&
+          isActive == other.isActive;
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      nameAr.hashCode ^
+      nameEn.hashCode ^
+      imageUrl.hashCode ^
+      isActive.hashCode;
 }
