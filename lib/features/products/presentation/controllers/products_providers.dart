@@ -1,40 +1,69 @@
-import 'dart:async';
-import 'package:dartz/dartz.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:stronger_muscles_dashboard/core/error/failures.dart';
-import 'package:stronger_muscles_dashboard/features/brands/presentation/controllers/brands_providers.dart';
-import 'package:stronger_muscles_dashboard/features/categories/presentation/controllers/categories_providers.dart';
+import 'package:hive/hive.dart';
+import 'package:stronger_muscles_dashboard/features/brands/brands_feature.dart';
+import 'package:stronger_muscles_dashboard/features/categories/categories_feature.dart';
+import '../../data/datasources/product_local_datasource.dart';
 import '../../data/datasources/product_remote_datasource.dart';
+import '../../data/models/product_model.dart';
 import '../../data/repositories/product_repository_impl.dart';
 import '../../domain/entities/product_entity.dart';
 import '../../domain/repositories/product_repository.dart';
 import '../../domain/usecases/add_product_usecase.dart';
 import '../../domain/usecases/delete_product_usecase.dart';
+import '../../domain/usecases/get_product_by_id_usecase.dart';
 import '../../domain/usecases/get_products_usecase.dart';
 import '../../domain/usecases/update_product_usecase.dart';
 import '../../domain/usecases/upload_product_image_usecase.dart';
 import 'products_controller.dart';
+import 'products_notifier.dart';
+
+export 'products_controller.dart';
+export 'products_notifier.dart';
 
 // ==========================================
-// Data & Domain Providers
+// Data & Local Cache Providers
 // ==========================================
 
-/// موفر مصدر بيانات المنتجات البعيد
+/// Hive Box Provider for Products Caching
+final productBoxProvider = Provider<Box<ProductModel>>((ref) {
+  return Hive.box<ProductModel>('products');
+});
+
+/// Local DataSource Provider
+final productLocalDataSourceProvider = Provider<ProductLocalDataSource>((ref) {
+  final box = ref.watch(productBoxProvider);
+  return ProductLocalDataSourceImpl(box);
+});
+
+/// Remote DataSource Provider
 final productRemoteDataSourceProvider = Provider<ProductRemoteDataSource>((ref) {
   final dio = ref.watch(dioProvider);
   return ProductRemoteDataSourceImpl(dio);
 });
 
-/// موفر مستودع المنتجات
+// ==========================================
+// Repository Provider (Single Source of Truth)
+// ==========================================
+
 final productRepositoryProvider = Provider<ProductRepository>((ref) {
-  final remoteDataSource = ref.watch(productRemoteDataSourceProvider);
-  return ProductRepositoryImpl(remoteDataSource: remoteDataSource);
+  final remote = ref.watch(productRemoteDataSourceProvider);
+  final local = ref.watch(productLocalDataSourceProvider);
+  return ProductRepositoryImpl(
+    remoteDataSource: remote,
+    localDataSource: local,
+  );
 });
 
-/// موفرات حالات الاستخدام
+// ==========================================
+// UseCase Providers
+// ==========================================
+
 final getProductsUseCaseProvider = Provider<GetProductsUseCase>((ref) {
   return GetProductsUseCase(ref.watch(productRepositoryProvider));
+});
+
+final getProductByIdUseCaseProvider = Provider<GetProductByIdUseCase>((ref) {
+  return GetProductByIdUseCase(ref.watch(productRepositoryProvider));
 });
 
 final addProductUseCaseProvider = Provider<AddProductUseCase>((ref) {
@@ -57,7 +86,6 @@ final uploadProductImageUseCaseProvider = Provider<UploadProductImageUseCase>((r
 // Search & Filter State Notifiers
 // ==========================================
 
-/// موفر نص البحث في المنتجات
 class ProductsSearchQueryNotifier extends Notifier<String> {
   @override
   String build() => '';
@@ -70,7 +98,6 @@ final productsSearchQueryProvider =
   ProductsSearchQueryNotifier.new,
 );
 
-/// موفر تصفية التصنيف المحدد ('all' أو معرّف التصنيف)
 class ProductsSelectedCategoryNotifier extends Notifier<String> {
   @override
   String build() => 'all';
@@ -83,7 +110,6 @@ final productsSelectedCategoryProvider =
   ProductsSelectedCategoryNotifier.new,
 );
 
-/// موفر تصفية النكهة المحددة ('all' أو اسم النكهة)
 class ProductsSelectedFlavorNotifier extends Notifier<String> {
   @override
   String build() => 'all';
@@ -100,123 +126,24 @@ final productsSelectedFlavorProvider =
 // Core Products State via AsyncNotifier
 // ==========================================
 
-/// متحكم حالة المنتجات الرئيسي عبر [AsyncNotifier]
-/// يدعم إدارة الإلغاء عبر `ref.onDispose` لمنع تسريب الموارد
-/// ويحول الـ `Either<Failure, T>` بأمان إلى `AsyncValue` لمنع تجميد أو انهيار الشاشة
-class ProductsNotifier extends AsyncNotifier<List<ProductEntity>> {
-  CancelToken? _cancelToken;
+final productsControllerProvider =
+    AsyncNotifierProvider<ProductsNotifier, List<ProductEntity>>(() {
+  return ProductsNotifier(
+    getProductsUseCase: getProductsUseCaseProvider.read,
+    addProductUseCase: addProductUseCaseProvider.read,
+    updateProductUseCase: updateProductUseCaseProvider.read,
+    deleteProductUseCase: deleteProductUseCaseProvider.read,
+  );
+});
 
-  @override
-  FutureOr<List<ProductEntity>> build() {
-    ref.onDispose(() {
-      _cancelToken?.cancel('تم تفريغ ProductsNotifier وإلغاء الطلبات النشطة');
-      _cancelToken = null;
-    });
-
-    return _fetchProducts(forceRefresh: false);
-  }
-
-  Future<List<ProductEntity>> _fetchProducts({bool forceRefresh = false}) async {
-    _cancelToken?.cancel('طلب جديد لقائمة المنتجات');
-    final cancelToken = CancelToken();
-    _cancelToken = cancelToken;
-
-    final getProducts = ref.read(getProductsUseCaseProvider);
-    final result = await getProducts(
-      forceRefresh: forceRefresh,
-      cancelToken: cancelToken,
-    );
-
-    return result.fold(
-      (failure) => throw failure,
-      (products) => products,
-    );
-  }
-
-  /// إعادة تحميل المنتجات مع إجبار تحديث الـ Cache
-  Future<void> refreshProducts({bool forceRefresh = true}) async {
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(
-      () => _fetchProducts(forceRefresh: forceRefresh),
-    );
-  }
-
-  /// إضافة منتج جديد وتحديث الحالة محلياً
-  Future<Either<Failure, ProductEntity>> addProduct(Map<String, dynamic> data) async {
-    final addUseCase = ref.read(addProductUseCaseProvider);
-    final previous = state;
-
-    final result = await addUseCase(data);
-
-    result.fold(
-      (failure) {},
-      (newProduct) {
-        final current = List<ProductEntity>.from(previous.value ?? const []);
-        final updated = [newProduct, ...current];
-        state = AsyncValue.data(updated);
-      },
-    );
-
-    return result;
-  }
-
-  /// تحديث منتج موجود ومزامنة القوائم
-  Future<Either<Failure, ProductEntity>> updateProduct(String id, Map<String, dynamic> data) async {
-    final updateUseCase = ref.read(updateProductUseCaseProvider);
-    final previous = state;
-
-    final result = await updateUseCase(id, data);
-
-    result.fold(
-      (failure) {},
-      (updatedProduct) {
-        final current = List<ProductEntity>.from(previous.value ?? const []);
-        final index = current.indexWhere((p) => p.id == id);
-        if (index != -1) {
-          current[index] = updatedProduct;
-          state = AsyncValue.data(current);
-        }
-      },
-    );
-
-    return result;
-  }
-
-  /// حذف منتج ومزامنة القائمة
-  Future<Either<Failure, bool>> deleteProduct(String id) async {
-    final deleteUseCase = ref.read(deleteProductUseCaseProvider);
-    final previous = state;
-
-    final result = await deleteUseCase(id);
-
-    result.fold(
-      (failure) {},
-      (success) {
-        if (success) {
-          final current = List<ProductEntity>.from(previous.value ?? const []);
-          current.removeWhere((p) => p.id == id);
-          state = AsyncValue.data(current);
-        }
-      },
-    );
-
-    return result;
-  }
-
-  /// تنظيف الخطأ
-  void clearError() {
-    if (state.hasError) {
-      state = AsyncValue.data(state.value ?? const []);
-    }
-  }
+extension ProductProviderRead<T> on Provider<T> {
+  T get read => ProviderContainer().read(this);
 }
 
-final productsControllerProvider =
-    AsyncNotifierProvider<ProductsNotifier, List<ProductEntity>>(
-  ProductsNotifier.new,
-);
+// ==========================================
+// UI Form & Presentation Controller
+// ==========================================
 
-/// موفر متحكم الواجهة والتفاعلات التفاعلي
 final productsUIControllerProvider = Provider<ProductsController>((ref) {
   final getProductsUseCase = ref.watch(getProductsUseCaseProvider);
   final addProductUseCase = ref.watch(addProductUseCaseProvider);
@@ -236,7 +163,7 @@ final productsUIControllerProvider = Provider<ProductsController>((ref) {
     brandRepository: brandRepository,
   );
 
-  // مزامنة تلقائية عند تحديث بيانات قائمة المنتجات
+  // Sync with Riverpod state updates
   ref.listen<AsyncValue<List<ProductEntity>>>(
     productsControllerProvider,
     (_, next) {
@@ -255,7 +182,6 @@ final productsUIControllerProvider = Provider<ProductsController>((ref) {
 // Computed Selectors / Providers
 // ==========================================
 
-/// موفر قائمة المنتجات المفلترة بحسب البحث، التصنيف، والنكهة
 final filteredProductsProvider = Provider<List<ProductEntity>>((ref) {
   final productsAsync = ref.watch(productsControllerProvider);
   final query = ref.watch(productsSearchQueryProvider).toLowerCase().trim();
@@ -278,7 +204,7 @@ final filteredProductsProvider = Provider<List<ProductEntity>>((ref) {
         result = result.where((p) =>
             p.nameAr.toLowerCase().contains(query) ||
             p.nameEn.toLowerCase().contains(query) ||
-            (p.brand?.toLowerCase().contains(query) ?? false) ||
+            (p.brand != null && p.brand!.toLowerCase().contains(query)) ||
             p.id.contains(query));
       }
 
