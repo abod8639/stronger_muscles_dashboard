@@ -2,17 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stronger_muscles_dashboard/config/app_colors.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
+import 'package:stronger_muscles_dashboard/core/error/failures.dart';
+import 'package:stronger_muscles_dashboard/core/utils/components/enhanced_error_widget.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/enhanced_loading_widget.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/my_refresh_indicator.dart';
-import 'package:stronger_muscles_dashboard/features/auth/presentation/widgets/auth_error_card.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_providers.dart';
-import '../widgets/dashboard_header_status.dart';
-import '../widgets/dashboard_period_selector.dart';
-import '../widgets/dashboard_indicators_section.dart';
-import '../widgets/dashboard_charts_section.dart';
-import '../widgets/recent_orders_section.dart';
 import '../widgets/categories_summary_section.dart';
+import '../widgets/dashboard_charts_section.dart';
+import '../widgets/dashboard_header_status.dart';
+import '../widgets/dashboard_indicators_section.dart';
+import '../widgets/dashboard_period_selector.dart';
+import '../widgets/recent_orders_section.dart';
 
+/// Dumb presentation widget for the Dashboard screen.
+/// Adheres to:
+/// - Zero business or data calculation logic inside UI
+/// - No cross-feature private imports (uses core EnhancedErrorWidget)
+/// - Selective state listening via Riverpod
 class DashboardPage extends ConsumerWidget {
   const DashboardPage({super.key});
 
@@ -28,22 +34,18 @@ class DashboardPage extends ConsumerWidget {
           message: 'جاري تحميل لوحة التحكم...',
         ),
         error: (error, stackTrace) {
-          return Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 550),
-                child: AuthErrorCard(
-                  error: error,
-                  onRetry: () => ref
-                      .read(dashboardStatsNotifierProvider.notifier)
-                      .refreshDashboard(),
-                ),
-              ),
-            ),
+          final errorMessage = error is Failure ? error.toMessage() : error.toString();
+          return EnhancedErrorWidget(
+            title: 'خطأ في تحميل البيانات',
+            message: errorMessage,
+            onRetry: () => ref
+                .read(dashboardStatsNotifierProvider.notifier)
+                .refreshDashboard(),
           );
         },
         data: (stats) {
+          final isEmpty = stats.orders.isEmpty && stats.products.isEmpty;
+
           return MyRefreshIndicator(
             onRefresh: () => ref
                 .read(dashboardStatsNotifierProvider.notifier)
@@ -59,10 +61,10 @@ class DashboardPage extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const DashboardHeaderStatus(),
-                    SizedBox(height: res.itemSpacing * 1),
+                    SizedBox(height: res.itemSpacing),
                     const DashboardPeriodSelector(),
-                    SizedBox(height: res.itemSpacing * 1),
-                    if (stats.orders.isEmpty && stats.products.isEmpty)
+                    SizedBox(height: res.itemSpacing),
+                    if (isEmpty)
                       const Center(
                         child: Padding(
                           padding: EdgeInsets.all(40.0),
