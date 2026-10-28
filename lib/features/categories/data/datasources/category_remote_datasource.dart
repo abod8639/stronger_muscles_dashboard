@@ -3,9 +3,15 @@ import 'package:stronger_muscles_dashboard/config/api_config.dart';
 import 'package:stronger_muscles_dashboard/core/error/exceptions.dart';
 import '../models/category_model.dart';
 
+/// Contract for executing category network calls via HTTP/Dio.
 abstract class CategoryRemoteDataSource {
   Future<List<CategoryModel>> getCategories({
     bool tree = false,
+    CancelToken? cancelToken,
+  });
+
+  Future<CategoryModel> getCategoryById(
+    String id, {
     CancelToken? cancelToken,
   });
 
@@ -26,12 +32,13 @@ abstract class CategoryRemoteDataSource {
   });
 }
 
+/// Production implementation of [CategoryRemoteDataSource] using [Dio].
+/// 100% testable via Constructor Dependency Injection.
 class CategoryRemoteDataSourceImpl implements CategoryRemoteDataSource {
-  final Dio dio;
-
+  final Dio _dio;
   static const Duration _defaultTimeout = Duration(seconds: 30);
 
-  CategoryRemoteDataSourceImpl(this.dio);
+  CategoryRemoteDataSourceImpl({required Dio dio}) : _dio = dio;
 
   Options get _options => Options(
         sendTimeout: _defaultTimeout,
@@ -45,7 +52,7 @@ class CategoryRemoteDataSourceImpl implements CategoryRemoteDataSource {
     CancelToken? cancelToken,
   }) async {
     try {
-      final response = await dio.get(
+      final response = await _dio.get(
         ApiConfig.adminCategories,
         queryParameters: {'tree': tree ? 1 : 0},
         cancelToken: cancelToken,
@@ -68,7 +75,6 @@ class CategoryRemoteDataSourceImpl implements CategoryRemoteDataSource {
           }
         }
 
-        // معالجة القائمة الكبيرة في Isolate خلفي لمنع تجميد الشاشة
         return await CategoryModel.fromJsonListAsync(listData);
       }
 
@@ -88,12 +94,45 @@ class CategoryRemoteDataSourceImpl implements CategoryRemoteDataSource {
   }
 
   @override
+  Future<CategoryModel> getCategoryById(
+    String id, {
+    CancelToken? cancelToken,
+  }) async {
+    try {
+      final response = await _dio.get(
+        ApiConfig.adminCategoryDetail(id),
+        cancelToken: cancelToken,
+        options: _options,
+      );
+
+      final data = response.data;
+      if (response.statusCode == 200 && data is Map<String, dynamic>) {
+        final categoryMap = (data['category'] ?? data['data'] ?? data) as Map<String, dynamic>;
+        return await CategoryModel.fromJsonAsync(categoryMap);
+      }
+
+      throw ServerException(
+        message: 'فشل في جلب بيانات التصنيف $id',
+        statusCode: response.statusCode,
+      );
+    } on DioException {
+      rethrow;
+    } catch (e) {
+      if (e is AppException) rethrow;
+      throw ParsingException(
+        message: 'خطأ أثناء تحليل بيانات التصنيف: $e',
+        originalError: e,
+      );
+    }
+  }
+
+  @override
   Future<CategoryModel> addCategory(
     Map<String, dynamic> categoryData, {
     CancelToken? cancelToken,
   }) async {
     try {
-      final response = await dio.post(
+      final response = await _dio.post(
         ApiConfig.adminCategories,
         data: categoryData,
         cancelToken: cancelToken,
@@ -129,7 +168,7 @@ class CategoryRemoteDataSourceImpl implements CategoryRemoteDataSource {
     CancelToken? cancelToken,
   }) async {
     try {
-      final response = await dio.put(
+      final response = await _dio.put(
         ApiConfig.adminCategoryDetail(id),
         data: categoryData,
         cancelToken: cancelToken,
@@ -163,7 +202,7 @@ class CategoryRemoteDataSourceImpl implements CategoryRemoteDataSource {
     CancelToken? cancelToken,
   }) async {
     try {
-      final response = await dio.delete(
+      final response = await _dio.delete(
         ApiConfig.adminCategoryDetail(id),
         cancelToken: cancelToken,
         options: _options,
