@@ -1,52 +1,52 @@
-import 'package:dartz/dartz.dart';
-import 'package:dio/dio.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import '../entities/admin_notification_entity.dart';
 import '../entities/notifications_result_entity.dart';
 import '../repositories/notification_repository.dart';
 
+/// Pure Dart UseCase for retrieving notifications list and analytics.
 class GetNotificationsUseCase {
   final NotificationRepository repository;
 
-  GetNotificationsUseCase(this.repository);
+  const GetNotificationsUseCase(this.repository);
 
   Future<Either<Failure, NotificationsResultEntity>> call({
     String? search,
     String? type,
     int page = 1,
-    CancelToken? cancelToken,
+    bool forceRefresh = false,
   }) {
     return repository.getNotifications(
       search: search,
       type: type,
       page: page,
-      cancelToken: cancelToken,
+      forceRefresh: forceRefresh,
     );
   }
 }
 
+/// Pure Dart UseCase for dispatching a notification.
 class SendNotificationUseCase {
   final NotificationRepository repository;
 
-  SendNotificationUseCase(this.repository);
+  const SendNotificationUseCase(this.repository);
 
   Future<Either<Failure, AdminNotificationEntity>> call(
-    Map<String, dynamic> data, {
-    CancelToken? cancelToken,
-  }) {
-    return repository.sendNotification(data, cancelToken: cancelToken);
+    Map<String, dynamic> data,
+  ) {
+    return repository.sendNotification(data);
   }
 }
 
+/// Pure Dart UseCase for deleting an administrative notification.
 class DeleteNotificationUseCase {
   final NotificationRepository repository;
 
-  DeleteNotificationUseCase(this.repository);
+  const DeleteNotificationUseCase(this.repository);
 
   Future<Either<Failure, void>> call(
-    String id, {
-    CancelToken? cancelToken,
-  }) {
-    return repository.deleteNotification(id, cancelToken: cancelToken);
+    String id,
+  ) {
+    return repository.deleteNotification(id);
   }
 }
