@@ -1,23 +1,15 @@
-import 'package:dartz/dartz.dart';
-import 'package:dio/dio.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import '../entities/category_entity.dart';
 import '../repositories/category_repository.dart';
 
+/// Pure Dart UseCase for updating an existing category.
 class UpdateCategoryUseCase {
-  final CategoryRepository repository;
+  final CategoryRepository _repository;
 
-  UpdateCategoryUseCase(this.repository);
+  const UpdateCategoryUseCase(this._repository);
 
-  Future<Either<Failure, CategoryEntity>> call(
-    String id,
-    Map<String, dynamic> categoryData, {
-    CancelToken? cancelToken,
-  }) async {
-    return await repository.updateCategory(
-      id,
-      categoryData,
-      cancelToken: cancelToken,
-    );
+  Future<Either<Failure, CategoryEntity>> call(CategoryEntity category) {
+    return _repository.updateCategory(category);
   }
 }
