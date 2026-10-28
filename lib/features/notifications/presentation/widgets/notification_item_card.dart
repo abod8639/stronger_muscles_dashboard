@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../domain/entities/admin_notification_entity.dart';
 import '../controllers/notifications_providers.dart';
 
+/// Card widget rendering individual notification item with metadata and action buttons.
 class NotificationItemCard extends ConsumerWidget {
   final AdminNotificationEntity notification;
 
@@ -91,7 +92,7 @@ class NotificationItemCard extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header: Type badge + Target badge + Date
+            // Header: Type badge + Target badge + Delete button
             Row(
               children: [
                 // Type Badge
@@ -150,9 +151,13 @@ class NotificationItemCard extends ConsumerWidget {
                 ),
                 const Spacer(),
 
-                // Delete button
+                // Delete button with confirmation
                 IconButton(
-                  icon: Icon(Icons.delete_outline_rounded, size: 20, color: colorScheme.error.withValues(alpha: 0.8)),
+                  icon: Icon(
+                    Icons.delete_outline_rounded,
+                    size: 20,
+                    color: colorScheme.error.withValues(alpha: 0.8),
+                  ),
                   tooltip: 'حذف الإشعار',
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
@@ -171,7 +176,9 @@ class NotificationItemCard extends ConsumerWidget {
                             style: FilledButton.styleFrom(backgroundColor: colorScheme.error),
                             onPressed: () {
                               Navigator.of(ctx).pop();
-                              ref.read(notificationsControllerProvider.notifier).deleteNotification(notification.id);
+                              ref
+                                  .read(notificationsControllerProvider.notifier)
+                                  .deleteNotification(notification.id);
                             },
                             child: const Text('حذف'),
                           ),
