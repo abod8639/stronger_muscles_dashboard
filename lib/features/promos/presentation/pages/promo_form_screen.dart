@@ -53,7 +53,12 @@ class PromoFormScreen extends ConsumerWidget {
                 : Padding(
                     padding: const EdgeInsets.only(left: 8),
                     child: FilledButton.icon(
-                      onPressed: () => controller.savePromo(context),
+                      onPressed: () async {
+                        final success = await controller.savePromo();
+                        if (success && context.mounted) {
+                          Navigator.of(context).pop();
+                        }
+                      },
                       icon: Icon(
                         isEditing
                             ? Icons.save_rounded
