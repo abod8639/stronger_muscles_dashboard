@@ -3,16 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../config/responsive.dart';
 import '../../../../core/utils/components/base_app_bar.dart';
 import '../../../../core/utils/components/custom_search_bar.dart';
+import '../../../../core/utils/components/enhanced_error_widget.dart';
 import '../../../../core/utils/components/enhanced_loading_widget.dart';
 import '../../../../core/utils/components/generic_empty_state.dart';
 import '../../../../core/utils/components/my_refresh_indicator.dart';
 import '../../../../core/utils/components/top_section.dart';
-import '../../../auth/presentation/widgets/auth_error_card.dart';
 import '../controllers/notifications_providers.dart';
 import '../widgets/notification_item_card.dart';
 import '../widgets/notifications_stats_header.dart';
 import '../widgets/send_notification_dialog.dart';
 
+/// Screen displaying notifications management interface with real-time stats and filters.
 class NotificationsScreen extends ConsumerWidget {
   const NotificationsScreen({super.key});
 
@@ -42,8 +43,9 @@ class NotificationsScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(24.0),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 550),
-              child: AuthErrorCard(
-                error: error,
+              child: EnhancedErrorWidget(
+                title: 'خطأ في تحميل الإشعارات',
+                message: error.toString(),
                 onRetry: () => ref
                     .read(notificationsControllerProvider.notifier)
                     .refreshNotifications(),
@@ -68,7 +70,7 @@ class NotificationsScreen extends ConsumerWidget {
                   const NotificationsStatsHeader(),
                   const SizedBox(height: 8),
 
-                  // أزرار الفلترة السريعة
+                  // Category filter chips
                   Padding(
                     padding: EdgeInsets.symmetric(
                       horizontal: responsive.defaultPadding.left,
@@ -124,6 +126,7 @@ class NotificationsScreen extends ConsumerWidget {
                           itemBuilder: (context, index) {
                             final notification = filteredNotifications[index];
                             return NotificationItemCard(
+                              key: ValueKey(notification.id),
                               notification: notification,
                             );
                           },
