@@ -1,108 +1,159 @@
-import 'dart:async';
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/auth_entity.dart';
-import 'auth_providers.dart';
+import '../../domain/usecases/check_auth_status_usecase.dart';
+import '../../domain/usecases/get_current_user_usecase.dart';
+import '../../domain/usecases/login_usecase.dart';
+import '../../domain/usecases/logout_usecase.dart';
+import '../../domain/usecases/signup_usecase.dart';
+import '../../auth_di.dart';
+import 'auth_state.dart';
 
-class AuthController extends AsyncNotifier<AuthEntity?> {
-  CancelToken? _cancelToken;
+/// Presentation Controller managing authentication state.
+/// Pure functional error handling: uses `Either<Failure, T>.fold(...)` with ZERO try-catch blocks.
+/// 100% testable with Constructor Dependency Injection for unit tests.
+class AuthController extends Notifier<AuthState> {
+  final LoginUseCase? _injectedLoginUseCase;
+  final SignupUseCase? _injectedSignupUseCase;
+  final LogoutUseCase? _injectedLogoutUseCase;
+  final GetCurrentUserUseCase? _injectedGetCurrentUserUseCase;
+  final CheckAuthStatusUseCase? _injectedCheckAuthStatusUseCase;
+
+  AuthController({
+    LoginUseCase? loginUseCase,
+    SignupUseCase? signupUseCase,
+    LogoutUseCase? logoutUseCase,
+    GetCurrentUserUseCase? getCurrentUserUseCase,
+    CheckAuthStatusUseCase? checkAuthStatusUseCase,
+  })  : _injectedLoginUseCase = loginUseCase,
+        _injectedSignupUseCase = signupUseCase,
+        _injectedLogoutUseCase = logoutUseCase,
+        _injectedGetCurrentUserUseCase = getCurrentUserUseCase,
+        _injectedCheckAuthStatusUseCase = checkAuthStatusUseCase;
+
+  LoginUseCase get _loginUseCase =>
+      _injectedLoginUseCase ?? ref.read(loginUseCaseProvider);
+
+  SignupUseCase get _signupUseCase =>
+      _injectedSignupUseCase ?? ref.read(signupUseCaseProvider);
+
+  LogoutUseCase get _logoutUseCase =>
+      _injectedLogoutUseCase ?? ref.read(logoutUseCaseProvider);
+
+  GetCurrentUserUseCase get _getCurrentUserUseCase =>
+      _injectedGetCurrentUserUseCase ?? ref.read(getCurrentUserUseCaseProvider);
+
+  CheckAuthStatusUseCase get _checkAuthStatusUseCase =>
+      _injectedCheckAuthStatusUseCase ?? ref.read(checkAuthStatusUseCaseProvider);
 
   @override
-  FutureOr<AuthEntity?> build() {
-    // إدارة الإلغاء عبر ref.onDispose لمنع تسريب الموارد أو الاستجابات المتأخرة
-    ref.onDispose(() {
-      _cancelToken?.cancel('تم إلغاء الطلب بسبب تفريغ الـ Notifier');
-      _cancelToken = null;
-    });
+  AuthState build() {
+    _initSession();
+    return const AuthState.initial();
+  }
 
-    final repo = ref.read(authRepositoryProvider);
-    final result = repo.getCurrentUser();
-    return result.fold(
-      (failure) => null,
-      (user) => user,
+  /// Restores session from local cache on initialization
+  Future<void> _initSession() async {
+    final statusResult = await _checkAuthStatusUseCase();
+    statusResult.fold(
+      (failure) => state = const AuthState.unauthenticated(),
+      (hasToken) async {
+        if (!hasToken) {
+          state = const AuthState.unauthenticated();
+          return;
+        }
+
+        final userResult = await _getCurrentUserUseCase();
+        userResult.fold(
+          (failure) => state = const AuthState.unauthenticated(),
+          (user) {
+            if (user != null) {
+              state = AuthState.authenticated(user);
+            } else {
+              state = const AuthState.unauthenticated();
+            }
+          },
+        );
+      },
     );
   }
 
-  /// تسجيل دخول المشرف مع إلغاء آمن لأي طلب نشط
+  /// Administrator login action
   Future<bool> login({
     required String email,
     required String password,
   }) async {
-    _cancelToken?.cancel('طلب تسجيل دخول جديد تم إرساله');
-    _cancelToken = CancelToken();
+    state = AuthState.loading(user: state.user);
 
-    state = const AsyncLoading();
-
-    final loginUseCase = ref.read(loginUseCaseProvider);
-    final result = await loginUseCase(
-      email.trim(),
-      password,
-      cancelToken: _cancelToken,
+    final result = await _loginUseCase(
+      email: email,
+      password: password,
     );
 
     return result.fold(
       (failure) {
-        state = AsyncValue.error(failure, StackTrace.current);
+        state = AuthState.failure(failure);
         return false;
       },
       (user) {
-        state = AsyncValue.data(user);
+        state = AuthState.authenticated(user);
         return true;
       },
     );
   }
 
-  /// إنشاء حساب مشرف جديد
+  /// Administrator registration action
   Future<bool> signup({
     required String name,
     required String email,
     required String password,
   }) async {
-    _cancelToken?.cancel('طلب إنشاء حساب جديد تم إرساله');
-    _cancelToken = CancelToken();
+    state = AuthState.loading(user: state.user);
 
-    state = const AsyncLoading();
-
-    final signupUseCase = ref.read(signupUseCaseProvider);
-    final result = await signupUseCase(
-      name.trim(),
-      email.trim(),
-      password,
-      cancelToken: _cancelToken,
+    final result = await _signupUseCase(
+      name: name,
+      email: email,
+      password: password,
     );
 
     return result.fold(
       (failure) {
-        state = AsyncValue.error(failure, StackTrace.current);
+        state = AuthState.failure(failure);
         return false;
       },
       (user) {
-        state = AsyncValue.data(user);
+        state = AuthState.authenticated(user);
         return true;
       },
     );
   }
 
-  /// تسجيل الخروج
+  /// Session termination action
   Future<void> logout() async {
-    state = const AsyncLoading();
-    final logoutUseCase = ref.read(logoutUseCaseProvider);
-    final result = await logoutUseCase();
+    state = AuthState.loading(user: state.user);
+
+    final result = await _logoutUseCase();
 
     result.fold(
       (failure) {
-        state = AsyncValue.error(failure, StackTrace.current);
+        state = AuthState.failure(failure, user: state.user);
       },
       (_) {
-        state = const AsyncValue.data(null);
+        state = const AuthState.unauthenticated();
       },
     );
   }
 
-  /// إعادة تعيين حالة الخطأ لاستعادة واجهة المستخدم الطبيعية
+  /// Clears active failure state to restore clean UI view
   void clearError() {
-    if (state.hasError) {
-      state = AsyncValue.data(state.value);
+    if (state.isFailure) {
+      state = state.user != null
+          ? AuthState.authenticated(state.user!)
+          : const AuthState.unauthenticated();
     }
+  }
+
+  /// Directly sets the authenticated user if needed
+  void setAuthenticatedUser(AuthEntity user) {
+    state = AuthState.authenticated(user);
   }
 }
