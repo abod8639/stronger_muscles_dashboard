@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
-import '../../domain/entities/admin_notification_entity.dart';
-import '../../domain/entities/notifications_result_entity.dart';
 
+/// Data Transfer Object (DTO) for administrative notifications.
+/// Strictly decoupled from Domain entities.
 class AdminNotificationModel {
   final String id;
   final String title;
@@ -81,35 +81,57 @@ class AdminNotificationModel {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'title': title,
       'body': body,
       'type': type,
       'target_type': targetType,
       if (userId != null) 'user_id': userId,
+      if (userName != null || userEmail != null)
+        'user': {
+          if (userName != null) 'name': userName,
+          if (userEmail != null) 'email': userEmail,
+        },
+      if (adminName != null)
+        'admin': {
+          'name': adminName,
+        },
       if (imageUrl != null) 'image_url': imageUrl,
       if (data != null) 'data': data,
+      'is_read': isRead,
+      if (createdAt != null) 'created_at': createdAt!.toIso8601String(),
     };
   }
 
-  AdminNotificationEntity toEntity() {
-    return AdminNotificationEntity(
-      id: id,
-      title: title,
-      body: body,
-      type: type,
-      targetType: targetType,
-      userId: userId,
-      userName: userName,
-      userEmail: userEmail,
-      adminName: adminName,
-      imageUrl: imageUrl,
-      data: data,
-      isRead: isRead,
-      createdAt: createdAt,
-    );
-  }
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AdminNotificationModel &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          title == other.title &&
+          body == other.body &&
+          type == other.type &&
+          targetType == other.targetType &&
+          userId == other.userId &&
+          isRead == other.isRead;
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      title.hashCode ^
+      body.hashCode ^
+      type.hashCode ^
+      targetType.hashCode ^
+      (userId?.hashCode ?? 0) ^
+      isRead.hashCode;
+
+  @override
+  String toString() =>
+      'AdminNotificationModel(id: $id, title: $title, type: $type, target: $targetType)';
 }
 
+/// DTO for the complete notification response including stats.
 class NotificationsResultModel {
   final List<AdminNotificationModel> notifications;
   final int totalCount;
@@ -124,6 +146,13 @@ class NotificationsResultModel {
     required this.broadcastCount,
     required this.targetedCount,
   });
+
+  const NotificationsResultModel.empty()
+      : notifications = const [],
+        totalCount = 0,
+        todayCount = 0,
+        broadcastCount = 0,
+        targetedCount = 0;
 
   factory NotificationsResultModel.fromJson(Map<String, dynamic> json) {
     final List<dynamic> items = json['data'] is List ? (json['data'] as List) : [];
@@ -143,6 +172,18 @@ class NotificationsResultModel {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'data': notifications.map((n) => n.toJson()).toList(),
+      'stats': {
+        'total': totalCount,
+        'sent_today': todayCount,
+        'broadcast': broadcastCount,
+        'targeted': targetedCount,
+      },
+    };
+  }
+
   static int _parseInt(dynamic value, {int fallback = 0}) {
     if (value is int) return value;
     if (value is num) return value.toInt();
@@ -150,18 +191,31 @@ class NotificationsResultModel {
     return fallback;
   }
 
-  NotificationsResultEntity toEntity() {
-    return NotificationsResultEntity(
-      notifications: notifications.map((m) => m.toEntity()).toList(),
-      totalCount: totalCount,
-      todayCount: todayCount,
-      broadcastCount: broadcastCount,
-      targetedCount: targetedCount,
-    );
-  }
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is NotificationsResultModel &&
+          runtimeType == other.runtimeType &&
+          listEquals(notifications, other.notifications) &&
+          totalCount == other.totalCount &&
+          todayCount == other.todayCount &&
+          broadcastCount == other.broadcastCount &&
+          targetedCount == other.targetedCount;
+
+  @override
+  int get hashCode =>
+      notifications.hashCode ^
+      totalCount.hashCode ^
+      todayCount.hashCode ^
+      broadcastCount.hashCode ^
+      targetedCount.hashCode;
+
+  @override
+  String toString() =>
+      'NotificationsResultModel(total: $totalCount, today: $todayCount, broadcast: $broadcastCount, count: ${notifications.length})';
 }
 
-/// دالة Isolate لتحليل مصفوفة الإشعارات والإحصائيات في الخلفية
+/// Isolate compute function for parsing raw JSON notifications response.
 NotificationsResultModel parseNotificationsResultCompute(dynamic rawJson) {
   try {
     if (rawJson is Map<String, dynamic>) {
@@ -169,26 +223,14 @@ NotificationsResultModel parseNotificationsResultCompute(dynamic rawJson) {
     } else if (rawJson is Map) {
       return NotificationsResultModel.fromJson(Map<String, dynamic>.from(rawJson));
     }
-    return const NotificationsResultModel(
-      notifications: [],
-      totalCount: 0,
-      todayCount: 0,
-      broadcastCount: 0,
-      targetedCount: 0,
-    );
+    return const NotificationsResultModel.empty();
   } catch (e) {
     debugPrint('parseNotificationsResultCompute fallback: $e');
-    return const NotificationsResultModel(
-      notifications: [],
-      totalCount: 0,
-      todayCount: 0,
-      broadcastCount: 0,
-      targetedCount: 0,
-    );
+    return const NotificationsResultModel.empty();
   }
 }
 
-/// دالة Isolate لتحليل كائن الإشعار الواحد عند الإنشاء
+/// Isolate compute function for parsing single notification response.
 AdminNotificationModel parseAdminNotificationCompute(dynamic rawJson) {
   try {
     if (rawJson is Map<String, dynamic>) {
