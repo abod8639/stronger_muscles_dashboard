@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/base_app_bar.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
@@ -68,12 +67,12 @@ class _CategoryFormPageState extends ConsumerState<CategoryFormPage> {
     try {
       if (widget.category != null) {
         success = await ref
-            .read(categoriesControllerProvider.notifier)
-            .updateCategory(widget.category!.id, categoryData);
+            .read(categoriesNotifierProvider.notifier)
+            .updateCategoryFromData(widget.category!.id, categoryData);
       } else {
         success = await ref
-            .read(categoriesControllerProvider.notifier)
-            .addCategory(categoryData);
+            .read(categoriesNotifierProvider.notifier)
+            .addCategoryFromData(categoryData);
       }
     } finally {
       controller.isLoading = false;
@@ -103,14 +102,12 @@ class _CategoryFormPageState extends ConsumerState<CategoryFormPage> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(categoriesControllerProvider, (previous, next) {
-      next.whenOrNull(
-        error: (error, _) {
-          final message =
-              error is Failure ? error.toMessage() : error.toString();
-          _showSnackbar(message, isError: true);
-        },
-      );
+    ref.listen(categoriesNotifierProvider, (previous, next) {
+      if (next.hasError &&
+          next.errorMessage != null &&
+          next.errorMessage != previous?.errorMessage) {
+        _showSnackbar(next.errorMessage!, isError: true);
+      }
     });
 
     final theme = Theme.of(context);
