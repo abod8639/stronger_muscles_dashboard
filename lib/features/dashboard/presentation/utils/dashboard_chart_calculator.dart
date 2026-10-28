@@ -1,0 +1,340 @@
+import 'dart:math' as math;
+import 'package:fl_chart/fl_chart.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/presentation/models/orders_chart_data.dart';
+import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
+
+/// Pure calculation utility for Dashboard charts and status trend metrics.
+/// Decoupled from Riverpod and Flutter framework state for 100% testability.
+class DashboardChartCalculator {
+  const DashboardChartCalculator._();
+
+  /// Calculates chart display spots, axis intervals, and localized subtitles for orders.
+  static OrdersChartData calculateOrdersChartData(
+    List<OrderEntity> orders,
+    String period,
+  ) {
+    switch (period) {
+      case 'month':
+        return _calculateMonthOrdersData(orders);
+      case 'year':
+        return _calculateYearOrdersData(orders);
+      case 'week':
+      default:
+        return _calculateWeekOrdersData(orders);
+    }
+  }
+
+  static OrdersChartData _calculateWeekOrdersData(List<OrderEntity> orders) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final days = List.generate(7, (i) => today.subtract(Duration(days: 6 - i)));
+
+    const arabicDays = [
+      'الإثنين',
+      'الثلاثاء',
+      'الأربعاء',
+      'الخميس',
+      'الجمعة',
+      'السبت',
+      'الأحد',
+    ];
+
+    final spots = <FlSpot>[];
+    final bottomTitles = <String>[];
+    int total = 0;
+
+    for (int i = 0; i < days.length; i++) {
+      final day = days[i];
+      final count = orders.where((o) {
+        final d = o.orderDate;
+        return d.year == day.year && d.month == day.month && d.day == day.day;
+      }).length;
+
+      total += count;
+      spots.add(FlSpot(i.toDouble(), count.toDouble()));
+      bottomTitles.add(arabicDays[(day.weekday - 1) % 7]);
+    }
+
+    final (maxY, interval) = _calculateMaxYAndInterval(spots);
+
+    return OrdersChartData(
+      spots: spots,
+      bottomTitles: bottomTitles,
+      maxY: maxY,
+      interval: interval,
+      bottomTitleInterval: 1.0,
+      periodSubtitle: 'آخر 7 أيام (إجمالي: $total طلب)',
+      totalPeriodOrders: total,
+    );
+  }
+
+  static OrdersChartData _calculateMonthOrdersData(List<OrderEntity> orders) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final days = List.generate(30, (i) => today.subtract(Duration(days: 29 - i)));
+
+    final spots = <FlSpot>[];
+    final bottomTitles = <String>[];
+    int total = 0;
+
+    for (int i = 0; i < days.length; i++) {
+      final day = days[i];
+      final count = orders.where((o) {
+        final d = o.orderDate;
+        return d.year == day.year && d.month == day.month && d.day == day.day;
+      }).length;
+
+      total += count;
+      spots.add(FlSpot(i.toDouble(), count.toDouble()));
+      bottomTitles.add('${day.day}/${day.month}');
+    }
+
+    final (maxY, interval) = _calculateMaxYAndInterval(spots);
+
+    return OrdersChartData(
+      spots: spots,
+      bottomTitles: bottomTitles,
+      maxY: maxY,
+      interval: interval,
+      bottomTitleInterval: 5.0,
+      periodSubtitle: 'آخر 30 يوم (إجمالي: $total طلب)',
+      totalPeriodOrders: total,
+    );
+  }
+
+  static OrdersChartData _calculateYearOrdersData(List<OrderEntity> orders) {
+    final now = DateTime.now();
+    const arabicMonths = [
+      'يناير',
+      'فبراير',
+      'مارس',
+      'أبريل',
+      'مايو',
+      'يونيو',
+      'يوليو',
+      'أغسطس',
+      'سبتمبر',
+      'أكتوبر',
+      'نوفمبر',
+      'ديسمبر',
+    ];
+
+    final spots = <FlSpot>[];
+    final bottomTitles = <String>[];
+    int total = 0;
+
+    for (int m = 1; m <= 12; m++) {
+      final count = orders.where((o) {
+        final d = o.orderDate;
+        return d.year == now.year && d.month == m;
+      }).length;
+
+      total += count;
+      spots.add(FlSpot((m - 1).toDouble(), count.toDouble()));
+      bottomTitles.add(arabicMonths[m - 1]);
+    }
+
+    final (maxY, interval) = _calculateMaxYAndInterval(spots);
+
+    return OrdersChartData(
+      spots: spots,
+      bottomTitles: bottomTitles,
+      maxY: maxY,
+      interval: interval,
+      bottomTitleInterval: 1.0,
+      periodSubtitle: 'عام ${now.year} (إجمالي: $total طلب)',
+      totalPeriodOrders: total,
+    );
+  }
+
+  static (double, double) _calculateMaxYAndInterval(List<FlSpot> spots) {
+    double maxCount =
+        spots.isEmpty ? 0.0 : spots.map((s) => s.y).reduce(math.max);
+    double maxY;
+    double interval;
+
+    if (maxCount <= 4) {
+      maxY = 4.0;
+      interval = 1.0;
+    } else if (maxCount <= 8) {
+      maxY = 8.0;
+      interval = 2.0;
+    } else if (maxCount <= 20) {
+      maxY = ((maxCount + 3) ~/ 4 * 4).toDouble();
+      interval = maxY / 4;
+    } else {
+      final step = (maxCount / 4).ceil();
+      final roundedStep = step <= 10 ? step : ((step + 4) ~/ 5 * 5);
+      maxY = (roundedStep * 4).toDouble();
+      interval = roundedStep.toDouble();
+    }
+
+    return (maxY, interval);
+  }
+
+  /// Calculates trend spots, percentage change, and positive/negative direction.
+  static IndicatorTrendData calculateStatusTrendData(
+    List<OrderEntity> orders,
+    OrderStatus status,
+    String period,
+  ) {
+    switch (period) {
+      case 'month':
+        return _calculateStatusMonthData(orders, status);
+      case 'year':
+        return _calculateStatusYearData(orders, status);
+      case 'week':
+      default:
+        return _calculateStatusWeekData(orders, status);
+    }
+  }
+
+  static IndicatorTrendData _calculateStatusWeekData(
+    List<OrderEntity> orders,
+    OrderStatus status,
+  ) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    final currentDays =
+        List.generate(7, (i) => today.subtract(Duration(days: 6 - i)));
+    final previousDays =
+        List.generate(7, (i) => today.subtract(Duration(days: 13 - i)));
+
+    final spots = <FlSpot>[];
+    int currentTotal = 0;
+
+    for (int i = 0; i < currentDays.length; i++) {
+      final day = currentDays[i];
+      final count = orders.where((o) {
+        return o.status == status &&
+            o.orderDate.year == day.year &&
+            o.orderDate.month == day.month &&
+            o.orderDate.day == day.day;
+      }).length;
+
+      currentTotal += count;
+      spots.add(FlSpot(i.toDouble(), count.toDouble()));
+    }
+
+    int previousTotal = 0;
+    for (final day in previousDays) {
+      final count = orders.where((o) {
+        return o.status == status &&
+            o.orderDate.year == day.year &&
+            o.orderDate.month == day.month &&
+            o.orderDate.day == day.day;
+      }).length;
+      previousTotal += count;
+    }
+
+    final (trend, trendUp) =
+        _calculateTrendPercentage(currentTotal, previousTotal);
+
+    return IndicatorTrendData(
+      spots: spots,
+      trend: trend,
+      trendUp: trendUp,
+    );
+  }
+
+  static IndicatorTrendData _calculateStatusMonthData(
+    List<OrderEntity> orders,
+    OrderStatus status,
+  ) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    final currentDays =
+        List.generate(30, (i) => today.subtract(Duration(days: 29 - i)));
+    final previousDays =
+        List.generate(30, (i) => today.subtract(Duration(days: 59 - i)));
+
+    final spots = <FlSpot>[];
+    int currentTotal = 0;
+
+    for (int i = 0; i < currentDays.length; i++) {
+      final day = currentDays[i];
+      final count = orders.where((o) {
+        return o.status == status &&
+            o.orderDate.year == day.year &&
+            o.orderDate.month == day.month &&
+            o.orderDate.day == day.day;
+      }).length;
+
+      currentTotal += count;
+      spots.add(FlSpot(i.toDouble(), count.toDouble()));
+    }
+
+    int previousTotal = 0;
+    for (final day in previousDays) {
+      final count = orders.where((o) {
+        return o.status == status &&
+            o.orderDate.year == day.year &&
+            o.orderDate.month == day.month &&
+            o.orderDate.day == day.day;
+      }).length;
+      previousTotal += count;
+    }
+
+    final (trend, trendUp) =
+        _calculateTrendPercentage(currentTotal, previousTotal);
+
+    return IndicatorTrendData(
+      spots: spots,
+      trend: trend,
+      trendUp: trendUp,
+    );
+  }
+
+  static IndicatorTrendData _calculateStatusYearData(
+    List<OrderEntity> orders,
+    OrderStatus status,
+  ) {
+    final now = DateTime.now();
+    final spots = <FlSpot>[];
+    int currentTotal = 0;
+
+    for (int m = 1; m <= 12; m++) {
+      final count = orders.where((o) {
+        return o.status == status &&
+            o.orderDate.year == now.year &&
+            o.orderDate.month == m;
+      }).length;
+
+      currentTotal += count;
+      spots.add(FlSpot((m - 1).toDouble(), count.toDouble()));
+    }
+
+    int previousTotal = orders.where((o) {
+      return o.status == status && o.orderDate.year == (now.year - 1);
+    }).length;
+
+    final (trend, trendUp) =
+        _calculateTrendPercentage(currentTotal, previousTotal);
+
+    return IndicatorTrendData(
+      spots: spots,
+      trend: trend,
+      trendUp: trendUp,
+    );
+  }
+
+  static (String, bool) _calculateTrendPercentage(int current, int previous) {
+    if (previous == 0) {
+      if (current == 0) {
+        return ('0%', true);
+      }
+      return ('+100%', true);
+    }
+
+    final diff = current - previous;
+    final percent = ((diff / previous) * 100).round();
+
+    if (percent >= 0) {
+      return ('+$percent%', true);
+    } else {
+      return ('$percent%', false);
+    }
+  }
+}
