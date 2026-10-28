@@ -17,35 +17,39 @@ import 'package:stronger_muscles_dashboard/features/settings/presentation/page/s
 import 'package:stronger_muscles_dashboard/features/support/presentation/pages/support_screen.dart';
 import 'package:stronger_muscles_dashboard/features/users/presentation/pages/users_page.dart';
 
+/// Dumb presentation root container for app-wide shell navigation.
+/// Adheres to:
+/// - Zero business or data calculation logic inside UI
+/// - Safe tab clamping to prevent index-out-of-bounds crashes
+/// - Selective state listening via Riverpod
 class MainNavigationScreen extends ConsumerStatefulWidget {
   const MainNavigationScreen({super.key});
 
   @override
-  ConsumerState<MainNavigationScreen> createState() => _MainNavigationScreenState();
+  ConsumerState<MainNavigationScreen> createState() =>
+      _MainNavigationScreenState();
 }
 
 class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  static const List<Widget> _pages = [
+    DashboardPage(),
+    CategoriesScreen(),
+    ProductsScreen(),
+    PromosScreen(),
+    OrdersPage(),
+    UsersPage(),
+    NotificationsScreen(),
+    SettingsScreen(),
+    SupportScreen(),
+  ];
+
   Widget _buildContent(int activeIndex) {
-    const pages = [
-      DashboardPage(),
-      CategoriesScreen(),
-      ProductsScreen(),
-      PromosScreen(),
-      OrdersPage(),
-      UsersPage(),
-      NotificationsScreen(),
-      SettingsScreen(),
-      SupportScreen(),
-    ];
-
-    // حصر المؤشر دائماً ضمن نطاق القائمة لمنع أي انهيار للشاشة
-    final safeIndex = activeIndex.clamp(0, pages.length - 1);
-
+    final safeIndex = activeIndex.clamp(0, _pages.length - 1);
     return IndexedStack(
       index: safeIndex,
-      children: pages,
+      children: _pages,
     );
   }
 
@@ -55,15 +59,14 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return navAsync.when(
-      loading: () => const Scaffold(  // final String ip = "localhost";
-
+      loading: () => const Scaffold(
         body: EnhancedLoadingWidget(
           message: 'جاري تهيئة لوحة التحكم...',
         ),
       ),
       error: (error, stackTrace) => NavigationErrorFallback(
         error: error,
-        onRetry: () => ref.read(navigationControllerProvider.notifier).build(),
+        onRetry: () => ref.invalidate(navigationControllerProvider),
       ),
       data: (navState) {
         return LayoutBuilder(
@@ -78,8 +81,6 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
               body: Stack(
                 children: [
                   const AppAmbientBackground(),
-
-                  // التخطيط الرئيسي
                   SafeArea(
                     child: Row(
                       children: [
@@ -105,7 +106,8 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
                   ),
                 ],
               ),
-              bottomNavigationBar: isDesktop ? null : const MyBottomNavigationBar(),
+              bottomNavigationBar:
+                  isDesktop ? null : const MyBottomNavigationBar(),
             );
           },
         );
