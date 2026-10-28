@@ -6,8 +6,7 @@ import 'package:stronger_muscles_dashboard/core/network/auth_service.dart';
 import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
 import 'package:stronger_muscles_dashboard/features/auth/auth_feature.dart';
 import 'package:stronger_muscles_dashboard/features/brands/brands_feature.dart';
-import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
-import 'package:stronger_muscles_dashboard/features/categories/presentation/page/category_form_page/category_form_page.dart';
+import 'package:stronger_muscles_dashboard/features/categories/categories_feature.dart';
 import 'package:stronger_muscles_dashboard/features/navigation/presentation/page/main_navigation_screen.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/order_details_screen/order_details_screen.dart';
@@ -44,14 +43,7 @@ final GoRouter appRouter = GoRouter(
         return ProductFormPage(product: product);
       },
     ),
-    GoRoute(
-      path: AppRoutes.categoryForm,
-      name: 'categoryForm',
-      builder: (context, state) {
-        final category = state.extra as CategoryEntity?;
-        return CategoryFormPage(category: category);
-      },
-    ),
+    ...CategoriesRoutes.routes,
     GoRoute(
       path: AppRoutes.promoForm,
       name: 'promoForm',
