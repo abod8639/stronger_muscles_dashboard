@@ -1,12 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:fpdart/fpdart.dart';
 import 'package:stronger_muscles_dashboard/core/error/exceptions.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import 'package:stronger_muscles_dashboard/features/brands/data/datasources/brand_local_datasource.dart';
 import 'package:stronger_muscles_dashboard/features/brands/data/datasources/brand_remote_datasource.dart';
 import 'package:stronger_muscles_dashboard/features/brands/data/models/brand_model.dart';
 import 'package:stronger_muscles_dashboard/features/brands/data/repositories/brand_repository_impl.dart';
-import 'package:stronger_muscles_dashboard/features/brands/domain/entities/brand_entity.dart';
 
 class MockBrandRemoteDataSource implements BrandRemoteDataSource {
   List<BrandModel>? mockBrands;
@@ -44,26 +42,26 @@ class MockBrandLocalDataSource implements BrandLocalDataSource {
     cacheValid = true;
   }
 
-  @override
-  Future<BrandModel?> getCachedBrandById(String id) async {
-    if (exceptionToThrow != null) throw exceptionToThrow!;
-    try {
-      return storedBrands.firstWhere((b) => b.id == id);
-    } catch (_) {
-      return null;
-    }
-  }
+  // @override
+  // Future<BrandModel?> getCachedBrandById(String id) async {
+  //   if (exceptionToThrow != null) throw exceptionToThrow!;
+  //   try {
+  //     return storedBrands.firstWhere((b) => b.id == id);
+  //   } catch (_) {
+  //     return null;
+  //   }
+  // }
 
-  @override
-  Future<void> cacheBrand(BrandModel brand) async {
-    if (exceptionToThrow != null) throw exceptionToThrow!;
-    final index = storedBrands.indexWhere((b) => b.id == brand.id);
-    if (index >= 0) {
-      storedBrands[index] = brand;
-    } else {
-      storedBrands.add(brand);
-    }
-  }
+  // @override
+  // Future<void> cacheBrand(BrandModel brand) async {
+  //   if (exceptionToThrow != null) throw exceptionToThrow!;
+  //   final index = storedBrands.indexWhere((b) => b.id == brand.id);
+  //   if (index >= 0) {
+  //     storedBrands[index] = brand;
+  //   } else {
+  //     storedBrands.add(brand);
+  //   }
+  // }
 
   @override
   Future<bool> isCacheValid() async {
@@ -88,7 +86,7 @@ void main() {
     id: 'b-1',
     nameAr: 'ماركة 1',
     nameEn: 'Brand 1',
-    image: 'https://example.com/b1.png',
+    imageUrl: 'https://example.com/b1.png',
   );
 
   setUp(() {
