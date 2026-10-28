@@ -1,19 +1,21 @@
-import 'package:dartz/dartz.dart';
-import 'package:dio/dio.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import '../entities/auth_entity.dart';
 import '../repositories/auth_repository.dart';
 
+/// 100% Pure Dart UseCase for administrator login.
 class LoginUseCase {
-  final AuthRepository repository;
+  final AuthRepository _repository;
 
-  LoginUseCase(this.repository);
+  const LoginUseCase(this._repository);
 
-  Future<Either<Failure, AuthEntity>> call(
-    String email,
-    String password, {
-    CancelToken? cancelToken,
+  Future<Either<Failure, AuthEntity>> call({
+    required String email,
+    required String password,
   }) async {
-    return await repository.login(email, password, cancelToken: cancelToken);
+    return await _repository.login(
+      email: email,
+      password: password,
+    );
   }
 }
