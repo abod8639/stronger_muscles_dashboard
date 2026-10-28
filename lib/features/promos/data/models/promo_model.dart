@@ -1,33 +1,5 @@
-import 'package:stronger_muscles_dashboard/features/promos/domain/entities/promo_entity.dart';
-
-List<PromoModel> parsePromoListCompute(dynamic data) {
-  if (data is List) {
-    return data
-        .whereType<Map>()
-        .map((json) => PromoModel.fromJson(Map<String, dynamic>.from(json)))
-        .toList();
-  } else if (data is Map && data['data'] is List) {
-    return (data['data'] as List)
-        .whereType<Map>()
-        .map((json) => PromoModel.fromJson(Map<String, dynamic>.from(json)))
-        .toList();
-  }
-  return const [];
-}
-
-PromoModel parsePromoCompute(dynamic data) {
-  if (data is Map) {
-    final map = data['data'] is Map ? data['data'] as Map : data;
-    return PromoModel.fromJson(Map<String, dynamic>.from(map));
-  }
-  return PromoModel(
-    id: '',
-    imageUrl: '',
-    backgroundColor: '#FFFFFF',
-    isActive: false,
-  );
-}
-
+/// Isolated DTO model for promotional banners.
+/// Strictly decoupled from Domain Entities with zero entity imports.
 class PromoModel {
   final String id;
   final Map<String, dynamic>? title;
@@ -40,7 +12,7 @@ class PromoModel {
   final bool isActive;
   final DateTime? createdAt;
 
-  PromoModel({
+  const PromoModel({
     required this.id,
     this.title,
     this.subtitle,
@@ -56,9 +28,9 @@ class PromoModel {
   factory PromoModel.fromJson(Map<String, dynamic> json) {
     return PromoModel(
       id: json['id']?.toString() ?? '',
-      title: json['title'] is Map ? Map<String, dynamic>.from(json['title']) : null,
-      subtitle: json['subtitle'] is Map ? Map<String, dynamic>.from(json['subtitle']) : null,
-      buttonText: json['button_text'] is Map ? Map<String, dynamic>.from(json['button_text']) : null,
+      title: json['title'] is Map ? Map<String, dynamic>.from(json['title'] as Map) : null,
+      subtitle: json['subtitle'] is Map ? Map<String, dynamic>.from(json['subtitle'] as Map) : null,
+      buttonText: json['button_text'] is Map ? Map<String, dynamic>.from(json['button_text'] as Map) : null,
       imageUrl: json['image_url']?.toString() ?? '',
       backgroundColor: json['background_color']?.toString() ?? '#FFFFFF',
       targetType: json['target_type']?.toString() ?? 'none',
@@ -82,34 +54,33 @@ class PromoModel {
       'created_at': createdAt?.toIso8601String(),
     };
   }
+}
 
-  PromoEntity toEntity() {
-    return PromoEntity(
-      id: id,
-      title: title,
-      subtitle: subtitle,
-      buttonText: buttonText,
-      imageUrl: imageUrl,
-      backgroundColor: backgroundColor,
-      targetType: targetType,
-      targetId: targetId,
-      isActive: isActive,
-      createdAt: createdAt,
-    );
+/// Compute parser functions for compute isolate execution
+List<PromoModel> parsePromoListCompute(dynamic data) {
+  if (data is List) {
+    return data
+        .whereType<Map>()
+        .map((json) => PromoModel.fromJson(Map<String, dynamic>.from(json)))
+        .toList();
+  } else if (data is Map && data['data'] is List) {
+    return (data['data'] as List)
+        .whereType<Map>()
+        .map((json) => PromoModel.fromJson(Map<String, dynamic>.from(json)))
+        .toList();
   }
+  return const [];
+}
 
-  factory PromoModel.fromEntity(PromoEntity entity) {
-    return PromoModel(
-      id: entity.id,
-      title: entity.title,
-      subtitle: entity.subtitle,
-      buttonText: entity.buttonText,
-      imageUrl: entity.imageUrl,
-      backgroundColor: entity.backgroundColor,
-      targetType: entity.targetType,
-      targetId: entity.targetId,
-      isActive: entity.isActive,
-      createdAt: entity.createdAt,
-    );
+PromoModel parsePromoCompute(dynamic data) {
+  if (data is Map) {
+    final map = data['data'] is Map ? data['data'] as Map : data;
+    return PromoModel.fromJson(Map<String, dynamic>.from(map));
   }
+  return const PromoModel(
+    id: '',
+    imageUrl: '',
+    backgroundColor: '#FFFFFF',
+    isActive: false,
+  );
 }
