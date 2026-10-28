@@ -1,17 +1,23 @@
-import 'package:flutter/foundation.dart';
-import '../../domain/entities/auth_entity.dart';
+/// Data Transfer Object (DTO) for authentication responses and payloads.
+/// Strictly decoupled from Domain Entities with no class inheritance.
+class AuthModel {
+  final String id;
+  final String name;
+  final String email;
+  final String role;
+  final String? token;
+  final String? profileImage;
 
-class AuthModel extends AuthEntity {
   const AuthModel({
-    required super.id,
-    required super.name,
-    required super.email,
-    super.role = 'admin',
-    super.token,
-    super.profileImage,
+    required this.id,
+    required this.name,
+    required this.email,
+    this.role = 'admin',
+    this.token,
+    this.profileImage,
   });
 
-  /// تحليل آمن ومقاوم لجميع أخطاء الـ Type / Null
+  /// Resilient parsing safe against nested structures, type mismatches, and nulls
   factory AuthModel.fromJson(Map<String, dynamic> json) {
     final user = _extractUserMap(json);
 
@@ -19,10 +25,7 @@ class AuthModel extends AuthEntity {
       id: _safeString(user['id'] ?? json['id'], fallback: '0'),
       name: _safeString(user['name'] ?? json['name'], fallback: 'مستخدم'),
       email: _safeString(user['email'] ?? json['email'], fallback: ''),
-      role: _safeString(
-        user['role'] ?? json['role'],
-        fallback: 'admin',
-      ),
+      role: _safeString(user['role'] ?? json['role'], fallback: 'admin'),
       token: _safeNullableString(
         json['token'] ??
             json['access_token'] ??
@@ -38,7 +41,6 @@ class AuthModel extends AuthEntity {
     );
   }
 
-  /// استخراج كائن المستخدم سواء كان مفرداً أو مغلفاً داخل user أو data
   static Map<String, dynamic> _extractUserMap(Map<String, dynamic> json) {
     if (json['user'] is Map) {
       return Map<String, dynamic>.from(json['user'] as Map);
@@ -75,13 +77,24 @@ class AuthModel extends AuthEntity {
     };
   }
 
-  /// معالجة وتحليل الـ Payload في Isolate منفصل عبر `compute` لمنع تجميد واجهة المستخدم (UI Freezing)
-  static Future<AuthModel> fromJsonAsync(Map<String, dynamic> json) async {
-    return await compute(_parseAuthModelIsolate, json);
-  }
-}
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AuthModel &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          name == other.name &&
+          email == other.email &&
+          role == other.role &&
+          token == other.token &&
+          profileImage == other.profileImage;
 
-/// دالة Top-level ليتم تمريرها للـ Isolate
-AuthModel _parseAuthModelIsolate(Map<String, dynamic> json) {
-  return AuthModel.fromJson(json);
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      name.hashCode ^
+      email.hashCode ^
+      role.hashCode ^
+      token.hashCode ^
+      profileImage.hashCode;
 }
