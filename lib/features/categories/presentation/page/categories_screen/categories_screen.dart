@@ -14,7 +14,6 @@ import 'package:stronger_muscles_dashboard/core/utils/components/top_section.dar
 import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
 import 'package:stronger_muscles_dashboard/features/auth/presentation/widgets/auth_error_card.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
-import 'package:stronger_muscles_dashboard/features/categories/presentation/controllers/categories_notifier.dart';
 import 'package:stronger_muscles_dashboard/features/categories/presentation/controllers/categories_providers.dart';
 import 'package:stronger_muscles_dashboard/features/categories/presentation/controllers/categories_state.dart';
 import 'package:stronger_muscles_dashboard/features/categories/presentation/page/categories_screen/widgets/category_grid_card.dart';
@@ -106,7 +105,7 @@ class CategoriesScreen extends ConsumerWidget {
     required String? errorMessage,
     required List<CategoryEntity> filteredCategories,
     required String searchQuery,
-    required Responsive responsive,
+    required ResponsiveLayout responsive,
     required EdgeInsets padding,
   }) {
     if (status == CategoriesStatus.loading && filteredCategories.isEmpty) {
