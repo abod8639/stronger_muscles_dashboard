@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../config/responsive.dart';
 import '../controllers/notifications_providers.dart';
 
+/// Presentation Header widget displaying aggregated notification metrics.
+/// Listens selectively via [notificationsStatsProvider] to avoid rebuilding on search queries.
 class NotificationsStatsHeader extends ConsumerWidget {
   const NotificationsStatsHeader({super.key});
 
@@ -14,13 +16,12 @@ class NotificationsStatsHeader extends ConsumerWidget {
     final isDark = theme.brightness == Brightness.dark;
     final isNarrow = responsive.screenWidth < 1000;
 
-    final asyncResult = ref.watch(notificationsControllerProvider);
-    final data = asyncResult.value;
+    final stats = ref.watch(notificationsStatsProvider);
 
-    final total = data?.totalCount.toString() ?? '0';
-    final today = data?.todayCount.toString() ?? '0';
-    final broadcast = data?.broadcastCount.toString() ?? '0';
-    final targeted = data?.targetedCount.toString() ?? '0';
+    final total = stats.total.toString();
+    final today = stats.today.toString();
+    final broadcast = stats.broadcast.toString();
+    final targeted = stats.targeted.toString();
 
     return Padding(
       padding: EdgeInsets.symmetric(
@@ -145,33 +146,33 @@ class NotificationsStatsHeader extends ConsumerWidget {
     final colorScheme = theme.colorScheme;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(16),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: isDark
               ? [
-                  Color.lerp(colorScheme.surfaceContainer, Colors.white, 0.03)!,
-                  Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.09)!,
+                  Color.lerp(colorScheme.surfaceContainer, Colors.white, 0.04)!,
+                  Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.08)!,
                 ]
               : [
-                  Color.lerp(colorScheme.surfaceContainer, Colors.white, 0.70)!,
-                  Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.03)!,
+                  Color.lerp(colorScheme.surface, Colors.white, 0.85)!,
+                  Color.lerp(colorScheme.surface, const Color(0xFFA3B1C6), 0.08)!,
                 ],
         ),
         boxShadow: [
           BoxShadow(
             color: isDark
-                ? Colors.black.withValues(alpha: 0.5)
-                : const Color(0xFFA3B1C6).withValues(alpha: 0.35),
+                ? Colors.black.withValues(alpha: 0.3)
+                : const Color(0xFFA3B1C6).withValues(alpha: 0.25),
             offset: const Offset(3, 4),
-            blurRadius: 10,
+            blurRadius: 8,
           ),
           BoxShadow(
             color: isDark
-                ? Colors.white.withValues(alpha: 0.03)
+                ? Colors.white.withValues(alpha: 0.02)
                 : Colors.white.withValues(alpha: 0.9),
             offset: const Offset(-2, -2),
             blurRadius: 6,
@@ -179,9 +180,9 @@ class NotificationsStatsHeader extends ConsumerWidget {
         ],
         border: Border.all(
           color: isDark
-              ? Colors.white.withValues(alpha: 0.05)
-              : Colors.white.withValues(alpha: 0.8),
-          width: 1,
+              ? Colors.white.withValues(alpha: 0.06)
+              : Colors.white.withValues(alpha: 0.85),
+          width: 1.2,
         ),
       ),
       child: Row(
@@ -189,10 +190,11 @@ class NotificationsStatsHeader extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: iconColor.withValues(alpha: 0.15),
+              color: iconColor.withValues(alpha: 0.14),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: iconColor.withValues(alpha: 0.28)),
             ),
-            child: Icon(icon, color: iconColor, size: 20),
+            child: Icon(icon, color: iconColor, size: 22),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -204,12 +206,12 @@ class NotificationsStatsHeader extends ConsumerWidget {
                   title,
                   style: theme.textTheme.labelMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 4),
                 Text(
                   value,
                   style: theme.textTheme.titleMedium?.copyWith(
