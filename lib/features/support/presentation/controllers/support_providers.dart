@@ -1,22 +1,61 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../features/auth/presentation/controllers/auth_providers.dart';
+import 'package:hive/hive.dart';
+import 'package:stronger_muscles_dashboard/config/api_config.dart';
+import 'package:stronger_muscles_dashboard/core/network/dio_provider.dart';
+import '../../data/datasources/support_local_data_source.dart';
+import '../../data/datasources/support_realtime_data_source.dart';
 import '../../data/datasources/support_remote_data_source.dart';
 import '../../data/repositories/support_repository_impl.dart';
 import '../../domain/repositories/support_repository.dart';
-import '../../domain/usecases/support_usecases.dart';
+import '../../domain/usecases/assign_ticket_admin_usecase.dart';
+import '../../domain/usecases/delete_support_ticket_usecase.dart';
+import '../../domain/usecases/get_support_stats_usecase.dart';
+import '../../domain/usecases/get_support_ticket_detail_usecase.dart';
+import '../../domain/usecases/get_support_tickets_usecase.dart';
+import '../../domain/usecases/send_support_message_usecase.dart';
+import '../../domain/usecases/update_ticket_priority_usecase.dart';
+import '../../domain/usecases/update_ticket_status_usecase.dart';
 import 'support_controller.dart';
+import 'support_state.dart';
 
-final supportRemoteDataSourceProvider = Provider<SupportRemoteDataSource>((ref) {
+/// Provider for the Hive cache Box dedicated to the support feature.
+final supportBoxProvider = Provider<Box>((ref) {
+  return Hive.box('support_cache');
+});
+
+/// Provider for [SupportLocalDataSource].
+final supportLocalDataSourceProvider = Provider<SupportLocalDataSource>((ref) {
+  return SupportLocalDataSourceImpl(box: ref.watch(supportBoxProvider));
+});
+
+/// Provider for [SupportRemoteDataSource] backed by centralized [dioProvider].
+final supportRemoteDataSourceProvider =
+    Provider<SupportRemoteDataSource>((ref) {
   final dio = ref.watch(dioProvider);
   return SupportRemoteDataSourceImpl(dio: dio);
 });
 
+/// Provider for [SupportRealtimeDataSource] WebSocket client.
+final supportRealtimeDataSourceProvider =
+    Provider<SupportRealtimeDataSource>((ref) {
+  final host = ApiConfigController().ip;
+  final realtimeSource = SupportRealtimeDataSourceImpl(host: host);
+  ref.onDispose(() {
+    realtimeSource.disconnect();
+  });
+  return realtimeSource;
+});
+
+/// Provider for [SupportRepository] as the Single Source of Truth (SSOT).
 final supportRepositoryProvider = Provider<SupportRepository>((ref) {
   return SupportRepositoryImpl(
     remoteDataSource: ref.watch(supportRemoteDataSourceProvider),
+    localDataSource: ref.watch(supportLocalDataSourceProvider),
+    realtimeDataSource: ref.watch(supportRealtimeDataSourceProvider),
   );
 });
 
+/// Providers for Domain UseCases
 final getSupportTicketsUseCaseProvider =
     Provider<GetSupportTicketsUseCase>((ref) {
   return GetSupportTicketsUseCase(ref.watch(supportRepositoryProvider));
@@ -56,19 +95,6 @@ final getSupportStatsUseCaseProvider = Provider<GetSupportStatsUseCase>((ref) {
   return GetSupportStatsUseCase(ref.watch(supportRepositoryProvider));
 });
 
-final supportControllerProvider = Provider<SupportController>((ref) {
-  final controller = SupportController(
-    getTicketsUseCase: ref.watch(getSupportTicketsUseCaseProvider),
-    getTicketDetailUseCase: ref.watch(getSupportTicketDetailUseCaseProvider),
-    sendMessageUseCase: ref.watch(sendSupportMessageUseCaseProvider),
-    updateStatusUseCase: ref.watch(updateTicketStatusUseCaseProvider),
-    updatePriorityUseCase: ref.watch(updateTicketPriorityUseCaseProvider),
-    assignAdminUseCase: ref.watch(assignTicketAdminUseCaseProvider),
-    deleteTicketUseCase: ref.watch(deleteSupportTicketUseCaseProvider),
-    getStatsUseCase: ref.watch(getSupportStatsUseCaseProvider),
-  );
-  ref.onDispose(() {
-    controller.dispose();
-  });
-  return controller;
-});
+/// Central NotifierProvider for Support UI State Management.
+final supportControllerProvider =
+    NotifierProvider<SupportNotifier, SupportState>(SupportNotifier.new);
