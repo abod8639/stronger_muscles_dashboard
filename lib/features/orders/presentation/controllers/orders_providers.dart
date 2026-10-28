@@ -1,10 +1,9 @@
-import 'dart:async';
-import 'package:dartz/dartz.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:stronger_muscles_dashboard/core/error/failures.dart';
-import 'package:stronger_muscles_dashboard/features/auth/presentation/controllers/auth_providers.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:stronger_muscles_dashboard/core/network/dio_provider.dart';
+import '../../data/datasources/order_local_datasource.dart';
 import '../../data/datasources/order_remote_datasource.dart';
+import '../../data/models/order_model.dart';
 import '../../data/repositories/order_repository_impl.dart';
 import '../../domain/entities/order_entity.dart';
 import '../../domain/repositories/order_repository.dart';
@@ -12,42 +11,65 @@ import '../../domain/usecases/get_order_detail_usecase.dart';
 import '../../domain/usecases/get_orders_usecase.dart';
 import '../../domain/usecases/update_order_status_usecase.dart';
 import 'order_details_controller.dart';
+import 'orders_notifier.dart';
+
+export 'order_details_controller.dart';
+export 'orders_notifier.dart';
 
 // ==========================================
-// Data & Domain Providers
+// Data Layer Scoped Providers
 // ==========================================
 
-/// موفر مصدر بيانات الطلبات البعيد
+/// Scoped provider for Orders Hive Cache Box
+final orderHiveBoxProvider = Provider<Box<OrderModel>>((ref) {
+  return Hive.box<OrderModel>('orders');
+});
+
+/// Scoped provider for [OrderLocalDataSource]
+final orderLocalDataSourceProvider = Provider<OrderLocalDataSource>((ref) {
+  final box = ref.watch(orderHiveBoxProvider);
+  return OrderLocalDataSourceImpl(box: box);
+});
+
+/// Scoped provider for [OrderRemoteDataSource]
 final orderRemoteDataSourceProvider = Provider<OrderRemoteDataSource>((ref) {
   final dio = ref.watch(dioProvider);
   return OrderRemoteDataSourceImpl(dio);
 });
 
-/// موفر مستودع الطلبات
+// ==========================================
+// Domain Layer Scoped Providers
+// ==========================================
+
+/// Scoped provider for [OrderRepository] acting as Single Source of Truth
 final orderRepositoryProvider = Provider<OrderRepository>((ref) {
-  final remoteDataSource = ref.watch(orderRemoteDataSourceProvider);
-  return OrderRepositoryImpl(remoteDataSource: remoteDataSource);
+  return OrderRepositoryImpl(
+    remoteDataSource: ref.watch(orderRemoteDataSourceProvider),
+    localDataSource: ref.watch(orderLocalDataSourceProvider),
+  );
 });
 
-/// موفرات حالات الاستخدام (UseCases)
+/// Scoped provider for [GetOrdersUseCase]
 final getOrdersUseCaseProvider = Provider<GetOrdersUseCase>((ref) {
   return GetOrdersUseCase(ref.watch(orderRepositoryProvider));
 });
 
+/// Scoped provider for [GetOrderDetailUseCase]
 final getOrderDetailUseCaseProvider = Provider<GetOrderDetailUseCase>((ref) {
   return GetOrderDetailUseCase(ref.watch(orderRepositoryProvider));
 });
 
+/// Scoped provider for [UpdateOrderStatusUseCase]
 final updateOrderStatusUseCaseProvider =
     Provider<UpdateOrderStatusUseCase>((ref) {
   return UpdateOrderStatusUseCase(ref.watch(orderRepositoryProvider));
 });
 
 // ==========================================
-// Search & Filter State Notifiers
+// Search, Filter & Pagination Providers
 // ==========================================
 
-/// موفر نص البحث في الطلبات
+/// Notifier managing orders search keyword
 class OrdersSearchQueryNotifier extends Notifier<String> {
   @override
   String build() => '';
@@ -60,7 +82,7 @@ final ordersSearchQueryProvider =
   OrdersSearchQueryNotifier.new,
 );
 
-/// موفر تبويب تصفية الحالة المحدد (all, pending, processing, shipped, delivered, cancelled)
+/// Notifier managing selected order status filter ('all', 'pending', etc.)
 class OrdersSelectedStatusNotifier extends Notifier<String> {
   @override
   String build() => 'all';
@@ -73,7 +95,7 @@ final ordersSelectedStatusProvider =
   OrdersSelectedStatusNotifier.new,
 );
 
-/// موفر الصفحة الحالية للتقسيم (Pagination)
+/// Notifier managing current table pagination index
 class OrdersCurrentPageNotifier extends Notifier<int> {
   @override
   int build() => 1;
@@ -93,99 +115,20 @@ final ordersCurrentPageProvider =
   OrdersCurrentPageNotifier.new,
 );
 
-/// عدد العناصر في الصفحة الواحدة
+/// Page size configuration
 final ordersItemsPerPageProvider = Provider<int>((ref) => 6);
 
 // ==========================================
-// Core Orders State via AsyncNotifier
+// Core State Providers
 // ==========================================
 
-/// متحكم حالة الطلبات الرئيسي عبر [AsyncNotifier]
-/// يدعم إلغاء الطلبات عبر `ref.onDispose` لمنع تسريب الموارد
-/// ويحول `Either<Failure, T>` إلى `AsyncValue` بأمان لمنع الانهيار
-class OrdersNotifier extends AsyncNotifier<List<OrderEntity>> {
-  CancelToken? _cancelToken;
-
-  @override
-  FutureOr<List<OrderEntity>> build() {
-    // إدارة الإلغاء عبر ref.onDispose لمنع تسريب الموارد
-    ref.onDispose(() {
-      _cancelToken?.cancel('تم إلغاء طلبات إدارة الطلبات بسبب تفريغ الـ Notifier');
-      _cancelToken = null;
-    });
-
-    return _fetchOrders(forceRefresh: false);
-  }
-
-  Future<List<OrderEntity>> _fetchOrders({bool forceRefresh = false}) async {
-    _cancelToken?.cancel('طلب جديد لقائمة الطلبات');
-    final cancelToken = CancelToken();
-    _cancelToken = cancelToken;
-
-    final getOrders = ref.read(getOrdersUseCaseProvider);
-    final result = await getOrders(
-      forceRefresh: forceRefresh,
-      cancelToken: cancelToken,
-    );
-
-    return result.fold(
-      (failure) => throw failure,
-      (orders) => orders,
-    );
-  }
-
-  /// إعادة تحميل الطلبات مع إجبار تحديث الـ Cache
-  Future<void> refreshOrders({bool forceRefresh = true}) async {
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(
-      () => _fetchOrders(forceRefresh: forceRefresh),
-    );
-  }
-
-  /// تحديث حالة الطلب ومزامنة الحالة فورياً
-  Future<Either<Failure, OrderEntity>> updateOrderStatus(
-    String orderId,
-    OrderStatus newStatus,
-  ) async {
-    final updateUseCase = ref.read(updateOrderStatusUseCaseProvider);
-    final previousState = state;
-
-    final result = await updateUseCase(orderId, newStatus);
-
-    result.fold(
-      (failure) {
-        // الحفاظ على الحالة السابقة وعدم إخفاء الشاشة عند فشل التحديث
-      },
-      (updatedOrder) {
-        final currentList = List<OrderEntity>.from(previousState.value ?? const []);
-        final index = currentList.indexWhere((o) => o.id == orderId);
-        if (index != -1) {
-          currentList[index] = updatedOrder;
-          state = AsyncValue.data(currentList);
-        }
-      },
-    );
-
-    return result;
-  }
-
-  /// تنظيف الخطأ واستعادة آخر بيانات مسترجعة
-  void clearError() {
-    if (state.hasError) {
-      state = AsyncValue.data(state.value ?? const []);
-    }
-  }
-}
-
+/// Main state controller provider managing orders list
 final ordersControllerProvider =
     AsyncNotifierProvider<OrdersNotifier, List<OrderEntity>>(
   OrdersNotifier.new,
 );
 
-// ==========================================
-// Order Details Controller Provider
-// ==========================================
-
+/// Auto-disposing family provider for order details controller
 final orderDetailsControllerProvider = Provider.autoDispose
     .family<OrderDetailsController, OrderEntity>((ref, initialOrder) {
   final updateUseCase = ref.watch(updateOrderStatusUseCaseProvider);
@@ -201,10 +144,10 @@ final orderDetailsControllerProvider = Provider.autoDispose
 });
 
 // ==========================================
-// Computed Selectors / Providers
+// Computed Selectors
 // ==========================================
 
-/// موفر قائمة الطلبات المفلترة بحسب البحث وحالة التصفية
+/// Provider filtering orders list based on query and selected status
 final filteredOrdersProvider = Provider<List<OrderEntity>>((ref) {
   final ordersAsync = ref.watch(ordersControllerProvider);
   final query = ref.watch(ordersSearchQueryProvider).toLowerCase().trim();
@@ -233,7 +176,7 @@ final filteredOrdersProvider = Provider<List<OrderEntity>>((ref) {
   );
 });
 
-/// موفر إجمالي الصفحات
+/// Provider computing total available pages
 final ordersTotalPagesProvider = Provider<int>((ref) {
   final filtered = ref.watch(filteredOrdersProvider);
   final itemsPerPage = ref.watch(ordersItemsPerPageProvider);
@@ -241,7 +184,7 @@ final ordersTotalPagesProvider = Provider<int>((ref) {
   return (filtered.length / itemsPerPage).ceil();
 });
 
-/// موفر صفحة الطلبات المقتطعة للجدول الحالي
+/// Provider returning sliced orders for current page
 final paginatedOrdersProvider = Provider<List<OrderEntity>>((ref) {
   final filtered = ref.watch(filteredOrdersProvider);
   final currentPage = ref.watch(ordersCurrentPageProvider);
@@ -253,7 +196,7 @@ final paginatedOrdersProvider = Provider<List<OrderEntity>>((ref) {
   return filtered.sublist(start, end);
 });
 
-/// فئة بيانات إحصائيات الطلبات
+/// Data class holding order metrics
 class OrdersStats {
   final int totalOrders;
   final double totalRevenue;
@@ -266,24 +209,40 @@ class OrdersStats {
     this.pendingOrders = 0,
     this.deliveredOrders = 0,
   });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is OrdersStats &&
+          runtimeType == other.runtimeType &&
+          totalOrders == other.totalOrders &&
+          totalRevenue == other.totalRevenue &&
+          pendingOrders == other.pendingOrders &&
+          deliveredOrders == other.deliveredOrders;
+
+  @override
+  int get hashCode =>
+      totalOrders.hashCode ^
+      totalRevenue.hashCode ^
+      pendingOrders.hashCode ^
+      deliveredOrders.hashCode;
 }
 
-/// موفر إحصائيات ومؤشرات الأداء السريعة للطلبات
+/// Selective provider for quick stats strip, avoiding table rebuilds
 final ordersStatsProvider = Provider<OrdersStats>((ref) {
-  final ordersAsync = ref.watch(ordersControllerProvider);
-  return ordersAsync.maybeWhen(
-    data: (orders) {
-      final total = orders.length;
-      final revenue = orders.fold<double>(0.0, (sum, o) => sum + o.totalAmount);
-      final pending = orders.where((o) => o.status == OrderStatus.pending).length;
-      final delivered = orders.where((o) => o.status == OrderStatus.delivered).length;
-      return OrdersStats(
-        totalOrders: total,
-        totalRevenue: revenue,
-        pendingOrders: pending,
-        deliveredOrders: delivered,
-      );
-    },
-    orElse: () => const OrdersStats(),
+  final orders = ref.watch(
+    ordersControllerProvider.select((asyncVal) => asyncVal.value ?? const []),
+  );
+
+  final total = orders.length;
+  final revenue = orders.fold<double>(0.0, (sum, o) => sum + o.totalAmount);
+  final pending = orders.where((o) => o.status == OrderStatus.pending).length;
+  final delivered = orders.where((o) => o.status == OrderStatus.delivered).length;
+
+  return OrdersStats(
+    totalOrders: total,
+    totalRevenue: revenue,
+    pendingOrders: pending,
+    deliveredOrders: delivered,
   );
 });
