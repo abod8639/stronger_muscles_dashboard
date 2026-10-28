@@ -1,23 +1,18 @@
-import 'package:dartz/dartz.dart';
-import 'package:dio/dio.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import '../entities/category_entity.dart';
 import '../repositories/category_repository.dart';
 
+/// Pure Dart UseCase for retrieving categories list or hierarchical tree.
 class GetCategoriesUseCase {
-  final CategoryRepository repository;
+  final CategoryRepository _repository;
 
-  GetCategoriesUseCase(this.repository);
+  const GetCategoriesUseCase(this._repository);
 
   Future<Either<Failure, List<CategoryEntity>>> call({
-    bool tree = true,
+    bool tree = false,
     bool forceRefresh = false,
-    CancelToken? cancelToken,
-  }) async {
-    return await repository.getCategories(
-      tree: tree,
-      forceRefresh: forceRefresh,
-      cancelToken: cancelToken,
-    );
+  }) {
+    return _repository.getCategories(tree: tree, forceRefresh: forceRefresh);
   }
 }
