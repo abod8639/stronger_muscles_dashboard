@@ -36,7 +36,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
     try {
       final ordersResult = await _orderRepository.getOrders();
       final productsResult = await _productRepository.getProducts();
-      final categoriesResult = await _categoryRepository.getCategories(cancelToken: cancelToken);
+      final categoriesResult = await _categoryRepository.getCategories();
       final usersResult = await _userRepository.getUsersStats();
 
       final orders = ordersResult.fold(
