@@ -4,8 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:stronger_muscles_dashboard/core/network/auth_service.dart';
 import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
-import 'package:stronger_muscles_dashboard/features/auth/presentation/pages/login_screen.dart';
-import 'package:stronger_muscles_dashboard/features/auth/presentation/pages/signup_screen.dart';
+import 'package:stronger_muscles_dashboard/features/auth/auth_feature.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
 import 'package:stronger_muscles_dashboard/features/categories/presentation/page/category_form_page/category_form_page.dart';
 import 'package:stronger_muscles_dashboard/features/navigation/presentation/page/main_navigation_screen.dart';
@@ -34,16 +33,7 @@ final GoRouter appRouter = GoRouter(
       name: 'dashboard',
       builder: (context, state) => const MainNavigationScreen(),
     ),
-    GoRoute(
-      path: AppRoutes.login,
-      name: 'login',
-      builder: (context, state) => const LoginScreen(),
-    ),
-    GoRoute(
-      path: AppRoutes.signup,
-      name: 'signup',
-      builder: (context, state) => const SignupScreen(),
-    ),
+    ...AuthRoutes.routes,
     GoRoute(
       path: AppRoutes.productForm,
       name: 'productForm',
