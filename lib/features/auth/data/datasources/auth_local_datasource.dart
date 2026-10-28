@@ -1,26 +1,32 @@
 import 'package:get_storage/get_storage.dart';
 import 'package:stronger_muscles_dashboard/core/error/exceptions.dart';
 
+/// Contract for caching tokens and session data locally.
 abstract class AuthLocalDataSource {
   Future<void> saveToken(String token);
-  String? getToken();
+  Future<String?> getToken();
   Future<void> clearToken();
-  bool hasToken();
-  Future<void> saveUser(Map<String, dynamic> user);
-  Map<String, dynamic>? getUser();
+  Future<bool> hasToken();
+  Future<void> saveUser(Map<String, dynamic> userJson);
+  Future<Map<String, dynamic>?> getUser();
+  Future<void> clearAll();
 }
 
+/// Production implementation of [AuthLocalDataSource] using [GetStorage].
+/// Fully testable via Constructor Dependency Injection.
 class AuthLocalDataSourceImpl implements AuthLocalDataSource {
-  final GetStorage storage;
+  final GetStorage _storage;
+
   static const String _tokenKey = 'admin_token';
   static const String _userKey = 'admin_user';
 
-  AuthLocalDataSourceImpl(this.storage);
+  const AuthLocalDataSourceImpl({required GetStorage storage})
+      : _storage = storage;
 
   @override
   Future<void> saveToken(String token) async {
     try {
-      await storage.write(_tokenKey, token);
+      await _storage.write(_tokenKey, token);
     } catch (e) {
       throw CacheException(
         message: 'فشل في حفظ رمز المصادقة محلياً',
@@ -30,18 +36,44 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   }
 
   @override
-  String? getToken() {
+  Future<String?> getToken() async {
     try {
-      return storage.read(_tokenKey);
-    } catch (_) {
-      return null;
+      final token = _storage.read<String>(_tokenKey);
+      return token;
+    } catch (e) {
+      throw CacheException(
+        message: 'فشل في قراءة رمز المصادقة من الذاكرة المحلية',
+        originalError: e,
+      );
     }
   }
 
   @override
-  Future<void> saveUser(Map<String, dynamic> user) async {
+  Future<void> clearToken() async {
     try {
-      await storage.write(_userKey, user);
+      await _storage.remove(_tokenKey);
+    } catch (e) {
+      throw CacheException(
+        message: 'فشل في مسح رمز المصادقة من الذاكرة المحلية',
+        originalError: e,
+      );
+    }
+  }
+
+  @override
+  Future<bool> hasToken() async {
+    try {
+      final token = _storage.read<String>(_tokenKey);
+      return token != null && token.trim().isNotEmpty;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  @override
+  Future<void> saveUser(Map<String, dynamic> userJson) async {
+    try {
+      await _storage.write(_userKey, userJson);
     } catch (e) {
       throw CacheException(
         message: 'فشل في حفظ بيانات المستخدم محلياً',
@@ -51,37 +83,31 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   }
 
   @override
-  Map<String, dynamic>? getUser() {
+  Future<Map<String, dynamic>?> getUser() async {
     try {
-      final data = storage.read(_userKey);
+      final data = _storage.read(_userKey);
       if (data is Map) {
         return Map<String, dynamic>.from(data);
       }
       return null;
-    } catch (_) {
-      return null;
-    }
-  }
-
-  @override
-  Future<void> clearToken() async {
-    try {
-      await storage.remove(_tokenKey);
-      await storage.remove(_userKey);
     } catch (e) {
       throw CacheException(
-        message: 'فشل في مسح بيانات الجلسة المحلية',
+        message: 'فشل في قراءة بيانات المستخدم من الذاكرة المحلية',
         originalError: e,
       );
     }
   }
 
   @override
-  bool hasToken() {
+  Future<void> clearAll() async {
     try {
-      return storage.hasData(_tokenKey) && storage.read(_tokenKey) != null;
-    } catch (_) {
-      return false;
+      await _storage.remove(_tokenKey);
+      await _storage.remove(_userKey);
+    } catch (e) {
+      throw CacheException(
+        message: 'فشل في مسح بيانات الجلسة المحلية',
+        originalError: e,
+      );
     }
   }
 }
