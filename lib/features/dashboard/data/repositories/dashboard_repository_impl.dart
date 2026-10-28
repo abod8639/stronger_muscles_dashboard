@@ -1,10 +1,12 @@
-import 'package:dartz/dartz.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:fpdart/fpdart.dart';
+import 'package:stronger_muscles_dashboard/core/error/exceptions.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import 'package:stronger_muscles_dashboard/core/error/network_error_handler.dart';
-import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
-import 'package:stronger_muscles_dashboard/features/categories/domain/repositories/category_repository.dart';
+import 'package:stronger_muscles_dashboard/features/categories/categories_feature.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/data/datasources/dashboard_local_datasource.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/data/datasources/dashboard_remote_datasource.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/data/mappers/dashboard_mapper.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/entities/dashboard_stats_entity.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/repositories/dashboard_repository.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
@@ -13,27 +15,63 @@ import 'package:stronger_muscles_dashboard/features/products/domain/entities/pro
 import 'package:stronger_muscles_dashboard/features/products/domain/repositories/product_repository.dart';
 import 'package:stronger_muscles_dashboard/features/users/domain/repositories/user_repository.dart';
 
+/// Single Source of Truth for Dashboard Data.
+/// Orchestrates calls between Remote data aggregation and Hive LocalDataSource caching.
+/// Isolated computational heavy-lifting in background Isolate via [compute].
 class DashboardRepositoryImpl implements DashboardRepository {
   final OrderRepository _orderRepository;
   final ProductRepository _productRepository;
   final CategoryRepository _categoryRepository;
   final UserRepository _userRepository;
+  final DashboardLocalDataSource _localDataSource;
+  final DashboardRemoteDataSource? _remoteDataSource;
 
   DashboardRepositoryImpl({
     required OrderRepository orderRepository,
     required ProductRepository productRepository,
     required CategoryRepository categoryRepository,
     required UserRepository userRepository,
+    required DashboardLocalDataSource localDataSource,
+    DashboardRemoteDataSource? remoteDataSource,
   })  : _orderRepository = orderRepository,
         _productRepository = productRepository,
         _categoryRepository = categoryRepository,
-        _userRepository = userRepository;
+        _userRepository = userRepository,
+        _localDataSource = localDataSource,
+        _remoteDataSource = remoteDataSource;
 
   @override
   Future<Either<Failure, DashboardStatsEntity>> getDashboardStats({
-    CancelToken? cancelToken,
+    bool forceRefresh = false,
   }) async {
+    // 1. Check local Hive cache if refresh is not forced
+    if (!forceRefresh) {
+      final isCacheValid = await _localDataSource.isCacheValid();
+      if (isCacheValid) {
+        try {
+          final cachedModel = await _localDataSource.getCachedStats();
+          if (cachedModel != null) {
+            return Right(cachedModel.toEntity());
+          }
+        } catch (_) {
+          // If cache read fails, proceed to live aggregation
+        }
+      }
+    }
+
+    // 2. Fetch fresh domain data (try direct remote stats if available, fallback to constituent aggregation)
     try {
+      if (_remoteDataSource != null) {
+        try {
+          final remoteModel = await _remoteDataSource.getRemoteStats();
+          final entity = remoteModel.toEntity();
+          await _localDataSource.cacheStats(remoteModel);
+          return Right(entity);
+        } catch (_) {
+          // If direct endpoint is unavailable or fails, fallback to constituent services
+        }
+      }
+
       final ordersResult = await _orderRepository.getOrders();
       final productsResult = await _productRepository.getProducts();
       final categoriesResult = await _categoryRepository.getCategories();
@@ -41,7 +79,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
 
       final orders = ordersResult.fold(
         (failure) {
-          debugPrint('Dashboard: Orders fetch returned failure: ${failure.toMessage()}');
+          debugPrint('Dashboard: Orders fetch returned failure: ${failure.message}');
           return <OrderEntity>[];
         },
         (ords) => ords,
@@ -49,7 +87,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
 
       final products = productsResult.fold(
         (failure) {
-          debugPrint('Dashboard: Products fetch returned failure: ${failure.toMessage()}');
+          debugPrint('Dashboard: Products fetch returned failure: ${failure.message}');
           return <ProductEntity>[];
         },
         (prods) => prods,
@@ -57,7 +95,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
 
       final categories = categoriesResult.fold(
         (failure) {
-          debugPrint('Dashboard: Categories fetch returned failure: ${failure.toMessage()}');
+          debugPrint('Dashboard: Categories fetch returned failure: ${failure.message}');
           return <CategoryEntity>[];
         },
         (cats) => cats,
@@ -68,7 +106,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
         (stats) => stats.totalUsers,
       );
 
-      // عزل العمليات الحسابية والتجميعية الكبيرة في Isolate خلفي لمنع تجميد الشاشة
+      // 3. Compute heavy metrics in background Isolate
       final stats = await compute(
         _computeDashboardStats,
         _DashboardComputationParams(
@@ -79,16 +117,27 @@ class DashboardRepositoryImpl implements DashboardRepository {
         ),
       );
 
+      // 4. Update Hive cache
+      await _localDataSource.cacheStats(stats.toModel());
+
       return Right(stats);
+    } on AppException catch (e) {
+      // 5. Resilient fallback to stale cache on network failure
+      try {
+        final fallback = await _localDataSource.getCachedStats();
+        if (fallback != null) {
+          return Right(fallback.toEntity());
+        }
+      } catch (_) {}
+      return Left(NetworkErrorHandler.handleException(e));
     } catch (e, stackTrace) {
       debugPrint('DashboardRepositoryImpl Exception: $e');
-      final failure = NetworkErrorHandler.handleException(e, stackTrace);
-      return Left(failure);
+      return Left(NetworkErrorHandler.handleException(e, stackTrace));
     }
   }
 }
 
-/// كلاس معاملات الحساب لعزله في Isolate
+/// Parameter carrier class for Isolate computation
 class _DashboardComputationParams {
   final List<OrderEntity> orders;
   final List<ProductEntity> products;
@@ -103,14 +152,13 @@ class _DashboardComputationParams {
   });
 }
 
-/// دالة الحساب المنفصلة التي تعمل في Isolate خلفي
+/// Pure computation function executing in background Isolate
 DashboardStatsEntity _computeDashboardStats(_DashboardComputationParams params) {
   final orders = params.orders;
   final products = params.products;
   final categories = params.categories;
   final totalUsers = params.totalUsers;
 
-  // 1. حساب حالات الطلبات والإيرادات
   int pending = 0;
   int processing = 0;
   int shipped = 0;
@@ -142,7 +190,6 @@ DashboardStatsEntity _computeDashboardStats(_DashboardComputationParams params) 
     }
   }
 
-  // 2. إحصائيات المخزون
   int inStock = 0;
   int lowStock = 0;
   int outOfStock = 0;
