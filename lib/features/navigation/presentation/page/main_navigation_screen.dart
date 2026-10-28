@@ -6,7 +6,7 @@ import 'package:stronger_muscles_dashboard/core/utils/components/enhanced_loadin
 import 'package:stronger_muscles_dashboard/core/utils/components/my_bottomnavigationbar.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/sidebar.dart';
 import 'package:stronger_muscles_dashboard/features/categories/categories_feature.dart';
-import 'package:stronger_muscles_dashboard/features/dashboard/presentation/pages/dashboard_page.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/dashboard_feature.dart';
 import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_providers.dart';
 import 'package:stronger_muscles_dashboard/features/navigation/presentation/widget/navigation_error_fallback.dart';
 import 'package:stronger_muscles_dashboard/features/notifications/presentation/pages/notifications_screen.dart';
