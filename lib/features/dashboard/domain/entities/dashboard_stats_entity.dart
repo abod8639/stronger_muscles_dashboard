@@ -1,7 +1,9 @@
+import 'package:stronger_muscles_dashboard/features/categories/categories_feature.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
-import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
 
+/// Pure Dart Domain Entity representing consolidated Dashboard statistics.
+/// 100% pure Dart: zero imports from Flutter UI, Dio, Hive, or 3rd-party SDKs.
 class DashboardStatsEntity {
   final double totalRevenue;
   final int totalOrders;
@@ -41,23 +43,22 @@ class DashboardStatsEntity {
     required this.outOfStock,
   });
 
-  factory DashboardStatsEntity.initial() => const DashboardStatsEntity(
-        totalRevenue: 0.0,
-        totalOrders: 0,
-        totalUsers: 0,
-        totalProducts: 0,
-        orders: [],
-        products: [],
-        categories: [],
-        pendingOrders: 0,
-        processingOrders: 0,
-        shippedOrders: 0,
-        deliveredOrders: 0,
-        cancelledOrders: 0,
-        inStock: 0,
-        lowStock: 0,
-        outOfStock: 0,
-      );
+  const DashboardStatsEntity.initial()
+      : totalRevenue = 0.0,
+        totalOrders = 0,
+        totalUsers = 0,
+        totalProducts = 0,
+        orders = const [],
+        products = const [],
+        categories = const [],
+        pendingOrders = 0,
+        processingOrders = 0,
+        shippedOrders = 0,
+        deliveredOrders = 0,
+        cancelledOrders = 0,
+        inStock = 0,
+        lowStock = 0,
+        outOfStock = 0;
 
   DashboardStatsEntity copyWith({
     double? totalRevenue,
@@ -94,4 +95,42 @@ class DashboardStatsEntity {
       outOfStock: outOfStock ?? this.outOfStock,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is DashboardStatsEntity &&
+        other.totalRevenue == totalRevenue &&
+        other.totalOrders == totalOrders &&
+        other.totalUsers == totalUsers &&
+        other.totalProducts == totalProducts &&
+        other.pendingOrders == pendingOrders &&
+        other.processingOrders == processingOrders &&
+        other.shippedOrders == shippedOrders &&
+        other.deliveredOrders == deliveredOrders &&
+        other.cancelledOrders == cancelledOrders &&
+        other.inStock == inStock &&
+        other.lowStock == lowStock &&
+        other.outOfStock == outOfStock;
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        totalRevenue,
+        totalOrders,
+        totalUsers,
+        totalProducts,
+        pendingOrders,
+        processingOrders,
+        shippedOrders,
+        deliveredOrders,
+        cancelledOrders,
+        inStock,
+        lowStock,
+        outOfStock,
+      );
+
+  @override
+  String toString() =>
+      'DashboardStatsEntity(revenue: $totalRevenue, orders: $totalOrders, users: $totalUsers, products: $totalProducts)';
 }
