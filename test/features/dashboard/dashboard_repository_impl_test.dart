@@ -94,36 +94,35 @@ class MockProductRepository implements ProductRepository {
   Failure? failureToReturn;
 
   @override
-  Future<dartz.Either<Failure, List<ProductEntity>>> getProducts({
-    CancelToken? cancelToken,
+  Future<fp.Either<Failure, List<ProductEntity>>> getProducts({
     bool forceRefresh = false,
   }) async {
-    if (failureToReturn != null) return dartz.Left(failureToReturn!);
-    return dartz.Right(products);
+    if (failureToReturn != null) return fp.Left(failureToReturn!);
+    return fp.Right(products);
   }
 
   @override
-  Future<dartz.Either<Failure, ProductEntity>> addProduct(Map<String, dynamic> data, {CancelToken? cancelToken}) async {
+  Future<fp.Either<Failure, ProductEntity>> addProduct(Map<String, dynamic> data) async {
     throw UnimplementedError();
   }
 
   @override
-  Future<dartz.Either<Failure, bool>> deleteProduct(String id, {CancelToken? cancelToken}) async {
+  Future<fp.Either<Failure, bool>> deleteProduct(String id) async {
     throw UnimplementedError();
   }
 
   @override
-  Future<dartz.Either<Failure, ProductEntity>> getProductById(String id, {CancelToken? cancelToken}) async {
+  Future<fp.Either<Failure, ProductEntity>> getProductById(String id) async {
     throw UnimplementedError();
   }
 
   @override
-  Future<dartz.Either<Failure, ProductEntity>> updateProduct(String id, Map<String, dynamic> data, {CancelToken? cancelToken}) async {
+  Future<fp.Either<Failure, ProductEntity>> updateProduct(String id, Map<String, dynamic> data) async {
     throw UnimplementedError();
   }
 
   @override
-  Future<dartz.Either<Failure, String>> uploadImage(String filePath, {CancelToken? cancelToken}) async {
+  Future<fp.Either<Failure, String>> uploadImage(String filePath) async {
     throw UnimplementedError();
   }
 }
