@@ -77,7 +77,7 @@ class ProductVariantManager extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(10),
-                    onTap: controller.addVariant,
+                    onTap: controller.addNewVariant,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 14, vertical: 8),
