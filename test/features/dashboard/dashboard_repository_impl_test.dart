@@ -71,21 +71,20 @@ class MockOrderRepository implements OrderRepository {
   Failure? failureToReturn;
 
   @override
-  Future<dartz.Either<Failure, List<OrderEntity>>> getOrders({
-    CancelToken? cancelToken,
+  Future<fp.Either<Failure, List<OrderEntity>>> getOrders({
     bool forceRefresh = false,
   }) async {
-    if (failureToReturn != null) return dartz.Left(failureToReturn!);
-    return dartz.Right(orders);
+    if (failureToReturn != null) return fp.Left(failureToReturn!);
+    return fp.Right(orders);
   }
 
   @override
-  Future<dartz.Either<Failure, OrderEntity>> getOrderDetails(String id, {CancelToken? cancelToken}) async {
+  Future<fp.Either<Failure, OrderEntity>> getOrderDetails(String id) async {
     throw UnimplementedError();
   }
 
   @override
-  Future<dartz.Either<Failure, OrderEntity>> updateOrderStatus(String id, OrderStatus status, {CancelToken? cancelToken}) async {
+  Future<fp.Either<Failure, OrderEntity>> updateOrderStatus(String id, OrderStatus status) async {
     throw UnimplementedError();
   }
 }
