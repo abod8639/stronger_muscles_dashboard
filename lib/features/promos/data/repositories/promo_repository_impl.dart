@@ -1,75 +1,97 @@
-import 'package:dartz/dartz.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import 'package:stronger_muscles_dashboard/core/error/network_error_handler.dart';
-import 'package:stronger_muscles_dashboard/features/promos/data/datasources/promo_remote_datasource.dart';
-import 'package:stronger_muscles_dashboard/features/promos/data/models/promo_model.dart';
-import 'package:stronger_muscles_dashboard/features/promos/domain/entities/promo_entity.dart';
-import 'package:stronger_muscles_dashboard/features/promos/domain/repositories/promo_repository.dart';
+import '../../domain/entities/promo_entity.dart';
+import '../../domain/repositories/promo_repository.dart';
+import '../datasources/promo_local_datasource.dart';
+import '../datasources/promo_remote_datasource.dart';
+import '../mappers/promo_mapper.dart';
 
+/// Single Source of Truth (SSOT) implementation of [PromoRepository].
+/// Coordinates between [PromoRemoteDataSource] (Dio) and [PromoLocalDataSource] (Hive)
+/// with offline caching resilience and functional error handling via [Either].
 class PromoRepositoryImpl implements PromoRepository {
-  final PromoRemoteDataSource remoteDataSource;
+  final PromoRemoteDataSource _remoteDataSource;
+  final PromoLocalDataSource _localDataSource;
 
-  PromoRepositoryImpl({required this.remoteDataSource});
+  const PromoRepositoryImpl({
+    required PromoRemoteDataSource remoteDataSource,
+    required PromoLocalDataSource localDataSource,
+  })  : _remoteDataSource = remoteDataSource,
+        _localDataSource = localDataSource;
 
   @override
-  Future<Either<Failure, List<PromoEntity>>> getPromos({CancelToken? cancelToken}) async {
+  Future<Either<Failure, List<PromoEntity>>> getPromos() async {
     try {
-      final models = await remoteDataSource.getPromos(cancelToken: cancelToken);
-      return Right(models.map((model) => model.toEntity()).toList());
+      final remoteModels = await _remoteDataSource.getPromos();
+      await _localDataSource.cachePromos(remoteModels);
+      final entities = remoteModels.map((m) => m.toEntity()).toList();
+      return Right(entities);
     } catch (e, stackTrace) {
-      debugPrint('PromoRepositoryImpl (getPromos) Exception: $e');
+      debugPrint('⚠️ [PromoRepositoryImpl] Remote fetch failed, checking local cache: $e');
+      try {
+        final cachedModels = await _localDataSource.getCachedPromos();
+        if (cachedModels.isNotEmpty) {
+          debugPrint('✅ [PromoRepositoryImpl] Serving ${cachedModels.length} promos from Hive cache');
+          return Right(cachedModels.map((m) => m.toEntity()).toList());
+        }
+      } catch (cacheError) {
+        debugPrint('⚠️ [PromoRepositoryImpl] Hive cache read error: $cacheError');
+      }
       final failure = NetworkErrorHandler.handleException(e, stackTrace);
       return Left(failure);
     }
   }
 
   @override
-  Future<Either<Failure, PromoEntity>> addPromo(PromoEntity promo, {CancelToken? cancelToken}) async {
+  Future<Either<Failure, PromoEntity>> addPromo(PromoEntity promo) async {
     try {
-      final model = PromoModel.fromEntity(promo);
-      final addedModel = await remoteDataSource.addPromo(model.toJson(), cancelToken: cancelToken);
+      final model = promo.toModel();
+      final addedModel = await _remoteDataSource.addPromo(model.toJson());
+      await _localDataSource.cachePromo(addedModel);
       return Right(addedModel.toEntity());
     } catch (e, stackTrace) {
-      debugPrint('PromoRepositoryImpl (addPromo) Exception: $e');
+      debugPrint('❌ [PromoRepositoryImpl.addPromo] Error: $e');
       final failure = NetworkErrorHandler.handleException(e, stackTrace);
       return Left(failure);
     }
   }
 
   @override
-  Future<Either<Failure, PromoEntity>> updatePromo(PromoEntity promo, {CancelToken? cancelToken}) async {
+  Future<Either<Failure, PromoEntity>> updatePromo(PromoEntity promo) async {
     try {
-      final model = PromoModel.fromEntity(promo);
-      final updatedModel = await remoteDataSource.updatePromo(promo.id, model.toJson(), cancelToken: cancelToken);
+      final model = promo.toModel();
+      final updatedModel = await _remoteDataSource.updatePromo(promo.id, model.toJson());
+      await _localDataSource.cachePromo(updatedModel);
       return Right(updatedModel.toEntity());
     } catch (e, stackTrace) {
-      debugPrint('PromoRepositoryImpl (updatePromo) Exception: $e');
+      debugPrint('❌ [PromoRepositoryImpl.updatePromo] Error: $e');
       final failure = NetworkErrorHandler.handleException(e, stackTrace);
       return Left(failure);
     }
   }
 
   @override
-  Future<Either<Failure, void>> deletePromo(String id, {CancelToken? cancelToken}) async {
+  Future<Either<Failure, Unit>> deletePromo(String id) async {
     try {
-      await remoteDataSource.deletePromo(id, cancelToken: cancelToken);
-      return const Right(null);
+      await _remoteDataSource.deletePromo(id);
+      await _localDataSource.deleteCachedPromo(id);
+      return const Right(unit);
     } catch (e, stackTrace) {
-      debugPrint('PromoRepositoryImpl (deletePromo) Exception: $e');
+      debugPrint('❌ [PromoRepositoryImpl.deletePromo] Error: $e');
       final failure = NetworkErrorHandler.handleException(e, stackTrace);
       return Left(failure);
     }
   }
 
   @override
-  Future<Either<Failure, String>> uploadImage(String filePath, {CancelToken? cancelToken}) async {
+  Future<Either<Failure, String>> uploadImage(String filePath) async {
     try {
-      final url = await remoteDataSource.uploadImage(filePath, cancelToken: cancelToken);
+      final url = await _remoteDataSource.uploadImage(filePath);
       return Right(url);
     } catch (e, stackTrace) {
-      debugPrint('PromoRepositoryImpl (uploadImage) Exception: $e');
+      debugPrint('❌ [PromoRepositoryImpl.uploadImage] Error: $e');
       final failure = NetworkErrorHandler.handleException(e, stackTrace);
       return Left(failure);
     }
