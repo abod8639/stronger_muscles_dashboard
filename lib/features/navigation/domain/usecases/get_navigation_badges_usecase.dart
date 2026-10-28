@@ -1,17 +1,18 @@
-import 'package:dartz/dartz.dart';
-import 'package:dio/dio.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import '../entities/navigation_badges_entity.dart';
 import '../repositories/navigation_repository.dart';
 
+/// Pure Dart UseCase for retrieving Navigation badges.
+/// Encapsulates the execution logic for retrieving badge counters.
 class GetNavigationBadgesUseCase {
-  final NavigationRepository repository;
+  final NavigationRepository _repository;
 
-  GetNavigationBadgesUseCase(this.repository);
+  const GetNavigationBadgesUseCase(this._repository);
 
   Future<Either<Failure, NavigationBadgesEntity>> call({
-    CancelToken? cancelToken,
-  }) async {
-    return await repository.getNavigationBadges(cancelToken: cancelToken);
+    bool forceRefresh = false,
+  }) {
+    return _repository.getNavigationBadges(forceRefresh: forceRefresh);
   }
 }
