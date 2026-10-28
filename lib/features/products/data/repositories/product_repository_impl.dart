@@ -1,97 +1,115 @@
-import 'package:dartz/dartz.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import 'package:stronger_muscles_dashboard/core/error/network_error_handler.dart';
-import 'package:stronger_muscles_dashboard/core/storage/cache_service.dart';
 import '../../domain/entities/product_entity.dart';
 import '../../domain/repositories/product_repository.dart';
+import '../datasources/product_local_datasource.dart';
 import '../datasources/product_remote_datasource.dart';
-import '../models/product_model.dart';
+import '../mappers/product_mapper.dart';
 
+/// Production implementation of [ProductRepository] acting as Single Source of Truth.
+/// Orchestrates calls between Hive local cache [ProductLocalDataSource] and Dio remote datasource [ProductRemoteDataSource].
 class ProductRepositoryImpl implements ProductRepository {
   final ProductRemoteDataSource remoteDataSource;
-  final CacheService? _cacheService;
-
-  static const String _cacheKeyProducts = 'products_list';
+  final ProductLocalDataSource localDataSource;
 
   ProductRepositoryImpl({
     required this.remoteDataSource,
-    CacheService? cacheService,
-  }) : _cacheService = cacheService ?? CacheService.instance;
+    required this.localDataSource,
+  });
 
   @override
   Future<Either<Failure, List<ProductEntity>>> getProducts({
     bool forceRefresh = false,
-    CancelToken? cancelToken,
   }) async {
-    // 1. فحص التخزين المؤقت (Cache)
-    if (!forceRefresh && _cacheService != null) {
+    // 1. Try reading from Hive local cache if not forced
+    if (!forceRefresh) {
       try {
-        final cachedData = _cacheService.get<dynamic>(_cacheKeyProducts);
-        if (cachedData != null && cachedData is List && cachedData.isNotEmpty) {
-          if (cachedData.first is ProductModel) {
-            debugPrint('✓ تم استرجاع المنتجات من الـ Cache بنجاح');
-            return Right(
-              (cachedData as List<ProductModel>).map((m) => m.toEntity()).toList(),
-            );
-          } else {
-            _cacheService.remove(_cacheKeyProducts);
+        final isCacheValid = await localDataSource.isCacheValid();
+        if (isCacheValid) {
+          final cachedModels = await localDataSource.getCachedProducts();
+          if (cachedModels.isNotEmpty) {
+            debugPrint('✓ Products retrieved from Hive cache (${cachedModels.length} products)');
+            return Right(cachedModels.map((m) => m.toEntity()).toList());
           }
         }
       } catch (e) {
-        debugPrint('⚠️ خطأ في قراءة Cache المنتجات: $e');
-        _cacheService.remove(_cacheKeyProducts);
+        debugPrint('⚠️ ProductRepositoryImpl: Hive cache read failed: $e');
       }
     }
 
-    // 2. الجلب من الخادم
+    // 2. Fetch fresh data from remote endpoint
     try {
-      debugPrint('↓ جاري تحميل المنتجات من الخادم...');
-      final models = await remoteDataSource.getProducts(cancelToken: cancelToken);
+      debugPrint('↓ Fetching products from remote API...');
+      final models = await remoteDataSource.getProducts();
 
+      // 3. Cache into Hive
       try {
-        _cacheService?.set(_cacheKeyProducts, models, cacheDurationSeconds: 300);
+        await localDataSource.cacheProducts(models);
       } catch (e) {
-        debugPrint('⚠️ تعذر تخزين المنتجات في Cache: $e');
+        debugPrint('⚠️ ProductRepositoryImpl: Hive caching failed: $e');
       }
 
-      final entities = models.map((m) => m.toEntity()).toList();
-      return Right(entities);
+      return Right(models.map((m) => m.toEntity()).toList());
     } catch (e, stackTrace) {
+      debugPrint('❌ ProductRepositoryImpl (getProducts) Exception: $e');
+
+      // Resilient fallback to cached products during offline/network failure
+      try {
+        final cachedModels = await localDataSource.getCachedProducts();
+        if (cachedModels.isNotEmpty) {
+          debugPrint('✓ Falling back to cached products during network error');
+          return Right(cachedModels.map((m) => m.toEntity()).toList());
+        }
+      } catch (_) {}
+
       final failure = NetworkErrorHandler.handleException(e, stackTrace);
-      debugPrint('❌ [ProductRepositoryImpl] فشل في getProducts: ${failure.toMessage()}');
       return Left(failure);
     }
   }
 
   @override
-  Future<Either<Failure, ProductEntity>> getProductById(
-    String id, {
-    CancelToken? cancelToken,
-  }) async {
+  Future<Either<Failure, ProductEntity>> getProductById(String id) async {
     try {
-      final model = await remoteDataSource.getProductById(id, cancelToken: cancelToken);
+      final model = await remoteDataSource.getProductById(id);
+      try {
+        await localDataSource.cacheProduct(model);
+      } catch (e) {
+        debugPrint('⚠️ ProductRepositoryImpl: Hive caching single product failed: $e');
+      }
       return Right(model.toEntity());
     } catch (e, stackTrace) {
+      debugPrint('❌ ProductRepositoryImpl (getProductById) Exception: $e');
+
+      try {
+        final cached = await localDataSource.getCachedProductById(id);
+        if (cached != null) {
+          debugPrint('✓ Found cached product for offline details view ($id)');
+          return Right(cached.toEntity());
+        }
+      } catch (_) {}
+
       final failure = NetworkErrorHandler.handleException(e, stackTrace);
-      debugPrint('❌ [ProductRepositoryImpl] فشل في getProductById ($id): ${failure.toMessage()}');
       return Left(failure);
     }
   }
 
   @override
   Future<Either<Failure, ProductEntity>> addProduct(
-    Map<String, dynamic> productData, {
-    CancelToken? cancelToken,
-  }) async {
+    Map<String, dynamic> productData,
+  ) async {
     try {
-      final model = await remoteDataSource.addProduct(productData, cancelToken: cancelToken);
-      _cacheService?.remove(_cacheKeyProducts);
+      final model = await remoteDataSource.addProduct(productData);
+      try {
+        await localDataSource.cacheProduct(model);
+      } catch (e) {
+        debugPrint('⚠️ ProductRepositoryImpl: Hive caching newly added product failed: $e');
+      }
       return Right(model.toEntity());
     } catch (e, stackTrace) {
+      debugPrint('❌ ProductRepositoryImpl (addProduct) Exception: $e');
       final failure = NetworkErrorHandler.handleException(e, stackTrace);
-      debugPrint('❌ [ProductRepositoryImpl] فشل في addProduct: ${failure.toMessage()}');
       return Left(failure);
     }
   }
@@ -99,49 +117,50 @@ class ProductRepositoryImpl implements ProductRepository {
   @override
   Future<Either<Failure, ProductEntity>> updateProduct(
     String id,
-    Map<String, dynamic> productData, {
-    CancelToken? cancelToken,
-  }) async {
+    Map<String, dynamic> productData,
+  ) async {
     try {
-      final model = await remoteDataSource.updateProduct(id, productData, cancelToken: cancelToken);
-      _cacheService?.remove(_cacheKeyProducts);
+      final model = await remoteDataSource.updateProduct(id, productData);
+      try {
+        await localDataSource.cacheProduct(model);
+      } catch (e) {
+        debugPrint('⚠️ ProductRepositoryImpl: Hive updating product failed: $e');
+      }
       return Right(model.toEntity());
     } catch (e, stackTrace) {
+      debugPrint('❌ ProductRepositoryImpl (updateProduct) Exception: $e');
       final failure = NetworkErrorHandler.handleException(e, stackTrace);
-      debugPrint('❌ [ProductRepositoryImpl] فشل في updateProduct ($id): ${failure.toMessage()}');
       return Left(failure);
     }
   }
 
   @override
-  Future<Either<Failure, bool>> deleteProduct(
-    String id, {
-    CancelToken? cancelToken,
-  }) async {
+  Future<Either<Failure, bool>> deleteProduct(String id) async {
     try {
-      final result = await remoteDataSource.deleteProduct(id, cancelToken: cancelToken);
+      final result = await remoteDataSource.deleteProduct(id);
       if (result) {
-        _cacheService?.remove(_cacheKeyProducts);
+        try {
+          await localDataSource.deleteCachedProduct(id);
+        } catch (e) {
+          debugPrint('⚠️ ProductRepositoryImpl: Hive removing deleted product failed: $e');
+        }
       }
       return Right(result);
     } catch (e, stackTrace) {
+      debugPrint('❌ ProductRepositoryImpl (deleteProduct) Exception: $e');
       final failure = NetworkErrorHandler.handleException(e, stackTrace);
-      debugPrint('❌ [ProductRepositoryImpl] فشل في deleteProduct ($id): ${failure.toMessage()}');
       return Left(failure);
     }
   }
 
   @override
-  Future<Either<Failure, String>> uploadImage(
-    String filePath, {
-    CancelToken? cancelToken,
-  }) async {
+  Future<Either<Failure, String>> uploadImage(String filePath) async {
     try {
-      final url = await remoteDataSource.uploadImage(filePath, cancelToken: cancelToken);
+      final url = await remoteDataSource.uploadImage(filePath);
       return Right(url);
     } catch (e, stackTrace) {
+      debugPrint('❌ ProductRepositoryImpl (uploadImage) Exception: $e');
       final failure = NetworkErrorHandler.handleException(e, stackTrace);
-      debugPrint('❌ [ProductRepositoryImpl] فشل في uploadImage: ${failure.toMessage()}');
       return Left(failure);
     }
   }
