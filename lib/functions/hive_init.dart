@@ -25,4 +25,5 @@ Future<void> hiveInit() async {
   await Hive.openBox<OrderModel>('orders');
   await Hive.openBox<UserAddress>('addresses');
   await Hive.openBox<UserModel>('users');
+  await Hive.openBox('brands');
 }
