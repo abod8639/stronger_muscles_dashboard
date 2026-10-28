@@ -18,7 +18,14 @@ class PromoSaveActionCard extends StatelessWidget {
       builder: (context, _) => SizedBox(
         width: double.infinity,
         child: FilledButton.icon(
-          onPressed: controller.isLoading ? null : () => controller.savePromo(context),
+          onPressed: controller.isLoading
+              ? null
+              : () async {
+                  final success = await controller.savePromo();
+                  if (success && context.mounted) {
+                    Navigator.of(context).pop();
+                  }
+                },
           style: FilledButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(
