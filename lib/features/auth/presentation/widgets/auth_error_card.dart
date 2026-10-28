@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 
+/// Dumb, reusable [StatelessWidget] displaying structured error messages.
+/// Maps strongly-typed [Failure] variants to contextual icons and titles.
 class AuthErrorCard extends StatelessWidget {
   final Object error;
   final VoidCallback? onRetry;
