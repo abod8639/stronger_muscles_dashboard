@@ -12,8 +12,8 @@ import 'package:stronger_muscles_dashboard/features/navigation/presentation/widg
 import 'package:stronger_muscles_dashboard/features/notifications/notifications_feature.dart';
 import 'package:stronger_muscles_dashboard/features/orders/orders_feature.dart';
 import 'package:stronger_muscles_dashboard/features/products/products_feature.dart';
-import 'package:stronger_muscles_dashboard/features/promos/presentation/pages/promos_screen.dart';
-import 'package:stronger_muscles_dashboard/features/settings/presentation/page/settings_screen.dart';
+import 'package:stronger_muscles_dashboard/features/promos/promos_feature.dart';
+import 'package:stronger_muscles_dashboard/features/settings/settings_feature.dart';
 import 'package:stronger_muscles_dashboard/features/support/presentation/pages/support_screen.dart';
 import 'package:stronger_muscles_dashboard/features/users/presentation/pages/users_page.dart';
 

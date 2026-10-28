@@ -23,10 +23,9 @@ export 'domain/usecases/login_usecase.dart';
 export 'domain/usecases/logout_usecase.dart';
 export 'domain/usecases/signup_usecase.dart';
 
-// Presentation State
+// Presentation State & Providers
 export 'presentation/controllers/auth_state.dart';
-
-
+export 'presentation/controllers/auth_providers.dart';
 
 // Modular Routes
 export 'auth_routes.dart';
