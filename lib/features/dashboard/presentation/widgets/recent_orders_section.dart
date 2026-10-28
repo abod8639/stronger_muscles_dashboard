@@ -6,7 +6,7 @@ import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/base_data_view.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/entities/dashboard_stats_entity.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_providers.dart';
-import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_providers.dart';
+import 'package:stronger_muscles_dashboard/features/navigation/navigation_feature.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/widgets/order_list_tile.dart';
 

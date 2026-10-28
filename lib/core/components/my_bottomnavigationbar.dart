@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_providers.dart';
+import 'package:stronger_muscles_dashboard/features/navigation/navigation_feature.dart';
 
 class MyBottomNavigationBar extends ConsumerWidget {
   const MyBottomNavigationBar({super.key});

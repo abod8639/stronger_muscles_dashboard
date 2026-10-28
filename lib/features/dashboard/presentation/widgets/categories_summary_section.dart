@@ -8,7 +8,7 @@ import 'package:stronger_muscles_dashboard/core/utils/components/category_card.d
 import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/entities/dashboard_stats_entity.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_providers.dart';
-import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_providers.dart';
+import 'package:stronger_muscles_dashboard/features/navigation/navigation_feature.dart';
 
 class CategoriesSummarySection extends ConsumerWidget {
   const CategoriesSummarySection({super.key});

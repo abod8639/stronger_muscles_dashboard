@@ -7,7 +7,7 @@ import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
 import 'package:stronger_muscles_dashboard/features/auth/auth_feature.dart';
 import 'package:stronger_muscles_dashboard/features/brands/brands_feature.dart';
 import 'package:stronger_muscles_dashboard/features/categories/categories_feature.dart';
-import 'package:stronger_muscles_dashboard/features/navigation/presentation/page/main_navigation_screen.dart';
+import 'package:stronger_muscles_dashboard/features/navigation/navigation_feature.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/order_details_screen/order_details_screen.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
