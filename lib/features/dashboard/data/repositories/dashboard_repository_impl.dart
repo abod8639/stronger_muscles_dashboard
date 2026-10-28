@@ -11,7 +11,7 @@ import 'package:stronger_muscles_dashboard/features/dashboard/domain/entities/da
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/repositories/dashboard_repository.dart';
 import 'package:stronger_muscles_dashboard/features/orders/orders_feature.dart';
 import 'package:stronger_muscles_dashboard/features/products/products_feature.dart';
-import 'package:stronger_muscles_dashboard/features/users/domain/repositories/user_repository.dart';
+import 'package:stronger_muscles_dashboard/features/users/users_feature.dart';
 
 /// Single Source of Truth for Dashboard Data.
 /// Orchestrates calls between Remote data aggregation and Hive LocalDataSource caching.
@@ -74,6 +74,13 @@ class DashboardRepositoryImpl implements DashboardRepository {
       final productsResult = await _productRepository.getProducts();
       final categoriesResult = await _categoryRepository.getCategories();
       final usersResult = await _userRepository.getUsersStats();
+
+      if (ordersResult.isLeft() &&
+          productsResult.isLeft() &&
+          categoriesResult.isLeft() &&
+          usersResult.isLeft()) {
+        throw const ServerException(message: 'Constituent dashboard services failed');
+      }
 
       final orders = ordersResult.fold(
         (failure) {
