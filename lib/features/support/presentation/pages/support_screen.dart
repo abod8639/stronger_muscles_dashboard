@@ -1,104 +1,128 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../config/responsive.dart';
-import '../controllers/support_controller.dart';
 import '../controllers/support_providers.dart';
 import '../widgets/support_chat_view.dart';
 import '../widgets/support_stats_header.dart';
 import '../widgets/support_ticket_card.dart';
 
-class SupportScreen extends ConsumerWidget {
+/// Clean Architecture Presentation Page for Support & Complaints module.
+/// Supports responsive split layout on Desktop and Master-Detail navigation on Mobile/Tablet.
+class SupportScreen extends ConsumerStatefulWidget {
   const SupportScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final controller = ref.watch(supportControllerProvider);
+  ConsumerState<SupportScreen> createState() => _SupportScreenState();
+}
 
-    return ListenableBuilder(
-      listenable: controller,
-      builder: (context, _) {
-        final responsive = context.responsive;
-        final theme = Theme.of(context);
-        final isDark = theme.brightness == Brightness.dark;
-        final isDesktop = responsive.screenWidth >= 950;
+class _SupportScreenState extends ConsumerState<SupportScreen> {
+  late final TextEditingController _searchController;
 
-        final hasSelectedTicket = !isDesktop && controller.selectedTicket != null;
+  @override
+  void initState() {
+    super.initState();
+    final initialQuery = ref.read(supportControllerProvider).searchQuery;
+    _searchController = TextEditingController(text: initialQuery);
+  }
 
-        return PopScope(
-          canPop: !hasSelectedTicket,
-          onPopInvokedWithResult: (didPop, result) {
-            if (!didPop && hasSelectedTicket) {
-              controller.setSelectedTicket(null);
-            }
-          },
-          child: Scaffold(
-            backgroundColor: theme.scaffoldBackgroundColor,
-            body: SafeArea(
-              child: hasSelectedTicket
-                  ? const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                      child: SupportChatView(),
-                    )
-                  : Column(
-                      children: [
-                        _buildHeader(context, controller, isDark),
-                        const SupportStatsHeader(),
-                        const SizedBox(height: 8),
-                        _buildFiltersBar(context, controller, isDark),
-                        const SizedBox(height: 10),
-                        Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: responsive.defaultPadding.left,
-                            ),
-                            child: Builder(
-                              builder: (context) {
-                                if (controller.isLoading &&
-                                    controller.tickets.isEmpty) {
-                                  return const Center(
-                                    child: CircularProgressIndicator(),
-                                  );
-                                }
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
-                                if (controller.tickets.isEmpty) {
-                                  return _buildNoTicketsState(context, isDark);
-                                }
+  @override
+  Widget build(BuildContext context) {
+    final responsive = context.responsive;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final isDesktop = responsive.screenWidth >= 950;
 
-                                if (isDesktop) {
-                                  return Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      SizedBox(
-                                        width: 380,
-                                        child: _buildTicketsList(
-                                            context, controller, isDark),
-                                      ),
-                                      const SizedBox(width: 14),
-                                      const Expanded(
-                                        child: SupportChatView(),
-                                      ),
-                                    ],
-                                  );
-                                } else {
-                                  return _buildTicketsList(
-                                      context, controller, isDark);
-                                }
-                              },
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 14),
-                      ],
-                    ),
-            ),
-          ),
-        );
+    final hasSelectedTicket = !isDesktop &&
+        ref.watch(
+            supportControllerProvider.select((s) => s.selectedTicket != null));
+
+    return PopScope(
+      canPop: !hasSelectedTicket,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop && hasSelectedTicket) {
+          ref
+              .read(supportControllerProvider.notifier)
+              .setSelectedTicket(null);
+        }
       },
+      child: Scaffold(
+        backgroundColor: theme.scaffoldBackgroundColor,
+        body: SafeArea(
+          child: hasSelectedTicket
+              ? const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                  child: SupportChatView(),
+                )
+              : Column(
+                  children: [
+                    _buildHeader(context, isDark),
+                    const SupportStatsHeader(),
+                    const SizedBox(height: 8),
+                    _buildFiltersBar(context, isDark),
+                    const SizedBox(height: 10),
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: responsive.defaultPadding.left,
+                        ),
+                        child: Consumer(
+                          builder: (context, ref, _) {
+                            final isLoading = ref.watch(
+                              supportControllerProvider.select(
+                                (s) => s.isLoading && s.tickets.isEmpty,
+                              ),
+                            );
+                            final tickets = ref.watch(
+                              supportControllerProvider
+                                  .select((s) => s.tickets),
+                            );
+
+                            if (isLoading) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+
+                            if (tickets.isEmpty) {
+                              return _buildNoTicketsState(context, isDark);
+                            }
+
+                            if (isDesktop) {
+                              return Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    width: 380,
+                                    child: _buildTicketsList(context, isDark),
+                                  ),
+                                  const SizedBox(width: 14),
+                                  const Expanded(
+                                    child: SupportChatView(),
+                                  ),
+                                ],
+                              );
+                            } else {
+                              return _buildTicketsList(context, isDark);
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                  ],
+                ),
+        ),
+      ),
     );
   }
 
-  Widget _buildHeader(
-      BuildContext context, SupportController controller, bool isDark) {
+  Widget _buildHeader(BuildContext context, bool isDark) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final responsive = context.responsive;
@@ -160,18 +184,24 @@ class SupportScreen extends ConsumerWidget {
               padding: const EdgeInsets.all(10),
             ),
             icon: const Icon(Icons.refresh_rounded, size: 20),
-            onPressed: () => controller.fetchTickets(),
+            onPressed: () => ref
+                .read(supportControllerProvider.notifier)
+                .fetchTickets(),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildFiltersBar(
-      BuildContext context, SupportController controller, bool isDark) {
+  Widget _buildFiltersBar(BuildContext context, bool isDark) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final responsive = context.responsive;
+
+    final selectedPriority = ref.watch(
+        supportControllerProvider.select((s) => s.selectedPriority));
+    final searchQuery =
+        ref.watch(supportControllerProvider.select((s) => s.searchQuery));
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: responsive.defaultPadding.left),
@@ -190,7 +220,10 @@ class SupportScreen extends ConsumerWidget {
                     ),
                   ),
                   child: TextField(
-                    onChanged: (val) => controller.onSearchChanged(val),
+                    controller: _searchController,
+                    onChanged: (val) => ref
+                        .read(supportControllerProvider.notifier)
+                        .onSearchChanged(val),
                     style: TextStyle(
                       fontSize: 13,
                       color: colorScheme.onSurface,
@@ -201,13 +234,22 @@ class SupportScreen extends ConsumerWidget {
                           : 'ابحث برقم التذكرة، اسم العميل، البريد، أو الموضوع...',
                       hintStyle: TextStyle(
                         fontSize: 12,
-                        color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                        color:
+                            colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                       ),
-                      prefixIcon: Icon(Icons.search_rounded, size: 18, color: colorScheme.onSurfaceVariant),
-                      suffixIcon: controller.searchQuery.isNotEmpty
+                      prefixIcon: Icon(Icons.search_rounded,
+                          size: 18, color: colorScheme.onSurfaceVariant),
+                      suffixIcon: searchQuery.isNotEmpty
                           ? IconButton(
-                              icon: Icon(Icons.clear_rounded, size: 16, color: colorScheme.onSurfaceVariant),
-                              onPressed: () => controller.onSearchChanged(''),
+                              icon: Icon(Icons.clear_rounded,
+                                  size: 16,
+                                  color: colorScheme.onSurfaceVariant),
+                              onPressed: () {
+                                _searchController.clear();
+                                ref
+                                    .read(supportControllerProvider.notifier)
+                                    .onSearchChanged('');
+                              },
                             )
                           : const SizedBox.shrink(),
                       border: InputBorder.none,
@@ -230,24 +272,40 @@ class SupportScreen extends ConsumerWidget {
                 ),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
-                    value: controller.selectedPriority,
+                    value: selectedPriority,
                     dropdownColor: colorScheme.surfaceContainer,
-                    icon: Icon(Icons.arrow_drop_down, color: colorScheme.onSurfaceVariant),
-                    style: TextStyle(fontSize: 12.5, color: colorScheme.onSurface),
+                    icon: Icon(Icons.arrow_drop_down,
+                        color: colorScheme.onSurfaceVariant),
+                    style: TextStyle(
+                        fontSize: 12.5, color: colorScheme.onSurface),
                     items: [
                       DropdownMenuItem(
-                          value: 'all', child: Text('جميع الأولويات', style: TextStyle(color: colorScheme.onSurface))),
+                          value: 'all',
+                          child: Text('جميع الأولويات',
+                              style: TextStyle(color: colorScheme.onSurface))),
                       DropdownMenuItem(
-                          value: 'urgent', child: Text('عاجلة جداً 🔥', style: TextStyle(color: colorScheme.onSurface))),
+                          value: 'urgent',
+                          child: Text('عاجلة جداً 🔥',
+                              style: TextStyle(color: colorScheme.onSurface))),
                       DropdownMenuItem(
-                          value: 'high', child: Text('أولوية مرتفعة', style: TextStyle(color: colorScheme.onSurface))),
+                          value: 'high',
+                          child: Text('أولوية مرتفعة',
+                              style: TextStyle(color: colorScheme.onSurface))),
                       DropdownMenuItem(
-                          value: 'normal', child: Text('أولوية عادية', style: TextStyle(color: colorScheme.onSurface))),
+                          value: 'normal',
+                          child: Text('أولوية عادية',
+                              style: TextStyle(color: colorScheme.onSurface))),
                       DropdownMenuItem(
-                          value: 'low', child: Text('منخفضة', style: TextStyle(color: colorScheme.onSurface))),
+                          value: 'low',
+                          child: Text('منخفضة',
+                              style: TextStyle(color: colorScheme.onSurface))),
                     ],
                     onChanged: (val) {
-                      if (val != null) controller.updateSelectedPriority(val);
+                      if (val != null) {
+                        ref
+                            .read(supportControllerProvider.notifier)
+                            .updateSelectedPriority(val);
+                      }
                     },
                   ),
                 ),
@@ -259,26 +317,26 @@ class SupportScreen extends ConsumerWidget {
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                _buildStatusChip(context, controller, 'all', 'جميع التذاكر'),
-                _buildStatusChip(context, controller, 'open', 'جديدة'),
-                _buildStatusChip(context, controller, 'in_progress', 'قيد المعالجة'),
-                _buildStatusChip(context, controller, 'waiting_user', 'بانتظار العميل'),
-                _buildStatusChip(context, controller, 'resolved', 'تم الحل'),
-                _buildStatusChip(context, controller, 'closed', 'مغلقة'),
+                _buildStatusChip(context, 'all', 'جميع التذاكر'),
+                _buildStatusChip(context, 'open', 'جديدة'),
+                _buildStatusChip(context, 'in_progress', 'قيد المعالجة'),
+                _buildStatusChip(context, 'waiting_user', 'بانتظار العميل'),
+                _buildStatusChip(context, 'resolved', 'تم الحل'),
+                _buildStatusChip(context, 'closed', 'مغلقة'),
                 const SizedBox(width: 12),
                 Container(
                     width: 1,
                     height: 20,
                     color: colorScheme.outlineVariant),
                 const SizedBox(width: 12),
-                _buildCategoryChip(context, controller, 'all', 'كل الأقسام'),
+                _buildCategoryChip(context, 'all', 'كل الأقسام'),
                 _buildCategoryChip(
-                    context, controller, 'orders_shipping', 'الطلبات والشحن'),
-                _buildCategoryChip(context, controller, 'supplements', 'المكملات'),
+                    context, 'orders_shipping', 'الطلبات والشحن'),
+                _buildCategoryChip(context, 'supplements', 'المكملات'),
                 _buildCategoryChip(
-                    context, controller, 'payment_refunds', 'المدفوعات'),
-                _buildCategoryChip(context, controller, 'complaint', 'شكاوى رسمية'),
-                _buildCategoryChip(context, controller, 'technical', 'مشاكل تقنية'),
+                    context, 'payment_refunds', 'المدفوعات'),
+                _buildCategoryChip(context, 'complaint', 'شكاوى رسمية'),
+                _buildCategoryChip(context, 'technical', 'مشاكل تقنية'),
               ],
             ),
           ),
@@ -288,53 +346,85 @@ class SupportScreen extends ConsumerWidget {
   }
 
   Widget _buildStatusChip(
-      BuildContext context, SupportController controller, String value, String label) {
+      BuildContext context, String value, String label) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final isSelected = controller.selectedStatus == value;
+    final selectedStatus = ref.watch(
+        supportControllerProvider.select((s) => s.selectedStatus));
+    final isSelected = selectedStatus == value;
+
     return Padding(
       padding: const EdgeInsets.only(right: 6),
       child: FilterChip(
-        label: Text(label, style: TextStyle(fontSize: 11, color: isSelected ? colorScheme.onPrimaryContainer : colorScheme.onSurface)),
+        label: Text(label,
+            style: TextStyle(
+                fontSize: 11,
+                color: isSelected
+                    ? colorScheme.onPrimaryContainer
+                    : colorScheme.onSurface)),
         selected: isSelected,
         selectedColor: colorScheme.primaryContainer,
         backgroundColor: colorScheme.surfaceContainerHigh,
-        side: BorderSide(color: isSelected ? colorScheme.primary : colorScheme.outlineVariant),
-        onSelected: (_) => controller.updateSelectedStatus(value),
+        side: BorderSide(
+            color: isSelected
+                ? colorScheme.primary
+                : colorScheme.outlineVariant),
+        onSelected: (_) => ref
+            .read(supportControllerProvider.notifier)
+            .updateSelectedStatus(value),
       ),
     );
   }
 
   Widget _buildCategoryChip(
-      BuildContext context, SupportController controller, String value, String label) {
+      BuildContext context, String value, String label) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final isSelected = controller.selectedCategory == value;
+    final selectedCategory = ref.watch(
+        supportControllerProvider.select((s) => s.selectedCategory));
+    final isSelected = selectedCategory == value;
+
     return Padding(
       padding: const EdgeInsets.only(right: 6),
       child: ChoiceChip(
-        label: Text(label, style: TextStyle(fontSize: 11, color: isSelected ? colorScheme.onPrimaryContainer : colorScheme.onSurface)),
+        label: Text(label,
+            style: TextStyle(
+                fontSize: 11,
+                color: isSelected
+                    ? colorScheme.onPrimaryContainer
+                    : colorScheme.onSurface)),
         selected: isSelected,
         selectedColor: colorScheme.primaryContainer,
         backgroundColor: colorScheme.surfaceContainerHigh,
-        side: BorderSide(color: isSelected ? colorScheme.primary : colorScheme.outlineVariant),
-        onSelected: (_) => controller.updateSelectedCategory(value),
+        side: BorderSide(
+            color: isSelected
+                ? colorScheme.primary
+                : colorScheme.outlineVariant),
+        onSelected: (_) => ref
+            .read(supportControllerProvider.notifier)
+            .updateSelectedCategory(value),
       ),
     );
   }
 
-  Widget _buildTicketsList(
-      BuildContext context, SupportController controller, bool isDark) {
+  Widget _buildTicketsList(BuildContext context, bool isDark) {
+    final filteredTickets = ref.watch(
+        supportControllerProvider.select((s) => s.filteredTickets));
+    final selectedTicketId = ref.watch(
+        supportControllerProvider.select((s) => s.selectedTicket?.id));
+
     return ListView.builder(
-      itemCount: controller.filteredTickets.length,
+      itemCount: filteredTickets.length,
       itemBuilder: (context, index) {
-        final ticket = controller.filteredTickets[index];
-        final isSelected = controller.selectedTicket?.id == ticket.id;
+        final ticket = filteredTickets[index];
+        final isSelected = selectedTicketId == ticket.id;
 
         return SupportTicketCard(
           ticket: ticket,
           isSelected: isSelected,
-          onTap: () => controller.selectTicket(ticket),
+          onTap: () => ref
+              .read(supportControllerProvider.notifier)
+              .selectTicket(ticket),
         );
       },
     );
