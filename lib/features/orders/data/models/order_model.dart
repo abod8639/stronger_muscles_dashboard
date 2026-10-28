@@ -38,28 +38,6 @@ class OrderModel with _$OrderModel {
   String get userEmail => user?.email ?? 'No email';
   String? get userPhoto => user?.photoUrl;
 
-  OrderEntity toEntity() => OrderEntity(
-        id: id,
-        userId: userId,
-        userName: userName,
-        userEmail: userEmail,
-        userPhoto: userPhoto,
-        phoneNumber: phoneNumber,
-        totalAmount: totalAmount,
-        subtotal: subtotal,
-        shippingCost: shippingCost,
-        discount: discount,
-        status: status,
-        paymentStatus: paymentStatus,
-        paymentMethod: paymentMethod,
-        addressId: addressId,
-        shippingAddress: shippingAddress?.toEntity(),
-        trackingNumber: trackingNumber,
-        notes: notes,
-        orderDate: orderDate,
-        items: items?.map((e) => e.toEntity()).toList() ?? const [],
-      );
-
   factory OrderModel.fromJson(Map<String, dynamic> json) =>
       _$OrderModelFromJson(_mapOrderJson(json));
 
@@ -107,18 +85,6 @@ class OrderItemModel with _$OrderItemModel {
     @HiveField(9) String? selectedSize,
     @HiveField(10) String? fullName,
   }) = _OrderItemModel;
-
-  OrderItemEntity toEntity() => OrderItemEntity(
-        id: id,
-        productId: productId,
-        productName: productName,
-        quantity: quantity,
-        unitPrice: unitPrice,
-        subtotal: subtotal,
-        imageUrl: imageUrl,
-        selectedFlavor: selectedFlavor,
-        selectedSize: selectedSize,
-      );
 
   factory OrderItemModel.fromJson(Map<String, dynamic> json) =>
       _$OrderItemModelFromJson(_mapItemJson(json));
