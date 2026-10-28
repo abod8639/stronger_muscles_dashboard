@@ -10,7 +10,7 @@ import 'package:stronger_muscles_dashboard/features/dashboard/dashboard_feature.
 import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_providers.dart';
 import 'package:stronger_muscles_dashboard/features/navigation/presentation/widget/navigation_error_fallback.dart';
 import 'package:stronger_muscles_dashboard/features/notifications/notifications_feature.dart';
-import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/orders_page.dart';
+import 'package:stronger_muscles_dashboard/features/orders/orders_feature.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/pages/products_screen.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/pages/promos_screen.dart';
 import 'package:stronger_muscles_dashboard/features/settings/presentation/page/settings_screen.dart';

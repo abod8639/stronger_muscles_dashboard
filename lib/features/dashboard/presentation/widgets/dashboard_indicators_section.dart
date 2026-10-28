@@ -5,7 +5,7 @@ import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/premium_indicator_card.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/entities/dashboard_stats_entity.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_providers.dart';
-import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
+import 'package:stronger_muscles_dashboard/features/orders/orders_feature.dart';
 
 class DashboardIndicatorsSection extends ConsumerWidget {
   const DashboardIndicatorsSection({super.key});

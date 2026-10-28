@@ -1,5 +1,5 @@
 import 'package:stronger_muscles_dashboard/features/categories/categories_feature.dart';
-import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
+import 'package:stronger_muscles_dashboard/features/orders/orders_feature.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
 
 /// Pure Dart Domain Entity representing consolidated Dashboard statistics.

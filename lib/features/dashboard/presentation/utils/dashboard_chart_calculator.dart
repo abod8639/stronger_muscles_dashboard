@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 import 'package:fl_chart/fl_chart.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/presentation/models/orders_chart_data.dart';
-import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
+import 'package:stronger_muscles_dashboard/features/orders/orders_feature.dart';
 
 /// Pure calculation utility for Dashboard charts and status trend metrics.
 /// Decoupled from Riverpod and Flutter framework state for 100% testability.

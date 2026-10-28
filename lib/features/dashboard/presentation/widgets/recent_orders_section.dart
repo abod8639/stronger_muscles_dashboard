@@ -7,8 +7,7 @@ import 'package:stronger_muscles_dashboard/core/utils/components/base_data_view.
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/entities/dashboard_stats_entity.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_providers.dart';
 import 'package:stronger_muscles_dashboard/features/navigation/navigation_feature.dart';
-import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
-import 'package:stronger_muscles_dashboard/features/orders/presentation/widgets/order_list_tile.dart';
+import 'package:stronger_muscles_dashboard/features/orders/orders_feature.dart';
 
 class RecentOrdersSection extends ConsumerWidget {
   const RecentOrdersSection({super.key});

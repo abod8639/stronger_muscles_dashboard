@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
-import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
+import 'package:stronger_muscles_dashboard/features/orders/orders_feature.dart';
 
 /// شارة حالة الطلب المتوافقة مع معايير Material Design 3
 class OrderStatusBadge extends StatelessWidget {
