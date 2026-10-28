@@ -9,4 +9,5 @@ abstract class AppRoutes {
   static const String categoryForm = '/categories/form';
   static const String promoForm = '/promos/form';
   static const String orderDetails = '/orders/details';
+  static const String brands = '/brands';
 }
