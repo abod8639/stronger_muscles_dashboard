@@ -10,8 +10,7 @@ import 'package:stronger_muscles_dashboard/features/categories/categories_featur
 import 'package:stronger_muscles_dashboard/features/navigation/navigation_feature.dart';
 import 'package:stronger_muscles_dashboard/features/notifications/notifications_feature.dart';
 import 'package:stronger_muscles_dashboard/features/orders/orders_feature.dart';
-import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
-import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_form_page.dart';
+import 'package:stronger_muscles_dashboard/features/products/products_feature.dart';
 import 'package:stronger_muscles_dashboard/features/promos/domain/entities/promo_entity.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/pages/promo_form_screen.dart';
 
@@ -36,14 +35,7 @@ final GoRouter appRouter = GoRouter(
     ...AuthRoutes.routes,
     ...BrandsRoutes.routes,
     ...NotificationsRoutes.routes,
-    GoRoute(
-      path: AppRoutes.productForm,
-      name: 'productForm',
-      builder: (context, state) {
-        final product = state.extra as ProductEntity?;
-        return ProductFormPage(product: product);
-      },
-    ),
+    ...ProductsRoutes.routes,
     ...CategoriesRoutes.routes,
     GoRoute(
       path: AppRoutes.promoForm,
