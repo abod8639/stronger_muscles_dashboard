@@ -30,22 +30,23 @@ void main() {
       expect(b1, isNot(equals(b3)));
     });
 
-    test('displayName returns language-specific name with graceful fallback', () {
+    test('getName returns language-specific name with graceful fallback', () {
       const b = BrandEntity(
         id: '1',
         nameAr: 'شركة الرياضة',
         nameEn: 'Sport Co',
       );
 
-      expect(b.displayName('ar'), 'شركة الرياضة');
-      expect(b.displayName('en'), 'Sport Co');
-      expect(b.displayName('fr'), 'Sport Co'); // Fallback to English
+      expect(b.getName('ar'), 'شركة الرياضة');
+      expect(b.getName('en'), 'Sport Co');
+      expect(b.displayName, 'شركة الرياضة');
 
       const bArOnly = BrandEntity(
         id: '2',
         nameAr: 'عربي فقط',
+        nameEn: '',
       );
-      expect(bArOnly.displayName('en'), 'عربي فقط'); // Fallback to Arabic
+      expect(bArOnly.displayName, 'عربي فقط');
     });
 
     test('copyWith produces expected updated clone', () {
@@ -69,8 +70,6 @@ void main() {
         'name_ar': 'ماركة عالمية',
         'name_en': 'Global Brand',
         'image': 'https://cdn.example.com/logo.jpg',
-        'created_at': '2026-01-01T00:00:00Z',
-        'updated_at': '2026-01-02T00:00:00Z',
       };
 
       final model = BrandModel.fromJson(json);
@@ -78,16 +77,14 @@ void main() {
       expect(model.id, 'b-100');
       expect(model.nameAr, 'ماركة عالمية');
       expect(model.nameEn, 'Global Brand');
-      expect(model.image, 'https://cdn.example.com/logo.jpg');
-      expect(model.createdAt, '2026-01-01T00:00:00Z');
-      expect(model.updatedAt, '2026-01-02T00:00:00Z');
+      expect(model.imageUrl, 'https://cdn.example.com/logo.jpg');
     });
 
     test('fromJson handles int IDs and fallback field names safely', () {
       final json = {
         'id': 999,
         'name': 'Fallback Generic Name',
-        'logo': 'https://cdn.example.com/logo2.jpg',
+        'image': 'https://cdn.example.com/logo2.jpg',
       };
 
       final model = BrandModel.fromJson(json);
@@ -95,7 +92,7 @@ void main() {
       expect(model.id, '999');
       expect(model.nameAr, 'Fallback Generic Name');
       expect(model.nameEn, 'Fallback Generic Name');
-      expect(model.image, 'https://cdn.example.com/logo2.jpg');
+      expect(model.imageUrl, 'https://cdn.example.com/logo2.jpg');
     });
 
     test('toJson serializes model back to Map', () {
@@ -103,14 +100,14 @@ void main() {
         id: '1',
         nameAr: 'أ',
         nameEn: 'A',
-        image: 'img.png',
+        imageUrl: 'img.png',
       );
 
       final map = model.toJson();
       expect(map['id'], '1');
       expect(map['name_ar'], 'أ');
       expect(map['name_en'], 'A');
-      expect(map['image'], 'img.png');
+      expect(map['image_url'], 'img.png');
     });
 
     test('toEntity and toModel map bidirectionally', () {
@@ -118,18 +115,14 @@ void main() {
         id: '77',
         nameAr: 'العلامة',
         nameEn: 'Brand',
-        image: 'brand.png',
-        createdAt: '2026-01-01',
-        updatedAt: '2026-01-02',
+        imageUrl: 'brand.png',
       );
 
       final entity = model.toEntity();
       expect(entity.id, '77');
       expect(entity.nameAr, 'العلامة');
       expect(entity.nameEn, 'Brand');
-      expect(entity.image, 'brand.png');
-      expect(entity.createdAt, '2026-01-01');
-      expect(entity.updatedAt, '2026-01-02');
+      expect(entity.imageUrl, 'brand.png');
 
       final backToModel = entity.toModel();
       expect(backToModel.id, entity.id);
@@ -139,8 +132,8 @@ void main() {
 
     test('toEntities maps list of models to list of entities', () {
       final models = [
-        const BrandModel(id: '1', nameAr: 'أ'),
-        const BrandModel(id: '2', nameAr: 'ب'),
+        const BrandModel(id: '1', nameAr: 'أ', nameEn: 'A'),
+        const BrandModel(id: '2', nameAr: 'ب', nameEn: 'B'),
       ];
 
       final entities = models.toEntities();
