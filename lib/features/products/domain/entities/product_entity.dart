@@ -1,3 +1,5 @@
+/// Pure Dart Domain Entity representing a Product.
+/// 100% pure Dart - zero imports from external frameworks or storage packages.
 class ProductEntity {
   final String id;
   final String nameAr;
@@ -45,7 +47,7 @@ class ProductEntity {
 
   String getName(String lang) => lang == 'ar' ? nameAr : nameEn;
   String getDescription(String lang) => lang == 'ar' ? descriptionAr : descriptionEn;
-  
+
   double get finalPrice => discountPrice ?? price;
   bool get isInStock => stockQuantity > 0;
 
@@ -92,8 +94,35 @@ class ProductEntity {
       variants: variants ?? this.variants,
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ProductEntity &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          nameAr == other.nameAr &&
+          nameEn == other.nameEn &&
+          price == other.price &&
+          categoryId == other.categoryId &&
+          stockQuantity == other.stockQuantity &&
+          isActive == other.isActive;
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      nameAr.hashCode ^
+      nameEn.hashCode ^
+      price.hashCode ^
+      categoryId.hashCode ^
+      stockQuantity.hashCode ^
+      isActive.hashCode;
+
+  @override
+  String toString() => 'ProductEntity(id: $id, name: $nameAr, price: $price, stock: $stockQuantity)';
 }
 
+/// Pure Dart Domain Entity representing a Product Size variant.
 class ProductSizeEntity {
   final String size;
   final double price;
@@ -104,8 +133,36 @@ class ProductSizeEntity {
     required this.price,
     this.discountPrice,
   });
+
+  ProductSizeEntity copyWith({
+    String? size,
+    double? price,
+    double? discountPrice,
+  }) {
+    return ProductSizeEntity(
+      size: size ?? this.size,
+      price: price ?? this.price,
+      discountPrice: discountPrice ?? this.discountPrice,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ProductSizeEntity &&
+          runtimeType == other.runtimeType &&
+          size == other.size &&
+          price == other.price &&
+          discountPrice == other.discountPrice;
+
+  @override
+  int get hashCode => size.hashCode ^ price.hashCode ^ discountPrice.hashCode;
+
+  @override
+  String toString() => 'ProductSizeEntity(size: $size, price: $price)';
 }
 
+/// Pure Dart Domain Entity representing an advanced Product Variant.
 class ProductVariantEntity {
   final String id;
   final String sku;
@@ -126,4 +183,50 @@ class ProductVariantEntity {
     required this.attributes,
     required this.isActive,
   });
+
+  ProductVariantEntity copyWith({
+    String? id,
+    String? sku,
+    double? price,
+    double? discountPrice,
+    double? effectivePrice,
+    int? stockQuantity,
+    Map<String, dynamic>? attributes,
+    bool? isActive,
+  }) {
+    return ProductVariantEntity(
+      id: id ?? this.id,
+      sku: sku ?? this.sku,
+      price: price ?? this.price,
+      discountPrice: discountPrice ?? this.discountPrice,
+      effectivePrice: effectivePrice ?? this.effectivePrice,
+      stockQuantity: stockQuantity ?? this.stockQuantity,
+      attributes: attributes ?? this.attributes,
+      isActive: isActive ?? this.isActive,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ProductVariantEntity &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          sku == other.sku &&
+          price == other.price &&
+          effectivePrice == other.effectivePrice &&
+          stockQuantity == other.stockQuantity &&
+          isActive == other.isActive;
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      sku.hashCode ^
+      price.hashCode ^
+      effectivePrice.hashCode ^
+      stockQuantity.hashCode ^
+      isActive.hashCode;
+
+  @override
+  String toString() => 'ProductVariantEntity(id: $id, sku: $sku, price: $price)';
 }
