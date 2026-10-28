@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stronger_muscles_dashboard/features/auth/presentation/controllers/auth_providers.dart';
 import 'package:stronger_muscles_dashboard/features/brands/presentation/controllers/brands_providers.dart';
-import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_providers.dart';
+import 'package:stronger_muscles_dashboard/features/products/products_feature.dart';
 import 'package:stronger_muscles_dashboard/features/promos/data/datasources/promo_remote_datasource.dart';
 import 'package:stronger_muscles_dashboard/features/promos/data/repositories/promo_repository_impl.dart';
 import 'package:stronger_muscles_dashboard/features/promos/domain/entities/promo_entity.dart';

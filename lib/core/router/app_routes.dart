@@ -13,4 +13,5 @@ abstract class AppRoutes {
   static const String brands = '/brands';
   static const String notifications = '/notifications';
   static const String orders = '/orders';
+  static const String products = '/products';
 }

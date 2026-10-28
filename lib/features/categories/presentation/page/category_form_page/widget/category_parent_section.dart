@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/features/categories/presentation/controllers/categories_controller.dart';
-import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/category_tree_selector.dart';
+import 'package:stronger_muscles_dashboard/features/products/products_feature.dart';
 
 /// قسم اختيار وتبعية التصنيف الأب مع إمكانية إلغاء التحديد
 class CategoryParentSection extends StatelessWidget {

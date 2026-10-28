@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
-import '../controllers/products_controller.dart';
 import '../controllers/products_providers.dart';
 
 class ProductBulkActionsBar extends ConsumerWidget {

@@ -1,6 +1,6 @@
 import 'package:stronger_muscles_dashboard/features/categories/categories_feature.dart';
 import 'package:stronger_muscles_dashboard/features/orders/orders_feature.dart';
-import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
+import 'package:stronger_muscles_dashboard/features/products/products_feature.dart';
 
 /// Pure Dart Domain Entity representing consolidated Dashboard statistics.
 /// 100% pure Dart: zero imports from Flutter UI, Dio, Hive, or 3rd-party SDKs.

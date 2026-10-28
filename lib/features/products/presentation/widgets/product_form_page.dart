@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
-import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_providers.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_form_mixin.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_form_sections.dart';
