@@ -1,17 +1,14 @@
-import 'package:dartz/dartz.dart';
-import 'package:dio/dio.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import '../repositories/category_repository.dart';
 
+/// Pure Dart UseCase for deleting a category by ID.
 class DeleteCategoryUseCase {
-  final CategoryRepository repository;
+  final CategoryRepository _repository;
 
-  DeleteCategoryUseCase(this.repository);
+  const DeleteCategoryUseCase(this._repository);
 
-  Future<Either<Failure, Unit>> call(
-    String id, {
-    CancelToken? cancelToken,
-  }) async {
-    return await repository.deleteCategory(id, cancelToken: cancelToken);
+  Future<Either<Failure, Unit>> call(String id) {
+    return _repository.deleteCategory(id);
   }
 }
