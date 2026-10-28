@@ -1,3 +1,5 @@
+/// Pure Dart Domain Entity representing a physical shipping or billing address.
+/// 100% pure Dart - zero imports from external frameworks or storage packages.
 class AddressEntity {
   final int id;
   final int? userId;
@@ -34,13 +36,66 @@ class AddressEntity {
   });
 
   String get fullAddress => [
-    street,
-    city,
-    state,
-    postalCode,
-    country,
-  ].where((e) => e != null && e.isNotEmpty).join(', ');
+        street,
+        city,
+        state,
+        postalCode,
+        country,
+      ].where((e) => e != null && e.isNotEmpty).join(', ');
 
   String get shortAddress => '$city, ${country ?? ''}';
   bool get hasCoordinates => latitude != null && longitude != null;
+
+  AddressEntity copyWith({
+    int? id,
+    int? userId,
+    String? label,
+    String? fullName,
+    String? phone,
+    String? street,
+    String? city,
+    String? state,
+    String? postalCode,
+    String? country,
+    bool? isDefault,
+    double? latitude,
+    double? longitude,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return AddressEntity(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      label: label ?? this.label,
+      fullName: fullName ?? this.fullName,
+      phone: phone ?? this.phone,
+      street: street ?? this.street,
+      city: city ?? this.city,
+      state: state ?? this.state,
+      postalCode: postalCode ?? this.postalCode,
+      country: country ?? this.country,
+      isDefault: isDefault ?? this.isDefault,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AddressEntity &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          street == other.street &&
+          city == other.city &&
+          isDefault == other.isDefault;
+
+  @override
+  int get hashCode =>
+      id.hashCode ^ street.hashCode ^ city.hashCode ^ isDefault.hashCode;
+
+  @override
+  String toString() => 'AddressEntity(id: $id, city: $city, street: $street)';
 }
