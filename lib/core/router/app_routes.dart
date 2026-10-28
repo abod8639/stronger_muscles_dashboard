@@ -17,4 +17,5 @@ abstract class AppRoutes {
   static const String promos = '/promos';
   static const String settings = '/settings';
   static const String support = '/support';
+  static const String users = '/users';
 }
