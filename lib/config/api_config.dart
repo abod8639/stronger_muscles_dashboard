@@ -59,6 +59,9 @@ class ApiConfig {
   // Navigation Badges
   static const String adminNavigationBadges = '/admin/navigation/badges';
 
+  // Store & Dashboard Settings
+  static const String adminSettings = '/admin/settings';
+
   // Image Uploads
   static const String adminUploadProductImage = '/admin/upload/product-image';
   static const String adminUploadCategoryImage = '/admin/upload/category-image';

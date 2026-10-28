@@ -11,8 +11,8 @@ import 'package:stronger_muscles_dashboard/features/navigation/navigation_featur
 import 'package:stronger_muscles_dashboard/features/notifications/notifications_feature.dart';
 import 'package:stronger_muscles_dashboard/features/orders/orders_feature.dart';
 import 'package:stronger_muscles_dashboard/features/products/products_feature.dart';
-import 'package:stronger_muscles_dashboard/features/promos/domain/entities/promo_entity.dart';
-import 'package:stronger_muscles_dashboard/features/promos/presentation/pages/promo_form_screen.dart';
+import 'package:stronger_muscles_dashboard/features/promos/promos_feature.dart';
+import 'package:stronger_muscles_dashboard/features/settings/settings_feature.dart';
 
 /// المفتاح العام للتنقل في GoRouter
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -37,15 +37,9 @@ final GoRouter appRouter = GoRouter(
     ...NotificationsRoutes.routes,
     ...ProductsRoutes.routes,
     ...CategoriesRoutes.routes,
-    GoRoute(
-      path: AppRoutes.promoForm,
-      name: 'promoForm',
-      builder: (context, state) {
-        final promo = state.extra as PromoEntity?;
-        return PromoFormScreen(promo: promo);
-      },
-    ),
+    ...PromosRoutes.routes,
     ...OrdersRoutes.routes,
+    ...SettingsRoutes.routes,
   ],
   redirect: (BuildContext context, GoRouterState state) {
     final isLoggedIn = AuthService.instance.isLoggedIn();
