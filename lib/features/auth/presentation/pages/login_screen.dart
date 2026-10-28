@@ -5,7 +5,7 @@ import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/build_background.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
-import '../../auth_di.dart';
+import 'package:stronger_muscles_dashboard/features/auth/presentation/controllers/auth_providers.dart';
 import '../controllers/auth_state.dart';
 import '../widgets/auth_error_card.dart';
 import '../widgets/auth_primary_button.dart';

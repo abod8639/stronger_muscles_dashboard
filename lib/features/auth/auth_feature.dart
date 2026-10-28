@@ -26,16 +26,7 @@ export 'domain/usecases/signup_usecase.dart';
 // Presentation State
 export 'presentation/controllers/auth_state.dart';
 
-// Public Scoped Dependency Injection Providers
-export 'auth_di.dart'
-    show
-        authRepositoryProvider,
-        authControllerProvider,
-        loginUseCaseProvider,
-        signupUseCaseProvider,
-        logoutUseCaseProvider,
-        checkAuthStatusUseCaseProvider,
-        getCurrentUserUseCaseProvider;
+
 
 // Modular Routes
 export 'auth_routes.dart';

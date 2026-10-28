@@ -1,11 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:stronger_muscles_dashboard/features/auth/presentation/controllers/auth_providers.dart';
 import '../../domain/entities/auth_entity.dart';
 import '../../domain/usecases/check_auth_status_usecase.dart';
 import '../../domain/usecases/get_current_user_usecase.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/logout_usecase.dart';
 import '../../domain/usecases/signup_usecase.dart';
-import '../../auth_di.dart';
 import 'auth_state.dart';
 
 /// Presentation Controller managing authentication state.
