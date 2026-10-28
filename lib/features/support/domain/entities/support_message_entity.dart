@@ -1,3 +1,5 @@
+/// 100% Pure Dart Domain Entity representing a single message within a support ticket thread.
+/// Adheres strictly to Clean Architecture: Zero dependencies on Flutter UI, Dio, Hive, or 3rd-party SDKs.
 class SupportMessageEntity {
   final int id;
   final int ticketId;
@@ -23,33 +25,65 @@ class SupportMessageEntity {
     required this.createdAt,
   });
 
-  factory SupportMessageEntity.fromJson(Map<String, dynamic> json) {
-    List<String> parsedAttachments = [];
-    if (json['attachments'] is List) {
-      parsedAttachments = (json['attachments'] as List).map((e) => e.toString()).toList();
-    }
-
-    return SupportMessageEntity(
-      id: json['id'] is int ? json['id'] as int : int.tryParse(json['id']?.toString() ?? '0') ?? 0,
-      ticketId: json['ticket_id'] is int
-          ? json['ticket_id'] as int
-          : int.tryParse(json['ticket_id']?.toString() ?? '0') ?? 0,
-      senderType: json['sender_type']?.toString() ?? 'user',
-      senderId: json['sender_id'] is int
-          ? json['sender_id'] as int
-          : int.tryParse(json['sender_id']?.toString() ?? ''),
-      senderName: json['sender_name']?.toString() ?? 'مستخدم',
-      message: json['message']?.toString() ?? '',
-      attachments: parsedAttachments,
-      isInternalNote: json['is_internal_note'] == true || json['is_internal_note'] == 1,
-      isRead: json['is_read'] == true || json['is_read'] == 1,
-      createdAt: json['created_at'] != null
-          ? DateTime.tryParse(json['created_at'].toString()) ?? DateTime.now()
-          : DateTime.now(),
-    );
-  }
-
   bool get isUser => senderType == 'user';
   bool get isAdmin => senderType == 'admin';
   bool get isSystem => senderType == 'system';
+
+  SupportMessageEntity copyWith({
+    int? id,
+    int? ticketId,
+    String? senderType,
+    int? senderId,
+    String? senderName,
+    String? message,
+    List<String>? attachments,
+    bool? isInternalNote,
+    bool? isRead,
+    DateTime? createdAt,
+  }) {
+    return SupportMessageEntity(
+      id: id ?? this.id,
+      ticketId: ticketId ?? this.ticketId,
+      senderType: senderType ?? this.senderType,
+      senderId: senderId ?? this.senderId,
+      senderName: senderName ?? this.senderName,
+      message: message ?? this.message,
+      attachments: attachments ?? this.attachments,
+      isInternalNote: isInternalNote ?? this.isInternalNote,
+      isRead: isRead ?? this.isRead,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is SupportMessageEntity &&
+        other.id == id &&
+        other.ticketId == ticketId &&
+        other.senderType == senderType &&
+        other.senderId == senderId &&
+        other.senderName == senderName &&
+        other.message == message &&
+        other.isInternalNote == isInternalNote &&
+        other.isRead == isRead &&
+        other.createdAt == createdAt;
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        ticketId,
+        senderType,
+        senderId,
+        senderName,
+        message,
+        isInternalNote,
+        isRead,
+        createdAt,
+      );
+
+  @override
+  String toString() =>
+      'SupportMessageEntity(id: $id, ticketId: $ticketId, sender: $senderName, type: $senderType)';
 }
