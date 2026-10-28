@@ -3,15 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
 import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
-import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/build_background.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
-import 'package:stronger_muscles_dashboard/features/auth/domain/entities/auth_entity.dart';
-import 'package:stronger_muscles_dashboard/features/auth/presentation/controllers/auth_providers.dart';
-import 'package:stronger_muscles_dashboard/features/auth/presentation/widgets/auth_error_card.dart';
-import 'package:stronger_muscles_dashboard/features/auth/presentation/widgets/build_primary_button.dart';
-import 'package:stronger_muscles_dashboard/features/auth/presentation/widgets/build_text_field.dart';
+import '../../auth_di.dart';
+import '../controllers/auth_state.dart';
+import '../widgets/auth_error_card.dart';
+import '../widgets/auth_primary_button.dart';
+import '../widgets/auth_text_field.dart';
 
+/// Strictly Dumb UI Screen for Login.
+/// Contains ZERO business or validation logic.
+/// Uses selective state listening via `.select()` to prevent unnecessary widget rebuilds.
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
@@ -20,52 +22,41 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  late final TextEditingController _emailController;
+  late final TextEditingController _passwordController;
+  late final FocusNode _emailFocusNode;
+  late final FocusNode _passwordFocusNode;
 
-  bool _isPasswordVisible = false;
-  bool _rememberMe = false;
-
-  String? _emailError;
-  String? _passwordError;
+  @override
+  void initState() {
+    super.initState();
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+    _emailFocusNode = FocusNode();
+    _passwordFocusNode = FocusNode();
+  }
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
     super.dispose();
   }
 
-  bool _validate() {
-    bool isValid = true;
-    setState(() {
-      _emailError = null;
-      _passwordError = null;
-    });
-
-    final email = _emailController.text.trim();
-    if (email.isEmpty) {
-      setState(() => _emailError = 'البريد الإلكتروني مطلوب');
-      isValid = false;
-    } else if (!email.contains('@') && email != 'test') {
-      setState(() => _emailError = 'بريد إلكتروني غير صالح');
-      isValid = false;
-    }
-
-    if (_passwordController.text.isEmpty) {
-      setState(() => _passwordError = 'كلمة المرور مطلوبة');
-      isValid = false;
-    }
-
-    return isValid;
-  }
-
   Future<void> _handleLogin() async {
-    if (!_validate()) return;
+    // Dismiss keyboard
+    FocusScope.of(context).unfocus();
 
+    // Delegate validation entirely to form controller
+    final isValid = ref.read(loginFormControllerProvider.notifier).validate();
+    if (!isValid) return;
+
+    final formState = ref.read(loginFormControllerProvider);
     final success = await ref.read(authControllerProvider.notifier).login(
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
+          email: formState.email,
+          password: formState.password,
         );
 
     if (success && mounted) {
@@ -75,54 +66,46 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authState = ref.watch(authControllerProvider);
     final size = MediaQuery.of(context).size;
     final isDesktop = size.width >= 900;
 
-    // الاستماع لتغييرات الحالة لعرض الرسائل وتأثيرات التنقل
-    ref.listen<AsyncValue<AuthEntity?>>(authControllerProvider, (previous, next) {
-      next.whenOrNull(
-        error: (error, _) {
-          final message =
-              error is Failure ? error.toMessage() : error.toString();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  const Icon(Icons.error_outline, color: Colors.white),
-                  const SizedBox(width: 10),
-                  Expanded(child: Text(message)),
-                ],
-              ),
-              backgroundColor: AppColors.error,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
+    // Side-effects listener: SnackBar feedback for errors & success
+    ref.listen<AuthState>(authControllerProvider, (previous, next) {
+      if (next.isFailure && next.failure != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.error_outline, color: Colors.white),
+                const SizedBox(width: 10),
+                Expanded(child: Text(next.failure!.toMessage())),
+              ],
             ),
-          );
-        },
-        data: (user) {
-          if (user != null && previous?.isLoading == true) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: const Row(
-                  children: [
-                    Icon(Icons.check_circle_outline, color: Colors.white),
-                    SizedBox(width: 10),
-                    Text('تم تسجيل الدخول بنجاح'),
-                  ],
-                ),
-                backgroundColor: AppColors.success,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            );
-          }
-        },
-      );
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        );
+      } else if (next.isAuthenticated && previous?.isLoading == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Row(
+              children: [
+                Icon(Icons.check_circle_outline, color: Colors.white),
+                SizedBox(width: 10),
+                Text('تم تسجيل الدخول بنجاح'),
+              ],
+            ),
+            backgroundColor: AppColors.success,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        );
+      }
     });
 
     return Scaffold(
@@ -140,7 +123,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 child: Center(
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 450),
-                    child: _buildLoginCard(authState),
+                    child: _buildLoginCard(),
                   ),
                 ),
               ),
@@ -151,7 +134,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  Widget _buildLoginCard(AsyncValue<AuthEntity?> authState) {
+  Widget _buildLoginCard() {
     return TweenAnimationBuilder<double>(
       duration: const Duration(milliseconds: 1000),
       tween: Tween(begin: 0.0, end: 1.0),
@@ -175,58 +158,102 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _buildLogo(),
-            const SizedBox(height: 24),
-            _buildHeaderText(),
+            const _LoginHeader(),
             const SizedBox(height: 28),
-
-            // واجهة بديلة (Fallback UI) عند حدوث خطأ دون انهيار الشاشة
-            if (authState.hasError && authState.error != null)
-              AuthErrorCard(
-                error: authState.error!,
-                onRetry: _handleLogin,
-                onDismiss: () =>
-                    ref.read(authControllerProvider.notifier).clearError(),
-              ),
-
-            _buildFormFields(authState.isLoading),
+            const _LoginErrorSection(),
+            _buildFormInputs(),
             const SizedBox(height: 16),
-            _buildRememberForgot(authState.isLoading),
+            const _LoginRememberForgotSection(),
             const SizedBox(height: 32),
-            _buildLoginAction(authState.isLoading),
+            _LoginActionButton(onLogin: _handleLogin),
             const SizedBox(height: 24),
-            _buildFooter(),
+            const _LoginFooter(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildLogo() {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.12),
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.3),
-            blurRadius: 15,
-            spreadRadius: 2,
-          ),
-        ],
-      ),
-      child: const Icon(
-        Icons.fitness_center_rounded,
-        size: 55,
-        color: Colors.white,
-      ),
-    );
-  }
-
-  Widget _buildHeaderText() {
+  Widget _buildFormInputs() {
     return Column(
       children: [
+        // Selective listening for email error only
+        Consumer(
+          builder: (context, ref, child) {
+            final emailError = ref.watch(
+              loginFormControllerProvider.select((s) => s.emailError),
+            );
+            return AuthTextField(
+              controller: _emailController,
+              label: 'اسم المستخدم (test) / البريد الإلكتروني',
+              icon: Icons.person_outline,
+              keyboardType: TextInputType.emailAddress,
+              errorText: emailError,
+              onChanged: (val) => ref
+                  .read(loginFormControllerProvider.notifier)
+                  .onEmailChanged(val),
+            );
+          },
+        ),
+        const SizedBox(height: 20),
+        // Selective listening for password error & visibility only
+        Consumer(
+          builder: (context, ref, child) {
+            final isVisible = ref.watch(
+              loginFormControllerProvider.select((s) => s.isPasswordVisible),
+            );
+            final passwordError = ref.watch(
+              loginFormControllerProvider.select((s) => s.passwordError),
+            );
+            return AuthTextField(
+              controller: _passwordController,
+              label: 'كلمة المرور',
+              icon: Icons.lock_person_outlined,
+              isPassword: true,
+              isPasswordVisible: isVisible,
+              errorText: passwordError,
+              onTogglePassword: () => ref
+                  .read(loginFormControllerProvider.notifier)
+                  .togglePasswordVisibility(),
+              onChanged: (val) => ref
+                  .read(loginFormControllerProvider.notifier)
+                  .onPasswordChanged(val),
+            );
+          },
+        ),
+      ],
+    );
+  }
+}
+
+/// Dumb Header Widget (const constructor)
+class _LoginHeader extends StatelessWidget {
+  const _LoginHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.12),
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.3),
+                blurRadius: 15,
+                spreadRadius: 2,
+              ),
+            ],
+          ),
+          child: const Icon(
+            Icons.fitness_center_rounded,
+            size: 55,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 24),
         const Text(
           'تسجيل الدخول',
           style: TextStyle(
@@ -248,50 +275,61 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       ],
     );
   }
+}
 
-  Widget _buildFormFields(bool isLoading) {
-    return Column(
-      children: [
-        buildTextField(
-          controller: _emailController,
-          label: 'اسم المستخدم (test) / البريد الإلكتروني',
-          icon: Icons.person_outline,
-          keyboardType: TextInputType.emailAddress,
-          errorText: _emailError,
-        ),
-        const SizedBox(height: 20),
-        buildTextField(
-          controller: _passwordController,
-          label: 'كلمة المرور',
-          icon: Icons.lock_person_outlined,
-          isPassword: true,
-          isPasswordVisible: _isPasswordVisible,
-          onTogglePassword: () =>
-              setState(() => _isPasswordVisible = !_isPasswordVisible),
-          errorText: _passwordError,
-        ),
-      ],
+/// Selective error display
+class _LoginErrorSection extends ConsumerWidget {
+  const _LoginErrorSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final failure = ref.watch(
+      authControllerProvider.select((s) => s.failure),
+    );
+
+    if (failure == null) return const SizedBox.shrink();
+
+    return AuthErrorCard(
+      error: failure,
+      onDismiss: () => ref.read(authControllerProvider.notifier).clearError(),
     );
   }
+}
 
-  Widget _buildRememberForgot(bool isLoading) {
+/// Selective Remember Me & Forgot Password Section
+class _LoginRememberForgotSection extends ConsumerWidget {
+  const _LoginRememberForgotSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final rememberMe = ref.watch(
+      loginFormControllerProvider.select((s) => s.rememberMe),
+    );
+    final isLoading = ref.watch(
+      authControllerProvider.select((s) => s.isLoading),
+    );
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         InkWell(
           onTap: isLoading
               ? null
-              : () => setState(() => _rememberMe = !_rememberMe),
+              : () => ref
+                  .read(loginFormControllerProvider.notifier)
+                  .toggleRememberMe(),
           child: Row(
             children: [
               SizedBox(
                 height: 24,
                 width: 24,
                 child: Checkbox(
-                  value: _rememberMe,
+                  value: rememberMe,
                   onChanged: isLoading
                       ? null
-                      : (v) => setState(() => _rememberMe = v ?? false),
+                      : (v) => ref
+                          .read(loginFormControllerProvider.notifier)
+                          .toggleRememberMe(v),
                   activeColor: AppColors.primary,
                   side: BorderSide(
                     color: Colors.white.withValues(alpha: 0.4),
@@ -326,16 +364,34 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       ],
     );
   }
+}
 
-  Widget _buildLoginAction(bool isLoading) {
-    return buildPrimaryButton(
+/// Action button with selective rebuild on loading state
+class _LoginActionButton extends ConsumerWidget {
+  final VoidCallback onLogin;
+
+  const _LoginActionButton({required this.onLogin});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isLoading = ref.watch(
+      authControllerProvider.select((s) => s.isLoading),
+    );
+
+    return AuthPrimaryButton(
       label: 'تسجيل الدخول',
       isLoading: isLoading,
-      onPressed: _handleLogin,
+      onPressed: onLogin,
     );
   }
+}
 
-  Widget _buildFooter() {
+/// Static footer widget
+class _LoginFooter extends StatelessWidget {
+  const _LoginFooter();
+
+  @override
+  Widget build(BuildContext context) {
     return Wrap(
       alignment: WrapAlignment.center,
       crossAxisAlignment: WrapCrossAlignment.center,
