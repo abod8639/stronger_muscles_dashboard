@@ -1,6 +1,5 @@
-import 'package:flutter/foundation.dart';
-import '../../domain/entities/navigation_badges_entity.dart';
-
+/// Data Transfer Object (DTO) for Navigation item badges.
+/// Strictly decoupled from Domain Entities with no class inheritance.
 class NavigationBadgesModel {
   final int pendingOrdersCount;
   final int unreadNotificationsCount;
@@ -49,34 +48,31 @@ class NavigationBadgesModel {
     return 0;
   }
 
-  NavigationBadgesEntity toEntity() => NavigationBadgesEntity(
-        pendingOrdersCount: pendingOrdersCount,
-        unreadNotificationsCount: unreadNotificationsCount,
-        openTicketsCount: openTicketsCount,
-        lowStockProductsCount: lowStockProductsCount,
-      );
-
   Map<String, dynamic> toJson() => {
         'pending_orders': pendingOrdersCount,
         'unread_notifications': unreadNotificationsCount,
         'open_tickets': openTicketsCount,
         'low_stock_products': lowStockProductsCount,
       };
-}
 
-/// دالة Isolate لتحليل الـ JSON الخاص بشارات التنقل في الخلفية
-NavigationBadgesModel parseNavigationBadgesCompute(dynamic rawJson) {
-  try {
-    if (rawJson is Map<String, dynamic>) {
-      final data = rawJson['data'] is Map ? rawJson['data'] : rawJson;
-      return NavigationBadgesModel.fromJson(Map<String, dynamic>.from(data));
-    } else if (rawJson is Map) {
-      final data = rawJson['data'] is Map ? rawJson['data'] : rawJson;
-      return NavigationBadgesModel.fromJson(Map<String, dynamic>.from(data));
-    }
-    return const NavigationBadgesModel();
-  } catch (e) {
-    debugPrint('parseNavigationBadgesCompute fallback triggered: $e');
-    return const NavigationBadgesModel();
-  }
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is NavigationBadgesModel &&
+          runtimeType == other.runtimeType &&
+          pendingOrdersCount == other.pendingOrdersCount &&
+          unreadNotificationsCount == other.unreadNotificationsCount &&
+          openTicketsCount == other.openTicketsCount &&
+          lowStockProductsCount == other.lowStockProductsCount;
+
+  @override
+  int get hashCode =>
+      pendingOrdersCount.hashCode ^
+      unreadNotificationsCount.hashCode ^
+      openTicketsCount.hashCode ^
+      lowStockProductsCount.hashCode;
+
+  @override
+  String toString() =>
+      'NavigationBadgesModel(pendingOrders: $pendingOrdersCount, notifications: $unreadNotificationsCount, tickets: $openTicketsCount, lowStock: $lowStockProductsCount)';
 }
