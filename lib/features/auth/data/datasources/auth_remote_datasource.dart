@@ -3,42 +3,41 @@ import 'package:stronger_muscles_dashboard/config/api_config.dart';
 import 'package:stronger_muscles_dashboard/core/error/exceptions.dart';
 import '../models/auth_model.dart';
 
+/// Contract for executing remote authentication network calls via HTTP.
 abstract class AuthRemoteDataSource {
-  Future<AuthModel> login(
-    String email,
-    String password, {
-    CancelToken? cancelToken,
+  Future<AuthModel> login({
+    required String email,
+    required String password,
   });
 
-  Future<AuthModel> signup(
-    String name,
-    String email,
-    String password, {
-    CancelToken? cancelToken,
+  Future<AuthModel> signup({
+    required String name,
+    required String email,
+    required String password,
   });
 }
 
+/// Production implementation of [AuthRemoteDataSource] using [Dio].
+/// 100% testable via Constructor Dependency Injection.
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
-  final Dio dio;
+  final Dio _dio;
 
   static const Duration _defaultTimeout = Duration(seconds: 15);
 
-  AuthRemoteDataSourceImpl(this.dio);
+  const AuthRemoteDataSourceImpl({required Dio dio}) : _dio = dio;
 
   @override
-  Future<AuthModel> login(
-    String email,
-    String password, {
-    CancelToken? cancelToken,
+  Future<AuthModel> login({
+    required String email,
+    required String password,
   }) async {
     try {
-      final response = await dio.post(
+      final response = await _dio.post(
         ApiConfig.adminLogin,
         data: {
           'email': email,
           'password': password,
         },
-        cancelToken: cancelToken,
         options: Options(
           sendTimeout: _defaultTimeout,
           receiveTimeout: _defaultTimeout,
@@ -48,18 +47,20 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       final data = response.data;
       if (response.statusCode == 200 && data is Map<String, dynamic>) {
-        // معالجة البيانات الثقيلة في Isolate منفصل عبر compute
-        return await AuthModel.fromJsonAsync(data);
+        return AuthModel.fromJson(data);
       }
 
       throw ServerException(
-        message: data is Map ? (data['message']?.toString() ?? 'فشل تسجيل الدخول') : 'فشل تسجيل الدخول',
+        message: data is Map
+            ? (data['message']?.toString() ?? 'فشل تسجيل الدخول')
+            : 'فشل تسجيل الدخول',
         statusCode: response.statusCode,
       );
     } on DioException {
       rethrow;
+    } on AppException {
+      rethrow;
     } catch (e) {
-      if (e is AppException) rethrow;
       throw ParsingException(
         message: 'خطأ أثناء تحليل بيانات تسجيل الدخول: $e',
         originalError: e,
@@ -68,21 +69,19 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<AuthModel> signup(
-    String name,
-    String email,
-    String password, {
-    CancelToken? cancelToken,
+  Future<AuthModel> signup({
+    required String name,
+    required String email,
+    required String password,
   }) async {
     try {
-      final response = await dio.post(
+      final response = await _dio.post(
         ApiConfig.adminRegister,
         data: {
           'name': name,
           'email': email,
           'password': password,
         },
-        cancelToken: cancelToken,
         options: Options(
           sendTimeout: _defaultTimeout,
           receiveTimeout: _defaultTimeout,
@@ -93,8 +92,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final data = response.data;
       if ((response.statusCode == 200 || response.statusCode == 201) &&
           data is Map<String, dynamic>) {
-        // معالجة البيانات الثقيلة في Isolate منفصل عبر compute
-        return await AuthModel.fromJsonAsync(data);
+        return AuthModel.fromJson(data);
       }
 
       throw ServerException(
@@ -105,8 +103,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
     } on DioException {
       rethrow;
+    } on AppException {
+      rethrow;
     } catch (e) {
-      if (e is AppException) rethrow;
       throw ParsingException(
         message: 'خطأ أثناء تحليل بيانات إنشاء الحساب: $e',
         originalError: e,
