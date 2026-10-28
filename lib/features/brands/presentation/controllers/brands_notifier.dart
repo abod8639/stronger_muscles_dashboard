@@ -10,19 +10,15 @@ import 'brands_state.dart';
 /// 100% testable via Constructor Dependency Injection.
 class BrandsNotifier extends Notifier<BrandsState> {
   final GetBrandsUseCase? _injectedGetBrandsUseCase;
-  final GetBrandByIdUseCase? _injectedGetBrandByIdUseCase;
 
   BrandsNotifier({
     GetBrandsUseCase? getBrandsUseCase,
     GetBrandByIdUseCase? getBrandByIdUseCase,
-  })  : _injectedGetBrandsUseCase = getBrandsUseCase,
-        _injectedGetBrandByIdUseCase = getBrandByIdUseCase;
+  })  : _injectedGetBrandsUseCase = getBrandsUseCase;
 
   GetBrandsUseCase get _getBrandsUseCase =>
       _injectedGetBrandsUseCase ?? ref.read(getBrandsUseCaseProvider);
 
-  GetBrandByIdUseCase get _getBrandByIdUseCase =>
-      _injectedGetBrandByIdUseCase ?? ref.read(getBrandByIdUseCaseProvider);
 
   @override
   BrandsState build() {
