@@ -1,41 +1,44 @@
-import 'package:dartz/dartz.dart';
-import 'package:dio/dio.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import 'package:stronger_muscles_dashboard/core/error/network_error_handler.dart';
 import '../../domain/entities/auth_entity.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_local_datasource.dart';
 import '../datasources/auth_remote_datasource.dart';
+import '../mappers/auth_mapper.dart';
 import '../models/auth_model.dart';
 
+/// Single Source of Truth for Authentication.
+/// Orchestrates data between [AuthRemoteDataSource] (Network) and [AuthLocalDataSource] (Cache).
+/// Maps raw exceptions to strongly-typed [Failure] classes using `fpdart`'s [Either].
 class AuthRepositoryImpl implements AuthRepository {
-  final AuthRemoteDataSource remoteDataSource;
-  final AuthLocalDataSource localDataSource;
+  final AuthRemoteDataSource _remoteDataSource;
+  final AuthLocalDataSource _localDataSource;
 
-  AuthRepositoryImpl({
-    required this.remoteDataSource,
-    required this.localDataSource,
-  });
+  const AuthRepositoryImpl({
+    required AuthRemoteDataSource remoteDataSource,
+    required AuthLocalDataSource localDataSource,
+  })  : _remoteDataSource = remoteDataSource,
+        _localDataSource = localDataSource;
 
   @override
-  Future<Either<Failure, AuthEntity>> login(
-    String email,
-    String password, {
-    CancelToken? cancelToken,
+  Future<Either<Failure, AuthEntity>> login({
+    required String email,
+    required String password,
   }) async {
     try {
-      final authModel = await remoteDataSource.login(
-        email,
-        password,
-        cancelToken: cancelToken,
+      final authModel = await _remoteDataSource.login(
+        email: email,
+        password: password,
       );
 
-      if (authModel.token != null && authModel.token!.isNotEmpty) {
-        await localDataSource.saveToken(authModel.token!);
+      // Caching token and user profile
+      if (authModel.token != null && authModel.token!.trim().isNotEmpty) {
+        await _localDataSource.saveToken(authModel.token!);
       }
-      await localDataSource.saveUser(authModel.toJson());
+      await _localDataSource.saveUser(authModel.toJson());
 
-      return Right(authModel);
+      return Right(authModel.toEntity());
     } catch (e, stackTrace) {
       final failure = NetworkErrorHandler.handleException(e, stackTrace);
       return Left(failure);
@@ -43,26 +46,25 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, AuthEntity>> signup(
-    String name,
-    String email,
-    String password, {
-    CancelToken? cancelToken,
+  Future<Either<Failure, AuthEntity>> signup({
+    required String name,
+    required String email,
+    required String password,
   }) async {
     try {
-      final authModel = await remoteDataSource.signup(
-        name,
-        email,
-        password,
-        cancelToken: cancelToken,
+      final authModel = await _remoteDataSource.signup(
+        name: name,
+        email: email,
+        password: password,
       );
 
-      if (authModel.token != null && authModel.token!.isNotEmpty) {
-        await localDataSource.saveToken(authModel.token!);
+      // Caching token and user profile
+      if (authModel.token != null && authModel.token!.trim().isNotEmpty) {
+        await _localDataSource.saveToken(authModel.token!);
       }
-      await localDataSource.saveUser(authModel.toJson());
+      await _localDataSource.saveUser(authModel.toJson());
 
-      return Right(authModel);
+      return Right(authModel.toEntity());
     } catch (e, stackTrace) {
       final failure = NetworkErrorHandler.handleException(e, stackTrace);
       return Left(failure);
@@ -72,7 +74,7 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<Failure, Unit>> logout() async {
     try {
-      await localDataSource.clearToken();
+      await _localDataSource.clearAll();
       return const Right(unit);
     } catch (e, stackTrace) {
       final failure = NetworkErrorHandler.handleException(e, stackTrace);
@@ -81,21 +83,23 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  bool isLoggedIn() {
-    return localDataSource.hasToken();
-  }
-
-  @override
-  String? getToken() {
-    return localDataSource.getToken();
-  }
-
-  @override
-  Either<Failure, AuthEntity?> getCurrentUser() {
+  Future<Either<Failure, bool>> checkAuthStatus() async {
     try {
-      final userMap = localDataSource.getUser();
+      final hasToken = await _localDataSource.hasToken();
+      return Right(hasToken);
+    } catch (e, stackTrace) {
+      final failure = NetworkErrorHandler.handleException(e, stackTrace);
+      return Left(failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, AuthEntity?>> getCurrentUser() async {
+    try {
+      final userMap = await _localDataSource.getUser();
       if (userMap != null) {
-        return Right(AuthModel.fromJson(userMap));
+        final authModel = AuthModel.fromJson(userMap);
+        return Right(authModel.toEntity());
       }
       return const Right(null);
     } catch (e, stackTrace) {
