@@ -1,5 +1,5 @@
-import '../../domain/entities/support_message_entity.dart';
-
+/// Isolated Data Transfer Object (DTO) for support messages.
+/// Strictly decoupled from Domain Entities with serialization / deserialization support.
 class SupportMessageModel {
   final int id;
   final int ticketId;
@@ -12,7 +12,7 @@ class SupportMessageModel {
   final bool isRead;
   final DateTime createdAt;
 
-  SupportMessageModel({
+  const SupportMessageModel({
     required this.id,
     required this.ticketId,
     required this.senderType,
@@ -28,11 +28,14 @@ class SupportMessageModel {
   factory SupportMessageModel.fromJson(Map<String, dynamic> json) {
     List<String> parsedAttachments = [];
     if (json['attachments'] is List) {
-      parsedAttachments = (json['attachments'] as List).map((e) => e.toString()).toList();
+      parsedAttachments =
+          (json['attachments'] as List).map((e) => e.toString()).toList();
     }
 
     return SupportMessageModel(
-      id: json['id'] is int ? json['id'] as int : int.tryParse(json['id']?.toString() ?? '0') ?? 0,
+      id: json['id'] is int
+          ? json['id'] as int
+          : int.tryParse(json['id']?.toString() ?? '0') ?? 0,
       ticketId: json['ticket_id'] is int
           ? json['ticket_id'] as int
           : int.tryParse(json['ticket_id']?.toString() ?? '0') ?? 0,
@@ -43,26 +46,84 @@ class SupportMessageModel {
       senderName: json['sender_name']?.toString() ?? 'مستخدم',
       message: json['message']?.toString() ?? '',
       attachments: parsedAttachments,
-      isInternalNote: json['is_internal_note'] == true || json['is_internal_note'] == 1,
-      isRead: json['is_read'] == true || json['is_read'] == 1,
+      isInternalNote: json['is_internal_note'] == true ||
+          json['is_internal_note'] == 1 ||
+          json['is_internal_note']?.toString() == 'true',
+      isRead: json['is_read'] == true ||
+          json['is_read'] == 1 ||
+          json['is_read']?.toString() == 'true',
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'].toString()) ?? DateTime.now()
           : DateTime.now(),
     );
   }
 
-  SupportMessageEntity toEntity() {
-    return SupportMessageEntity(
-      id: id,
-      ticketId: ticketId,
-      senderType: senderType,
-      senderId: senderId,
-      senderName: senderName,
-      message: message,
-      attachments: attachments,
-      isInternalNote: isInternalNote,
-      isRead: isRead,
-      createdAt: createdAt,
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'ticket_id': ticketId,
+      'sender_type': senderType,
+      'sender_id': senderId,
+      'sender_name': senderName,
+      'message': message,
+      'attachments': attachments,
+      'is_internal_note': isInternalNote,
+      'is_read': isRead,
+      'created_at': createdAt.toIso8601String(),
+    };
+  }
+
+  SupportMessageModel copyWith({
+    int? id,
+    int? ticketId,
+    String? senderType,
+    int? senderId,
+    String? senderName,
+    String? message,
+    List<String>? attachments,
+    bool? isInternalNote,
+    bool? isRead,
+    DateTime? createdAt,
+  }) {
+    return SupportMessageModel(
+      id: id ?? this.id,
+      ticketId: ticketId ?? this.ticketId,
+      senderType: senderType ?? this.senderType,
+      senderId: senderId ?? this.senderId,
+      senderName: senderName ?? this.senderName,
+      message: message ?? this.message,
+      attachments: attachments ?? this.attachments,
+      isInternalNote: isInternalNote ?? this.isInternalNote,
+      isRead: isRead ?? this.isRead,
+      createdAt: createdAt ?? this.createdAt,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is SupportMessageModel &&
+        other.id == id &&
+        other.ticketId == ticketId &&
+        other.senderType == senderType &&
+        other.senderId == senderId &&
+        other.senderName == senderName &&
+        other.message == message &&
+        other.isInternalNote == isInternalNote &&
+        other.isRead == isRead &&
+        other.createdAt == createdAt;
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        ticketId,
+        senderType,
+        senderId,
+        senderName,
+        message,
+        isInternalNote,
+        isRead,
+        createdAt,
+      );
 }
