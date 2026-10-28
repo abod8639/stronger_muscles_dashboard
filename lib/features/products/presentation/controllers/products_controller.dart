@@ -3,10 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
 import 'package:stronger_muscles_dashboard/core/utils/components/confirm_dialog.dart';
 import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
-import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
-import 'package:stronger_muscles_dashboard/features/categories/domain/repositories/category_repository.dart';
-import 'package:stronger_muscles_dashboard/features/brands/domain/entities/brand_entity.dart';
-import 'package:stronger_muscles_dashboard/features/brands/domain/repositories/brand_repository.dart';
+import 'package:stronger_muscles_dashboard/features/brands/brands_feature.dart';
+import 'package:stronger_muscles_dashboard/features/categories/categories_feature.dart';
 import '../../domain/entities/product_entity.dart';
 import '../../domain/usecases/add_product_usecase.dart';
 import '../../domain/usecases/delete_product_usecase.dart';
@@ -14,7 +12,8 @@ import '../../domain/usecases/get_products_usecase.dart';
 import '../../domain/usecases/update_product_usecase.dart';
 import '../../domain/usecases/upload_product_image_usecase.dart';
 
-/// متحكم واجهة وإدارة المنتجات كـ [ChangeNotifier] نقي
+/// Pure Controller managing product UI actions, form validations, and bulk operations.
+/// 100% free of raw try-catch blocks in adherence to Clean Architecture.
 class ProductsController extends ChangeNotifier {
   final GetProductsUseCase _getProductsUseCase;
   final AddProductUseCase _addProductUseCase;
@@ -202,50 +201,45 @@ class ProductsController extends ChangeNotifier {
   final Map<String, TextEditingController> sizeDiscountControllers = {};
 
   Future<void> fetchData({bool forceRefresh = false}) async {
-    try {
-      _isLoading = true;
-      notifyListeners();
+    _isLoading = true;
+    notifyListeners();
 
-      final catResult = await _categoryRepository.getCategories(tree: true);
-      catResult.fold(
-        (failure) => debugPrint('Error categories: ${failure.toMessage()}'),
-        (cats) {
-          categories
-            ..clear()
-            ..addAll(cats);
-        },
-      );
+    final catResult = await _categoryRepository.getCategories(tree: true);
+    catResult.fold(
+      (failure) => debugPrint('Error categories: ${failure.toMessage()}'),
+      (cats) {
+        categories
+          ..clear()
+          ..addAll(cats);
+      },
+    );
 
-      final prodResult = await _getProductsUseCase(forceRefresh: forceRefresh);
-      prodResult.fold(
-        (failure) => AppFeedback.showError(failure.toMessage()),
-        (prods) {
-          products
-            ..clear()
-            ..addAll(prods);
-        },
-      );
+    final prodResult = await _getProductsUseCase(forceRefresh: forceRefresh);
+    prodResult.fold(
+      (failure) => AppFeedback.showError(failure.toMessage()),
+      (prods) {
+        products
+          ..clear()
+          ..addAll(prods);
+      },
+    );
 
-      final brandsResult = await _brandRepository.getBrands();
-      brandsResult.fold(
-        (failure) => debugPrint('Error brands: ${failure.toMessage()}'),
-        (bList) {
-          brands
-            ..clear()
-            ..addAll(bList);
-        },
-      );
+    final brandsResult = await _brandRepository.getBrands();
+    brandsResult.fold(
+      (failure) => debugPrint('Error brands: ${failure.toMessage()}'),
+      (bList) {
+        brands
+          ..clear()
+          ..addAll(bList);
+      },
+    );
 
-      _applyFiltering();
-    } catch (e) {
-      AppFeedback.showError('فشل في تحميل البيانات: ${e.toString()}');
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
+    _applyFiltering();
+    _isLoading = false;
+    notifyListeners();
   }
 
-  /// مزامنة المنتجات مباشرة من Riverpod
+  /// Synchronizes products list from Riverpod state
   void syncWithRiverpod(List<ProductEntity> newProducts) {
     products
       ..clear()
@@ -273,68 +267,161 @@ class ProductsController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void resetFilters() {
+    _searchQuery = '';
+    _selectedCategoryId = 'all';
+    _selectedFlavorId = 'all';
+    _applyFiltering();
+    notifyListeners();
+  }
+
   void _applyFiltering() {
-    Iterable<ProductEntity> filtered = products;
-    if (_selectedCategoryId != 'all') {
-      filtered = filtered.where((p) => p.categoryId == _selectedCategoryId);
-    }
-    if (_selectedFlavorId != 'all') {
-      filtered = filtered.where((p) => p.flavors?.contains(_selectedFlavorId) ?? false);
-    }
-    if (_searchQuery.isNotEmpty) {
-      final query = _searchQuery.toLowerCase();
-      filtered = filtered.where((p) =>
-          p.nameAr.toLowerCase().contains(query) ||
-          p.nameEn.toLowerCase().contains(query) ||
-          (p.brand?.toLowerCase().contains(query) ?? false) ||
-          p.id.contains(query));
-    }
+    final query = _searchQuery.toLowerCase().trim();
+
     filteredProducts
       ..clear()
-      ..addAll(filtered);
+      ..addAll(
+        products.where((product) {
+          final matchesCategory = _selectedCategoryId == 'all' ||
+              product.categoryId == _selectedCategoryId;
+
+          final matchesFlavor = _selectedFlavorId == 'all' ||
+              (product.flavors != null &&
+                  product.flavors!.contains(_selectedFlavorId));
+
+          final matchesSearch = query.isEmpty ||
+              product.nameAr.toLowerCase().contains(query) ||
+              product.nameEn.toLowerCase().contains(query) ||
+              (product.brand != null &&
+                  product.brand!.toLowerCase().contains(query)) ||
+              product.id.contains(query);
+
+          return matchesCategory && matchesFlavor && matchesSearch;
+        }),
+      );
+  }
+
+  void initForForm({ProductEntity? product}) {
+    imageUrls.clear();
+    productSizes.clear();
+    productFlavors.clear();
+    variants.clear();
+    selectedProductIds.clear();
+
+    if (product != null) {
+      textcontrollers['name_ar']?.text = product.nameAr;
+      textcontrollers['name_en']?.text = product.nameEn;
+      textcontrollers['price']?.text = product.price.toString();
+      textcontrollers['discount']?.text = product.discountPrice?.toString() ?? '';
+      textcontrollers['desc_ar']?.text = product.descriptionAr;
+      textcontrollers['desc_en']?.text = product.descriptionEn;
+      textcontrollers['stock']?.text = product.stockQuantity.toString();
+      textcontrollers['brand']?.text = product.brand ?? '';
+      textcontrollers['serving']?.text = product.servingSize ?? '';
+      textcontrollers['sessions']?.text =
+          product.servingsPerContainer?.toString() ?? '';
+
+      _isFeatured = product.isFeatured;
+      _isActive = product.isActive;
+      _isBackgroundWhite = product.isBackgroundWhite ?? false;
+
+      imageUrls.addAll(product.imageUrls);
+
+      if (product.productSizes != null) {
+        for (var ps in product.productSizes!) {
+          productSizes.add(ps);
+          sizePriceControllers[ps.size] =
+              TextEditingController(text: ps.price.toString());
+          sizeDiscountControllers[ps.size] =
+              TextEditingController(text: ps.discountPrice?.toString() ?? '');
+        }
+      }
+
+      if (product.flavors != null) {
+        productFlavors.addAll(product.flavors!);
+      }
+
+      if (product.variants != null) {
+        variants.addAll(product.variants!);
+      }
+    } else {
+      for (var c in textcontrollers.values) {
+        c.clear();
+      }
+      _isFeatured = false;
+      _isActive = true;
+      _isBackgroundWhite = false;
+    }
+    notifyListeners();
+  }
+
+  void addProductSize(String size, double price, double? discount) {
+    final newSize = ProductSizeEntity(size: size, price: price, discountPrice: discount);
+    productSizes.add(newSize);
+    sizePriceControllers[size] = TextEditingController(text: price.toString());
+    sizeDiscountControllers[size] =
+        TextEditingController(text: discount?.toString() ?? '');
+    notifyListeners();
+  }
+
+  void removeProductSize(int index) {
+    if (index >= 0 && index < productSizes.length) {
+      final size = productSizes[index].size;
+      sizePriceControllers[size]?.dispose();
+      sizePriceControllers.remove(size);
+      sizeDiscountControllers[size]?.dispose();
+      sizeDiscountControllers.remove(size);
+      productSizes.removeAt(index);
+      notifyListeners();
+    }
+  }
+
+  void selectSize(int index) {
+    selectedSizeIndex = index;
   }
 
   void syncSizeControllers() {
-    for (var size in productSizes) {
-      if (!sizePriceControllers.containsKey(size.size)) {
-        sizePriceControllers[size.size] = TextEditingController(text: size.price.toString());
-      }
-      if (!sizeDiscountControllers.containsKey(size.size)) {
-        sizeDiscountControllers[size.size] = TextEditingController(text: size.discountPrice?.toString() ?? '');
-      }
+    for (var ps in productSizes) {
+      sizePriceControllers.putIfAbsent(
+        ps.size,
+        () => TextEditingController(text: ps.price.toString()),
+      );
+      sizeDiscountControllers.putIfAbsent(
+        ps.size,
+        () => TextEditingController(text: ps.discountPrice?.toString() ?? ''),
+      );
     }
     notifyListeners();
   }
 
   void clearSizeControllers() {
-    sizePriceControllers.forEach((key, controller) => controller.dispose());
+    for (var c in sizePriceControllers.values) {
+      c.dispose();
+    }
     sizePriceControllers.clear();
-    sizeDiscountControllers.forEach((key, controller) => controller.dispose());
+    for (var c in sizeDiscountControllers.values) {
+      c.dispose();
+    }
     sizeDiscountControllers.clear();
   }
 
-  void selectSize(int index) {
-    _selectedSizeIndex = index;
-    if (index >= 0 && index < productSizes.length) {
-      final size = productSizes[index];
-      textcontrollers['price']?.text = size.price.toString();
-      textcontrollers['discount']?.text = size.discountPrice?.toString() ?? '';
-    }
-    notifyListeners();
-  }
-
-  void addVariant() {
+  void addNewVariant() {
     final newVariant = ProductVariantEntity(
       id: 'VAR-${DateTime.now().millisecondsSinceEpoch}',
-      sku: '',
+      sku: 'SKU-${DateTime.now().millisecondsSinceEpoch % 10000}',
       price: double.tryParse(textcontrollers['price']?.text ?? '0') ?? 0.0,
       discountPrice: double.tryParse(textcontrollers['discount']?.text ?? ''),
       effectivePrice: double.tryParse(textcontrollers['price']?.text ?? '0') ?? 0.0,
       stockQuantity: int.tryParse(textcontrollers['stock']?.text ?? '0') ?? 0,
-      attributes: {},
+      attributes: const {},
       isActive: true,
     );
     variants.add(newVariant);
+    notifyListeners();
+  }
+
+  void addVariant(ProductVariantEntity variant) {
+    variants.add(variant);
     notifyListeners();
   }
 
@@ -358,6 +445,7 @@ class ProductsController extends ChangeNotifier {
     required List<String> productImages,
     ProductEntity? existingProduct,
   }) async {
+    if (_isSaving) return false;
     if (!formKey.currentState!.validate()) return false;
     if (productImages.isEmpty) {
       AppFeedback.showWarning('يجب إضافة صورة واحدة على الأقل');
@@ -368,96 +456,115 @@ class ProductsController extends ChangeNotifier {
       return false;
     }
 
-    try {
-      _isSaving = true;
-      notifyListeners();
+    _isSaving = true;
+    notifyListeners();
 
-      final updatedSizes = productSizes.map((ps) {
-        final price = double.tryParse(sizePriceControllers[ps.size]?.text ?? '0') ?? 0.0;
-        final discount = double.tryParse(sizeDiscountControllers[ps.size]?.text ?? '');
-        return ProductSizeEntity(size: ps.size, price: price, discountPrice: discount);
-      }).toList();
+    final updatedSizes = productSizes.map((ps) {
+      final price =
+          double.tryParse(sizePriceControllers[ps.size]?.text ?? '0') ?? 0.0;
+      final discount =
+          double.tryParse(sizeDiscountControllers[ps.size]?.text ?? '');
+      return ProductSizeEntity(
+        size: ps.size,
+        price: price,
+        discountPrice: discount,
+      );
+    }).toList();
 
-      double mainPrice = double.tryParse(textcontrollers['price']!.text) ?? 0.0;
-      double? discountPrice = double.tryParse(textcontrollers['discount']!.text);
+    double mainPrice = double.tryParse(textcontrollers['price']!.text) ?? 0.0;
+    double? discountPrice = double.tryParse(textcontrollers['discount']!.text);
 
-      if (mainPrice == 0 && updatedSizes.isNotEmpty) {
-        mainPrice = updatedSizes.first.price;
-        discountPrice = updatedSizes.first.discountPrice;
-      }
-
-      final String generatedId = existingProduct?.id ?? 'PROD-${DateTime.now().millisecondsSinceEpoch}';
-
-      final productData = {
-        'id': generatedId,
-        'name': {'ar': textcontrollers['name_ar']!.text.trim(), 'en': textcontrollers['name_en']!.text.trim()},
-        'description': {'ar': textcontrollers['desc_ar']!.text.trim(), 'en': textcontrollers['desc_en']!.text.trim()},
-        'price': mainPrice,
-        'discount_price': discountPrice,
-        'image_urls': productImages,
-        'category_id': categoryId,
-        'stock_quantity': int.tryParse(textcontrollers['stock']!.text) ?? 0,
-        'brand': textcontrollers['brand']!.text.trim(),
-        'is_active': _isActive,
-        'featured': _isFeatured,
-        'is_background_white': _isBackgroundWhite,
-        'serving_size': textcontrollers['serving']!.text.trim(),
-        'servings_per_container': int.tryParse(textcontrollers['sessions']!.text) ?? 0,
-        'flavors': productFlavors.toList(),
-        'product_sizes': updatedSizes.map((s) => {'size': s.size, 'price': s.price, 'discount_price': s.discountPrice}).toList(),
-        'product_variants': variants.map((v) => {
-          'id': v.id,
-          'sku': v.sku,
-          'price': v.price,
-          'discount_price': v.discountPrice,
-          'effective_price': v.effectivePrice,
-          'stock_quantity': v.stockQuantity,
-          'attributes': v.attributes,
-          'is_active': v.isActive,
-        }).toList(),
-      };
-
-      if (existingProduct == null) {
-        final result = await _addProductUseCase(productData);
-        final isSuccess = result.fold<bool>(
-          (failure) {
-            AppFeedback.showError(failure.toMessage());
-            return false;
-          },
-          (newProduct) {
-            products.insert(0, newProduct);
-            AppFeedback.showSuccess('تم إضافة المنتج بنجاح');
-            _applyFiltering();
-            notifyListeners();
-            return true;
-          },
-        );
-        return isSuccess;
-      } else {
-        final result = await _updateProductUseCase(existingProduct.id, productData);
-        final isSuccess = result.fold<bool>(
-          (failure) {
-            AppFeedback.showError(failure.toMessage());
-            return false;
-          },
-          (updatedProduct) {
-            final index = products.indexWhere((p) => p.id == existingProduct.id);
-            if (index != -1) products[index] = updatedProduct;
-            AppFeedback.showSuccess('تم تحديث المنتج بنجاح');
-            _applyFiltering();
-            notifyListeners();
-            return true;
-          },
-        );
-        return isSuccess;
-      }
-    } catch (e) {
-      AppFeedback.showError('خطأ في الحفظ: ${e.toString()}');
-      return false;
-    } finally {
-      _isSaving = false;
-      notifyListeners();
+    if (mainPrice == 0 && updatedSizes.isNotEmpty) {
+      mainPrice = updatedSizes.first.price;
+      discountPrice = updatedSizes.first.discountPrice;
     }
+
+    final String generatedId = existingProduct?.id ??
+        'PROD-${DateTime.now().millisecondsSinceEpoch}';
+
+    final productData = {
+      'id': generatedId,
+      'name': {
+        'ar': textcontrollers['name_ar']!.text.trim(),
+        'en': textcontrollers['name_en']!.text.trim(),
+      },
+      'description': {
+        'ar': textcontrollers['desc_ar']!.text.trim(),
+        'en': textcontrollers['desc_en']!.text.trim(),
+      },
+      'price': mainPrice,
+      'discount_price': discountPrice,
+      'image_urls': productImages,
+      'category_id': categoryId,
+      'stock_quantity': int.tryParse(textcontrollers['stock']!.text) ?? 0,
+      'brand': textcontrollers['brand']!.text.trim(),
+      'is_active': _isActive,
+      'featured': _isFeatured,
+      'is_background_white': _isBackgroundWhite,
+      'serving_size': textcontrollers['serving']!.text.trim(),
+      'servings_per_container':
+          int.tryParse(textcontrollers['sessions']!.text) ?? 0,
+      'flavors': productFlavors.toList(),
+      'product_sizes': updatedSizes
+          .map((s) => {
+                'size': s.size,
+                'price': s.price,
+                'discount_price': s.discountPrice,
+              })
+          .toList(),
+      'product_variants': variants
+          .map((v) => {
+                'id': v.id,
+                'sku': v.sku,
+                'price': v.price,
+                'discount_price': v.discountPrice,
+                'effective_price': v.effectivePrice,
+                'stock_quantity': v.stockQuantity,
+                'attributes': v.attributes,
+                'is_active': v.isActive,
+              })
+          .toList(),
+    };
+
+    bool isSuccess = false;
+    if (existingProduct == null) {
+      final result = await _addProductUseCase(productData);
+      isSuccess = result.fold<bool>(
+        (failure) {
+          AppFeedback.showError(failure.toMessage());
+          return false;
+        },
+        (newProduct) {
+          products.insert(0, newProduct);
+          AppFeedback.showSuccess('تم إضافة المنتج بنجاح');
+          _applyFiltering();
+          notifyListeners();
+          return true;
+        },
+      );
+    } else {
+      final result =
+          await _updateProductUseCase(existingProduct.id, productData);
+      isSuccess = result.fold<bool>(
+        (failure) {
+          AppFeedback.showError(failure.toMessage());
+          return false;
+        },
+        (updatedProduct) {
+          final index =
+              products.indexWhere((p) => p.id == existingProduct.id);
+          if (index != -1) products[index] = updatedProduct;
+          AppFeedback.showSuccess('تم تحديث المنتج بنجاح');
+          _applyFiltering();
+          notifyListeners();
+          return true;
+        },
+      );
+    }
+
+    _isSaving = false;
+    notifyListeners();
+    return isSuccess;
   }
 
   void confirmDelete(BuildContext context, String id, String productName) {
@@ -478,22 +585,18 @@ class ProductsController extends ChangeNotifier {
   }
 
   Future<void> _executeDelete(String id) async {
-    try {
-      final result = await _deleteProductUseCase(id);
-      result.fold(
-        (failure) => AppFeedback.showError(failure.toMessage()),
-        (success) {
-          if (success) {
-            products.removeWhere((p) => p.id == id);
-            _applyFiltering();
-            notifyListeners();
-            AppFeedback.showSuccess('تم حذف المنتج بنجاح');
-          }
-        },
-      );
-    } catch (e) {
-      AppFeedback.showError('خطأ في الحذف: ${e.toString()}');
-    }
+    final result = await _deleteProductUseCase(id);
+    result.fold(
+      (failure) => AppFeedback.showError(failure.toMessage()),
+      (success) {
+        if (success) {
+          products.removeWhere((p) => p.id == id);
+          _applyFiltering();
+          notifyListeners();
+          AppFeedback.showSuccess('تم حذف المنتج بنجاح');
+        }
+      },
+    );
   }
 
   // --- Selection Methods ---
@@ -523,17 +626,6 @@ class ProductsController extends ChangeNotifier {
 
   bool isProductSelected(String id) => selectedProductIds.contains(id);
 
-  void selectAll() {
-    selectedProductIds.addAll(filteredProducts.map((p) => p.id));
-    if (!_isSelectionMode) _isSelectionMode = true;
-    notifyListeners();
-  }
-
-  void deselectAll() {
-    selectedProductIds.clear();
-    notifyListeners();
-  }
-
   void toggleSelectAll() {
     if (isAllSelected) {
       deselectAll();
@@ -542,16 +634,29 @@ class ProductsController extends ChangeNotifier {
     }
   }
 
+  void selectAll() {
+    selectedProductIds.addAll(filteredProducts.map((p) => p.id));
+    _isSelectionMode = true;
+    notifyListeners();
+  }
+
+  void deselectAll() {
+    selectedProductIds.clear();
+    _isSelectionMode = false;
+    notifyListeners();
+  }
+
   // --- Bulk Action Methods ---
   void confirmBulkDelete(BuildContext context) {
-    final count = selectedCount;
+    final count = selectedProductIds.length;
     if (count == 0) return;
 
     showDialog(
       context: context,
       builder: (ctx) => ConfirmDialog(
         title: 'تأكيد الحذف الجماعي',
-        message: 'هل أنت متأكد من حذف $count منتج(ات) محدد بشكل نهائي؟ لا يمكن التراجع عن هذا الإجراء.',
+        message:
+            'هل أنت متأكد من حذف $count منتج(ات) محدد بشكل نهائي؟ لا يمكن التراجع عن هذا الإجراء.',
         confirmText: 'حذف المحدد',
         confirmColor: Colors.redAccent,
         icon: Icons.delete_sweep_rounded,
@@ -565,161 +670,135 @@ class ProductsController extends ChangeNotifier {
 
   Future<void> _executeBulkDelete() async {
     final idsToDelete = selectedProductIds.toList();
-    if (idsToDelete.isEmpty) return;
+    if (idsToDelete.isEmpty || _isBulkOperating) return;
 
-    try {
-      _isBulkOperating = true;
-      notifyListeners();
+    _isBulkOperating = true;
+    notifyListeners();
 
-      int successCount = 0;
-      int failCount = 0;
+    int successCount = 0;
+    int failCount = 0;
 
-      for (final id in idsToDelete) {
-        try {
-          final result = await _deleteProductUseCase(id);
-          final bool isSuccess = result.fold((l) => false, (r) => r);
-          if (isSuccess) {
-            products.removeWhere((p) => p.id == id);
-            selectedProductIds.remove(id);
-            successCount++;
-          } else {
-            failCount++;
-          }
-        } catch (_) {
-          failCount++;
-        }
-      }
-
-      _applyFiltering();
-
-      if (selectedProductIds.isEmpty) {
-        _isSelectionMode = false;
-      }
-
-      if (failCount == 0) {
-        AppFeedback.showSuccess('تم حذف $successCount منتج(ات) بنجاح');
+    for (final id in idsToDelete) {
+      final result = await _deleteProductUseCase(id);
+      final bool isSuccess = result.fold((l) => false, (r) => r);
+      if (isSuccess) {
+        products.removeWhere((p) => p.id == id);
+        selectedProductIds.remove(id);
+        successCount++;
       } else {
-        AppFeedback.showWarning('تم حذف $successCount وفشل حذف $failCount منتج');
+        failCount++;
       }
-    } catch (e) {
-      AppFeedback.showError('خطأ في الحذف الجماعي: ${e.toString()}');
-    } finally {
-      _isBulkOperating = false;
-      notifyListeners();
     }
+
+    _applyFiltering();
+
+    if (selectedProductIds.isEmpty) {
+      _isSelectionMode = false;
+    }
+
+    if (failCount == 0) {
+      AppFeedback.showSuccess('تم حذف $successCount منتج(ات) بنجاح');
+    } else {
+      AppFeedback.showWarning('تم حذف $successCount وفشل حذف $failCount منتج');
+    }
+
+    _isBulkOperating = false;
+    notifyListeners();
   }
 
   Future<void> bulkToggleStatus({required bool activate}) async {
     final idsToUpdate = selectedProductIds.toList();
-    if (idsToUpdate.isEmpty) return;
+    if (idsToUpdate.isEmpty || _isBulkOperating) return;
 
     final actionName = activate ? 'تفعيل' : 'تعطيل';
+    _isBulkOperating = true;
+    notifyListeners();
 
-    try {
-      _isBulkOperating = true;
-      notifyListeners();
+    int successCount = 0;
+    int failCount = 0;
 
-      int successCount = 0;
-      int failCount = 0;
-
-      for (final id in idsToUpdate) {
-        try {
-          final result = await _updateProductUseCase(id, {'is_active': activate});
-          result.fold(
-            (l) => failCount++,
-            (updatedProduct) {
-              final index = products.indexWhere((p) => p.id == id);
-              if (index != -1) {
-                products[index] = updatedProduct;
-              }
-              successCount++;
-            },
-          );
-        } catch (_) {
-          failCount++;
-        }
-      }
-
-      _applyFiltering();
-
-      if (failCount == 0) {
-        AppFeedback.showSuccess('تم $actionName $successCount منتج(ات) بنجاح');
-      } else {
-        AppFeedback.showWarning('تم $actionName $successCount وفشل $failCount منتج');
-      }
-    } catch (e) {
-      AppFeedback.showError('خطأ في الـ $actionName الجماعي: ${e.toString()}');
-    } finally {
-      _isBulkOperating = false;
-      notifyListeners();
+    for (final id in idsToUpdate) {
+      final result =
+          await _updateProductUseCase(id, {'is_active': activate});
+      result.fold(
+        (l) => failCount++,
+        (updatedProduct) {
+          final index = products.indexWhere((p) => p.id == id);
+          if (index != -1) {
+            products[index] = updatedProduct;
+          }
+          successCount++;
+        },
+      );
     }
+
+    _applyFiltering();
+
+    if (failCount == 0) {
+      AppFeedback.showSuccess('تم $actionName $successCount منتج(ات) بنجاح');
+    } else {
+      AppFeedback.showWarning('تم $actionName $successCount وفشل $failCount منتج');
+    }
+
+    _isBulkOperating = false;
+    notifyListeners();
   }
 
   Future<void> bulkChangeCategory(String newCategoryId) async {
     final idsToUpdate = selectedProductIds.toList();
-    if (idsToUpdate.isEmpty) return;
+    if (idsToUpdate.isEmpty || _isBulkOperating) return;
 
-    try {
-      _isBulkOperating = true;
-      notifyListeners();
+    _isBulkOperating = true;
+    notifyListeners();
 
-      int successCount = 0;
-      int failCount = 0;
+    int successCount = 0;
+    int failCount = 0;
 
-      for (final id in idsToUpdate) {
-        try {
-          final result = await _updateProductUseCase(id, {'category_id': newCategoryId});
-          result.fold(
-            (l) => failCount++,
-            (updatedProduct) {
-              final index = products.indexWhere((p) => p.id == id);
-              if (index != -1) {
-                products[index] = updatedProduct;
-              }
-              successCount++;
-            },
-          );
-        } catch (_) {
-          failCount++;
-        }
-      }
-
-      _applyFiltering();
-
-      if (failCount == 0) {
-        AppFeedback.showSuccess('تم نقل $successCount منتج(ات) إلى القسم بنجاح');
-      } else {
-        AppFeedback.showWarning('تم نقل $successCount وفشل نقل $failCount منتج');
-      }
-    } catch (e) {
-      AppFeedback.showError('خطأ في نقل المنتجات: ${e.toString()}');
-    } finally {
-      _isBulkOperating = false;
-      notifyListeners();
+    for (final id in idsToUpdate) {
+      final result = await _updateProductUseCase(
+          id, {'category_id': newCategoryId});
+      result.fold(
+        (l) => failCount++,
+        (updatedProduct) {
+          final index = products.indexWhere((p) => p.id == id);
+          if (index != -1) {
+            products[index] = updatedProduct;
+          }
+          successCount++;
+        },
+      );
     }
+
+    _applyFiltering();
+
+    if (failCount == 0) {
+      AppFeedback.showSuccess('تم نقل $successCount منتج(ات) إلى القسم بنجاح');
+    } else {
+      AppFeedback.showWarning('تم نقل $successCount وفشل نقل $failCount منتج');
+    }
+
+    _isBulkOperating = false;
+    notifyListeners();
   }
 
   Future<String?> uploadImage(String filePath) async {
-    try {
-      _isUploadingImage = true;
-      notifyListeners();
+    if (_isUploadingImage) return null;
 
-      final result = await _uploadProductImageUseCase(filePath);
-      final uploadedUrl = result.fold<String?>(
-        (failure) {
-          AppFeedback.showError(failure.toMessage());
-          return null;
-        },
-        (url) => url,
-      );
-      return uploadedUrl;
-    } catch (e) {
-      AppFeedback.showError('خطأ في الرفع: ${e.toString()}');
-      return null;
-    } finally {
-      _isUploadingImage = false;
-      notifyListeners();
-    }
+    _isUploadingImage = true;
+    notifyListeners();
+
+    final result = await _uploadProductImageUseCase(filePath);
+    final uploadedUrl = result.fold<String?>(
+      (failure) {
+        AppFeedback.showError(failure.toMessage());
+        return null;
+      },
+      (url) => url,
+    );
+
+    _isUploadingImage = false;
+    notifyListeners();
+    return uploadedUrl;
   }
 
   void showProductForm(BuildContext context, {ProductEntity? product}) {
