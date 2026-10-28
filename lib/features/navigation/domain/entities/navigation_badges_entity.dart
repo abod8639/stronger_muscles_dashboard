@@ -1,3 +1,5 @@
+/// 100% Pure Dart Domain Entity representing navigation item badges.
+/// Free of any framework, networking, or database library dependencies.
 class NavigationBadgesEntity {
   final int pendingOrdersCount;
   final int unreadNotificationsCount;
@@ -11,12 +13,11 @@ class NavigationBadgesEntity {
     required this.lowStockProductsCount,
   });
 
-  factory NavigationBadgesEntity.initial() => const NavigationBadgesEntity(
-        pendingOrdersCount: 0,
-        unreadNotificationsCount: 0,
-        openTicketsCount: 0,
-        lowStockProductsCount: 0,
-      );
+  const NavigationBadgesEntity.initial()
+      : pendingOrdersCount = 0,
+        unreadNotificationsCount = 0,
+        openTicketsCount = 0,
+        lowStockProductsCount = 0;
 
   NavigationBadgesEntity copyWith({
     int? pendingOrdersCount,
@@ -50,4 +51,8 @@ class NavigationBadgesEntity {
       unreadNotificationsCount.hashCode ^
       openTicketsCount.hashCode ^
       lowStockProductsCount.hashCode;
+
+  @override
+  String toString() =>
+      'NavigationBadgesEntity(pendingOrders: $pendingOrdersCount, notifications: $unreadNotificationsCount, tickets: $openTicketsCount, lowStock: $lowStockProductsCount)';
 }
