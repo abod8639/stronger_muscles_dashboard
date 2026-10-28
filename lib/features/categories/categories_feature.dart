@@ -1,5 +1,6 @@
 /// Public contracts barrel file for the Categories feature.
 /// Strictly encapsulates internal data sources, DTOs, mappers, and internal widgets.
+library;
 
 // Domain Entities
 export 'domain/entities/category_entity.dart';
