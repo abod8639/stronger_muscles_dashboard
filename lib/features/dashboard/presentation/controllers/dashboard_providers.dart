@@ -11,7 +11,7 @@ import 'package:stronger_muscles_dashboard/features/dashboard/presentation/model
 import 'package:stronger_muscles_dashboard/features/dashboard/presentation/utils/dashboard_chart_calculator.dart';
 import 'package:stronger_muscles_dashboard/features/orders/orders_feature.dart';
 import 'package:stronger_muscles_dashboard/features/products/products_feature.dart';
-import 'package:stronger_muscles_dashboard/features/users/presentation/controllers/users_providers.dart';
+import 'package:stronger_muscles_dashboard/features/users/users_feature.dart';
 import 'dashboard_notifier.dart';
 
 // ==================== Data Layer Scoped Providers ====================
