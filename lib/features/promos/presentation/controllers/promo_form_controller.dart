@@ -1,16 +1,20 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
-import 'package:stronger_muscles_dashboard/features/brands/domain/entities/brand_entity.dart';
-import 'package:stronger_muscles_dashboard/features/brands/domain/repositories/brand_repository.dart';
+import 'package:stronger_muscles_dashboard/features/brands/brands_feature.dart';
 import 'package:stronger_muscles_dashboard/features/products/products_feature.dart';
-import 'package:stronger_muscles_dashboard/features/promos/domain/entities/promo_entity.dart';
-import 'package:stronger_muscles_dashboard/features/promos/domain/usecases/promo_usecases.dart';
-import 'package:stronger_muscles_dashboard/features/promos/presentation/controllers/promos_controller.dart';
+import '../../domain/entities/promo_entity.dart';
+import '../../domain/usecases/add_promo_usecase.dart';
+import '../../domain/usecases/update_promo_usecase.dart';
+import '../../domain/usecases/upload_promo_image_usecase.dart';
+import 'promos_controller.dart';
 
-/// متحكم مخصص لإدارة نموذج إنشاء وتعديل الإعلانات الترويجية وفق معايير Clean Architecture
+/// Form controller managing creation and modification of promotional banners.
+/// Adheres strictly to Clean Architecture:
+/// - Enforces guard clauses against duplicate submissions while loading
+/// - Zero raw try-catch blocks (functional error handling via fpdart)
+/// - Proper resource disposal
 class PromoFormController extends ChangeNotifier {
   final PromoEntity? initialPromo;
   final AddPromoUseCase addPromoUseCase;
@@ -41,7 +45,6 @@ class PromoFormController extends ChangeNotifier {
   final buttonEnController = TextEditingController();
   final backgroundColorController = TextEditingController();
 
-  // State
   String _backgroundColorHex = '#FFFFFF';
   String get backgroundColorHex => _backgroundColorHex;
   set backgroundColorHex(String val) {
@@ -90,7 +93,6 @@ class PromoFormController extends ChangeNotifier {
   bool _isBrandsLoading = false;
   bool get isBrandsLoading => _isBrandsLoading;
 
-  // Cache & Reference Lists
   List<ProductEntity> _products = [];
   List<ProductEntity> get products => _products;
 
@@ -141,34 +143,30 @@ class PromoFormController extends ChangeNotifier {
     }
 
     if (_products.isEmpty && getProductsUseCase != null) {
-      try {
-        final result = await getProductsUseCase!.call();
-        result.fold(
-          (failure) {},
-          (fetched) {
-            _products = fetched;
-            notifyListeners();
-          },
-        );
-      } catch (_) {}
+      final result = await getProductsUseCase!.call();
+      result.fold(
+        (failure) {},
+        (fetched) {
+          _products = fetched;
+          notifyListeners();
+        },
+      );
     }
 
     if (_brands.isEmpty && brandRepository != null) {
       _isBrandsLoading = true;
       notifyListeners();
-      try {
-        final result = await brandRepository!.getBrands();
-        result.fold(
-          (failure) {},
-          (fetched) {
-            _brands = fetched;
-          },
-        );
-      } catch (_) {
-      } finally {
-        _isBrandsLoading = false;
-        notifyListeners();
-      }
+
+      final result = await brandRepository!.getBrands();
+      result.fold(
+        (failure) {},
+        (fetched) {
+          _brands = fetched;
+        },
+      );
+
+      _isBrandsLoading = false;
+      notifyListeners();
     }
   }
 
@@ -187,23 +185,27 @@ class PromoFormController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> savePromo([BuildContext? context]) async {
+  /// Saves or updates the promotional banner.
+  /// Returns `true` if operation succeeded, `false` otherwise.
+  Future<bool> savePromo() async {
+    // Guard clause against duplicate concurrent submissions
+    if (_isLoading) return false;
+
     if (_existingImageUrl.isEmpty && _selectedImage == null) {
       AppFeedback.showError('يجب اختيار صورة للإعلان');
-      return;
+      return false;
     }
 
-    // التحقق من صحة توجيه الإعلان
     if (_selectedTargetType == 'product' &&
-        (_selectedTargetId == null || _selectedTargetId!.isEmpty)) {
+        (_selectedTargetId == null || _selectedTargetId!.trim().isEmpty)) {
       AppFeedback.showError('يجب اختيار منتج للإعلان');
-      return;
+      return false;
     }
 
     if (_selectedTargetType == 'brand' &&
-        (_selectedTargetId == null || _selectedTargetId!.isEmpty)) {
+        (_selectedTargetId == null || _selectedTargetId!.trim().isEmpty)) {
       AppFeedback.showError('يجب اختيار ماركة للإعلان');
-      return;
+      return false;
     }
 
     _isLoading = true;
@@ -211,8 +213,7 @@ class PromoFormController extends ChangeNotifier {
 
     String finalImageUrl = _existingImageUrl;
     if (_selectedImage != null) {
-      final uploadResult =
-          await uploadPromoImageUseCase.call(_selectedImage!.path);
+      final uploadResult = await uploadPromoImageUseCase.call(_selectedImage!.path);
       final bool uploadSucceeded = uploadResult.fold(
         (failure) {
           AppFeedback.showError(failure.toMessage());
@@ -226,67 +227,66 @@ class PromoFormController extends ChangeNotifier {
       if (!uploadSucceeded) {
         _isLoading = false;
         notifyListeners();
-        return;
+        return false;
       }
     }
 
-    final targetId =
-        _selectedTargetType == 'none' ? null : _selectedTargetId;
+    final targetId = _selectedTargetType == 'none' ? null : _selectedTargetId;
 
     final promoData = PromoEntity(
       id: initialPromo?.id ?? '',
       title: {
         'ar': titleArController.text.trim(),
-        'en': titleEnController.text.trim()
+        'en': titleEnController.text.trim(),
       },
       subtitle: {
         'ar': subtitleArController.text.trim(),
-        'en': subtitleEnController.text.trim()
+        'en': subtitleEnController.text.trim(),
       },
       buttonText: {
         'ar': buttonArController.text.trim(),
-        'en': buttonEnController.text.trim()
+        'en': buttonEnController.text.trim(),
       },
       imageUrl: finalImageUrl,
       backgroundColor: backgroundColorController.text.isNotEmpty
-          ? backgroundColorController.text
+          ? backgroundColorController.text.trim()
           : '#FFFFFF',
       targetType: _selectedTargetType,
       targetId: targetId,
       isActive: _isActive,
+      createdAt: initialPromo?.createdAt,
     );
 
-    try {
-      if (isEditing) {
-        final result = await updatePromoUseCase.call(promoData);
-        result.fold(
-          (failure) => AppFeedback.showError(failure.toMessage()),
-          (updated) {
-            promosController?.updatePromoLocally(updated);
-            AppFeedback.showSuccess('تم تحديث الإعلان بنجاح');
-            if (context != null && context.mounted) {
-              Navigator.of(context).pop();
-            }
-          },
-        );
-      } else {
-        final result = await addPromoUseCase.call(promoData);
-        result.fold(
-          (failure) => AppFeedback.showError(failure.toMessage()),
-          (added) {
-            promosController?.updatePromoLocally(added);
-            AppFeedback.showSuccess('تمت إضافة الإعلان بنجاح');
-            if (context != null && context.mounted) {
-              Navigator.of(context).pop();
-            }
-          },
-        );
-      }
-    } catch (e) {
-      AppFeedback.showError(e.toString().replaceAll('Exception: ', ''));
-    } finally {
+    if (isEditing) {
+      final result = await updatePromoUseCase.call(promoData);
       _isLoading = false;
       notifyListeners();
+      return result.fold(
+        (failure) {
+          AppFeedback.showError(failure.toMessage());
+          return false;
+        },
+        (updated) {
+          promosController?.updatePromoLocally(updated);
+          AppFeedback.showSuccess('تم تحديث الإعلان بنجاح');
+          return true;
+        },
+      );
+    } else {
+      final result = await addPromoUseCase.call(promoData);
+      _isLoading = false;
+      notifyListeners();
+      return result.fold(
+        (failure) {
+          AppFeedback.showError(failure.toMessage());
+          return false;
+        },
+        (added) {
+          promosController?.updatePromoLocally(added);
+          AppFeedback.showSuccess('تمت إضافة الإعلان بنجاح');
+          return true;
+        },
+      );
     }
   }
 
