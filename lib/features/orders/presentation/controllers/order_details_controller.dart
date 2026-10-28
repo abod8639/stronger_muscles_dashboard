@@ -7,7 +7,8 @@ import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order
 import 'package:stronger_muscles_dashboard/features/orders/domain/usecases/update_order_status_usecase.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/services/invoice_pdf_service.dart';
 
-/// متحكم تفاصيل وإجراءات الطلب كـ [ChangeNotifier] نقي
+/// Pure Controller managing order details actions and PDF generation.
+/// Free of raw try-catch blocks in adherence to Clean Architecture.
 class OrderDetailsController extends ChangeNotifier {
   final UpdateOrderStatusUseCase _updateOrderStatusUseCase;
   final VoidCallback? _onStatusUpdated;
@@ -27,150 +28,136 @@ class OrderDetailsController extends ChangeNotifier {
         _updateOrderStatusUseCase = updateOrderStatusUseCase,
         _onStatusUpdated = onStatusUpdated;
 
-  /// تأكيد الطلب بنقله إلى حالة "قيد المعالجة"
+  /// Confirms order moving it to 'processing'
   Future<void> confirmOrder() async {
     await updateOrderStatus(OrderStatus.processing);
   }
 
-  /// شحن الطلب بنقله إلى حالة "تم الشحن"
+  /// Ships order moving it to 'shipped'
   Future<void> shipOrder() async {
     await updateOrderStatus(OrderStatus.shipped);
   }
 
-  /// توصيل الطلب بنقله إلى حالة "تم التوصيل"
+  /// Delivers order moving it to 'delivered'
   Future<void> deliverOrder() async {
     await updateOrderStatus(OrderStatus.delivered);
   }
 
-  /// إلغاء الطلب بنقله إلى حالة "ملغي"
+  /// Cancels order moving it to 'cancelled'
   Future<void> cancelOrder() async {
     await updateOrderStatus(OrderStatus.cancelled);
   }
 
-  /// تحديث حالة الطلب ومزامنتها مع الواجهة
+  /// Updates order status with functional error handling
   Future<void> updateOrderStatus(OrderStatus newStatus) async {
     if (_isUpdatingStatus) return;
 
-    try {
-      _isUpdatingStatus = true;
-      notifyListeners();
+    _isUpdatingStatus = true;
+    notifyListeners();
 
-      final result = await _updateOrderStatusUseCase(order.id, newStatus);
+    final result = await _updateOrderStatusUseCase(order.id, newStatus);
 
-      result.fold(
-        (failure) {
-          AppFeedback.showError(failure.toMessage());
-        },
-        (updatedOrder) {
-          order = updatedOrder;
-          notifyListeners();
-          _onStatusUpdated?.call();
-          AppFeedback.showSuccess(
-            'تم تغيير حالة الطلب إلى "${getStatusText(newStatus)}" بنجاح',
-          );
-        },
-      );
-    } catch (e) {
-      AppFeedback.showError('تعذر تحديث حالة الطلب: $e');
-    } finally {
-      _isUpdatingStatus = false;
-      notifyListeners();
-    }
+    result.fold(
+      (failure) {
+        AppFeedback.showError(failure.toMessage());
+      },
+      (updatedOrder) {
+        order = updatedOrder;
+        notifyListeners();
+        _onStatusUpdated?.call();
+        AppFeedback.showSuccess(
+          'تم تغيير حالة الطلب إلى "${getStatusText(newStatus)}" بنجاح',
+        );
+      },
+    );
+
+    _isUpdatingStatus = false;
+    notifyListeners();
   }
 
-  /// طباعة الفاتورة أو حفظها كـ PDF
+  /// Prints or saves order invoice as PDF
   Future<void> printInvoice() async {
     if (_isGeneratingPdf) return;
 
-    try {
-      _isGeneratingPdf = true;
-      notifyListeners();
-      await InvoicePdfService.printInvoice(order);
-    } catch (e) {
-      AppFeedback.showError('تعذر إنشاء الفاتورة: $e');
-    } finally {
-      _isGeneratingPdf = false;
-      notifyListeners();
-    }
+    _isGeneratingPdf = true;
+    notifyListeners();
+    await InvoicePdfService.printInvoice(order);
+    _isGeneratingPdf = false;
+    notifyListeners();
   }
 
-  /// مشاركة ملف الفاتورة PDF
+  /// Shares order invoice PDF
   Future<void> shareInvoice() async {
     if (_isGeneratingPdf) return;
 
-    try {
-      _isGeneratingPdf = true;
-      notifyListeners();
-      await InvoicePdfService.shareInvoice(order);
-    } catch (e) {
-      AppFeedback.showError('تعذر مشاركة ملف الفاتورة: $e');
-    } finally {
-      _isGeneratingPdf = false;
-      notifyListeners();
-    }
+    _isGeneratingPdf = true;
+    notifyListeners();
+    await InvoicePdfService.shareInvoice(order);
+    _isGeneratingPdf = false;
+    notifyListeners();
   }
 
-  /// نسخ رقم الطلب إلى الحافظة
+  /// Copies order ID to clipboard with feedback
   void copyOrderId() {
     Clipboard.setData(ClipboardData(text: order.id));
-    AppFeedback.showSuccess('تم نسخ رقم الطلب إلى الحافظة');
+    AppFeedback.showSuccess('تم نسخ رقم الطلب بنجاح');
   }
 
-  /// الاتصال بالعميل
-  Future<void> callCustomer(String phone) async {
-    final uri = Uri.parse('tel:$phone');
-    try {
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri);
-      } else {
-        AppFeedback.showWarning('لا يمكن فتح تطبيق الهاتف على هذا الجهاز');
-      }
-    } catch (e) {
-      AppFeedback.showError('فشل في محاولة إجراء المكالمة');
-    }
+  /// Copies text to clipboard with feedback
+  void copyToClipboard(BuildContext context, String text, String label) {
+    Clipboard.setData(ClipboardData(text: text));
+    AppFeedback.showSuccess('تم نسخ $label بنجاح');
   }
 
-  /// إرسال بريد إلكتروني للعميل
-  Future<void> emailCustomer(String email) async {
-    final uri = Uri.parse('mailto:$email');
-    try {
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri);
-      } else {
-        AppFeedback.showWarning('لا يمكن فتح تطبيق البريد على هذا الجهاز');
-      }
-    } catch (e) {
-      AppFeedback.showError('فشل في محاولة فتح تطبيق البريد');
-    }
-  }
-
-  /// فتح العنوان في خرائط Google
-  Future<void> openGoogleMaps(AddressEntity address) async {
-    final String query = address.hasCoordinates
-        ? '${address.latitude},${address.longitude}'
-        : address.fullAddress;
-
-    if (query.trim().isEmpty) {
-      AppFeedback.showWarning('عنوان الشحن غير متوفر');
+  /// Launches phone dialer
+  Future<void> callCustomer(String? phone) async {
+    if (phone == null || phone.isEmpty) {
+      AppFeedback.showError('رقم الهاتف غير متوفر');
       return;
     }
+    final uri = Uri.parse('tel:$phone');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      AppFeedback.showError('تعذر فتح تطبيق الهاتف');
+    }
+  }
 
-    final Uri mapUri = Uri.https(
-      'www.google.com',
-      '/maps/search/',
-      {'api': '1', 'query': query},
-    );
+  /// Sends email to customer
+  Future<void> emailCustomer(String? email) async {
+    if (email == null || email.isEmpty) {
+      AppFeedback.showError('البريد الإلكتروني غير متوفر');
+      return;
+    }
+    final uri = Uri.parse('mailto:$email');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      AppFeedback.showError('تعذر فتح تطبيق البريد');
+    }
+  }
 
-    try {
-      final launched = await launchUrl(
-        mapUri,
-        mode: LaunchMode.externalApplication,
-      );
-      if (!launched) {
-        await launchUrl(mapUri);
-      }
-    } catch (e) {
-      AppFeedback.showError('تعذر فتح خرائط Google: $e');
+  /// Opens Google Maps location for shipping address
+  Future<void> openGoogleMaps(AddressEntity? address) async {
+    await openMapLocation(address);
+  }
+
+  /// Opens map location for shipping address
+  Future<void> openMapLocation(AddressEntity? address) async {
+    if (address == null) return;
+
+    final String query;
+    if (address.hasCoordinates) {
+      query = '${address.latitude},${address.longitude}';
+    } else {
+      query = Uri.encodeComponent(address.fullAddress);
+    }
+
+    final uri = Uri.parse('https://www.google.com/maps/search/?api=1&query=$query');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      AppFeedback.showError('تعذر فتح تطبيق الخرائط');
     }
   }
 
@@ -186,6 +173,19 @@ class OrderDetailsController extends ChangeNotifier {
         return 'تم التوصيل';
       case OrderStatus.cancelled:
         return 'ملغي';
+    }
+  }
+
+  String getPaymentStatusText(PaymentStatus status) {
+    switch (status) {
+      case PaymentStatus.pending:
+        return 'معلق';
+      case PaymentStatus.paid:
+        return 'مدفوع';
+      case PaymentStatus.failed:
+        return 'فشل الدفع';
+      case PaymentStatus.refunded:
+        return 'مسترجع';
     }
   }
 }
