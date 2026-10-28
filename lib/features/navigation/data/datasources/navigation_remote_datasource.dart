@@ -1,44 +1,57 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
+import 'package:stronger_muscles_dashboard/config/api_config.dart';
+import 'package:stronger_muscles_dashboard/core/error/exceptions.dart';
 import '../models/navigation_badges_model.dart';
 
+/// Contract for fetching remote Navigation badges via HTTP/Dio.
 abstract class NavigationRemoteDataSource {
-  Future<NavigationBadgesModel> getNavigationBadges({CancelToken? cancelToken});
+  Future<NavigationBadgesModel> getNavigationBadges();
 }
 
+/// Production implementation of [NavigationRemoteDataSource] using [Dio].
+/// 100% testable via Constructor Dependency Injection.
 class NavigationRemoteDataSourceImpl implements NavigationRemoteDataSource {
   final Dio _dio;
-  static const String _badgesEndpoint = '/admin/navigation/badges';
 
-  NavigationRemoteDataSourceImpl(this._dio);
+  NavigationRemoteDataSourceImpl({required Dio dio}) : _dio = dio;
 
   @override
-  Future<NavigationBadgesModel> getNavigationBadges({
-    CancelToken? cancelToken,
-  }) async {
+  Future<NavigationBadgesModel> getNavigationBadges() async {
     try {
       final response = await _dio.get(
-        _badgesEndpoint,
-        cancelToken: cancelToken,
+        ApiConfig.adminNavigationBadges,
         options: Options(
-          receiveTimeout: const Duration(seconds: 30),
-          sendTimeout: const Duration(seconds: 30),
+          receiveTimeout: const Duration(seconds: 15),
+          sendTimeout: const Duration(seconds: 15),
+          headers: {'Accept': 'application/json'},
         ),
       );
 
-      // تحليل البيانات في مسار خلفي Isolate لمنع تجميد الشاشة
-      final parsed = await compute(parseNavigationBadgesCompute, response.data);
-      return parsed;
+      if (response.statusCode == 200) {
+        final data = response.data;
+        final Map<String, dynamic> map = data is Map<String, dynamic>
+            ? (data['data'] as Map<String, dynamic>? ?? data)
+            : Map<String, dynamic>.from(data as Map);
+
+        return NavigationBadgesModel.fromJson(map);
+      }
+
+      throw ServerException(
+        message: 'فشل في استرجاع شارات التنقل من الخادم',
+        statusCode: response.statusCode,
+      );
     } on DioException catch (e) {
-      // إذا كان المسار اختياري وغير موجود بالخادم بعد (404) نرجع كائناً آمناً بقيم افتراضية
       if (e.response?.statusCode == 404) {
-        debugPrint('Navigation badges endpoint not found (404), using default safe badges.');
+        // Safe fallback if optional backend endpoint is not yet mounted
         return const NavigationBadgesModel();
       }
-      rethrow;
+      throw ServerException(
+        message: e.message ?? 'خطأ في الاتصال بالشبكة أثناء جلب شارات التنقل',
+        statusCode: e.response?.statusCode,
+      );
     } catch (e) {
-      debugPrint('NavigationRemoteDataSource unexpected error: $e');
-      return const NavigationBadgesModel();
+      if (e is AppException) rethrow;
+      throw ServerException(message: 'حدث خطأ غير متوقع أثناء معالجة شارات التنقل: $e');
     }
   }
 }
