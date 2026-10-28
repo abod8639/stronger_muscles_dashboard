@@ -168,8 +168,9 @@ class PromosScreen extends ConsumerWidget {
                             onEdit: () {
                               context.push(AppRoutes.promoForm, extra: promo);
                             },
-                            onDelete: () => controller.confirmDelete(
+                            onDelete: () => _confirmDelete(
                               context,
+                              controller,
                               promo.id,
                               promo.displayTitle,
                             ),
@@ -183,6 +184,35 @@ class PromosScreen extends ConsumerWidget {
           ),
         ],
       ),
+      ),
+    );
+  }
+
+  void _confirmDelete(
+    BuildContext context,
+    dynamic controller,
+    String id,
+    String title,
+  ) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('تأكيد الحذف'),
+        content: Text('هل أنت متأكد أنك تريد حذف الإعلان "$title"؟'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('إلغاء'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              controller.deletePromo(id);
+            },
+            child: const Text('حذف'),
+          ),
+        ],
       ),
     );
   }
