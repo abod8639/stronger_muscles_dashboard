@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive/hive.dart';
-import '../../domain/entities/product_entity.dart';
 
 part 'product_model.freezed.dart';
 part 'product_model.g.dart';
@@ -72,17 +71,6 @@ class ProductVariantModel with _$ProductVariantModel {
       _$ProductVariantModelFromJson(_safeVariantJson(json));
 
   const ProductVariantModel._();
-
-  ProductVariantEntity toEntity() => ProductVariantEntity(
-        id: id,
-        sku: sku,
-        price: price,
-        discountPrice: discountPrice,
-        effectivePrice: effectivePrice,
-        stockQuantity: stockQuantity,
-        attributes: attributes,
-        isActive: isActive,
-      );
 }
 
 @freezed
@@ -98,12 +86,6 @@ class ProductSize with _$ProductSize {
       _$ProductSizeFromJson(_safeSizeJson(json));
 
   const ProductSize._();
-
-  ProductSizeEntity toEntity() => ProductSizeEntity(
-        size: size,
-        price: price,
-        discountPrice: discountPrice,
-      );
 }
 
 @freezed
@@ -192,28 +174,6 @@ class ProductModel with _$ProductModel {
   double get finalPrice => discountPrice ?? price;
   bool get isInStock => stockQuantity > 0;
   String get effectiveCategoryId => category?.id ?? categoryId;
-
-  ProductEntity toEntity() => ProductEntity(
-        id: id,
-        nameAr: name.ar,
-        nameEn: name.en,
-        descriptionAr: description.ar,
-        descriptionEn: description.en,
-        price: price,
-        discountPrice: discountPrice,
-        imageUrls: imageUrls.map((e) => e.original).toList(),
-        categoryId: effectiveCategoryId,
-        stockQuantity: stockQuantity,
-        brand: brand,
-        isActive: isActive,
-        isFeatured: featured,
-        isBackgroundWhite: isBackgroundWhite,
-        servingSize: servingSize,
-        servingsPerContainer: servingsPerContainer,
-        productSizes: productSizes?.map((e) => e.toEntity()).toList(),
-        flavors: flavor,
-        variants: variants.map((e) => e.toEntity()).toList(),
-      );
 
   /// معالجة استخراج كائن منتج مفرد في Isolate خلفي لمنع تجميد الشاشة
   static Future<ProductModel> fromJsonAsync(dynamic json) async {
