@@ -27,4 +27,5 @@ Future<void> hiveInit() async {
   await Hive.openBox<UserModel>('users');
   await Hive.openBox('brands');
   await Hive.openBox('dashboard_stats');
+  await Hive.openBox('navigation_badges');
 }
