@@ -16,15 +16,16 @@ class OrdersStatsSection extends ConsumerWidget {
       return const SizedBox.shrink();
     }
     final res = context.responsive;
-    final aspectRatio = MediaQuery.of(context).size.width / 1000;
 
-    return GridView.count(
+    return GridView(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: res.isDesktop ? 4 : 2,
-      crossAxisSpacing: 14,
-      mainAxisSpacing: 14,
-      childAspectRatio: res.isDesktop ? aspectRatio : aspectRatio * 2.2,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: res.isDesktop ? 4 : 2,
+        crossAxisSpacing: res.isMobile ? 10 : 14,
+        mainAxisSpacing: res.isMobile ? 10 : 14,
+        mainAxisExtent: res.isMobile ? 130 : 148,
+      ),
       children: [
         PremiumIndicatorCard(
           title: 'إجمالي الطلبات',
