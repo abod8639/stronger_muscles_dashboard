@@ -36,6 +36,7 @@ void main() {
       );
 
       final s3 = s1.copyWith(isStoreOpen: false, deliveryFee: 7000.0);
+      final s4 = s1.copyWith(taxRate: 14.0);
 
       expect(s1, equals(s2));
       expect(s1.hashCode, equals(s2.hashCode));
@@ -43,6 +44,9 @@ void main() {
       expect(s3.isStoreOpen, isFalse);
       expect(s3.deliveryFee, 7000.0);
       expect(s3.storeName, 'Stronger Muscles');
+      expect(s1.taxRate, 0.0);
+      expect(s4.taxRate, 14.0);
+      expect(s4, isNot(equals(s1)));
     });
   });
 
@@ -55,6 +59,7 @@ void main() {
         'currency': 'USD',
         'delivery_fee': 4000.0,
         'free_delivery_threshold': 80000.0,
+        'tax_rate': 12.5,
         'is_store_open': true,
         'order_notifications_enabled': false,
         'maintenance_mode': true,
@@ -68,6 +73,7 @@ void main() {
       expect(model.supportEmail, 'help@gympro.com');
       expect(model.currency, 'USD');
       expect(model.deliveryFee, 4000.0);
+      expect(model.taxRate, 12.5);
       expect(model.isStoreOpen, isTrue);
       expect(model.orderNotificationsEnabled, isFalse);
       expect(model.maintenanceMode, isTrue);
@@ -76,6 +82,7 @@ void main() {
       final serialized = model.toJson();
       expect(serialized['store_name'], 'Gym Pro');
       expect(serialized['currency'], 'USD');
+      expect(serialized['tax_rate'], 12.5);
       expect(serialized['is_store_open'], isTrue);
       expect(serialized['maintenance_mode'], isTrue);
     });
@@ -88,6 +95,7 @@ void main() {
         currency: 'IQD',
         deliveryFee: 6000.0,
         freeDeliveryThreshold: 120000.0,
+        taxRate: 14.0,
         isStoreOpen: false,
         orderNotificationsEnabled: true,
         maintenanceMode: false,
@@ -97,10 +105,18 @@ void main() {
       expect(model.storeName, entity.storeName);
       expect(model.supportEmail, entity.supportEmail);
       expect(model.deliveryFee, entity.deliveryFee);
+      expect(model.taxRate, 14.0);
       expect(model.isStoreOpen, entity.isStoreOpen);
 
       final mappedEntity = model.toEntity();
       expect(mappedEntity, equals(entity));
+    });
+
+    test('SettingsModel.fromJson defaults the tax rate to 0 when missing', () {
+      final model = SettingsModel.fromJson({'delivery_fee': 50});
+
+      expect(model.taxRate, 0.0);
+      expect(model.deliveryFee, 50.0);
     });
   });
 }
