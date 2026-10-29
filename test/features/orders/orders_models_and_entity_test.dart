@@ -162,5 +162,46 @@ void main() {
       expect(roundTripModel.totalAmount, entity.totalAmount);
       expect(roundTripModel.status, entity.status);
     });
+
+    test('OrderModel.fromJson reads the tax charged on the order', () {
+      final model = OrderModel.fromJson({
+        'id': 'order-tax',
+        'user_id': '7',
+        'order_date': '2026-10-29T10:00:00Z',
+        'address_id': '3',
+        'subtotal': 100,
+        'shipping_cost': 50,
+        'tax_amount': 14,
+        'total_amount': 164,
+      });
+
+      expect(model.taxAmount, 14.0);
+      expect(model.toEntity().taxAmount, 14.0);
+      expect(model.toEntity().toModel().taxAmount, 14.0);
+    });
+
+    test('OrderModel.fromJson defaults tax to 0 and includes it in a missing total', () {
+      final withoutTax = OrderModel.fromJson({
+        'id': 'order-old',
+        'user_id': '7',
+        'order_date': '2026-10-29T10:00:00Z',
+        'address_id': '3',
+        'subtotal': 100,
+        'shippingCost': 50,
+      });
+      final missingTotal = OrderModel.fromJson({
+        'id': 'order-no-total',
+        'user_id': '7',
+        'order_date': '2026-10-29T10:00:00Z',
+        'address_id': '3',
+        'subtotal': 100,
+        'shippingCost': 50,
+        'taxAmount': 14,
+      });
+
+      expect(withoutTax.taxAmount, 0.0);
+      expect(withoutTax.totalAmount, 150.0);
+      expect(missingTotal.totalAmount, 164.0);
+    });
   });
 }
