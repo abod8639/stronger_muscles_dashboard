@@ -32,6 +32,7 @@ class OrderModel with _$OrderModel {
     @HiveField(14) AddressModel? shippingAddress,
     @HiveField(15) List<OrderItemModel>? items,
     @HiveField(16) UserModel? user,
+    @HiveField(17, defaultValue: 0.0) @Default(0.0) double taxAmount,
   }) = _OrderModel;
 
   String get userName => user?.name ?? 'User $userId';
@@ -193,9 +194,10 @@ Map<String, dynamic> _mapOrderJson(Map<String, dynamic> rawJson) {
   final subtotal = _parseDouble(json['subtotal']);
   final shippingCost = _parseDouble(json['shippingCost'] ?? json['shipping_cost']);
   final discount = _parseDouble(json['discount'] ?? json['discount_amount']);
+  final taxAmount = _parseDouble(json['taxAmount'] ?? json['tax_amount']);
   var totalAmount = _parseDouble(json['total_amount'] ?? json['totalAmount']);
   if (totalAmount == 0.0 && subtotal > 0.0) {
-    totalAmount = (subtotal + shippingCost - discount).clamp(0.0, double.infinity);
+    totalAmount = (subtotal + shippingCost + taxAmount - discount).clamp(0.0, double.infinity);
   }
 
   return {
@@ -209,6 +211,7 @@ Map<String, dynamic> _mapOrderJson(Map<String, dynamic> rawJson) {
     ),
     'addressId': (json['address_id'] ?? json['addressId'] ?? '').toString(),
     'shippingCost': shippingCost,
+    'taxAmount': taxAmount,
     'totalAmount': totalAmount,
     'subtotal': subtotal,
     'discount': discount,
