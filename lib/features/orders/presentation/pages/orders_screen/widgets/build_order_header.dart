@@ -112,9 +112,13 @@ class OrderHeader extends StatelessWidget {
           color: iconColor,
         ),
         const SizedBox(width: 4),
-        Text(
-          _formatDate(order.orderDate),
-          style: textStyle,
+        Flexible(
+          child: Text(
+            _formatDate(order.orderDate),
+            style: textStyle,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       ],
     );
