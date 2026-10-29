@@ -14,3 +14,6 @@ export 'domain/usecases/get_users_usecase.dart';
 // Presentation Providers & Pages
 export 'presentation/controllers/users_providers.dart';
 export 'presentation/pages/users_page.dart';
+
+// Modular Routes
+export 'users_routes.dart';
