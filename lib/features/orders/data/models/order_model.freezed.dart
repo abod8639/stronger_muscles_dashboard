@@ -54,6 +54,8 @@ mixin _$OrderModel {
   List<OrderItemModel>? get items => throw _privateConstructorUsedError;
   @HiveField(16)
   UserModel? get user => throw _privateConstructorUsedError;
+  @HiveField(17)
+  double get taxAmount => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -84,7 +86,8 @@ abstract class $OrderModelCopyWith<$Res> {
       @HiveField(13) String? phoneNumber,
       @HiveField(14) AddressModel? shippingAddress,
       @HiveField(15) List<OrderItemModel>? items,
-      @HiveField(16) UserModel? user});
+      @HiveField(16) UserModel? user,
+      @HiveField(17) double taxAmount});
 
   $AddressModelCopyWith<$Res>? get shippingAddress;
   $UserModelCopyWith<$Res>? get user;
@@ -120,6 +123,7 @@ class _$OrderModelCopyWithImpl<$Res, $Val extends OrderModel>
     Object? shippingAddress = freezed,
     Object? items = freezed,
     Object? user = freezed,
+    Object? taxAmount = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -190,6 +194,10 @@ class _$OrderModelCopyWithImpl<$Res, $Val extends OrderModel>
           ? _value.user
           : user // ignore: cast_nullable_to_non_nullable
               as UserModel?,
+      taxAmount: null == taxAmount
+          ? _value.taxAmount
+          : taxAmount // ignore: cast_nullable_to_non_nullable
+              as double,
     ) as $Val);
   }
 
@@ -243,7 +251,8 @@ abstract class _$$OrderModelImplCopyWith<$Res>
       @HiveField(13) String? phoneNumber,
       @HiveField(14) AddressModel? shippingAddress,
       @HiveField(15) List<OrderItemModel>? items,
-      @HiveField(16) UserModel? user});
+      @HiveField(16) UserModel? user,
+      @HiveField(17) double taxAmount});
 
   @override
   $AddressModelCopyWith<$Res>? get shippingAddress;
@@ -279,6 +288,7 @@ class __$$OrderModelImplCopyWithImpl<$Res>
     Object? shippingAddress = freezed,
     Object? items = freezed,
     Object? user = freezed,
+    Object? taxAmount = null,
   }) {
     return _then(_$OrderModelImpl(
       id: null == id
@@ -349,13 +359,17 @@ class __$$OrderModelImplCopyWithImpl<$Res>
           ? _value.user
           : user // ignore: cast_nullable_to_non_nullable
               as UserModel?,
+      taxAmount: null == taxAmount
+          ? _value.taxAmount
+          : taxAmount // ignore: cast_nullable_to_non_nullable
+              as double,
     ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
-class _$OrderModelImpl extends _OrderModel {
+class _$OrderModelImpl extends _OrderModel with DiagnosticableTreeMixin {
   const _$OrderModelImpl(
       {@HiveField(0) required this.id,
       @HiveField(1) required this.userId,
@@ -373,7 +387,8 @@ class _$OrderModelImpl extends _OrderModel {
       @HiveField(13) this.phoneNumber,
       @HiveField(14) this.shippingAddress,
       @HiveField(15) final List<OrderItemModel>? items,
-      @HiveField(16) this.user})
+      @HiveField(16) this.user,
+      @HiveField(17) this.taxAmount = 0.0})
       : _items = items,
         super._();
 
@@ -444,10 +459,39 @@ class _$OrderModelImpl extends _OrderModel {
   @override
   @HiveField(16)
   final UserModel? user;
+  @override
+  @JsonKey()
+  @HiveField(17)
+  final double taxAmount;
 
   @override
-  String toString() {
-    return 'OrderModel(id: $id, userId: $userId, orderDate: $orderDate, status: $status, paymentStatus: $paymentStatus, paymentMethod: $paymentMethod, addressId: $addressId, subtotal: $subtotal, shippingCost: $shippingCost, discount: $discount, totalAmount: $totalAmount, trackingNumber: $trackingNumber, notes: $notes, phoneNumber: $phoneNumber, shippingAddress: $shippingAddress, items: $items, user: $user)';
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'OrderModel(id: $id, userId: $userId, orderDate: $orderDate, status: $status, paymentStatus: $paymentStatus, paymentMethod: $paymentMethod, addressId: $addressId, subtotal: $subtotal, shippingCost: $shippingCost, discount: $discount, totalAmount: $totalAmount, trackingNumber: $trackingNumber, notes: $notes, phoneNumber: $phoneNumber, shippingAddress: $shippingAddress, items: $items, user: $user, taxAmount: $taxAmount)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'OrderModel'))
+      ..add(DiagnosticsProperty('id', id))
+      ..add(DiagnosticsProperty('userId', userId))
+      ..add(DiagnosticsProperty('orderDate', orderDate))
+      ..add(DiagnosticsProperty('status', status))
+      ..add(DiagnosticsProperty('paymentStatus', paymentStatus))
+      ..add(DiagnosticsProperty('paymentMethod', paymentMethod))
+      ..add(DiagnosticsProperty('addressId', addressId))
+      ..add(DiagnosticsProperty('subtotal', subtotal))
+      ..add(DiagnosticsProperty('shippingCost', shippingCost))
+      ..add(DiagnosticsProperty('discount', discount))
+      ..add(DiagnosticsProperty('totalAmount', totalAmount))
+      ..add(DiagnosticsProperty('trackingNumber', trackingNumber))
+      ..add(DiagnosticsProperty('notes', notes))
+      ..add(DiagnosticsProperty('phoneNumber', phoneNumber))
+      ..add(DiagnosticsProperty('shippingAddress', shippingAddress))
+      ..add(DiagnosticsProperty('items', items))
+      ..add(DiagnosticsProperty('user', user))
+      ..add(DiagnosticsProperty('taxAmount', taxAmount));
   }
 
   @override
@@ -482,7 +526,9 @@ class _$OrderModelImpl extends _OrderModel {
             (identical(other.shippingAddress, shippingAddress) ||
                 other.shippingAddress == shippingAddress) &&
             const DeepCollectionEquality().equals(other._items, _items) &&
-            (identical(other.user, user) || other.user == user));
+            (identical(other.user, user) || other.user == user) &&
+            (identical(other.taxAmount, taxAmount) ||
+                other.taxAmount == taxAmount));
   }
 
   @JsonKey(ignore: true)
@@ -505,7 +551,8 @@ class _$OrderModelImpl extends _OrderModel {
       phoneNumber,
       shippingAddress,
       const DeepCollectionEquality().hash(_items),
-      user);
+      user,
+      taxAmount);
 
   @JsonKey(ignore: true)
   @override
@@ -539,7 +586,8 @@ abstract class _OrderModel extends OrderModel {
       @HiveField(13) final String? phoneNumber,
       @HiveField(14) final AddressModel? shippingAddress,
       @HiveField(15) final List<OrderItemModel>? items,
-      @HiveField(16) final UserModel? user}) = _$OrderModelImpl;
+      @HiveField(16) final UserModel? user,
+      @HiveField(17) final double taxAmount}) = _$OrderModelImpl;
   const _OrderModel._() : super._();
 
   factory _OrderModel.fromJson(Map<String, dynamic> json) =
@@ -596,6 +644,9 @@ abstract class _OrderModel extends OrderModel {
   @override
   @HiveField(16)
   UserModel? get user;
+  @override
+  @HiveField(17)
+  double get taxAmount;
   @override
   @JsonKey(ignore: true)
   _$$OrderModelImplCopyWith<_$OrderModelImpl> get copyWith =>
@@ -827,7 +878,8 @@ class __$$OrderItemModelImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$OrderItemModelImpl extends _OrderItemModel {
+class _$OrderItemModelImpl extends _OrderItemModel
+    with DiagnosticableTreeMixin {
   const _$OrderItemModelImpl(
       {@HiveField(0) required this.id,
       @HiveField(1) required this.orderId,
@@ -880,8 +932,26 @@ class _$OrderItemModelImpl extends _OrderItemModel {
   final String? fullName;
 
   @override
-  String toString() {
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'OrderItemModel(id: $id, orderId: $orderId, productId: $productId, productName: $productName, unitPrice: $unitPrice, quantity: $quantity, subtotal: $subtotal, imageUrl: $imageUrl, selectedFlavor: $selectedFlavor, selectedSize: $selectedSize, fullName: $fullName)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'OrderItemModel'))
+      ..add(DiagnosticsProperty('id', id))
+      ..add(DiagnosticsProperty('orderId', orderId))
+      ..add(DiagnosticsProperty('productId', productId))
+      ..add(DiagnosticsProperty('productName', productName))
+      ..add(DiagnosticsProperty('unitPrice', unitPrice))
+      ..add(DiagnosticsProperty('quantity', quantity))
+      ..add(DiagnosticsProperty('subtotal', subtotal))
+      ..add(DiagnosticsProperty('imageUrl', imageUrl))
+      ..add(DiagnosticsProperty('selectedFlavor', selectedFlavor))
+      ..add(DiagnosticsProperty('selectedSize', selectedSize))
+      ..add(DiagnosticsProperty('fullName', fullName));
   }
 
   @override
