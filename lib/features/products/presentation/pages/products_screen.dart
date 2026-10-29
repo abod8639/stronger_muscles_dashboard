@@ -67,6 +67,7 @@ class ProductsScreen extends ConsumerWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'fab_products_add',
         onPressed: () => controller.showProductForm(context),
         icon: const Icon(Icons.add_rounded),
         label: const Text('منتج جديد'),

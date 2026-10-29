@@ -37,6 +37,7 @@ class NotificationsScreen extends ConsumerWidget {
         onPressed: notifier.refreshNotifications,
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'fab_notifications_add',
         onPressed: () => showSendNotificationDialog(context),
         icon: const Icon(Icons.add_comment_rounded),
         label: const Text('إشعار جديد'),
