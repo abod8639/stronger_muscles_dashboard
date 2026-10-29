@@ -28,7 +28,7 @@ Widget buildRecentOrders(ResponsiveLayout res, List<OrderEntity> items) {
         },
         useListView: res.isTablet,
         showCount: 4,
-        mainAxisExtent: 190,
+        mainAxisExtent: res.isMobile ? 180 : 200,
         itemBuilder: (context, order, index) => OrderListTile(
           order: order,
           index: index,
