@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:stronger_muscles_dashboard/config/api_config.dart';
+import 'package:stronger_muscles_dashboard/core/config/api_config.dart';
 import '../models/settings_model.dart';
 
 /// Contract for remote operations regarding settings via REST API.

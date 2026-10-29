@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:stronger_muscles_dashboard/config/api_config.dart';
+import 'package:stronger_muscles_dashboard/core/config/api_config.dart';
 import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
 
 /// Centralized Dio HTTP Client Provider for the application.

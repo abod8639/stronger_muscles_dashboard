@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:stronger_muscles_dashboard/config/api_config.dart';
+import 'package:stronger_muscles_dashboard/core/config/api_config.dart';
 import 'package:stronger_muscles_dashboard/core/error/exceptions.dart';
 import '../../domain/entities/order_entity.dart';
 import '../models/order_model.dart';

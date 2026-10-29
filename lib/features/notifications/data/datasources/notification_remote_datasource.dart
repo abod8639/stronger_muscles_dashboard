@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:stronger_muscles_dashboard/config/api_config.dart';
+import 'package:stronger_muscles_dashboard/core/config/api_config.dart';
 import '../models/admin_notification_model.dart';
 
 /// Contract for remote communication with the notifications backend endpoints via Dio.

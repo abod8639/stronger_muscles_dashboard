@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
-import 'package:stronger_muscles_dashboard/config/api_config.dart';
+import 'package:stronger_muscles_dashboard/core/config/api_config.dart';
 import 'package:stronger_muscles_dashboard/core/network/dio_provider.dart';
 import '../../data/datasources/support_local_data_source.dart';
 import '../../data/datasources/support_realtime_data_source.dart';

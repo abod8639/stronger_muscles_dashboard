@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import '../../config/api_config.dart';
+import '../config/api_config.dart';
 import '../utils/ui_feedback.dart';
 import 'auth_service.dart';
 
