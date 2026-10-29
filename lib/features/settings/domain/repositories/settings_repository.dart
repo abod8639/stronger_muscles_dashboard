@@ -9,7 +9,9 @@ abstract class SettingsRepository {
   Future<Either<Failure, SettingsEntity>> getSettings();
 
   /// Updates application and store settings.
-  Future<Either<Failure, SettingsEntity>> updateSettings(SettingsEntity settings);
+  Future<Either<Failure, SettingsEntity>> updateSettings(
+    SettingsEntity settings,
+  );
 
   /// Clears local cached data across the application.
   Future<Either<Failure, Unit>> clearAppCache();

@@ -36,8 +36,9 @@ class SettingsState {
       isClearingCache: isClearingCache ?? this.isClearingCache,
       settings: settings ?? this.settings,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
-      successMessage:
-          clearSuccess ? null : (successMessage ?? this.successMessage),
+      successMessage: clearSuccess
+          ? null
+          : (successMessage ?? this.successMessage),
     );
   }
 

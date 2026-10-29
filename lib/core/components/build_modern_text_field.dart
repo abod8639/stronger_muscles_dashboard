@@ -21,6 +21,7 @@ class ModernTextField extends StatelessWidget {
   /// يضيف * للعنوان ويتحقق من أن الحقل غير فارغ (عند عدم تمرير [validator])
   final bool isRequired;
   final String? suffixText;
+  final String? helperText;
 
   const ModernTextField({
     super.key,
@@ -39,6 +40,7 @@ class ModernTextField extends StatelessWidget {
     this.keyboardType,
     this.isRequired = false,
     this.suffixText,
+    this.helperText,
   });
 
   @override
@@ -72,6 +74,7 @@ class ModernTextField extends StatelessWidget {
         hintText: hint,
         alignLabelWithHint: maxLines > 1,
         suffixText: suffixText,
+        helperText: helperText,
         prefixIcon: Icon(
           icon,
           size: 20,

@@ -18,8 +18,8 @@ class SettingsRepositoryImpl implements SettingsRepository {
   const SettingsRepositoryImpl({
     required SettingsRemoteDataSource remoteDataSource,
     required SettingsLocalDataSource localDataSource,
-  })  : _remoteDataSource = remoteDataSource,
-        _localDataSource = localDataSource;
+  }) : _remoteDataSource = remoteDataSource,
+       _localDataSource = localDataSource;
 
   @override
   Future<Either<Failure, SettingsEntity>> getSettings() async {
@@ -28,15 +28,21 @@ class SettingsRepositoryImpl implements SettingsRepository {
       await _localDataSource.cacheSettings(remoteModel);
       return Right(remoteModel.toEntity());
     } catch (e, stackTrace) {
-      debugPrint('⚠️ [SettingsRepositoryImpl] Remote fetch failed, attempting local cache: $e');
+      debugPrint(
+        '⚠️ [SettingsRepositoryImpl] Remote fetch failed, attempting local cache: $e',
+      );
       try {
         final cachedModel = await _localDataSource.getCachedSettings();
         if (cachedModel != null) {
-          debugPrint('✅ [SettingsRepositoryImpl] Serving settings from Hive cache');
+          debugPrint(
+            '✅ [SettingsRepositoryImpl] Serving settings from Hive cache',
+          );
           return Right(cachedModel.toEntity());
         }
       } catch (cacheError) {
-        debugPrint('⚠️ [SettingsRepositoryImpl] Local cache error: $cacheError');
+        debugPrint(
+          '⚠️ [SettingsRepositoryImpl] Local cache error: $cacheError',
+        );
       }
 
       // If remote and cache both fail, fallback to resilient default configuration
@@ -50,10 +56,14 @@ class SettingsRepositoryImpl implements SettingsRepository {
   }
 
   @override
-  Future<Either<Failure, SettingsEntity>> updateSettings(SettingsEntity settings) async {
+  Future<Either<Failure, SettingsEntity>> updateSettings(
+    SettingsEntity settings,
+  ) async {
     try {
       final model = settings.toModel();
-      final updatedModel = await _remoteDataSource.updateSettings(model.toJson());
+      final updatedModel = await _remoteDataSource.updateSettings(
+        model.toJson(),
+      );
       await _localDataSource.cacheSettings(updatedModel);
       return Right(updatedModel.toEntity());
     } catch (e, stackTrace) {

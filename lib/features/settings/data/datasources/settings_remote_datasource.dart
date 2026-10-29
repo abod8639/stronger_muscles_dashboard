@@ -22,10 +22,7 @@ class SettingsRemoteDataSourceImpl implements SettingsRemoteDataSource {
     try {
       final response = await _dio.get(
         ApiConfig.adminSettings,
-        options: Options(
-          sendTimeout: _timeout,
-          receiveTimeout: _timeout,
-        ),
+        options: Options(sendTimeout: _timeout, receiveTimeout: _timeout),
       );
 
       final data = response.data;
@@ -44,15 +41,14 @@ class SettingsRemoteDataSourceImpl implements SettingsRemoteDataSource {
   }
 
   @override
-  Future<SettingsModel> updateSettings(Map<String, dynamic> settingsData) async {
+  Future<SettingsModel> updateSettings(
+    Map<String, dynamic> settingsData,
+  ) async {
     try {
       final response = await _dio.put(
         ApiConfig.adminSettings,
         data: settingsData,
-        options: Options(
-          sendTimeout: _timeout,
-          receiveTimeout: _timeout,
-        ),
+        options: Options(sendTimeout: _timeout, receiveTimeout: _timeout),
       );
 
       final data = response.data;

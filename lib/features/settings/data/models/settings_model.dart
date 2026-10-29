@@ -34,23 +34,24 @@ class SettingsModel {
       storeName: json['store_name']?.toString() ?? 'Stronger Muscles',
       supportEmail:
           json['support_email']?.toString() ?? 'support@strongermuscles.com',
-      supportPhone:
-          json['support_phone']?.toString() ?? '+964 770 000 0000',
+      supportPhone: json['support_phone']?.toString() ?? '+964 770 000 0000',
       currency: json['currency']?.toString() ?? 'IQD',
       deliveryFee: (json['delivery_fee'] as num?)?.toDouble() ?? 5000.0,
       freeDeliveryThreshold:
           (json['free_delivery_threshold'] as num?)?.toDouble() ?? 100000.0,
       taxRate: (json['tax_rate'] as num?)?.toDouble() ?? 0.0,
-      isStoreOpen: json['is_store_open'] == true ||
+      isStoreOpen:
+          json['is_store_open'] == true ||
           json['is_store_open'] == 1 ||
           json['is_store_open'] == null,
       orderNotificationsEnabled:
           json['order_notifications_enabled'] == true ||
-              json['order_notifications_enabled'] == 1 ||
-              json['order_notifications_enabled'] == null,
-      maintenanceMode: json['maintenance_mode'] == true ||
-          json['maintenance_mode'] == 1,
-      allowedAdminRoles: (json['allowed_admin_roles'] as List<dynamic>?)
+          json['order_notifications_enabled'] == 1 ||
+          json['order_notifications_enabled'] == null,
+      maintenanceMode:
+          json['maintenance_mode'] == true || json['maintenance_mode'] == 1,
+      allowedAdminRoles:
+          (json['allowed_admin_roles'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           const ['admin', 'super_admin'],

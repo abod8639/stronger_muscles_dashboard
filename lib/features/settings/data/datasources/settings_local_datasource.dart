@@ -72,9 +72,7 @@ class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
       await _box.delete(_settingsKey);
       await _box.delete(_timestampKey);
     } catch (e) {
-      throw CacheException(
-        message: 'فشل في مسح ذاكرة الإعدادات المؤقتة: $e',
-      );
+      throw CacheException(message: 'فشل في مسح ذاكرة الإعدادات المؤقتة: $e');
     }
   }
 }

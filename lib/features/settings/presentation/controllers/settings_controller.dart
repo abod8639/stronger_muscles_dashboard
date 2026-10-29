@@ -22,9 +22,9 @@ class SettingsController extends Notifier<SettingsState> {
     GetSettingsUseCase? getSettingsUseCase,
     UpdateSettingsUseCase? updateSettingsUseCase,
     ClearAppCacheUseCase? clearAppCacheUseCase,
-  })  : _injectedGetSettingsUseCase = getSettingsUseCase,
-        _injectedUpdateSettingsUseCase = updateSettingsUseCase,
-        _injectedClearAppCacheUseCase = clearAppCacheUseCase;
+  }) : _injectedGetSettingsUseCase = getSettingsUseCase,
+       _injectedUpdateSettingsUseCase = updateSettingsUseCase,
+       _injectedClearAppCacheUseCase = clearAppCacheUseCase;
 
   GetSettingsUseCase get _getSettingsUseCase =>
       _injectedGetSettingsUseCase ?? ref.read(getSettingsUseCaseProvider);
@@ -68,7 +68,11 @@ class SettingsController extends Notifier<SettingsState> {
     // Guard clause against concurrent submissions
     if (state.isSaving) return false;
 
-    state = state.copyWith(isSaving: true, clearError: true, clearSuccess: true);
+    state = state.copyWith(
+      isSaving: true,
+      clearError: true,
+      clearSuccess: true,
+    );
 
     final result = await _updateSettingsUseCase.call(updatedSettings);
 
@@ -105,7 +109,9 @@ class SettingsController extends Notifier<SettingsState> {
   }
 
   Future<bool> toggleOrderNotifications(bool isEnabled) async {
-    final updated = state.settings.copyWith(orderNotificationsEnabled: isEnabled);
+    final updated = state.settings.copyWith(
+      orderNotificationsEnabled: isEnabled,
+    );
     return await saveSettings(updated);
   }
 

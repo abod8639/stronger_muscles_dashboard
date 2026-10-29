@@ -21,13 +21,17 @@ final settingsBoxProvider = Provider<Box>((ref) {
 });
 
 /// Local Data Source provider
-final settingsLocalDataSourceProvider = Provider<SettingsLocalDataSource>((ref) {
+final settingsLocalDataSourceProvider = Provider<SettingsLocalDataSource>((
+  ref,
+) {
   final box = ref.watch(settingsBoxProvider);
   return SettingsLocalDataSourceImpl(box: box);
 });
 
 /// Remote Data Source provider
-final settingsRemoteDataSourceProvider = Provider<SettingsRemoteDataSource>((ref) {
+final settingsRemoteDataSourceProvider = Provider<SettingsRemoteDataSource>((
+  ref,
+) {
   final dio = ref.watch(dioProvider);
   return SettingsRemoteDataSourceImpl(dio: dio);
 });
