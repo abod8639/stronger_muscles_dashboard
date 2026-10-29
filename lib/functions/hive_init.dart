@@ -31,4 +31,7 @@ Future<void> hiveInit() async {
   await Hive.openBox('notifications_cache');
   await Hive.openBox('promos_cache');
   await Hive.openBox('settings_cache');
+  await Hive.openBox('theme_cache');
+  await Hive.openBox('support_cache');
+  await Hive.openBox('users_stats_cache');
 }
