@@ -44,8 +44,10 @@ class CategoryRepositoryImpl implements CategoryRepository {
     // 2. Fetch fresh data from remote source
     try {
       final remoteModels = await _remoteDataSource.getCategories(tree: tree);
-      // Cache asynchronously
-      await _localDataSource.cacheCategories(remoteModels, tree: tree);
+      // Cache asynchronously without blocking remote return
+      try {
+        await _localDataSource.cacheCategories(remoteModels, tree: tree);
+      } catch (_) {}
       return Right(remoteModels.toEntities());
     } on AppException catch (e) {
       // 3. Resilient fallback: If remote fails, attempt to serve stale cached data
@@ -72,7 +74,9 @@ class CategoryRepositoryImpl implements CategoryRepository {
 
       // Fetch from remote
       final remoteModel = await _remoteDataSource.getCategoryById(id);
-      await _localDataSource.cacheCategory(remoteModel);
+      try {
+        await _localDataSource.cacheCategory(remoteModel);
+      } catch (_) {}
       return Right(remoteModel.toEntity());
     } on AppException catch (e) {
       return Left(NetworkErrorHandler.handleException(e));
@@ -86,7 +90,9 @@ class CategoryRepositoryImpl implements CategoryRepository {
     try {
       final remoteJson = category.toRemoteJson();
       final newModel = await _remoteDataSource.addCategory(remoteJson);
-      await _localDataSource.cacheCategory(newModel);
+      try {
+        await _localDataSource.cacheCategory(newModel);
+      } catch (_) {}
       return Right(newModel.toEntity());
     } on AppException catch (e) {
       return Left(NetworkErrorHandler.handleException(e));
@@ -100,7 +106,9 @@ class CategoryRepositoryImpl implements CategoryRepository {
     try {
       final remoteJson = category.toRemoteJson();
       final updatedModel = await _remoteDataSource.updateCategory(category.id, remoteJson);
-      await _localDataSource.cacheCategory(updatedModel);
+      try {
+        await _localDataSource.cacheCategory(updatedModel);
+      } catch (_) {}
       return Right(updatedModel.toEntity());
     } on AppException catch (e) {
       return Left(NetworkErrorHandler.handleException(e));
@@ -113,7 +121,9 @@ class CategoryRepositoryImpl implements CategoryRepository {
   Future<Either<Failure, Unit>> deleteCategory(String id) async {
     try {
       await _remoteDataSource.deleteCategory(id);
-      await _localDataSource.deleteCachedCategory(id);
+      try {
+        await _localDataSource.deleteCachedCategory(id);
+      } catch (_) {}
       return const Right(unit);
     } on AppException catch (e) {
       return Left(NetworkErrorHandler.handleException(e));
