@@ -1,15 +1,16 @@
-import 'package:dartz/dartz.dart';
-import 'package:dio/dio.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import '../entities/users_stats_entity.dart';
 import '../repositories/user_repository.dart';
 
 class GetUsersStatsUseCase {
-  final UserRepository repository;
+  final UserRepository _repository;
 
-  GetUsersStatsUseCase(this.repository);
+  const GetUsersStatsUseCase(this._repository);
 
-  Future<Either<Failure, UsersStatsEntity>> call({CancelToken? cancelToken}) async {
-    return await repository.getUsersStats(cancelToken: cancelToken);
+  Future<Either<Failure, UsersStatsEntity>> call({
+    bool forceRefresh = false,
+  }) async {
+    return _repository.getUsersStats(forceRefresh: forceRefresh);
   }
 }
