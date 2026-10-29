@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../domain/entities/user_address_entity.dart';
 import '../../domain/entities/user_entity.dart';
 import 'user_info_row.dart';
 
@@ -345,7 +346,7 @@ class UserCard extends StatelessWidget {
     BuildContext context,
     bool isDark,
     ColorScheme colorScheme,
-    dynamic addr,
+    UserAddressEntity addr,
   ) {
     final theme = Theme.of(context);
     return Container(
