@@ -1,5 +1,3 @@
-import 'package:dartz/dartz.dart' as dartz;
-import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart' as fp;
 import 'package:stronger_muscles_dashboard/core/error/exceptions.dart';
@@ -171,13 +169,13 @@ class MockUserRepository implements UserRepository {
   Failure? failureToReturn;
 
   @override
-  Future<dartz.Either<Failure, UsersStatsEntity>> getUsersStats({CancelToken? cancelToken}) async {
-    if (failureToReturn != null) return dartz.Left(failureToReturn!);
-    return dartz.Right(stats);
+  Future<fp.Either<Failure, UsersStatsEntity>> getUsersStats({bool forceRefresh = false}) async {
+    if (failureToReturn != null) return fp.Left(failureToReturn!);
+    return fp.Right(stats);
   }
 
   @override
-  Future<dartz.Either<Failure, List<UserEntity>>> getUsers({CancelToken? cancelToken}) async {
+  Future<fp.Either<Failure, List<UserEntity>>> getUsers({bool forceRefresh = false}) async {
     throw UnimplementedError();
   }
 }
@@ -257,6 +255,10 @@ void main() {
       });
       localDataSource.cacheValid = false;
       remoteDataSource.exceptionToThrow = ServerException(message: 'Connection failed');
+      orderRepository.failureToReturn = const ServerFailure(message: 'Orders failed');
+      productRepository.failureToReturn = const ServerFailure(message: 'Products failed');
+      categoryRepository.failureToReturn = const ServerFailure(message: 'Categories failed');
+      userRepository.failureToReturn = const ServerFailure(message: 'Users failed');
 
       final result = await repository.getDashboardStats(forceRefresh: true);
 
