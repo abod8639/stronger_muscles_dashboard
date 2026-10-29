@@ -16,7 +16,7 @@ class UsersStatsHeader extends ConsumerWidget {
     final borderRadius = BorderRadius.circular(20);
 
     final totalUsers =
-        ref.watch(usersNotifierProvider).value?.totalUsers ?? 0;
+        ref.watch(usersNotifierProvider.select((s) => s.value?.totalUsers ?? 0));
 
     return Padding(
       padding: EdgeInsets.symmetric(
