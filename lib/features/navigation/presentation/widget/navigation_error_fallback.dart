@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/enhanced_error_widget.dart';
+import 'package:stronger_muscles_dashboard/core/components/enhanced_error_widget.dart';
 
 /// Dumb presentation error fallback widget for Navigation initialization failure.
 /// Strictly decoupled from sibling features.

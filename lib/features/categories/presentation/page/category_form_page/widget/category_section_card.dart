@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/icon_card_with_shadow.dart';
+import 'package:stronger_muscles_dashboard/core/components/icon_card_with_shadow.dart';
 
 /// بطاقة قسم موحدة بنمط Material Design 3 لأقسام نموذج التصنيف
 class CategorySectionCard extends StatelessWidget {

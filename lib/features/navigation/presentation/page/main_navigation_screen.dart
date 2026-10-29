@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/build_background.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/drawer.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/enhanced_loading_widget.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/my_bottomnavigationbar.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/sidebar.dart';
+import 'package:stronger_muscles_dashboard/core/components/build_background.dart';
+import 'package:stronger_muscles_dashboard/core/components/drawer.dart';
+import 'package:stronger_muscles_dashboard/core/components/enhanced_loading_widget.dart';
+import 'package:stronger_muscles_dashboard/core/components/my_bottomnavigationbar.dart';
+import 'package:stronger_muscles_dashboard/core/components/sidebar.dart';
 import 'package:stronger_muscles_dashboard/features/categories/categories_feature.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/dashboard_feature.dart';
 import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_providers.dart';

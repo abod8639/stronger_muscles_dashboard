@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/image_gallery_editor.dart';
+import 'package:stronger_muscles_dashboard/core/components/image_gallery_editor.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/controllers/promo_form_controller.dart';
 
 /// قسم إدارة صورة الإعلان الرئيسية

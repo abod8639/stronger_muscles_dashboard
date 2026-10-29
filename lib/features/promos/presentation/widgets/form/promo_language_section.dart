@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/build_modern_text_field.dart';
+import 'package:stronger_muscles_dashboard/core/components/build_modern_text_field.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/controllers/promo_form_controller.dart';
 
 /// قسم النصوص والمحتوى ثنائي اللغة (العربية والإنجليزية)

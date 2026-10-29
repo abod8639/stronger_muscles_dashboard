@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/base_app_bar.dart';
+import 'package:stronger_muscles_dashboard/core/components/base_app_bar.dart';
 import 'package:stronger_muscles_dashboard/features/promos/domain/entities/promo_entity.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/controllers/promo_form_controller.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/controllers/promos_providers.dart';

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/utils/components/base_app_bar.dart';
-import '../../../../core/utils/components/custom_search_bar.dart';
-import '../../../../core/utils/components/enhanced_error_widget.dart';
-import '../../../../core/utils/components/enhanced_loading_widget.dart';
-import '../../../../core/utils/components/my_refresh_indicator.dart';
-import '../../../../core/utils/components/top_section.dart';
+import '../../../../core/components/base_app_bar.dart';
+import '../../../../core/components/custom_search_bar.dart';
+import '../../../../core/components/enhanced_error_widget.dart';
+import '../../../../core/components/enhanced_loading_widget.dart';
+import '../../../../core/components/my_refresh_indicator.dart';
+import '../../../../core/components/top_section.dart';
 import '../controllers/users_providers.dart';
 import '../widgets/user_card.dart';
 import '../widgets/users_stats_header.dart';

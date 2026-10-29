@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/confirm_dialog.dart';
+import 'package:stronger_muscles_dashboard/core/components/confirm_dialog.dart';
 import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
 import 'package:stronger_muscles_dashboard/features/brands/brands_feature.dart';
 import 'package:stronger_muscles_dashboard/features/categories/categories_feature.dart';

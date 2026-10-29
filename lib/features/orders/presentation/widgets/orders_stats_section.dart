@@ -2,7 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/premium_indicator_card.dart';
+import 'package:stronger_muscles_dashboard/core/components/premium_indicator_card.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/controllers/orders_providers.dart';
 
 class OrdersStatsSection extends ConsumerWidget {

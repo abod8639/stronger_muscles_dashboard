@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/base_data_view.dart';
+import 'package:stronger_muscles_dashboard/core/components/base_data_view.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/entities/dashboard_stats_entity.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_providers.dart';
 import 'package:stronger_muscles_dashboard/features/navigation/navigation_feature.dart';

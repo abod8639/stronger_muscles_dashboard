@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/config/theme.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/glass_container.dart';
+import 'package:stronger_muscles_dashboard/core/components/glass_container.dart';
 
 class ImageGalleryEditor extends StatelessWidget {
   final List<String> imageUrls;

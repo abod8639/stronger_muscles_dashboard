@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/base_app_bar.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/enhanced_loading_widget.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/my_refresh_indicator.dart';
+import 'package:stronger_muscles_dashboard/core/components/base_app_bar.dart';
+import 'package:stronger_muscles_dashboard/core/components/enhanced_loading_widget.dart';
+import 'package:stronger_muscles_dashboard/core/components/my_refresh_indicator.dart';
 import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/controllers/orders_providers.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/orders_screen/widgets/orders_table.dart';

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/icon_card_with_shadow.dart';
+import 'package:stronger_muscles_dashboard/core/components/icon_card_with_shadow.dart';
 
 /// عنصر عرض المعلومات الإحصائية المصغرة المتوافق مع Material Design 3 ومتجاوب بالكامل لمنع أي overflow
 Widget buildInfoItem({

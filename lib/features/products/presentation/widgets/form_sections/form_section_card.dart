@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/icon_card_with_shadow.dart';
+import 'package:stronger_muscles_dashboard/core/components/icon_card_with_shadow.dart';
 
 /// بطاقة حاوية لأقسام استمارة المنتج بتصميم Neumorphism / Soft UI
 /// خالية من الأنيميشن وذات ظلال ناعمة وتدرج محدب متناسق مع الوضعين الداكن والفاتح

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/build_modern_text_field.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/confirm_dialog.dart';
+import 'package:stronger_muscles_dashboard/core/components/build_modern_text_field.dart';
+import 'package:stronger_muscles_dashboard/core/components/confirm_dialog.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
 import 'package:stronger_muscles_dashboard/features/categories/presentation/controllers/categories_controller.dart';
 

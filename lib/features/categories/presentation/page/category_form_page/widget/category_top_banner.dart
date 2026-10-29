@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/icon_card_with_shadow.dart';
+import 'package:stronger_muscles_dashboard/core/components/icon_card_with_shadow.dart';
 
 /// ترويسة معلوماتية بنمط Material Design 3 لصفحة إدارة التصنيف
 class CategoryTopBanner extends StatelessWidget {

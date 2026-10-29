@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stronger_muscles_dashboard/core/network/auth_service.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/build_nav_item.dart';
+import 'package:stronger_muscles_dashboard/core/components/build_nav_item.dart';
 import 'package:stronger_muscles_dashboard/functions/cache_manager.dart';
 
 /// الشريط الجانبي المصمم بأسلوب Neumorphism / Soft UI

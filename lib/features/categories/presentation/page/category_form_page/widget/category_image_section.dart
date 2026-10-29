@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/build_modern_text_field.dart';
+import 'package:stronger_muscles_dashboard/core/components/build_modern_text_field.dart';
 import 'package:stronger_muscles_dashboard/features/categories/presentation/controllers/categories_controller.dart';
 
 /// قسم إدارة ومعاينة صورة التصنيف الترويجية بنمط Material Design 3

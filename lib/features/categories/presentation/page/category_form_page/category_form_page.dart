@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/base_app_bar.dart';
+import 'package:stronger_muscles_dashboard/core/components/base_app_bar.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
 import 'package:stronger_muscles_dashboard/features/categories/presentation/controllers/categories_controller.dart';
 import 'package:stronger_muscles_dashboard/features/categories/presentation/controllers/categories_providers.dart';

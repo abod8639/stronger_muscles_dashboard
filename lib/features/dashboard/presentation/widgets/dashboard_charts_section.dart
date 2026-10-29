@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stronger_muscles_dashboard/config/responsive.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/enhanced_line_chart.dart';
+import 'package:stronger_muscles_dashboard/core/components/enhanced_line_chart.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_providers.dart';
 
 /// قسم الرسوم البيانية للوحة التحكم بتصميم Neumorphism / Soft UI

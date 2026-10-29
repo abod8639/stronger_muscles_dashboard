@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:stronger_muscles_dashboard/core/network/auth_service.dart';
-import 'package:stronger_muscles_dashboard/core/utils/components/sidebar.dart';
+import 'package:stronger_muscles_dashboard/core/components/sidebar.dart';
 
 class RoleMockAuthService extends AuthService {
   final String mockRole;
