@@ -43,32 +43,41 @@ class _SupportChatViewState extends ConsumerState<SupportChatView> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(supportControllerProvider.select((s) => s.errorMessage),
-        (previous, next) {
+    ref.listen(supportControllerProvider.select((s) => s.errorMessage), (
+      previous,
+      next,
+    ) {
       if (next != null && next.isNotEmpty) {
         AppFeedback.showError(next);
         ref.read(supportControllerProvider.notifier).clearMessages();
       }
     });
 
-    ref.listen(supportControllerProvider.select((s) => s.successMessage),
-        (previous, next) {
+    ref.listen(supportControllerProvider.select((s) => s.successMessage), (
+      previous,
+      next,
+    ) {
       if (next != null && next.isNotEmpty) {
         AppFeedback.showSuccess(next);
         ref.read(supportControllerProvider.notifier).clearMessages();
       }
     });
 
-    final ticket =
-        ref.watch(supportControllerProvider.select((s) => s.selectedTicket));
-    final isLoadingDetail =
-        ref.watch(supportControllerProvider.select((s) => s.isLoadingDetail));
-    final isSendingReply =
-        ref.watch(supportControllerProvider.select((s) => s.isSendingReply));
-    final isInternalNote =
-        ref.watch(supportControllerProvider.select((s) => s.isInternalNote));
-    final replyStatus =
-        ref.watch(supportControllerProvider.select((s) => s.replyStatus));
+    final ticket = ref.watch(
+      supportControllerProvider.select((s) => s.selectedTicket),
+    );
+    final isLoadingDetail = ref.watch(
+      supportControllerProvider.select((s) => s.isLoadingDetail),
+    );
+    final isSendingReply = ref.watch(
+      supportControllerProvider.select((s) => s.isSendingReply),
+    );
+    final isInternalNote = ref.watch(
+      supportControllerProvider.select((s) => s.isInternalNote),
+    );
+    final replyStatus = ref.watch(
+      supportControllerProvider.select((s) => s.replyStatus),
+    );
 
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -82,10 +91,7 @@ class _SupportChatViewState extends ConsumerState<SupportChatView> {
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: colorScheme.outlineVariant,
-          width: 1,
-        ),
+        border: Border.all(color: colorScheme.outlineVariant, width: 1),
         boxShadow: [
           BoxShadow(
             color: colorScheme.shadow.withValues(alpha: isDark ? 0.3 : 0.08),
@@ -196,8 +202,10 @@ class _SupportChatViewState extends ConsumerState<SupportChatView> {
                         tooltip: 'العودة للتذاكر',
                         icon: const Icon(Icons.arrow_back_rounded, size: 20),
                         padding: EdgeInsets.zero,
-                        constraints:
-                            const BoxConstraints(minWidth: 32, minHeight: 32),
+                        constraints: const BoxConstraints(
+                          minWidth: 32,
+                          minHeight: 32,
+                        ),
                         onPressed: () => ref
                             .read(supportControllerProvider.notifier)
                             .setSelectedTicket(null),
@@ -206,8 +214,9 @@ class _SupportChatViewState extends ConsumerState<SupportChatView> {
                     ],
                     CircleAvatar(
                       radius: 18,
-                      backgroundColor:
-                          colorScheme.primary.withValues(alpha: 0.15),
+                      backgroundColor: colorScheme.primary.withValues(
+                        alpha: 0.15,
+                      ),
                       backgroundImage: ticket.userAvatar != null
                           ? CachedNetworkImageProvider(ticket.userAvatar!)
                           : null,
@@ -246,10 +255,13 @@ class _SupportChatViewState extends ConsumerState<SupportChatView> {
                               const SizedBox(width: 6),
                               Container(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 6, vertical: 2),
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
                                 decoration: BoxDecoration(
-                                  color: colorScheme.primary
-                                      .withValues(alpha: 0.1),
+                                  color: colorScheme.primary.withValues(
+                                    alpha: 0.1,
+                                  ),
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
@@ -278,11 +290,16 @@ class _SupportChatViewState extends ConsumerState<SupportChatView> {
                     ),
                     IconButton(
                       tooltip: 'حذف التذكرة',
-                      icon: Icon(Icons.delete_outline_rounded,
-                          color: colorScheme.error, size: 20),
+                      icon: Icon(
+                        Icons.delete_outline_rounded,
+                        color: colorScheme.error,
+                        size: 20,
+                      ),
                       padding: EdgeInsets.zero,
-                      constraints:
-                          const BoxConstraints(minWidth: 32, minHeight: 32),
+                      constraints: const BoxConstraints(
+                        minWidth: 32,
+                        minHeight: 32,
+                      ),
                       onPressed: () => _confirmDeleteTicket(context, ticket),
                     ),
                   ],
@@ -306,35 +323,55 @@ class _SupportChatViewState extends ConsumerState<SupportChatView> {
                             dropdownColor: colorScheme.surfaceContainer,
                             items: [
                               DropdownMenuItem(
-                                  value: 'open',
-                                  child: Text('جديدة',
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          color: colorScheme.onSurface))),
+                                value: 'open',
+                                child: Text(
+                                  'جديدة',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: colorScheme.onSurface,
+                                  ),
+                                ),
+                              ),
                               DropdownMenuItem(
-                                  value: 'in_progress',
-                                  child: Text('قيد المعالجة',
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          color: colorScheme.onSurface))),
+                                value: 'in_progress',
+                                child: Text(
+                                  'قيد المعالجة',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: colorScheme.onSurface,
+                                  ),
+                                ),
+                              ),
                               DropdownMenuItem(
-                                  value: 'waiting_user',
-                                  child: Text('بانتظار العميل',
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          color: colorScheme.onSurface))),
+                                value: 'waiting_user',
+                                child: Text(
+                                  'بانتظار العميل',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: colorScheme.onSurface,
+                                  ),
+                                ),
+                              ),
                               DropdownMenuItem(
-                                  value: 'resolved',
-                                  child: Text('تم الحل',
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          color: colorScheme.onSurface))),
+                                value: 'resolved',
+                                child: Text(
+                                  'تم الحل',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: colorScheme.onSurface,
+                                  ),
+                                ),
+                              ),
                               DropdownMenuItem(
-                                  value: 'closed',
-                                  child: Text('مغلقة',
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          color: colorScheme.onSurface))),
+                                value: 'closed',
+                                child: Text(
+                                  'مغلقة',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: colorScheme.onSurface,
+                                  ),
+                                ),
+                              ),
                             ],
                             onChanged: (val) {
                               if (val != null) {
@@ -364,29 +401,45 @@ class _SupportChatViewState extends ConsumerState<SupportChatView> {
                             dropdownColor: colorScheme.surfaceContainer,
                             items: [
                               DropdownMenuItem(
-                                  value: 'urgent',
-                                  child: Text('عاجلة 🔥',
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          color: colorScheme.onSurface))),
+                                value: 'urgent',
+                                child: Text(
+                                  'عاجلة 🔥',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: colorScheme.onSurface,
+                                  ),
+                                ),
+                              ),
                               DropdownMenuItem(
-                                  value: 'high',
-                                  child: Text('مرتفعة',
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          color: colorScheme.onSurface))),
+                                value: 'high',
+                                child: Text(
+                                  'مرتفعة',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: colorScheme.onSurface,
+                                  ),
+                                ),
+                              ),
                               DropdownMenuItem(
-                                  value: 'normal',
-                                  child: Text('عادية',
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          color: colorScheme.onSurface))),
+                                value: 'normal',
+                                child: Text(
+                                  'عادية',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: colorScheme.onSurface,
+                                  ),
+                                ),
+                              ),
                               DropdownMenuItem(
-                                  value: 'low',
-                                  child: Text('منخفضة',
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          color: colorScheme.onSurface))),
+                                value: 'low',
+                                child: Text(
+                                  'منخفضة',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: colorScheme.onSurface,
+                                  ),
+                                ),
+                              ),
                             ],
                             onChanged: (val) {
                               if (val != null) {
@@ -443,7 +496,9 @@ class _SupportChatViewState extends ConsumerState<SupportChatView> {
                         const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 3),
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
                           decoration: BoxDecoration(
                             color: colorScheme.primary.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(6),
@@ -483,25 +538,40 @@ class _SupportChatViewState extends ConsumerState<SupportChatView> {
                     dropdownColor: colorScheme.surfaceContainer,
                     items: [
                       DropdownMenuItem(
-                          value: 'open',
-                          child: Text('جديدة',
-                              style: TextStyle(color: colorScheme.onSurface))),
+                        value: 'open',
+                        child: Text(
+                          'جديدة',
+                          style: TextStyle(color: colorScheme.onSurface),
+                        ),
+                      ),
                       DropdownMenuItem(
-                          value: 'in_progress',
-                          child: Text('قيد المعالجة',
-                              style: TextStyle(color: colorScheme.onSurface))),
+                        value: 'in_progress',
+                        child: Text(
+                          'قيد المعالجة',
+                          style: TextStyle(color: colorScheme.onSurface),
+                        ),
+                      ),
                       DropdownMenuItem(
-                          value: 'waiting_user',
-                          child: Text('بانتظار رد العميل',
-                              style: TextStyle(color: colorScheme.onSurface))),
+                        value: 'waiting_user',
+                        child: Text(
+                          'بانتظار رد العميل',
+                          style: TextStyle(color: colorScheme.onSurface),
+                        ),
+                      ),
                       DropdownMenuItem(
-                          value: 'resolved',
-                          child: Text('تم الحل',
-                              style: TextStyle(color: colorScheme.onSurface))),
+                        value: 'resolved',
+                        child: Text(
+                          'تم الحل',
+                          style: TextStyle(color: colorScheme.onSurface),
+                        ),
+                      ),
                       DropdownMenuItem(
-                          value: 'closed',
-                          child: Text('مغلقة',
-                              style: TextStyle(color: colorScheme.onSurface))),
+                        value: 'closed',
+                        child: Text(
+                          'مغلقة',
+                          style: TextStyle(color: colorScheme.onSurface),
+                        ),
+                      ),
                     ],
                     onChanged: (val) {
                       if (val != null) {
@@ -528,21 +598,33 @@ class _SupportChatViewState extends ConsumerState<SupportChatView> {
                     dropdownColor: colorScheme.surfaceContainer,
                     items: [
                       DropdownMenuItem(
-                          value: 'urgent',
-                          child: Text('عاجلة جداً 🔥',
-                              style: TextStyle(color: colorScheme.onSurface))),
+                        value: 'urgent',
+                        child: Text(
+                          'عاجلة جداً 🔥',
+                          style: TextStyle(color: colorScheme.onSurface),
+                        ),
+                      ),
                       DropdownMenuItem(
-                          value: 'high',
-                          child: Text('أولوية مرتفعة',
-                              style: TextStyle(color: colorScheme.onSurface))),
+                        value: 'high',
+                        child: Text(
+                          'أولوية مرتفعة',
+                          style: TextStyle(color: colorScheme.onSurface),
+                        ),
+                      ),
                       DropdownMenuItem(
-                          value: 'normal',
-                          child: Text('أولوية عادية',
-                              style: TextStyle(color: colorScheme.onSurface))),
+                        value: 'normal',
+                        child: Text(
+                          'أولوية عادية',
+                          style: TextStyle(color: colorScheme.onSurface),
+                        ),
+                      ),
                       DropdownMenuItem(
-                          value: 'low',
-                          child: Text('منخفضة',
-                              style: TextStyle(color: colorScheme.onSurface))),
+                        value: 'low',
+                        child: Text(
+                          'منخفضة',
+                          style: TextStyle(color: colorScheme.onSurface),
+                        ),
+                      ),
                     ],
                     onChanged: (val) {
                       if (val != null) {
@@ -557,8 +639,11 @@ class _SupportChatViewState extends ConsumerState<SupportChatView> {
               const SizedBox(width: 8),
               IconButton(
                 tooltip: 'حذف التذكرة',
-                icon: Icon(Icons.delete_outline_rounded,
-                    color: colorScheme.error, size: 20),
+                icon: Icon(
+                  Icons.delete_outline_rounded,
+                  color: colorScheme.error,
+                  size: 20,
+                ),
                 onPressed: () => _confirmDeleteTicket(context, ticket),
               ),
             ],
@@ -580,12 +665,13 @@ class _SupportChatViewState extends ConsumerState<SupportChatView> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.chat_bubble_outline_rounded,
-                  size: 42,
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSurfaceVariant
-                      .withValues(alpha: 0.4)),
+              Icon(
+                Icons.chat_bubble_outline_rounded,
+                size: 42,
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+              ),
               const SizedBox(height: 10),
               Text(
                 'لا توجد رسائل سابقة في هذه التذكرة',
@@ -629,14 +715,20 @@ class _SupportChatViewState extends ConsumerState<SupportChatView> {
         decoration: BoxDecoration(
           color: Colors.amber.withValues(alpha: isDark ? 0.12 : 0.2),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Colors.amber.shade700.withValues(alpha: 0.4)),
+          border: Border.all(
+            color: Colors.amber.shade700.withValues(alpha: 0.4),
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Icon(Icons.lock_rounded, size: 14, color: Colors.amber.shade800),
+                Icon(
+                  Icons.lock_rounded,
+                  size: 14,
+                  color: Colors.amber.shade800,
+                ),
                 const SizedBox(width: 6),
                 Text(
                   'ملاحظة داخلية للمشرفين',
@@ -679,8 +771,9 @@ class _SupportChatViewState extends ConsumerState<SupportChatView> {
         ),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color:
-              isUser ? colorScheme.surfaceContainerHigh : colorScheme.primary,
+          color: isUser
+              ? colorScheme.surfaceContainerHigh
+              : colorScheme.primary,
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(18),
             topRight: const Radius.circular(18),
@@ -697,15 +790,19 @@ class _SupportChatViewState extends ConsumerState<SupportChatView> {
           ],
         ),
         child: Column(
-          crossAxisAlignment:
-              isUser ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+          crossAxisAlignment: isUser
+              ? CrossAxisAlignment.start
+              : CrossAxisAlignment.end,
           children: [
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (!isUser) ...[
-                  Icon(Icons.support_agent_rounded,
-                      size: 14, color: colorScheme.onPrimary),
+                  Icon(
+                    Icons.support_agent_rounded,
+                    size: 14,
+                    color: colorScheme.onPrimary,
+                  ),
                   const SizedBox(width: 4),
                   Text(
                     message.senderName,
@@ -716,9 +813,11 @@ class _SupportChatViewState extends ConsumerState<SupportChatView> {
                     ),
                   ),
                 ] else ...[
-                  Icon(Icons.person_rounded,
-                      size: 14,
-                      color: colorScheme.onSurface.withValues(alpha: 0.7)),
+                  Icon(
+                    Icons.person_rounded,
+                    size: 14,
+                    color: colorScheme.onSurface.withValues(alpha: 0.7),
+                  ),
                   const SizedBox(width: 4),
                   Text(
                     message.senderName,
@@ -772,8 +871,7 @@ class _SupportChatViewState extends ConsumerState<SupportChatView> {
       padding: EdgeInsets.all(isMobile ? 12 : 16),
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainer,
-        borderRadius:
-            const BorderRadius.vertical(bottom: Radius.circular(24)),
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -782,8 +880,11 @@ class _SupportChatViewState extends ConsumerState<SupportChatView> {
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                Icon(Icons.auto_awesome_rounded,
-                    size: 15, color: colorScheme.primary),
+                Icon(
+                  Icons.auto_awesome_rounded,
+                  size: 15,
+                  color: colorScheme.primary,
+                ),
                 const SizedBox(width: 6),
                 Text(
                   'ردود جاهزة وسريعة:',
@@ -804,7 +905,9 @@ class _SupportChatViewState extends ConsumerState<SupportChatView> {
                             ? '${template.substring(0, 35)}...'
                             : template,
                         style: TextStyle(
-                            fontSize: 11, color: colorScheme.onSurface),
+                          fontSize: 11,
+                          color: colorScheme.onSurface,
+                        ),
                       ),
                       onPressed: () {
                         _replyController.text = template;
@@ -835,14 +938,17 @@ class _SupportChatViewState extends ConsumerState<SupportChatView> {
                           children: [
                             const Icon(Icons.send_rounded, size: 14),
                             const SizedBox(width: 4),
-                            Text(isCompact
-                                ? 'رد للعميل'
-                                : 'رد رسمي للعميل (إشعار FCM)'),
+                            Text(
+                              isCompact
+                                  ? 'رد للعميل'
+                                  : 'رد رسمي للعميل (إشعار FCM)',
+                            ),
                           ],
                         ),
                         selected: !isInternalNote,
-                        selectedColor:
-                            colorScheme.primary.withValues(alpha: 0.15),
+                        selectedColor: colorScheme.primary.withValues(
+                          alpha: 0.15,
+                        ),
                         onSelected: (val) {
                           if (val) {
                             ref
@@ -855,17 +961,23 @@ class _SupportChatViewState extends ConsumerState<SupportChatView> {
                         label: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.lock_outline_rounded,
-                                size: 14, color: colorScheme.primary),
+                            Icon(
+                              Icons.lock_outline_rounded,
+                              size: 14,
+                              color: colorScheme.primary,
+                            ),
                             const SizedBox(width: 4),
-                            Text(isCompact
-                                ? 'ملاحظة داخلية'
-                                : 'ملاحظة داخلية للمشرفين فقط'),
+                            Text(
+                              isCompact
+                                  ? 'ملاحظة داخلية'
+                                  : 'ملاحظة داخلية للمشرفين فقط',
+                            ),
                           ],
                         ),
                         selected: isInternalNote,
-                        selectedColor:
-                            colorScheme.primary.withValues(alpha: 0.15),
+                        selectedColor: colorScheme.primary.withValues(
+                          alpha: 0.15,
+                        ),
                         onSelected: (val) {
                           if (val) {
                             ref
@@ -879,7 +991,9 @@ class _SupportChatViewState extends ConsumerState<SupportChatView> {
                   if (!isInternalNote)
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 2),
+                        horizontal: 10,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: colorScheme.surfaceContainerHigh,
                         borderRadius: BorderRadius.circular(10),
@@ -891,7 +1005,9 @@ class _SupportChatViewState extends ConsumerState<SupportChatView> {
                           Text(
                             'تغيير الحالة: ',
                             style: TextStyle(
-                                fontSize: 11.5, color: colorScheme.onSurface),
+                              fontSize: 11.5,
+                              color: colorScheme.onSurface,
+                            ),
                           ),
                           DropdownButtonHideUnderline(
                             child: DropdownButton<String>(
@@ -900,14 +1016,17 @@ class _SupportChatViewState extends ConsumerState<SupportChatView> {
                               dropdownColor: colorScheme.surfaceContainer,
                               items: const [
                                 DropdownMenuItem(
-                                    value: 'waiting_user',
-                                    child: Text('بانتظار رد العميل')),
+                                  value: 'waiting_user',
+                                  child: Text('بانتظار رد العميل'),
+                                ),
                                 DropdownMenuItem(
-                                    value: 'in_progress',
-                                    child: Text('قيد المعالجة')),
+                                  value: 'in_progress',
+                                  child: Text('قيد المعالجة'),
+                                ),
                                 DropdownMenuItem(
-                                    value: 'resolved',
-                                    child: Text('تم الحل بنجاح')),
+                                  value: 'resolved',
+                                  child: Text('تم الحل بنجاح'),
+                                ),
                               ],
                               onChanged: (val) {
                                 if (val != null) {
@@ -934,9 +1053,7 @@ class _SupportChatViewState extends ConsumerState<SupportChatView> {
                   decoration: BoxDecoration(
                     color: colorScheme.surfaceContainerHigh,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: colorScheme.outlineVariant,
-                    ),
+                    border: Border.all(color: colorScheme.outlineVariant),
                   ),
                   child: TextField(
                     controller: _replyController,
@@ -949,18 +1066,20 @@ class _SupportChatViewState extends ConsumerState<SupportChatView> {
                     decoration: InputDecoration(
                       hintText: isInternalNote
                           ? (isMobile
-                              ? 'اكتب ملاحظتك الداخلية هنا...'
-                              : 'اكتب ملاحظتك الداخلية هنا (ستكون مرئية لفرق الدعم فقط)...')
+                                ? 'اكتب ملاحظتك الداخلية هنا...'
+                                : 'اكتب ملاحظتك الداخلية هنا (ستكون مرئية لفرق الدعم فقط)...')
                           : (isMobile
-                              ? 'اكتب ردك للعميل...'
-                              : 'اكتب ردك للعميل (سيتم إرسال إشعار فوري عبر فايربيس على جواله)...'),
+                                ? 'اكتب ردك للعميل...'
+                                : 'اكتب ردك للعميل (سيتم إرسال إشعار فوري عبر فايربيس على جواله)...'),
                       hintStyle: TextStyle(
                         fontSize: 12,
                         color: colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
                       border: InputBorder.none,
                       contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 12),
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
                     ),
                   ),
                 ),
@@ -975,7 +1094,8 @@ class _SupportChatViewState extends ConsumerState<SupportChatView> {
                     vertical: 14,
                   ),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16)),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   elevation: 0,
                 ),
                 onPressed: isSendingReply
@@ -1037,7 +1157,8 @@ class _SupportChatViewState extends ConsumerState<SupportChatView> {
       builder: (ctx) => AlertDialog(
         title: const Text('حذف التذكرة'),
         content: Text(
-            'هل أنت متأكد من حذف التذكرة #${ticket.ticketNumber} نهائياً؟'),
+          'هل أنت متأكد من حذف التذكرة #${ticket.ticketNumber} نهائياً؟',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),

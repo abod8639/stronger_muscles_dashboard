@@ -54,52 +54,58 @@ void main() {
   });
 
   group('NavigationRepositoryImpl Tests', () {
-    test('returns cached badges immediately when cache is valid and forceRefresh is false', () async {
-      const cached = NavigationBadgesModel(
-        pendingOrdersCount: 5,
-        unreadNotificationsCount: 3,
-        openTicketsCount: 1,
-        lowStockProductsCount: 2,
-      );
-      localDataSource.cachedBadges = cached;
-      localDataSource.cacheValid = true;
+    test(
+      'returns cached badges immediately when cache is valid and forceRefresh is false',
+      () async {
+        const cached = NavigationBadgesModel(
+          pendingOrdersCount: 5,
+          unreadNotificationsCount: 3,
+          openTicketsCount: 1,
+          lowStockProductsCount: 2,
+        );
+        localDataSource.cachedBadges = cached;
+        localDataSource.cacheValid = true;
 
-      final result = await repository.getNavigationBadges(forceRefresh: false);
+        final result = await repository.getNavigationBadges(
+          forceRefresh: false,
+        );
 
-      expect(result.isRight(), isTrue);
-      result.fold(
-        (failure) => fail('Expected Right, got Left: $failure'),
-        (entity) {
+        expect(result.isRight(), isTrue);
+        result.fold((failure) => fail('Expected Right, got Left: $failure'), (
+          entity,
+        ) {
           expect(entity.pendingOrdersCount, 5);
           expect(entity.unreadNotificationsCount, 3);
           expect(entity.openTicketsCount, 1);
           expect(entity.lowStockProductsCount, 2);
-        },
-      );
-    });
+        });
+      },
+    );
 
-    test('fetches from remote data source and updates cache when forceRefresh is true', () async {
-      const remote = NavigationBadgesModel(
-        pendingOrdersCount: 12,
-        unreadNotificationsCount: 8,
-        openTicketsCount: 4,
-        lowStockProductsCount: 7,
-      );
-      remoteDataSource.remoteBadges = remote;
+    test(
+      'fetches from remote data source and updates cache when forceRefresh is true',
+      () async {
+        const remote = NavigationBadgesModel(
+          pendingOrdersCount: 12,
+          unreadNotificationsCount: 8,
+          openTicketsCount: 4,
+          lowStockProductsCount: 7,
+        );
+        remoteDataSource.remoteBadges = remote;
 
-      final result = await repository.getNavigationBadges(forceRefresh: true);
+        final result = await repository.getNavigationBadges(forceRefresh: true);
 
-      expect(result.isRight(), isTrue);
-      result.fold(
-        (failure) => fail('Expected Right, got Left: $failure'),
-        (entity) {
+        expect(result.isRight(), isTrue);
+        result.fold((failure) => fail('Expected Right, got Left: $failure'), (
+          entity,
+        ) {
           expect(entity.pendingOrdersCount, 12);
           expect(entity.unreadNotificationsCount, 8);
-        },
-      );
-      expect(localDataSource.cachedBadges?.pendingOrdersCount, 12);
-      expect(localDataSource.cacheValid, isTrue);
-    });
+        });
+        expect(localDataSource.cachedBadges?.pendingOrdersCount, 12);
+        expect(localDataSource.cacheValid, isTrue);
+      },
+    );
 
     test('falls back gracefully to stale cache on network exception', () async {
       localDataSource.cachedBadges = const NavigationBadgesModel(
@@ -107,7 +113,9 @@ void main() {
         unreadNotificationsCount: 1,
       );
       localDataSource.cacheValid = false;
-      remoteDataSource.exceptionToThrow = ServerException(message: 'Connection timed out');
+      remoteDataSource.exceptionToThrow = ServerException(
+        message: 'Connection timed out',
+      );
 
       final result = await repository.getNavigationBadges(forceRefresh: true);
 
@@ -120,18 +128,23 @@ void main() {
       );
     });
 
-    test('returns Left(Failure) when remote fails and no local cache exists', () async {
-      localDataSource.cachedBadges = null;
-      localDataSource.cacheValid = false;
-      remoteDataSource.exceptionToThrow = ServerException(message: 'Fatal server error');
+    test(
+      'returns Left(Failure) when remote fails and no local cache exists',
+      () async {
+        localDataSource.cachedBadges = null;
+        localDataSource.cacheValid = false;
+        remoteDataSource.exceptionToThrow = ServerException(
+          message: 'Fatal server error',
+        );
 
-      final result = await repository.getNavigationBadges(forceRefresh: true);
+        final result = await repository.getNavigationBadges(forceRefresh: true);
 
-      expect(result.isLeft(), isTrue);
-      result.fold(
-        (failure) => expect(failure.message, contains('Fatal server error')),
-        (_) => fail('Expected Left, got Right'),
-      );
-    });
+        expect(result.isLeft(), isTrue);
+        result.fold(
+          (failure) => expect(failure.message, contains('Fatal server error')),
+          (_) => fail('Expected Left, got Right'),
+        );
+      },
+    );
   });
 }

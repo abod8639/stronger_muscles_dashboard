@@ -14,7 +14,8 @@ class NavigationState {
     required this.userRole,
   });
 
-  factory NavigationState.initial({String userRole = 'admin'}) => NavigationState(
+  factory NavigationState.initial({String userRole = 'admin'}) =>
+      NavigationState(
         selectedIndex: 0,
         isDrawerOpen: false,
         badges: const NavigationBadgesEntity.initial(),

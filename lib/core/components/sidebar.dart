@@ -32,12 +32,28 @@ class Sidebar extends ConsumerWidget {
             end: Alignment.bottomRight,
             colors: isDark
                 ? [
-                    Color.lerp(colorScheme.surfaceContainer, Colors.white, 0.035)!,
-                    Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.08)!,
+                    Color.lerp(
+                      colorScheme.surfaceContainer,
+                      Colors.white,
+                      0.035,
+                    )!,
+                    Color.lerp(
+                      colorScheme.surfaceContainer,
+                      Colors.black,
+                      0.08,
+                    )!,
                   ]
                 : [
-                    Color.lerp(colorScheme.surfaceContainer, Colors.white, 0.65)!,
-                    Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.03)!,
+                    Color.lerp(
+                      colorScheme.surfaceContainer,
+                      Colors.white,
+                      0.65,
+                    )!,
+                    Color.lerp(
+                      colorScheme.surfaceContainer,
+                      Colors.black,
+                      0.03,
+                    )!,
                   ],
           ),
           boxShadow: [
@@ -84,12 +100,24 @@ class Sidebar extends ConsumerWidget {
                         end: Alignment.bottomRight,
                         colors: isDark
                             ? [
-                                Color.lerp(colorScheme.surfaceContainerHigh, Colors.white, 0.05)!,
-                                Color.lerp(colorScheme.surfaceContainerHigh, Colors.black, 0.15)!,
+                                Color.lerp(
+                                  colorScheme.surfaceContainerHigh,
+                                  Colors.white,
+                                  0.05,
+                                )!,
+                                Color.lerp(
+                                  colorScheme.surfaceContainerHigh,
+                                  Colors.black,
+                                  0.15,
+                                )!,
                               ]
                             : [
                                 Colors.white,
-                                Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.04)!,
+                                Color.lerp(
+                                  colorScheme.surfaceContainer,
+                                  Colors.black,
+                                  0.04,
+                                )!,
                               ],
                       ),
                       boxShadow: [
@@ -142,7 +170,9 @@ class Sidebar extends ConsumerWidget {
                         Text(
                           'DASHBOARD',
                           style: theme.textTheme.labelSmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant.withValues(alpha: 0.65),
+                            color: colorScheme.onSurfaceVariant.withValues(
+                              alpha: 0.65,
+                            ),
                             fontWeight: FontWeight.w600,
                             letterSpacing: 1.8,
                             fontSize: 9.5,
@@ -366,7 +396,11 @@ class _SidebarUserProfile extends ConsumerWidget {
           end: Alignment.bottomRight,
           colors: isDark
               ? [
-                  Color.lerp(colorScheme.surfaceContainerHigh, Colors.white, 0.02)!,
+                  Color.lerp(
+                    colorScheme.surfaceContainerHigh,
+                    Colors.white,
+                    0.02,
+                  )!,
                   Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.08)!,
                 ]
               : [
@@ -409,12 +443,24 @@ class _SidebarUserProfile extends ConsumerWidget {
                 end: Alignment.bottomRight,
                 colors: isDark
                     ? [
-                        Color.lerp(colorScheme.surfaceContainerHighest, Colors.white, 0.08)!,
-                        Color.lerp(colorScheme.surfaceContainerHighest, Colors.black, 0.15)!,
+                        Color.lerp(
+                          colorScheme.surfaceContainerHighest,
+                          Colors.white,
+                          0.08,
+                        )!,
+                        Color.lerp(
+                          colorScheme.surfaceContainerHighest,
+                          Colors.black,
+                          0.15,
+                        )!,
                       ]
                     : [
                         Colors.white,
-                        Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.08)!,
+                        Color.lerp(
+                          colorScheme.surfaceContainer,
+                          Colors.black,
+                          0.08,
+                        )!,
                       ],
               ),
               boxShadow: [
@@ -436,7 +482,8 @@ class _SidebarUserProfile extends ConsumerWidget {
             ),
             child: ClipOval(
               child: CachedNetworkImage(
-                imageUrl: 'https://avatars.githubusercontent.com/u/108903062?v=4',
+                imageUrl:
+                    'https://avatars.githubusercontent.com/u/108903062?v=4',
                 cacheManager: CustomCacheManager.instance,
                 width: 36,
                 height: 36,
@@ -505,7 +552,8 @@ class _NeumorphicLogoutButton extends StatefulWidget {
   const _NeumorphicLogoutButton({required this.onPressed});
 
   @override
-  State<_NeumorphicLogoutButton> createState() => _NeumorphicLogoutButtonState();
+  State<_NeumorphicLogoutButton> createState() =>
+      _NeumorphicLogoutButtonState();
 }
 
 class _NeumorphicLogoutButtonState extends State<_NeumorphicLogoutButton> {
@@ -537,23 +585,47 @@ class _NeumorphicLogoutButtonState extends State<_NeumorphicLogoutButton> {
               end: Alignment.bottomRight,
               colors: _isPressed
                   ? (isDark
-                      ? [
-                          Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.15)!,
-                          Color.lerp(colorScheme.surfaceContainerHigh, Colors.white, 0.02)!,
-                        ]
-                      : [
-                          Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.06)!,
-                          Colors.white,
-                        ])
+                        ? [
+                            Color.lerp(
+                              colorScheme.surfaceContainer,
+                              Colors.black,
+                              0.15,
+                            )!,
+                            Color.lerp(
+                              colorScheme.surfaceContainerHigh,
+                              Colors.white,
+                              0.02,
+                            )!,
+                          ]
+                        : [
+                            Color.lerp(
+                              colorScheme.surfaceContainer,
+                              Colors.black,
+                              0.06,
+                            )!,
+                            Colors.white,
+                          ])
                   : (isDark
-                      ? [
-                          Color.lerp(colorScheme.surfaceContainerHigh, Colors.white, 0.04)!,
-                          Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.1)!,
-                        ]
-                      : [
-                          Colors.white,
-                          Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.04)!,
-                        ]),
+                        ? [
+                            Color.lerp(
+                              colorScheme.surfaceContainerHigh,
+                              Colors.white,
+                              0.04,
+                            )!,
+                            Color.lerp(
+                              colorScheme.surfaceContainer,
+                              Colors.black,
+                              0.1,
+                            )!,
+                          ]
+                        : [
+                            Colors.white,
+                            Color.lerp(
+                              colorScheme.surfaceContainer,
+                              Colors.black,
+                              0.04,
+                            )!,
+                          ]),
             ),
             boxShadow: _isPressed
                 ? []

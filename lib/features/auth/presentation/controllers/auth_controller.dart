@@ -24,11 +24,11 @@ class AuthController extends Notifier<AuthState> {
     LogoutUseCase? logoutUseCase,
     GetCurrentUserUseCase? getCurrentUserUseCase,
     CheckAuthStatusUseCase? checkAuthStatusUseCase,
-  })  : _injectedLoginUseCase = loginUseCase,
-        _injectedSignupUseCase = signupUseCase,
-        _injectedLogoutUseCase = logoutUseCase,
-        _injectedGetCurrentUserUseCase = getCurrentUserUseCase,
-        _injectedCheckAuthStatusUseCase = checkAuthStatusUseCase;
+  }) : _injectedLoginUseCase = loginUseCase,
+       _injectedSignupUseCase = signupUseCase,
+       _injectedLogoutUseCase = logoutUseCase,
+       _injectedGetCurrentUserUseCase = getCurrentUserUseCase,
+       _injectedCheckAuthStatusUseCase = checkAuthStatusUseCase;
 
   LoginUseCase get _loginUseCase =>
       _injectedLoginUseCase ?? ref.read(loginUseCaseProvider);
@@ -43,7 +43,8 @@ class AuthController extends Notifier<AuthState> {
       _injectedGetCurrentUserUseCase ?? ref.read(getCurrentUserUseCaseProvider);
 
   CheckAuthStatusUseCase get _checkAuthStatusUseCase =>
-      _injectedCheckAuthStatusUseCase ?? ref.read(checkAuthStatusUseCaseProvider);
+      _injectedCheckAuthStatusUseCase ??
+      ref.read(checkAuthStatusUseCaseProvider);
 
   @override
   AuthState build() {
@@ -54,40 +55,32 @@ class AuthController extends Notifier<AuthState> {
   /// Restores session from local cache on initialization
   Future<void> _initSession() async {
     final statusResult = await _checkAuthStatusUseCase();
-    statusResult.fold(
-      (failure) => state = const AuthState.unauthenticated(),
-      (hasToken) async {
-        if (!hasToken) {
-          state = const AuthState.unauthenticated();
-          return;
-        }
+    statusResult.fold((failure) => state = const AuthState.unauthenticated(), (
+      hasToken,
+    ) async {
+      if (!hasToken) {
+        state = const AuthState.unauthenticated();
+        return;
+      }
 
-        final userResult = await _getCurrentUserUseCase();
-        userResult.fold(
-          (failure) => state = const AuthState.unauthenticated(),
-          (user) {
-            if (user != null) {
-              state = AuthState.authenticated(user);
-            } else {
-              state = const AuthState.unauthenticated();
-            }
-          },
-        );
-      },
-    );
+      final userResult = await _getCurrentUserUseCase();
+      userResult.fold((failure) => state = const AuthState.unauthenticated(), (
+        user,
+      ) {
+        if (user != null) {
+          state = AuthState.authenticated(user);
+        } else {
+          state = const AuthState.unauthenticated();
+        }
+      });
+    });
   }
 
   /// Administrator login action
-  Future<bool> login({
-    required String email,
-    required String password,
-  }) async {
+  Future<bool> login({required String email, required String password}) async {
     state = AuthState.loading(user: state.user);
 
-    final result = await _loginUseCase(
-      email: email,
-      password: password,
-    );
+    final result = await _loginUseCase(email: email, password: password);
 
     return result.fold(
       (failure) {

@@ -85,4 +85,6 @@ class CacheEntry {
   bool isExpired() => DateTime.now().isAfter(expiresAt);
 }
 
-final cacheServiceProvider = Provider<CacheService>((ref) => CacheService.instance);
+final cacheServiceProvider = Provider<CacheService>(
+  (ref) => CacheService.instance,
+);

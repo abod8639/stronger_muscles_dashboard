@@ -14,8 +14,8 @@ class UserRepositoryImpl implements UserRepository {
   UserRepositoryImpl({
     required UserRemoteDataSource remoteDataSource,
     required UserLocalDataSource localDataSource,
-  })  : _remoteDataSource = remoteDataSource,
-        _localDataSource = localDataSource;
+  }) : _remoteDataSource = remoteDataSource,
+       _localDataSource = localDataSource;
 
   @override
   Future<Either<Failure, UsersStatsEntity>> getUsersStats({

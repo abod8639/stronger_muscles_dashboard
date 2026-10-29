@@ -29,18 +29,20 @@ void main() {
   setUpAll(() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
-      const MethodChannel('plugins.flutter.io/path_provider'),
-      (MethodCall methodCall) async {
-        return Directory.systemTemp.path;
-      },
-    );
+          const MethodChannel('plugins.flutter.io/path_provider'),
+          (MethodCall methodCall) async {
+            return Directory.systemTemp.path;
+          },
+        );
   });
 
   setUp(() async {
     await GetStorage.init();
   });
 
-  testWidgets('Sidebar renders full menu for super_admin role', (WidgetTester tester) async {
+  testWidgets('Sidebar renders full menu for super_admin role', (
+    WidgetTester tester,
+  ) async {
     tester.view.physicalSize = const Size(1280, 1024);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
@@ -49,14 +51,13 @@ void main() {
       ProviderScope(
         overrides: [
           authServiceProvider.overrideWithValue(
-            RoleMockAuthService(mockRole: 'super_admin', mockName: 'Master Admin'),
+            RoleMockAuthService(
+              mockRole: 'super_admin',
+              mockName: 'Master Admin',
+            ),
           ),
         ],
-        child: const MaterialApp(
-          home: Scaffold(
-            body: Sidebar(),
-          ),
-        ),
+        child: const MaterialApp(home: Scaffold(body: Sidebar())),
       ),
     );
     await tester.pump();
@@ -73,19 +74,20 @@ void main() {
     expect(find.text('Settings'), findsOneWidget);
   });
 
-  testWidgets('Sidebar hides restricted items for customer_support role', (WidgetTester tester) async {
+  testWidgets('Sidebar hides restricted items for customer_support role', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           authServiceProvider.overrideWithValue(
-            RoleMockAuthService(mockRole: 'customer_support', mockName: 'Support Agent'),
+            RoleMockAuthService(
+              mockRole: 'customer_support',
+              mockName: 'Support Agent',
+            ),
           ),
         ],
-        child: const MaterialApp(
-          home: Scaffold(
-            body: Sidebar(),
-          ),
-        ),
+        child: const MaterialApp(home: Scaffold(body: Sidebar())),
       ),
     );
     await tester.pump();

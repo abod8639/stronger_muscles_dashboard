@@ -19,7 +19,9 @@ abstract class CategoryRepository {
   Future<Either<Failure, CategoryEntity>> addCategory(CategoryEntity category);
 
   /// Updates an existing category using a strongly-typed [CategoryEntity].
-  Future<Either<Failure, CategoryEntity>> updateCategory(CategoryEntity category);
+  Future<Either<Failure, CategoryEntity>> updateCategory(
+    CategoryEntity category,
+  );
 
   /// Deletes a category by its unique identifier.
   Future<Either<Failure, Unit>> deleteCategory(String id);

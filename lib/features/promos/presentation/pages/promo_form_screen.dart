@@ -178,11 +178,23 @@ class PromoFormScreen extends ConsumerWidget {
 
     if (width >= _desktopBreakpoint) {
       return column([
-        row([preview, column([image, appearance])], flex: [7, 5]),
-        row([
-          language,
-          column([target, row([publishing, save])]),
-        ], flex: [7, 5]),
+        row(
+          [
+            preview,
+            column([image, appearance]),
+          ],
+          flex: [7, 5],
+        ),
+        row(
+          [
+            language,
+            column([
+              target,
+              row([publishing, save]),
+            ]),
+          ],
+          flex: [7, 5],
+        ),
       ]);
     }
 

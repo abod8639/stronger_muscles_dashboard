@@ -156,7 +156,9 @@ class SupportRemoteDataSourceImpl implements SupportRemoteDataSource {
 
   @override
   Future<SupportTicketModel> updatePriority(
-      int ticketId, String priority) async {
+    int ticketId,
+    String priority,
+  ) async {
     final response = await dio.patch(
       ApiConfig.adminSupportTicketPriority(ticketId),
       data: {'priority': priority},
@@ -218,9 +220,7 @@ class SupportRemoteDataSourceImpl implements SupportRemoteDataSource {
 
     if (response.statusCode == 200) {
       final data = response.data['data'] ?? response.data;
-      return SupportStatsModel.fromJson(
-        Map<String, dynamic>.from(data as Map),
-      );
+      return SupportStatsModel.fromJson(Map<String, dynamic>.from(data as Map));
     } else {
       throw DioException(
         requestOptions: response.requestOptions,

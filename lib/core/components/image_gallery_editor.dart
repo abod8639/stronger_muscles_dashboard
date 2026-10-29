@@ -41,7 +41,7 @@ class ImageGalleryEditor extends StatelessWidget {
               ),
             ),
             TextButton.icon(
-              onPressed: () => showAddUrlDialog(context,onAddUrl),
+              onPressed: () => showAddUrlDialog(context, onAddUrl),
               icon: const Icon(color: AppColors.info, Icons.link, size: 18),
               label: const Text(
                 style: TextStyle(color: AppColors.info),
@@ -126,10 +126,7 @@ class ImageGalleryEditor extends StatelessWidget {
             fit: StackFit.expand,
             children: [
               !url.startsWith('http')
-                  ? Image.file(
-                      File(url),
-                      fit: BoxFit.cover,
-                    )
+                  ? Image.file(File(url), fit: BoxFit.cover)
                   : CachedNetworkImage(
                       imageUrl: url,
                       fit: BoxFit.cover,
@@ -208,7 +205,7 @@ class ImageGalleryEditor extends StatelessWidget {
   }
 }
 
-void showAddUrlDialog(BuildContext context,Function(String) onAddUrl) {
+void showAddUrlDialog(BuildContext context, Function(String) onAddUrl) {
   final controller = TextEditingController();
   showDialog(
     context: context,

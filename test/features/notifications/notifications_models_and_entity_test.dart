@@ -140,10 +140,7 @@ void main() {
 
     test('copyWith updates fields correctly', () {
       const initial = NotificationsResultEntity.initial();
-      final updated = initial.copyWith(
-        totalCount: 42,
-        todayCount: 5,
-      );
+      final updated = initial.copyWith(totalCount: 42, todayCount: 5);
 
       expect(updated.totalCount, 42);
       expect(updated.todayCount, 5);
@@ -210,38 +207,36 @@ void main() {
   });
 
   group('NotificationsResultModel & Isolate Compute Tests', () {
-    test('parseNotificationsResultCompute handles valid and malformed JSON safely', () {
-      final validJson = {
-        'data': [
-          {
-            'id': '1',
-            'title': 'Test',
-            'body': 'Content',
-            'type': 'general',
-            'target_type': 'all',
-          }
-        ],
-        'stats': {
-          'total': 1,
-          'sent_today': 1,
-          'broadcast': 1,
-          'targeted': 0,
-        }
-      };
+    test(
+      'parseNotificationsResultCompute handles valid and malformed JSON safely',
+      () {
+        final validJson = {
+          'data': [
+            {
+              'id': '1',
+              'title': 'Test',
+              'body': 'Content',
+              'type': 'general',
+              'target_type': 'all',
+            },
+          ],
+          'stats': {'total': 1, 'sent_today': 1, 'broadcast': 1, 'targeted': 0},
+        };
 
-      final result = parseNotificationsResultCompute(validJson);
-      expect(result.notifications.length, 1);
-      expect(result.totalCount, 1);
-      expect(result.todayCount, 1);
-      expect(result.broadcastCount, 1);
+        final result = parseNotificationsResultCompute(validJson);
+        expect(result.notifications.length, 1);
+        expect(result.totalCount, 1);
+        expect(result.todayCount, 1);
+        expect(result.broadcastCount, 1);
 
-      final entity = result.toEntity();
-      expect(entity.totalCount, 1);
-      expect(entity.notifications.first.title, 'Test');
+        final entity = result.toEntity();
+        expect(entity.totalCount, 1);
+        expect(entity.notifications.first.title, 'Test');
 
-      final fallbackResult = parseNotificationsResultCompute(null);
-      expect(fallbackResult.notifications, isEmpty);
-      expect(fallbackResult.totalCount, 0);
-    });
+        final fallbackResult = parseNotificationsResultCompute(null);
+        expect(fallbackResult.notifications, isEmpty);
+        expect(fallbackResult.totalCount, 0);
+      },
+    );
   });
 }

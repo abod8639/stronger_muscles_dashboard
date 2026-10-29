@@ -84,8 +84,9 @@ class SupportState {
       isDeleting: isDeleting ?? this.isDeleting,
       tickets: tickets ?? this.tickets,
       filteredTickets: filteredTickets ?? this.filteredTickets,
-      selectedTicket:
-          selectedTicket != null ? selectedTicket() : this.selectedTicket,
+      selectedTicket: selectedTicket != null
+          ? selectedTicket()
+          : this.selectedTicket,
       stats: stats ?? this.stats,
       selectedStatus: selectedStatus ?? this.selectedStatus,
       selectedPriority: selectedPriority ?? this.selectedPriority,
@@ -96,8 +97,9 @@ class SupportState {
       currentPage: currentPage ?? this.currentPage,
       hasMore: hasMore ?? this.hasMore,
       errorMessage: errorMessage != null ? errorMessage() : this.errorMessage,
-      successMessage:
-          successMessage != null ? successMessage() : this.successMessage,
+      successMessage: successMessage != null
+          ? successMessage()
+          : this.successMessage,
     );
   }
 
@@ -128,7 +130,9 @@ class SupportState {
   }
 
   static bool _listEquals(
-      List<SupportTicketEntity> a, List<SupportTicketEntity> b) {
+    List<SupportTicketEntity> a,
+    List<SupportTicketEntity> b,
+  ) {
     if (a.length != b.length) return false;
     for (int i = 0; i < a.length; i++) {
       if (a[i] != b[i]) return false;
@@ -138,25 +142,25 @@ class SupportState {
 
   @override
   int get hashCode => Object.hash(
-        isLoading,
-        isLoadingMore,
-        isLoadingDetail,
-        isSendingReply,
-        isUpdating,
-        isDeleting,
-        selectedTicket,
-        stats,
-        selectedStatus,
-        selectedPriority,
-        selectedCategory,
-        searchQuery,
-        isInternalNote,
-        replyStatus,
-        currentPage,
-        hasMore,
-        errorMessage,
-        successMessage,
-      );
+    isLoading,
+    isLoadingMore,
+    isLoadingDetail,
+    isSendingReply,
+    isUpdating,
+    isDeleting,
+    selectedTicket,
+    stats,
+    selectedStatus,
+    selectedPriority,
+    selectedCategory,
+    searchQuery,
+    isInternalNote,
+    replyStatus,
+    currentPage,
+    hasMore,
+    errorMessage,
+    successMessage,
+  );
 
   @override
   String toString() =>

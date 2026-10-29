@@ -99,70 +99,76 @@ void main() {
   });
 
   group('BrandRepositoryImpl.getBrands', () {
-    test('returns cached brands if cache is valid and forceRefresh is false', () async {
-      localDataSource.storedBrands = [tBrandModel];
-      localDataSource.cacheValid = true;
+    test(
+      'returns cached brands if cache is valid and forceRefresh is false',
+      () async {
+        localDataSource.storedBrands = [tBrandModel];
+        localDataSource.cacheValid = true;
 
-      final result = await repository.getBrands(forceRefresh: false);
+        final result = await repository.getBrands(forceRefresh: false);
 
-      expect(result.isRight(), true);
-      result.fold(
-        (l) => fail('Should not return left'),
-        (brands) {
+        expect(result.isRight(), true);
+        result.fold((l) => fail('Should not return left'), (brands) {
           expect(brands.length, 1);
           expect(brands.first.id, 'b-1');
-        },
-      );
-    });
+        });
+      },
+    );
 
-    test('fetches from remote, updates cache, and returns Right(List<BrandEntity>) on success', () async {
-      remoteDataSource.mockBrands = [tBrandModel];
+    test(
+      'fetches from remote, updates cache, and returns Right(List<BrandEntity>) on success',
+      () async {
+        remoteDataSource.mockBrands = [tBrandModel];
 
-      final result = await repository.getBrands(forceRefresh: true);
+        final result = await repository.getBrands(forceRefresh: true);
 
-      expect(result.isRight(), true);
-      result.fold(
-        (l) => fail('Should not return left'),
-        (brands) {
+        expect(result.isRight(), true);
+        result.fold((l) => fail('Should not return left'), (brands) {
           expect(brands.length, 1);
           expect(brands.first.id, 'b-1');
-        },
-      );
-      expect(localDataSource.storedBrands.length, 1);
-    });
+        });
+        expect(localDataSource.storedBrands.length, 1);
+      },
+    );
 
-    test('falls back to cache if remote throws ServerException but local cache has data', () async {
-      localDataSource.storedBrands = [tBrandModel];
-      localDataSource.cacheValid = false; // Even if expired, fallback should serve it
-      remoteDataSource.exceptionToThrow = const ServerException(message: 'Internal Error');
+    test(
+      'falls back to cache if remote throws ServerException but local cache has data',
+      () async {
+        localDataSource.storedBrands = [tBrandModel];
+        localDataSource.cacheValid =
+            false; // Even if expired, fallback should serve it
+        remoteDataSource.exceptionToThrow = const ServerException(
+          message: 'Internal Error',
+        );
 
-      final result = await repository.getBrands(forceRefresh: true);
+        final result = await repository.getBrands(forceRefresh: true);
 
-      expect(result.isRight(), true);
-      result.fold(
-        (l) => fail('Should not return left'),
-        (brands) {
+        expect(result.isRight(), true);
+        result.fold((l) => fail('Should not return left'), (brands) {
           expect(brands.length, 1);
           expect(brands.first.id, 'b-1');
-        },
-      );
-    });
+        });
+      },
+    );
 
-    test('returns Left(Failure) when remote throws and local cache is empty', () async {
-      localDataSource.storedBrands = [];
-      remoteDataSource.exceptionToThrow = const ServerException(message: 'Server Down', statusCode: 500);
+    test(
+      'returns Left(Failure) when remote throws and local cache is empty',
+      () async {
+        localDataSource.storedBrands = [];
+        remoteDataSource.exceptionToThrow = const ServerException(
+          message: 'Server Down',
+          statusCode: 500,
+        );
 
-      final result = await repository.getBrands(forceRefresh: true);
+        final result = await repository.getBrands(forceRefresh: true);
 
-      expect(result.isLeft(), true);
-      result.fold(
-        (failure) {
+        expect(result.isLeft(), true);
+        result.fold((failure) {
           expect(failure, isA<ServerFailure>());
           expect(failure.message, 'Server Down');
-        },
-        (r) => fail('Should not return right'),
-      );
-    });
+        }, (r) => fail('Should not return right'));
+      },
+    );
   });
 
   group('BrandRepositoryImpl.getBrandById', () {
@@ -172,44 +178,40 @@ void main() {
       final result = await repository.getBrandById('b-1');
 
       expect(result.isRight(), true);
-      result.fold(
-        (l) => fail('Should not return left'),
-        (brand) {
-          expect(brand.id, 'b-1');
-          expect(brand.nameEn, 'Brand 1');
-        },
-      );
+      result.fold((l) => fail('Should not return left'), (brand) {
+        expect(brand.id, 'b-1');
+        expect(brand.nameEn, 'Brand 1');
+      });
     });
 
-    test('fetches from remote and caches it when not present locally', () async {
-      localDataSource.storedBrands = [];
-      remoteDataSource.mockBrand = tBrandModel;
+    test(
+      'fetches from remote and caches it when not present locally',
+      () async {
+        localDataSource.storedBrands = [];
+        remoteDataSource.mockBrand = tBrandModel;
 
-      final result = await repository.getBrandById('b-1');
+        final result = await repository.getBrandById('b-1');
 
-      expect(result.isRight(), true);
-      result.fold(
-        (l) => fail('Should not return left'),
-        (brand) {
+        expect(result.isRight(), true);
+        result.fold((l) => fail('Should not return left'), (brand) {
           expect(brand.id, 'b-1');
-        },
-      );
-      expect(localDataSource.storedBrands.length, 1);
-    });
+        });
+        expect(localDataSource.storedBrands.length, 1);
+      },
+    );
 
     test('returns Left(Failure) when remote fetch fails', () async {
       localDataSource.storedBrands = [];
-      remoteDataSource.exceptionToThrow = const NetworkException(message: 'No internet');
+      remoteDataSource.exceptionToThrow = const NetworkException(
+        message: 'No internet',
+      );
 
       final result = await repository.getBrandById('b-999');
 
       expect(result.isLeft(), true);
-      result.fold(
-        (failure) {
-          expect(failure, isA<NetworkFailure>());
-        },
-        (r) => fail('Should not return right'),
-      );
+      result.fold((failure) {
+        expect(failure, isA<NetworkFailure>());
+      }, (r) => fail('Should not return right'));
     });
   });
 }

@@ -27,9 +27,7 @@ class PromoSaveActionCard extends StatelessWidget {
         onPressed: controller.isLoading
             ? null
             : () => savePromoAndClose(context, controller),
-        style: FilledButton.styleFrom(
-          minimumSize: const Size.fromHeight(52),
-        ),
+        style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
         icon: controller.isLoading
             ? SizedBox(
                 width: 20,

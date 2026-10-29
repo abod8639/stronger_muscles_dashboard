@@ -21,16 +21,20 @@ final navigationHiveBoxProvider = Provider<Box>((ref) {
 });
 
 /// Scoped provider for [NavigationLocalDataSource]
-final navigationLocalDataSourceProvider =
-    Provider<NavigationLocalDataSource>((ref) {
-  return NavigationLocalDataSourceImpl(box: ref.watch(navigationHiveBoxProvider));
+final navigationLocalDataSourceProvider = Provider<NavigationLocalDataSource>((
+  ref,
+) {
+  return NavigationLocalDataSourceImpl(
+    box: ref.watch(navigationHiveBoxProvider),
+  );
 });
 
 /// Scoped provider for [NavigationRemoteDataSource]
-final navigationRemoteDataSourceProvider =
-    Provider<NavigationRemoteDataSource>((ref) {
-  return NavigationRemoteDataSourceImpl(dio: ref.watch(dioProvider));
-});
+final navigationRemoteDataSourceProvider = Provider<NavigationRemoteDataSource>(
+  (ref) {
+    return NavigationRemoteDataSourceImpl(dio: ref.watch(dioProvider));
+  },
+);
 
 // ==================== Domain Layer Scoped Providers ====================
 
@@ -43,18 +47,19 @@ final navigationRepositoryProvider = Provider<NavigationRepository>((ref) {
 });
 
 /// Scoped provider for [GetNavigationBadgesUseCase]
-final getNavigationBadgesUseCaseProvider =
-    Provider<GetNavigationBadgesUseCase>((ref) {
-  return GetNavigationBadgesUseCase(ref.watch(navigationRepositoryProvider));
-});
+final getNavigationBadgesUseCaseProvider = Provider<GetNavigationBadgesUseCase>(
+  (ref) {
+    return GetNavigationBadgesUseCase(ref.watch(navigationRepositoryProvider));
+  },
+);
 
 // ==================== Presentation Layer Scoped Providers ====================
 
 /// Main navigation controller provider managing selection, drawer, and badges
 final navigationControllerProvider =
     AsyncNotifierProvider<NavigationNotifier, NavigationState>(
-  NavigationNotifier.new,
-);
+      NavigationNotifier.new,
+    );
 
 /// Scoped selective provider exposing active tab index without triggering full scaffold rebuilds
 final currentNavigationIndexProvider = Provider<int>((ref) {

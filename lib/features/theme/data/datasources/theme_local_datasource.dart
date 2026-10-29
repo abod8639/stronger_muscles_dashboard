@@ -53,9 +53,7 @@ class ThemeLocalDataSourceImpl implements ThemeLocalDataSource {
     try {
       await _box.delete(_themeKey);
     } catch (e) {
-      throw CacheException(
-        message: 'فشل في مسح ذاكرة الثيم المؤقتة: $e',
-      );
+      throw CacheException(message: 'فشل في مسح ذاكرة الثيم المؤقتة: $e');
     }
   }
 }

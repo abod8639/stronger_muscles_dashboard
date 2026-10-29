@@ -54,10 +54,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (!isValid) return;
 
     final formState = ref.read(loginFormControllerProvider);
-    final success = await ref.read(authControllerProvider.notifier).login(
-          email: formState.email,
-          password: formState.password,
-        );
+    final success = await ref
+        .read(authControllerProvider.notifier)
+        .login(email: formState.email, password: formState.password);
 
     if (success && mounted) {
       context.go(AppRoutes.dashboard);
@@ -283,9 +282,7 @@ class _LoginErrorSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final failure = ref.watch(
-      authControllerProvider.select((s) => s.failure),
-    );
+    final failure = ref.watch(authControllerProvider.select((s) => s.failure));
 
     if (failure == null) return const SizedBox.shrink();
 
@@ -316,8 +313,8 @@ class _LoginRememberForgotSection extends ConsumerWidget {
           onTap: isLoading
               ? null
               : () => ref
-                  .read(loginFormControllerProvider.notifier)
-                  .toggleRememberMe(),
+                    .read(loginFormControllerProvider.notifier)
+                    .toggleRememberMe(),
           child: Row(
             children: [
               SizedBox(
@@ -328,12 +325,10 @@ class _LoginRememberForgotSection extends ConsumerWidget {
                   onChanged: isLoading
                       ? null
                       : (v) => ref
-                          .read(loginFormControllerProvider.notifier)
-                          .toggleRememberMe(v),
+                            .read(loginFormControllerProvider.notifier)
+                            .toggleRememberMe(v),
                   activeColor: AppColors.primary,
-                  side: BorderSide(
-                    color: Colors.white.withValues(alpha: 0.4),
-                  ),
+                  side: BorderSide(color: Colors.white.withValues(alpha: 0.4)),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(4),
                   ),

@@ -20,11 +20,11 @@ class UsersStatsModel with _$UsersStatsModel {
       _$UsersStatsModelFromJson(_mapStatsJson(json));
 
   UsersStatsEntity toEntity() => UsersStatsEntity(
-        totalUsers: totalUsers,
-        activeUsers: activeUsers,
-        inactiveUsers: inactiveUsers,
-        users: users.map((e) => e.toEntity()).toList(),
-      );
+    totalUsers: totalUsers,
+    activeUsers: activeUsers,
+    inactiveUsers: inactiveUsers,
+    users: users.map((e) => e.toEntity()).toList(),
+  );
 }
 
 Map<String, dynamic> _mapStatsJson(Map<String, dynamic> json) {

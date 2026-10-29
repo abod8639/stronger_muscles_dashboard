@@ -165,10 +165,7 @@ void main() {
 
     test('copyWith updates state correctly while preserving other values', () {
       final initial = NavigationState.initial();
-      final updated = initial.copyWith(
-        selectedIndex: 4,
-        isDrawerOpen: true,
-      );
+      final updated = initial.copyWith(selectedIndex: 4, isDrawerOpen: true);
 
       expect(updated.selectedIndex, 4);
       expect(updated.isDrawerOpen, isTrue);

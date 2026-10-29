@@ -70,16 +70,17 @@ final getCurrentUserUseCaseProvider = Provider<GetCurrentUserUseCase>((ref) {
 /// ============================================================================
 
 /// State management controller for Authentication
-final authControllerProvider =
-    NotifierProvider<AuthController, AuthState>(AuthController.new);
+final authControllerProvider = NotifierProvider<AuthController, AuthState>(
+  AuthController.new,
+);
 
 /// Form controllers
 final loginFormControllerProvider =
     NotifierProvider<LoginFormController, LoginFormState>(
-  LoginFormController.new,
-);
+      LoginFormController.new,
+    );
 
 final signupFormControllerProvider =
     NotifierProvider<SignupFormController, SignupFormState>(
-  SignupFormController.new,
-);
+      SignupFormController.new,
+    );

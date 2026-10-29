@@ -15,25 +15,38 @@ class MockCategoryRemoteDataSource implements CategoryRemoteDataSource {
   Exception? exceptionToThrow;
 
   @override
-  Future<List<CategoryModel>> getCategories({bool tree = false, CancelToken? cancelToken}) async {
+  Future<List<CategoryModel>> getCategories({
+    bool tree = false,
+    CancelToken? cancelToken,
+  }) async {
     if (exceptionToThrow != null) throw exceptionToThrow!;
     return mockCategories!;
   }
 
   @override
-  Future<CategoryModel> getCategoryById(String id, {CancelToken? cancelToken}) async {
+  Future<CategoryModel> getCategoryById(
+    String id, {
+    CancelToken? cancelToken,
+  }) async {
     if (exceptionToThrow != null) throw exceptionToThrow!;
     return mockCategory!;
   }
 
   @override
-  Future<CategoryModel> addCategory(Map<String, dynamic> categoryData, {CancelToken? cancelToken}) async {
+  Future<CategoryModel> addCategory(
+    Map<String, dynamic> categoryData, {
+    CancelToken? cancelToken,
+  }) async {
     if (exceptionToThrow != null) throw exceptionToThrow!;
     return mockCategory!;
   }
 
   @override
-  Future<CategoryModel> updateCategory(String id, Map<String, dynamic> categoryData, {CancelToken? cancelToken}) async {
+  Future<CategoryModel> updateCategory(
+    String id,
+    Map<String, dynamic> categoryData, {
+    CancelToken? cancelToken,
+  }) async {
     if (exceptionToThrow != null) throw exceptionToThrow!;
     return mockCategory!;
   }
@@ -57,7 +70,10 @@ class MockCategoryLocalDataSource implements CategoryLocalDataSource {
   }
 
   @override
-  Future<void> cacheCategories(List<CategoryModel> categories, {bool tree = false}) async {
+  Future<void> cacheCategories(
+    List<CategoryModel> categories, {
+    bool tree = false,
+  }) async {
     if (exceptionToThrow != null) throw exceptionToThrow!;
     storedCategories = List.from(categories);
     cacheValid = true;
@@ -134,83 +150,91 @@ void main() {
   });
 
   group('CategoryRepositoryImpl.getCategories', () {
-    test('returns cached categories when cache is valid and forceRefresh is false', () async {
-      localDataSource.storedCategories = [tCategoryModel];
-      localDataSource.cacheValid = true;
+    test(
+      'returns cached categories when cache is valid and forceRefresh is false',
+      () async {
+        localDataSource.storedCategories = [tCategoryModel];
+        localDataSource.cacheValid = true;
 
-      final result = await repository.getCategories(forceRefresh: false);
+        final result = await repository.getCategories(forceRefresh: false);
 
-      expect(result.isRight(), true);
-      result.fold(
-        (l) => fail('Expected right'),
-        (categories) {
+        expect(result.isRight(), true);
+        result.fold((l) => fail('Expected right'), (categories) {
           expect(categories.length, 1);
           expect(categories.first.id, 'cat-1');
-        },
-      );
-    });
+        });
+      },
+    );
 
-    test('fetches from remote, updates cache, and returns Right(List<CategoryEntity>) on success', () async {
-      remoteDataSource.mockCategories = [tCategoryModel];
+    test(
+      'fetches from remote, updates cache, and returns Right(List<CategoryEntity>) on success',
+      () async {
+        remoteDataSource.mockCategories = [tCategoryModel];
 
-      final result = await repository.getCategories(forceRefresh: true);
+        final result = await repository.getCategories(forceRefresh: true);
 
-      expect(result.isRight(), true);
-      result.fold(
-        (l) => fail('Expected right'),
-        (categories) {
+        expect(result.isRight(), true);
+        result.fold((l) => fail('Expected right'), (categories) {
           expect(categories.length, 1);
           expect(categories.first.id, 'cat-1');
-        },
-      );
-      expect(localDataSource.storedCategories.length, 1);
-    });
+        });
+        expect(localDataSource.storedCategories.length, 1);
+      },
+    );
 
-    test('falls back to cache if remote throws ServerException and local cache has data', () async {
-      localDataSource.storedCategories = [tCategoryModel];
-      remoteDataSource.exceptionToThrow = const ServerException(message: 'Server Down');
+    test(
+      'falls back to cache if remote throws ServerException and local cache has data',
+      () async {
+        localDataSource.storedCategories = [tCategoryModel];
+        remoteDataSource.exceptionToThrow = const ServerException(
+          message: 'Server Down',
+        );
 
-      final result = await repository.getCategories(forceRefresh: true);
+        final result = await repository.getCategories(forceRefresh: true);
 
-      expect(result.isRight(), true);
-      result.fold(
-        (l) => fail('Expected right'),
-        (categories) {
+        expect(result.isRight(), true);
+        result.fold((l) => fail('Expected right'), (categories) {
           expect(categories.first.id, 'cat-1');
-        },
-      );
-    });
+        });
+      },
+    );
 
-    test('returns Left(Failure) when remote throws and local cache is empty', () async {
-      localDataSource.storedCategories = [];
-      remoteDataSource.exceptionToThrow = const ServerException(message: 'Server Down', statusCode: 500);
+    test(
+      'returns Left(Failure) when remote throws and local cache is empty',
+      () async {
+        localDataSource.storedCategories = [];
+        remoteDataSource.exceptionToThrow = const ServerException(
+          message: 'Server Down',
+          statusCode: 500,
+        );
 
-      final result = await repository.getCategories(forceRefresh: true);
+        final result = await repository.getCategories(forceRefresh: true);
 
-      expect(result.isLeft(), true);
-      result.fold(
-        (failure) {
+        expect(result.isLeft(), true);
+        result.fold((failure) {
           expect(failure, isA<ServerFailure>());
           expect(failure.message, 'Server Down');
-        },
-        (r) => fail('Expected left'),
-      );
-    });
+        }, (r) => fail('Expected left'));
+      },
+    );
   });
 
   group('CategoryRepositoryImpl.addCategory & deleteCategory', () {
-    test('addCategory calls remote, caches new category, and returns Right(CategoryEntity)', () async {
-      remoteDataSource.mockCategory = tCategoryModel;
+    test(
+      'addCategory calls remote, caches new category, and returns Right(CategoryEntity)',
+      () async {
+        remoteDataSource.mockCategory = tCategoryModel;
 
-      final result = await repository.addCategory(tCategoryEntity);
+        final result = await repository.addCategory(tCategoryEntity);
 
-      expect(result.isRight(), true);
-      result.fold(
-        (l) => fail('Expected right'),
-        (cat) => expect(cat.id, 'cat-1'),
-      );
-      expect(localDataSource.storedCategories.length, 1);
-    });
+        expect(result.isRight(), true);
+        result.fold(
+          (l) => fail('Expected right'),
+          (cat) => expect(cat.id, 'cat-1'),
+        );
+        expect(localDataSource.storedCategories.length, 1);
+      },
+    );
 
     test('deleteCategory calls remote and removes from cache', () async {
       localDataSource.storedCategories = [tCategoryModel];

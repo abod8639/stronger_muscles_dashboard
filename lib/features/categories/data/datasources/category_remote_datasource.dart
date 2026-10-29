@@ -10,10 +10,7 @@ abstract class CategoryRemoteDataSource {
     CancelToken? cancelToken,
   });
 
-  Future<CategoryModel> getCategoryById(
-    String id, {
-    CancelToken? cancelToken,
-  });
+  Future<CategoryModel> getCategoryById(String id, {CancelToken? cancelToken});
 
   Future<CategoryModel> addCategory(
     Map<String, dynamic> categoryData, {
@@ -26,10 +23,7 @@ abstract class CategoryRemoteDataSource {
     CancelToken? cancelToken,
   });
 
-  Future<bool> deleteCategory(
-    String id, {
-    CancelToken? cancelToken,
-  });
+  Future<bool> deleteCategory(String id, {CancelToken? cancelToken});
 }
 
 /// Production implementation of [CategoryRemoteDataSource] using [Dio].
@@ -41,10 +35,10 @@ class CategoryRemoteDataSourceImpl implements CategoryRemoteDataSource {
   CategoryRemoteDataSourceImpl({required Dio dio}) : _dio = dio;
 
   Options get _options => Options(
-        sendTimeout: _defaultTimeout,
-        receiveTimeout: _defaultTimeout,
-        headers: {'Accept': 'application/json'},
-      );
+    sendTimeout: _defaultTimeout,
+    receiveTimeout: _defaultTimeout,
+    headers: {'Accept': 'application/json'},
+  );
 
   @override
   Future<List<CategoryModel>> getCategories({
@@ -70,7 +64,8 @@ class CategoryRemoteDataSourceImpl implements CategoryRemoteDataSource {
             listData = rawData['data'];
           } else if (rawData['categories'] is List) {
             listData = rawData['categories'];
-          } else if (rawData['data'] is Map && rawData['data']['data'] is List) {
+          } else if (rawData['data'] is Map &&
+              rawData['data']['data'] is List) {
             listData = rawData['data']['data'];
           }
         }
@@ -107,7 +102,8 @@ class CategoryRemoteDataSourceImpl implements CategoryRemoteDataSource {
 
       final data = response.data;
       if (response.statusCode == 200 && data is Map<String, dynamic>) {
-        final categoryMap = (data['category'] ?? data['data'] ?? data) as Map<String, dynamic>;
+        final categoryMap =
+            (data['category'] ?? data['data'] ?? data) as Map<String, dynamic>;
         return await CategoryModel.fromJsonAsync(categoryMap);
       }
 
@@ -142,12 +138,15 @@ class CategoryRemoteDataSourceImpl implements CategoryRemoteDataSource {
       final data = response.data;
       if ((response.statusCode == 200 || response.statusCode == 201) &&
           data is Map<String, dynamic>) {
-        final categoryMap = (data['category'] ?? data['data'] ?? data) as Map<String, dynamic>;
+        final categoryMap =
+            (data['category'] ?? data['data'] ?? data) as Map<String, dynamic>;
         return await CategoryModel.fromJsonAsync(categoryMap);
       }
 
       throw ServerException(
-        message: data is Map ? (data['message']?.toString() ?? 'فشل إضافة التصنيف') : 'فشل إضافة التصنيف',
+        message: data is Map
+            ? (data['message']?.toString() ?? 'فشل إضافة التصنيف')
+            : 'فشل إضافة التصنيف',
         statusCode: response.statusCode,
       );
     } on DioException {
@@ -177,12 +176,15 @@ class CategoryRemoteDataSourceImpl implements CategoryRemoteDataSource {
 
       final data = response.data;
       if (response.statusCode == 200 && data is Map<String, dynamic>) {
-        final categoryMap = (data['category'] ?? data['data'] ?? data) as Map<String, dynamic>;
+        final categoryMap =
+            (data['category'] ?? data['data'] ?? data) as Map<String, dynamic>;
         return await CategoryModel.fromJsonAsync(categoryMap);
       }
 
       throw ServerException(
-        message: data is Map ? (data['message']?.toString() ?? 'فشل تحديث التصنيف') : 'فشل تحديث التصنيف',
+        message: data is Map
+            ? (data['message']?.toString() ?? 'فشل تحديث التصنيف')
+            : 'فشل تحديث التصنيف',
         statusCode: response.statusCode,
       );
     } on DioException {
@@ -197,10 +199,7 @@ class CategoryRemoteDataSourceImpl implements CategoryRemoteDataSource {
   }
 
   @override
-  Future<bool> deleteCategory(
-    String id, {
-    CancelToken? cancelToken,
-  }) async {
+  Future<bool> deleteCategory(String id, {CancelToken? cancelToken}) async {
     try {
       final response = await _dio.delete(
         ApiConfig.adminCategoryDetail(id),

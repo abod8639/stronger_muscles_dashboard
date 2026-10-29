@@ -67,5 +67,6 @@ final toggleThemeUseCaseProvider = Provider<ToggleThemeUseCase>((ref) {
 // ==========================================
 
 /// Central theme mode notifier provider for MaterialApp
-final themeControllerProvider =
-    NotifierProvider<ThemeNotifier, ThemeMode>(ThemeNotifier.new);
+final themeControllerProvider = NotifierProvider<ThemeNotifier, ThemeMode>(
+  ThemeNotifier.new,
+);

@@ -46,7 +46,9 @@ class SupportTicketsPageEntity {
   }
 
   static bool _listEquals(
-      List<SupportTicketEntity> a, List<SupportTicketEntity> b) {
+    List<SupportTicketEntity> a,
+    List<SupportTicketEntity> b,
+  ) {
     if (a.length != b.length) return false;
     for (int i = 0; i < a.length; i++) {
       if (a[i] != b[i]) return false;
@@ -56,12 +58,12 @@ class SupportTicketsPageEntity {
 
   @override
   int get hashCode => Object.hash(
-        Object.hashAll(tickets),
-        stats,
-        currentPage,
-        totalCount,
-        hasMore,
-      );
+    Object.hashAll(tickets),
+    stats,
+    currentPage,
+    totalCount,
+    hasMore,
+  );
 
   @override
   String toString() =>

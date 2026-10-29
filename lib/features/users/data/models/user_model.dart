@@ -32,19 +32,19 @@ class UserModel with _$UserModel {
       _$UserModelFromJson(_mapUserJson(json));
 
   UserEntity toEntity() => UserEntity(
-        id: id,
-        name: name,
-        email: email,
-        photoUrl: photoUrl,
-        phoneNumber: phoneNumber,
-        role: role ?? 'user',
-        isActive: isActive,
-        createdAt: createdAt,
-        lastLogin: lastLogin,
-        totalSpent: totalSpent,
-        ordersCount: ordersCount,
-        addresses: addresses.map((e) => e.toEntity()).toList(),
-      );
+    id: id,
+    name: name,
+    email: email,
+    photoUrl: photoUrl,
+    phoneNumber: phoneNumber,
+    role: role ?? 'user',
+    isActive: isActive,
+    createdAt: createdAt,
+    lastLogin: lastLogin,
+    totalSpent: totalSpent,
+    ordersCount: ordersCount,
+    addresses: addresses.map((e) => e.toEntity()).toList(),
+  );
 }
 
 Map<String, dynamic> _mapUserJson(Map<String, dynamic> json) {
@@ -57,7 +57,8 @@ Map<String, dynamic> _mapUserJson(Map<String, dynamic> json) {
 
   // Handle snake_case vs camelCase if needed, although JsonKey handles most
   data['photo_url'] = data['photo_url'] ?? data['photoUrl'];
-  data['phone_number'] = data['phone_number'] ?? data['phone'] ?? data['phoneNumber'];
+  data['phone_number'] =
+      data['phone_number'] ?? data['phone'] ?? data['phoneNumber'];
   data['total_spent'] = data['total_spent'] ?? data['totalSpent'] ?? 0.0;
   data['created_at'] = data['created_at'] ?? data['createdAt'];
   data['last_login'] = data['last_login'] ?? data['lastLogin'];

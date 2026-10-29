@@ -10,11 +10,7 @@ class CategoryIdField extends StatefulWidget {
   final CategoriesController controller;
   final CategoryEntity? category;
 
-  const CategoryIdField({
-    super.key,
-    required this.controller,
-    this.category,
-  });
+  const CategoryIdField({super.key, required this.controller, this.category});
 
   @override
   State<CategoryIdField> createState() => _CategoryIdFieldState();
@@ -73,7 +69,10 @@ class _CategoryIdFieldState extends State<CategoryIdField> {
                 onTap: _toggleIdLock,
                 borderRadius: BorderRadius.circular(8),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -86,7 +85,9 @@ class _CategoryIdFieldState extends State<CategoryIdField> {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        _isIdFieldEnabled ? 'القفل مفتوح' : 'انقر مرتين أو هنا لفك القفل',
+                        _isIdFieldEnabled
+                            ? 'القفل مفتوح'
+                            : 'انقر مرتين أو هنا لفك القفل',
                         style: TextStyle(
                           fontSize: 11,
                           color: activeColor,
@@ -126,7 +127,8 @@ class _CategoryIdFieldState extends State<CategoryIdField> {
                     controller: widget.controller.idController,
                     label: 'المعرف: مثلاً supplements_creatine',
                     icon: Icons.terminal_rounded,
-                    enabled: (!isEditing || _isIdFieldEnabled) &&
+                    enabled:
+                        (!isEditing || _isIdFieldEnabled) &&
                         !widget.controller.isLoading,
                   ),
                 ),
@@ -141,7 +143,9 @@ class _CategoryIdFieldState extends State<CategoryIdField> {
                         color: activeColor,
                         size: 20,
                       ),
-                      tooltip: _isIdFieldEnabled ? 'إعادة قفل الحقل' : 'فك قفل الحقل',
+                      tooltip: _isIdFieldEnabled
+                          ? 'إعادة قفل الحقل'
+                          : 'فك قفل الحقل',
                       onPressed: _toggleIdLock,
                     ),
                   ),

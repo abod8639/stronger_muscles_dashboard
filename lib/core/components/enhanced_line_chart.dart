@@ -40,7 +40,8 @@ class EnhancedLineChartWidget extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     final effectiveMaxY = maxY <= 0 ? 4.0 : maxY;
-    final effectiveInterval = horizontalInterval ??
+    final effectiveInterval =
+        horizontalInterval ??
         ((effectiveMaxY / 4) <= 0 ? 1.0 : (effectiveMaxY / 4));
     final maxXValue = spots.isEmpty
         ? 6.0
@@ -88,7 +89,9 @@ class EnhancedLineChartWidget extends StatelessWidget {
                       child: Text(
                         bottomTitles![index],
                         style: TextStyle(
-                          color: colorScheme.onSurfaceVariant.withValues(alpha: 0.75),
+                          color: colorScheme.onSurfaceVariant.withValues(
+                            alpha: 0.75,
+                          ),
                           fontSize: 11,
                           fontWeight: FontWeight.w500,
                         ),
@@ -100,7 +103,9 @@ class EnhancedLineChartWidget extends StatelessWidget {
                     child: Text(
                       '$index',
                       style: TextStyle(
-                        color: colorScheme.onSurfaceVariant.withValues(alpha: 0.75),
+                        color: colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.75,
+                        ),
                         fontSize: 11,
                       ),
                     ),
@@ -120,7 +125,9 @@ class EnhancedLineChartWidget extends StatelessWidget {
                   return Text(
                     '${value.toInt()}',
                     style: TextStyle(
-                      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.75),
+                      color: colorScheme.onSurfaceVariant.withValues(
+                        alpha: 0.75,
+                      ),
                       fontSize: 11,
                     ),
                     textAlign: TextAlign.right,
@@ -138,7 +145,8 @@ class EnhancedLineChartWidget extends StatelessWidget {
               getTooltipItems: (touchedSpots) {
                 return touchedSpots.map((LineBarSpot touchedSpot) {
                   final index = touchedSpot.x.toInt();
-                  final dateLabel = (bottomTitles != null &&
+                  final dateLabel =
+                      (bottomTitles != null &&
                           index >= 0 &&
                           index < bottomTitles!.length)
                       ? bottomTitles![index]

@@ -27,7 +27,9 @@ class CategoryTopBanner extends StatelessWidget {
         child: Row(
           children: [
             IconCardWithShadow(
-              icon: isEditing ? Icons.edit_note_rounded : Icons.category_rounded,
+              icon: isEditing
+                  ? Icons.edit_note_rounded
+                  : Icons.category_rounded,
             ),
             const SizedBox(width: 16),
             Expanded(

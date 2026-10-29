@@ -78,10 +78,7 @@ class MockSupportRemoteDataSource implements SupportRemoteDataSource {
   }) async {
     if (exceptionToThrow != null) throw exceptionToThrow!;
     return remotePage ??
-        const SupportTicketsPageModel(
-          tickets: [],
-          stats: SupportStatsModel(),
-        );
+        const SupportTicketsPageModel(tickets: [], stats: SupportStatsModel());
   }
 
   @override
@@ -128,7 +125,9 @@ class MockSupportRemoteDataSource implements SupportRemoteDataSource {
 
   @override
   Future<SupportTicketModel> updatePriority(
-      int ticketId, String priority) async {
+    int ticketId,
+    String priority,
+  ) async {
     if (exceptionToThrow != null) throw exceptionToThrow!;
     final base = await getTicketDetail(ticketId);
     return base.copyWith(priority: priority);
@@ -188,39 +187,35 @@ void main() {
       final result = await repository.getTickets();
 
       expect(result.isRight(), isTrue);
-      result.fold(
-        (_) => fail('Expected Right'),
-        (page) {
-          expect(page.tickets.length, 1);
-          expect(page.tickets.first.ticketNumber, 'SM-005');
-        },
-      );
+      result.fold((_) => fail('Expected Right'), (page) {
+        expect(page.tickets.length, 1);
+        expect(page.tickets.first.ticketNumber, 'SM-005');
+      });
       expect(mockLocal.cachedPage, isNotNull);
       expect(mockLocal.cachedPage?.tickets.first.ticketNumber, 'SM-005');
     });
 
-    test('getTickets falls back to local cache when remote throws DioException',
-        () async {
-      mockLocal.cachedPage = SupportTicketsPageModel(
-        tickets: [testTicket],
-        stats: const SupportStatsModel(total: 1, open: 1),
-      );
-      mockRemote.exceptionToThrow = DioException(
-        requestOptions: RequestOptions(path: '/tickets'),
-        type: DioExceptionType.connectionError,
-      );
+    test(
+      'getTickets falls back to local cache when remote throws DioException',
+      () async {
+        mockLocal.cachedPage = SupportTicketsPageModel(
+          tickets: [testTicket],
+          stats: const SupportStatsModel(total: 1, open: 1),
+        );
+        mockRemote.exceptionToThrow = DioException(
+          requestOptions: RequestOptions(path: '/tickets'),
+          type: DioExceptionType.connectionError,
+        );
 
-      final result = await repository.getTickets();
+        final result = await repository.getTickets();
 
-      expect(result.isRight(), isTrue);
-      result.fold(
-        (_) => fail('Expected Right cache fallback'),
-        (page) {
+        expect(result.isRight(), isTrue);
+        result.fold((_) => fail('Expected Right cache fallback'), (page) {
           expect(page.tickets.length, 1);
           expect(page.tickets.first.userName, 'ياسر');
-        },
-      );
-    });
+        });
+      },
+    );
 
     test('getTicketDetail caches detailed ticket in local Hive', () async {
       mockRemote.remoteTicket = testTicket;
@@ -242,27 +237,27 @@ void main() {
       );
 
       expect(result.isRight(), isTrue);
-      result.fold(
-        (_) => fail('Expected Right'),
-        (msg) {
-          expect(msg.ticketId, 5);
-          expect(msg.message, 'تم إرسال الطلب');
-        },
-      );
+      result.fold((_) => fail('Expected Right'), (msg) {
+        expect(msg.ticketId, 5);
+        expect(msg.message, 'تم إرسال الطلب');
+      });
     });
 
-    test('updateStatus updates ticket status and updates local cache', () async {
-      mockRemote.remoteTicket = testTicket;
+    test(
+      'updateStatus updates ticket status and updates local cache',
+      () async {
+        mockRemote.remoteTicket = testTicket;
 
-      final result = await repository.updateStatus(5, 'resolved');
+        final result = await repository.updateStatus(5, 'resolved');
 
-      expect(result.isRight(), isTrue);
-      result.fold(
-        (_) => fail('Expected Right'),
-        (ticket) => expect(ticket.status, 'resolved'),
-      );
-      expect(mockLocal.cachedTickets[5]?.status, 'resolved');
-    });
+        expect(result.isRight(), isTrue);
+        result.fold(
+          (_) => fail('Expected Right'),
+          (ticket) => expect(ticket.status, 'resolved'),
+        );
+        expect(mockLocal.cachedTickets[5]?.status, 'resolved');
+      },
+    );
 
     test('deleteTicket returns Right(unit) on success', () async {
       final result = await repository.deleteTicket(5);
@@ -286,28 +281,27 @@ void main() {
       );
     });
 
-    test('returns Left(Failure) when remote throws and no cache is present',
-        () async {
-      mockRemote.exceptionToThrow = DioException(
-        requestOptions: RequestOptions(path: '/tickets'),
-        type: DioExceptionType.badResponse,
-        response: Response(
+    test(
+      'returns Left(Failure) when remote throws and no cache is present',
+      () async {
+        mockRemote.exceptionToThrow = DioException(
           requestOptions: RequestOptions(path: '/tickets'),
-          statusCode: 500,
-          data: {'message': 'خطأ داخلي في الخادم'},
-        ),
-      );
+          type: DioExceptionType.badResponse,
+          response: Response(
+            requestOptions: RequestOptions(path: '/tickets'),
+            statusCode: 500,
+            data: {'message': 'خطأ داخلي في الخادم'},
+          ),
+        );
 
-      final result = await repository.getTickets();
+        final result = await repository.getTickets();
 
-      expect(result.isLeft(), isTrue);
-      result.fold(
-        (failure) {
+        expect(result.isLeft(), isTrue);
+        result.fold((failure) {
           expect(failure, isA<ServerFailure>());
           expect(failure.statusCode, 500);
-        },
-        (_) => fail('Expected Left Failure'),
-      );
-    });
+        }, (_) => fail('Expected Left Failure'));
+      },
+    );
   });
 }

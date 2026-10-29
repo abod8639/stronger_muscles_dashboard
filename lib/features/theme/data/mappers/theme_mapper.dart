@@ -15,9 +15,6 @@ extension ThemeModelMapper on ThemeModel {
 /// Extension mapper converting domain [ThemeEntity] to data [ThemeModel] DTO.
 extension ThemeEntityMapper on ThemeEntity {
   ThemeModel toModel() {
-    return ThemeModel(
-      mode: mode.storageKey,
-      updatedAt: updatedAt,
-    );
+    return ThemeModel(mode: mode.storageKey, updatedAt: updatedAt);
   }
 }

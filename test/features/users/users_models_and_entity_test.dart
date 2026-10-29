@@ -120,18 +120,8 @@ void main() {
       activeUsers: 85,
       inactiveUsers: 15,
       users: [
-        UserModel(
-          id: 1,
-          name: 'User 1',
-          role: 'customer',
-          isActive: true,
-        ),
-        UserModel(
-          id: 2,
-          name: 'User 2',
-          role: 'customer',
-          isActive: false,
-        ),
+        UserModel(id: 1, name: 'User 1', role: 'customer', isActive: true),
+        UserModel(id: 2, name: 'User 2', role: 'customer', isActive: false),
       ],
     );
 

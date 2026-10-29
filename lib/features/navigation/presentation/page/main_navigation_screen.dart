@@ -79,9 +79,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
 
     return navAsync.when(
       loading: () => const Scaffold(
-        body: EnhancedLoadingWidget(
-          message: 'جاري تهيئة لوحة التحكم...',
-        ),
+        body: EnhancedLoadingWidget(message: 'جاري تهيئة لوحة التحكم...'),
       ),
       error: (error, stackTrace) => NavigationErrorFallback(
         error: error,
@@ -115,7 +113,9 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
                                   ),
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(32),
-                                    child: _buildContent(navState.selectedIndex),
+                                    child: _buildContent(
+                                      navState.selectedIndex,
+                                    ),
                                   ),
                                 )
                               : _buildContent(navState.selectedIndex),
@@ -125,8 +125,9 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
                   ),
                 ],
               ),
-              bottomNavigationBar:
-                  isDesktop ? null : const MyBottomNavigationBar(),
+              bottomNavigationBar: isDesktop
+                  ? null
+                  : const MyBottomNavigationBar(),
             );
           },
         );

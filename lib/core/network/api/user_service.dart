@@ -11,7 +11,9 @@ class UserService extends ApiBase {
 
       if (decoded is Map<String, dynamic>) {
         if (decoded.containsKey('data')) {
-           return decoded['data'] is Map<String, dynamic> ? decoded['data'] : decoded;
+          return decoded['data'] is Map<String, dynamic>
+              ? decoded['data']
+              : decoded;
         }
         return decoded;
       }

@@ -23,8 +23,9 @@ class SupportTicketCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
-    final dateStr = DateFormat('MM/dd • h:mm a')
-        .format(ticket.lastReplyAt ?? ticket.createdAt);
+    final dateStr = DateFormat(
+      'MM/dd • h:mm a',
+    ).format(ticket.lastReplyAt ?? ticket.createdAt);
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
@@ -38,16 +39,17 @@ class SupportTicketCard extends StatelessWidget {
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               color: isSelected
-                  ? colorScheme.primaryContainer
-                      .withValues(alpha: isDark ? 0.35 : 0.6)
+                  ? colorScheme.primaryContainer.withValues(
+                      alpha: isDark ? 0.35 : 0.6,
+                    )
                   : colorScheme.surfaceContainer,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: isSelected
                     ? colorScheme.primary
                     : ticket.isUrgent
-                        ? colorScheme.error.withValues(alpha: 0.5)
-                        : colorScheme.outlineVariant,
+                    ? colorScheme.error.withValues(alpha: 0.5)
+                    : colorScheme.outlineVariant,
                 width: isSelected ? 1.5 : 1,
               ),
               boxShadow: [
@@ -71,18 +73,22 @@ class SupportTicketCard extends StatelessWidget {
                     GestureDetector(
                       onTap: () {
                         Clipboard.setData(
-                            ClipboardData(text: ticket.ticketNumber));
+                          ClipboardData(text: ticket.ticketNumber),
+                        );
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
-                                'تم نسخ رقم التذكرة: ${ticket.ticketNumber}'),
+                              'تم نسخ رقم التذكرة: ${ticket.ticketNumber}',
+                            ),
                             duration: const Duration(seconds: 1),
                           ),
                         );
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 7, vertical: 2.5),
+                          horizontal: 7,
+                          vertical: 2.5,
+                        ),
                         decoration: BoxDecoration(
                           color: colorScheme.primary.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(6),
@@ -100,8 +106,11 @@ class SupportTicketCard extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 4),
-                            Icon(Icons.copy_rounded,
-                                size: 11, color: colorScheme.primary),
+                            Icon(
+                              Icons.copy_rounded,
+                              size: 11,
+                              color: colorScheme.primary,
+                            ),
                           ],
                         ),
                       ),
@@ -113,7 +122,9 @@ class SupportTicketCard extends StatelessWidget {
                       dateStr,
                       style: theme.textTheme.bodySmall?.copyWith(
                         fontSize: 10.5,
-                        color: colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
+                        color: colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.8,
+                        ),
                       ),
                     ),
                   ],
@@ -125,8 +136,9 @@ class SupportTicketCard extends StatelessWidget {
                   children: [
                     CircleAvatar(
                       radius: 12,
-                      backgroundColor:
-                          colorScheme.primary.withValues(alpha: 0.15),
+                      backgroundColor: colorScheme.primary.withValues(
+                        alpha: 0.15,
+                      ),
                       backgroundImage: ticket.userAvatar != null
                           ? CachedNetworkImageProvider(ticket.userAvatar!)
                           : null,
@@ -160,18 +172,25 @@ class SupportTicketCard extends StatelessWidget {
                       const SizedBox(width: 6),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 2),
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: colorScheme.surfaceContainerHigh,
                           borderRadius: BorderRadius.circular(6),
                           border: Border.all(
-                              color: colorScheme.outlineVariant, width: 0.8),
+                            color: colorScheme.outlineVariant,
+                            width: 0.8,
+                          ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.shopping_bag_outlined,
-                                size: 10, color: colorScheme.onSurfaceVariant),
+                            Icon(
+                              Icons.shopping_bag_outlined,
+                              size: 10,
+                              color: colorScheme.onSurfaceVariant,
+                            ),
                             const SizedBox(width: 3),
                             Text(
                               '#${ticket.orderNumber}',
@@ -209,7 +228,9 @@ class SupportTicketCard extends StatelessWidget {
                     const SizedBox(width: 6),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 7, vertical: 2),
+                        horizontal: 7,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: colorScheme.surfaceContainerHigh,
                         borderRadius: BorderRadius.circular(6),
@@ -223,8 +244,11 @@ class SupportTicketCard extends StatelessWidget {
                       ),
                     ),
                     const Spacer(),
-                    Icon(Icons.chat_bubble_outline_rounded,
-                        size: 13, color: colorScheme.onSurfaceVariant),
+                    Icon(
+                      Icons.chat_bubble_outline_rounded,
+                      size: 13,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       '${ticket.messagesCount}',
@@ -281,11 +305,7 @@ class SupportTicketCard extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: TextStyle(
-          fontSize: 9.5,
-          fontWeight: FontWeight.bold,
-          color: fg,
-        ),
+        style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.bold, color: fg),
       ),
     );
   }
@@ -332,11 +352,7 @@ class SupportTicketCard extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.bold,
-          color: fg,
-        ),
+        style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: fg),
       ),
     );
   }

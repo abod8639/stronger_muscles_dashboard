@@ -7,39 +7,45 @@ import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order
 
 void main() {
   group('DashboardStatsEntity Tests', () {
-    test('initial() factory produces valid initial entity with zero metrics', () {
-      const entity = DashboardStatsEntity.initial();
+    test(
+      'initial() factory produces valid initial entity with zero metrics',
+      () {
+        const entity = DashboardStatsEntity.initial();
 
-      expect(entity.totalOrders, 0);
-      expect(entity.pendingOrders, 0);
-      expect(entity.processingOrders, 0);
-      expect(entity.shippedOrders, 0);
-      expect(entity.deliveredOrders, 0);
-      expect(entity.cancelledOrders, 0);
-      expect(entity.totalProducts, 0);
-      expect(entity.lowStock, 0);
-      expect(entity.outOfStock, 0);
-      expect(entity.inStock, 0);
-      expect(entity.totalUsers, 0);
-      expect(entity.totalRevenue, 0.0);
-      expect(entity.orders, isEmpty);
-      expect(entity.products, isEmpty);
-      expect(entity.categories, isEmpty);
-    });
+        expect(entity.totalOrders, 0);
+        expect(entity.pendingOrders, 0);
+        expect(entity.processingOrders, 0);
+        expect(entity.shippedOrders, 0);
+        expect(entity.deliveredOrders, 0);
+        expect(entity.cancelledOrders, 0);
+        expect(entity.totalProducts, 0);
+        expect(entity.lowStock, 0);
+        expect(entity.outOfStock, 0);
+        expect(entity.inStock, 0);
+        expect(entity.totalUsers, 0);
+        expect(entity.totalRevenue, 0.0);
+        expect(entity.orders, isEmpty);
+        expect(entity.products, isEmpty);
+        expect(entity.categories, isEmpty);
+      },
+    );
 
-    test('copyWith updates specified fields correctly while preserving others', () {
-      const initial = DashboardStatsEntity.initial();
-      final updated = initial.copyWith(
-        totalOrders: 42,
-        totalRevenue: 1500.50,
-        totalUsers: 10,
-      );
+    test(
+      'copyWith updates specified fields correctly while preserving others',
+      () {
+        const initial = DashboardStatsEntity.initial();
+        final updated = initial.copyWith(
+          totalOrders: 42,
+          totalRevenue: 1500.50,
+          totalUsers: 10,
+        );
 
-      expect(updated.totalOrders, 42);
-      expect(updated.totalRevenue, 1500.50);
-      expect(updated.totalUsers, 10);
-      expect(updated.totalProducts, 0);
-    });
+        expect(updated.totalOrders, 42);
+        expect(updated.totalRevenue, 1500.50);
+        expect(updated.totalUsers, 10);
+        expect(updated.totalProducts, 0);
+      },
+    );
 
     test('equality and hashCode work as expected for identical state', () {
       final e1 = const DashboardStatsEntity.initial().copyWith(
@@ -94,15 +100,18 @@ void main() {
       expect(model.totalRevenue, 4500.75);
     });
 
-    test('fromJson handles empty or null values safely with resilient fallbacks', () {
-      final json = <String, dynamic>{};
+    test(
+      'fromJson handles empty or null values safely with resilient fallbacks',
+      () {
+        final json = <String, dynamic>{};
 
-      final model = DashboardStatsModel.fromJson(json);
+        final model = DashboardStatsModel.fromJson(json);
 
-      expect(model.totalOrders, 0);
-      expect(model.totalRevenue, 0.0);
-      expect(model.inStock, 0);
-    });
+        expect(model.totalOrders, 0);
+        expect(model.totalRevenue, 0.0);
+        expect(model.inStock, 0);
+      },
+    );
 
     test('toJson serializes model back to backend map', () {
       const model = DashboardStatsModel(
@@ -163,42 +172,57 @@ void main() {
   group('DashboardChartCalculator Tests', () {
     test('calculateOrdersChartData produces 7 data spots for week period', () {
       final orders = <OrderEntity>[];
-      final chartData = DashboardChartCalculator.calculateOrdersChartData(orders, 'week');
+      final chartData = DashboardChartCalculator.calculateOrdersChartData(
+        orders,
+        'week',
+      );
 
       expect(chartData.spots.length, 7);
       expect(chartData.bottomTitles.length, 7);
       expect(chartData.totalPeriodOrders, 0);
     });
 
-    test('calculateOrdersChartData produces 30 data spots for month period', () {
-      final orders = <OrderEntity>[];
-      final chartData = DashboardChartCalculator.calculateOrdersChartData(orders, 'month');
+    test(
+      'calculateOrdersChartData produces 30 data spots for month period',
+      () {
+        final orders = <OrderEntity>[];
+        final chartData = DashboardChartCalculator.calculateOrdersChartData(
+          orders,
+          'month',
+        );
 
-      expect(chartData.spots.length, 30);
-      expect(chartData.bottomTitles.length, 30);
-      expect(chartData.totalPeriodOrders, 0);
-    });
+        expect(chartData.spots.length, 30);
+        expect(chartData.bottomTitles.length, 30);
+        expect(chartData.totalPeriodOrders, 0);
+      },
+    );
 
     test('calculateOrdersChartData produces 12 data spots for year period', () {
       final orders = <OrderEntity>[];
-      final chartData = DashboardChartCalculator.calculateOrdersChartData(orders, 'year');
+      final chartData = DashboardChartCalculator.calculateOrdersChartData(
+        orders,
+        'year',
+      );
 
       expect(chartData.spots.length, 12);
       expect(chartData.bottomTitles.length, 12);
       expect(chartData.totalPeriodOrders, 0);
     });
 
-    test('calculateStatusTrendData computes valid trend direction and spots', () {
-      final orders = <OrderEntity>[];
-      final trendData = DashboardChartCalculator.calculateStatusTrendData(
-        orders,
-        OrderStatus.pending,
-        'week',
-      );
+    test(
+      'calculateStatusTrendData computes valid trend direction and spots',
+      () {
+        final orders = <OrderEntity>[];
+        final trendData = DashboardChartCalculator.calculateStatusTrendData(
+          orders,
+          OrderStatus.pending,
+          'week',
+        );
 
-      expect(trendData.spots.length, 7);
-      expect(trendData.trend, '0%');
-      expect(trendData.trendUp, isTrue);
-    });
+        expect(trendData.spots.length, 7);
+        expect(trendData.trend, '0%');
+        expect(trendData.trendUp, isTrue);
+      },
+    );
   });
 }

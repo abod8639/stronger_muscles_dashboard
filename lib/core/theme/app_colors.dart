@@ -44,28 +44,19 @@ class AppColorsExtended {
   static LinearGradient purpleGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [
-      const Color(0xFF27272A),
-      const Color(0xFF1E1E22),
-    ],
+    colors: [const Color(0xFF27272A), const Color(0xFF1E1E22)],
   );
 
   static LinearGradient orangeGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [
-      const Color(0xFF27272A),
-      const Color(0xFF1E1E22),
-    ],
+    colors: [const Color(0xFF27272A), const Color(0xFF1E1E22)],
   );
 
   static LinearGradient pinkGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [
-      const Color(0xFF27272A),
-      const Color(0xFF1E1E22),
-    ],
+    colors: [const Color(0xFF27272A), const Color(0xFF1E1E22)],
   );
 
   // --- Subtle Shadows ---

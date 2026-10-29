@@ -41,7 +41,8 @@ class ApiBase {
 
   void _handleError(DioException e) {
     final path = e.requestOptions.path;
-    final isAuthEndpoint = path.contains('/login') || path.contains('/register');
+    final isAuthEndpoint =
+        path.contains('/login') || path.contains('/register');
 
     if (e.response?.statusCode == 401 && !isAuthEndpoint) {
       _authService.logout();

@@ -54,20 +54,20 @@ class ModernTextField extends StatelessWidget {
       focusNode: focusNode,
       onFieldSubmitted: onSubmitted != null ? (_) => onSubmitted!() : null,
       onChanged: onChanged,
-      validator: validator ??
+      validator:
+          validator ??
           (isRequired
               ? (val) => (val == null || val.trim().isEmpty)
                     ? 'هذا الحقل مطلوب'
                     : null
               : null),
-      keyboardType: keyboardType ??
+      keyboardType:
+          keyboardType ??
           (isNumber
               ? const TextInputType.numberWithOptions(decimal: true)
               : (maxLines > 1 ? TextInputType.multiline : TextInputType.text)),
       maxLines: maxLines,
-      style: theme.textTheme.bodyMedium?.copyWith(
-        color: colorScheme.onSurface,
-      ),
+      style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
       cursorColor: colorScheme.primary,
       decoration: InputDecoration(
         labelText: isRequired ? '$label *' : label,
@@ -75,11 +75,7 @@ class ModernTextField extends StatelessWidget {
         alignLabelWithHint: maxLines > 1,
         suffixText: suffixText,
         helperText: helperText,
-        prefixIcon: Icon(
-          icon,
-          size: 20,
-          color: colorScheme.onSurfaceVariant,
-        ),
+        prefixIcon: Icon(icon, size: 20, color: colorScheme.onSurfaceVariant),
       ),
     );
   }

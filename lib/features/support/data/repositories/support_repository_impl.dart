@@ -25,9 +25,9 @@ class SupportRepositoryImpl implements SupportRepository {
     required SupportRemoteDataSource remoteDataSource,
     required SupportLocalDataSource localDataSource,
     SupportRealtimeDataSource? realtimeDataSource,
-  })  : _remoteDataSource = remoteDataSource,
-        _localDataSource = localDataSource,
-        _realtimeDataSource = realtimeDataSource;
+  }) : _remoteDataSource = remoteDataSource,
+       _localDataSource = localDataSource,
+       _realtimeDataSource = realtimeDataSource;
 
   @override
   Future<Either<Failure, SupportTicketsPageEntity>> getTickets({
@@ -71,7 +71,8 @@ class SupportRepositoryImpl implements SupportRepository {
           }
         } catch (cacheError) {
           debugPrint(
-              '[SupportRepositoryImpl.getTickets] Cache error: $cacheError');
+            '[SupportRepositoryImpl.getTickets] Cache error: $cacheError',
+          );
         }
       }
 
@@ -81,14 +82,16 @@ class SupportRepositoryImpl implements SupportRepository {
 
   @override
   Future<Either<Failure, SupportTicketEntity>> getTicketDetail(
-      int ticketId) async {
+    int ticketId,
+  ) async {
     try {
       final model = await _remoteDataSource.getTicketDetail(ticketId);
       await _localDataSource.cacheTicketDetail(model);
       return Right(model.toEntity());
     } catch (e, stackTrace) {
       debugPrint(
-          '[SupportRepositoryImpl.getTicketDetail] Error: $e\n$stackTrace');
+        '[SupportRepositoryImpl.getTicketDetail] Error: $e\n$stackTrace',
+      );
 
       // Cache fallback
       try {
@@ -98,7 +101,8 @@ class SupportRepositoryImpl implements SupportRepository {
         }
       } catch (cacheError) {
         debugPrint(
-            '[SupportRepositoryImpl.getTicketDetail] Cache error: $cacheError');
+          '[SupportRepositoryImpl.getTicketDetail] Cache error: $cacheError',
+        );
       }
 
       return Left(NetworkErrorHandler.handleException(e));
@@ -154,7 +158,8 @@ class SupportRepositoryImpl implements SupportRepository {
       return Right(model.toEntity());
     } catch (e, stackTrace) {
       debugPrint(
-          '[SupportRepositoryImpl.updatePriority] Error: $e\n$stackTrace');
+        '[SupportRepositoryImpl.updatePriority] Error: $e\n$stackTrace',
+      );
       return Left(NetworkErrorHandler.handleException(e));
     }
   }
@@ -220,7 +225,8 @@ class SupportRepositoryImpl implements SupportRepository {
   @override
   Stream<(int, SupportMessageEntity)> get messageSentStream {
     if (_realtimeDataSource == null) return const Stream.empty();
-    return _realtimeDataSource.onMessageSent
-        .map((tuple) => (tuple.$1, tuple.$2.toEntity()));
+    return _realtimeDataSource.onMessageSent.map(
+      (tuple) => (tuple.$1, tuple.$2.toEntity()),
+    );
   }
 }

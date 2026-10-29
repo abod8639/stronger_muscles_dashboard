@@ -81,10 +81,7 @@ class _CategoryImageSectionState extends State<CategoryImageSection> {
             const SizedBox(height: 3),
             Text(
               'ستظهر المعاينة المباشرة هنا فور إدخال الرابط',
-              style: TextStyle(
-                color: colorScheme.outline,
-                fontSize: 11,
-              ),
+              style: TextStyle(color: colorScheme.outline, fontSize: 11),
             ),
           ],
         ),
@@ -121,7 +118,9 @@ class _CategoryImageSectionState extends State<CategoryImageSection> {
               imageUrl: imageUrl,
               fit: BoxFit.cover,
               placeholder: (_, _) => Container(
-                color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+                color: colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.4,
+                ),
                 child: Center(
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
@@ -130,7 +129,9 @@ class _CategoryImageSectionState extends State<CategoryImageSection> {
                 ),
               ),
               errorWidget: (_, _, _) => Container(
-                color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                color: colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.3,
+                ),
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,

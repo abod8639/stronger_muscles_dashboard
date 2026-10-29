@@ -9,7 +9,10 @@ class AssignTicketAdminUseCase {
 
   const AssignTicketAdminUseCase(this._repository);
 
-  Future<Either<Failure, SupportTicketEntity>> call(int ticketId, int? adminId) {
+  Future<Either<Failure, SupportTicketEntity>> call(
+    int ticketId,
+    int? adminId,
+  ) {
     return _repository.assignAdmin(ticketId, adminId);
   }
 }

@@ -13,7 +13,8 @@ class SupportTicketEntity {
   final String subject;
   final String category;
   final String priority; // 'low', 'normal', 'high', 'urgent'
-  final String status; // 'open', 'in_progress', 'waiting_user', 'resolved', 'closed'
+  final String
+  status; // 'open', 'in_progress', 'waiting_user', 'resolved', 'closed'
   final int? orderId;
   final String? orderNumber;
   final double? orderTotal;
@@ -195,20 +196,20 @@ class SupportTicketEntity {
 
   @override
   int get hashCode => Object.hash(
-        id,
-        ticketNumber,
-        userId,
-        userName,
-        userEmail,
-        subject,
-        category,
-        priority,
-        status,
-        adminId,
-        messagesCount,
-        unreadMessagesCount,
-        createdAt,
-      );
+    id,
+    ticketNumber,
+    userId,
+    userName,
+    userEmail,
+    subject,
+    category,
+    priority,
+    status,
+    adminId,
+    messagesCount,
+    unreadMessagesCount,
+    createdAt,
+  );
 
   @override
   String toString() =>

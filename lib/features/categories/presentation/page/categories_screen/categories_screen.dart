@@ -50,11 +50,18 @@ class CategoriesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final status = ref.watch(categoriesNotifierProvider.select((s) => s.status));
-    final errorMessage = ref.watch(categoriesNotifierProvider.select((s) => s.errorMessage));
-    final filteredCategories =
-        ref.watch(categoriesNotifierProvider.select((s) => s.filteredCategories));
-    final searchQuery = ref.watch(categoriesNotifierProvider.select((s) => s.searchQuery));
+    final status = ref.watch(
+      categoriesNotifierProvider.select((s) => s.status),
+    );
+    final errorMessage = ref.watch(
+      categoriesNotifierProvider.select((s) => s.errorMessage),
+    );
+    final filteredCategories = ref.watch(
+      categoriesNotifierProvider.select((s) => s.filteredCategories),
+    );
+    final searchQuery = ref.watch(
+      categoriesNotifierProvider.select((s) => s.searchQuery),
+    );
 
     final responsive = context.responsive;
     final padding = responsive.defaultPadding;
@@ -109,9 +116,7 @@ class CategoriesScreen extends ConsumerWidget {
     required EdgeInsets padding,
   }) {
     if (status == CategoriesStatus.loading && filteredCategories.isEmpty) {
-      return const EnhancedLoadingWidget(
-        message: 'جاري تحميل التصنيفات...',
-      );
+      return const EnhancedLoadingWidget(message: 'جاري تحميل التصنيفات...');
     }
 
     if (status == CategoriesStatus.error && filteredCategories.isEmpty) {
@@ -165,14 +170,10 @@ class CategoriesScreen extends ConsumerWidget {
             final category = filteredCategories[index];
             return CategoryListItem(
               category: category,
-              onTap: () => context.push(
-                AppRoutes.categoryForm,
-                extra: category,
-              ),
-              onEdit: () => context.push(
-                AppRoutes.categoryForm,
-                extra: category,
-              ),
+              onTap: () =>
+                  context.push(AppRoutes.categoryForm, extra: category),
+              onEdit: () =>
+                  context.push(AppRoutes.categoryForm, extra: category),
               onDelete: () => _confirmDelete(context, ref, category.id),
             );
           },
@@ -182,9 +183,7 @@ class CategoriesScreen extends ConsumerWidget {
 
     final int crossAxisCount = screenWidth >= 1400
         ? 5
-        : (screenWidth >= 1050
-            ? 4
-            : (screenWidth >= 700 ? 3 : 2));
+        : (screenWidth >= 1050 ? 4 : (screenWidth >= 700 ? 3 : 2));
 
     return MyRefreshIndicator(
       onRefresh: () => ref
@@ -204,14 +203,8 @@ class CategoriesScreen extends ConsumerWidget {
           final category = filteredCategories[index];
           return CategoryGridCard(
             category: category,
-            onTap: () => context.push(
-              AppRoutes.categoryForm,
-              extra: category,
-            ),
-            onEdit: () => context.push(
-              AppRoutes.categoryForm,
-              extra: category,
-            ),
+            onTap: () => context.push(AppRoutes.categoryForm, extra: category),
+            onEdit: () => context.push(AppRoutes.categoryForm, extra: category),
             onDelete: () => _confirmDelete(context, ref, category.id),
           );
         },
@@ -221,9 +214,6 @@ class CategoriesScreen extends ConsumerWidget {
 }
 
 /// Helper function to push CategoryFormPage.
-void showCategoryForm(
-  BuildContext context, {
-  CategoryEntity? category,
-}) {
+void showCategoryForm(BuildContext context, {CategoryEntity? category}) {
   context.push(AppRoutes.categoryForm, extra: category);
 }

@@ -60,10 +60,7 @@ class CategorySectionCard extends StatelessWidget {
             height: 1,
             color: colorScheme.outlineVariant.withValues(alpha: 0.35),
           ),
-          Padding(
-            padding: const EdgeInsets.all(18),
-            child: child,
-          ),
+          Padding(padding: const EdgeInsets.all(18), child: child),
         ],
       ),
     );

@@ -83,16 +83,19 @@ class SupportRealtimeDataSourceImpl implements SupportRealtimeDataSource {
               ? map['ticket_id'] as int
               : int.tryParse(map['ticket_id']?.toString() ?? '0') ?? 0;
           final msgMap = Map<String, dynamic>.from(map['message'] as Map);
-          _messageSentController.add(
-            (ticketId, SupportMessageModel.fromJson(msgMap)),
-          );
+          _messageSentController.add((
+            ticketId,
+            SupportMessageModel.fromJson(msgMap),
+          ));
         }
       });
 
       _subscriptions.addAll([subCreate, subUpdate, subMessage]);
-      _subscriptions.add(_pusherClient!.onConnectionEstablished.listen((_) {
-        _channel?.subscribeIfNotUnsubscribed();
-      }));
+      _subscriptions.add(
+        _pusherClient!.onConnectionEstablished.listen((_) {
+          _channel?.subscribeIfNotUnsubscribed();
+        }),
+      );
 
       _pusherClient!.connect();
     } catch (e) {

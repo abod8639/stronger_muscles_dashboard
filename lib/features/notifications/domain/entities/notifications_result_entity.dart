@@ -18,11 +18,11 @@ class NotificationsResultEntity {
   });
 
   const NotificationsResultEntity.initial()
-      : notifications = const [],
-        totalCount = 0,
-        todayCount = 0,
-        broadcastCount = 0,
-        targetedCount = 0;
+    : notifications = const [],
+      totalCount = 0,
+      todayCount = 0,
+      broadcastCount = 0,
+      targetedCount = 0;
 
   NotificationsResultEntity copyWith({
     List<AdminNotificationEntity>? notifications,
@@ -40,7 +40,10 @@ class NotificationsResultEntity {
     );
   }
 
-  static bool _listEquals(List<AdminNotificationEntity> a, List<AdminNotificationEntity> b) {
+  static bool _listEquals(
+    List<AdminNotificationEntity> a,
+    List<AdminNotificationEntity> b,
+  ) {
     if (identical(a, b)) return true;
     if (a.length != b.length) return false;
     for (int i = 0; i < a.length; i++) {

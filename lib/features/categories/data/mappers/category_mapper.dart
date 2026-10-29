@@ -42,14 +42,8 @@ extension CategoryEntityMapper on CategoryEntity {
   Map<String, dynamic> toRemoteJson() {
     return {
       if (id.isNotEmpty) 'id': id,
-      'name': {
-        'ar': nameAr,
-        'en': nameEn,
-      },
-      'description': {
-        'ar': descriptionAr ?? '',
-        'en': descriptionEn ?? '',
-      },
+      'name': {'ar': nameAr, 'en': nameEn},
+      'description': {'ar': descriptionAr ?? '', 'en': descriptionEn ?? ''},
       'image_url': imageUrl,
       'sort_order': sortOrder,
       'is_active': isActive,

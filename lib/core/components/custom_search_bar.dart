@@ -138,7 +138,9 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
           ),
           if (isFocused)
             BoxShadow(
-              color: colorScheme.primary.withValues(alpha: isDark ? 0.12 : 0.15),
+              color: colorScheme.primary.withValues(
+                alpha: isDark ? 0.12 : 0.15,
+              ),
               offset: const Offset(0, 2),
               blurRadius: 12,
             ),
@@ -147,8 +149,8 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
           color: isFocused
               ? colorScheme.primary.withValues(alpha: isDark ? 0.5 : 0.6)
               : (isDark
-                  ? Colors.white.withValues(alpha: 0.06)
-                  : Colors.white.withValues(alpha: 0.85)),
+                    ? Colors.white.withValues(alpha: 0.06)
+                    : Colors.white.withValues(alpha: 0.85)),
           width: isFocused ? 1.4 : 1.0,
         ),
       ),
@@ -161,7 +163,8 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
             // 1. Leading Search Icon
             Padding(
               padding: const EdgeInsetsDirectional.only(start: 16, end: 8),
-              child: widget.leading ??
+              child:
+                  widget.leading ??
                   Icon(
                     Icons.search_rounded,
                     size: 22,
@@ -200,7 +203,9 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                   decoration: InputDecoration(
                     hintText: widget.hintText,
                     hintStyle: theme.textTheme.bodyLarge?.copyWith(
-                      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.70),
+                      color: colorScheme.onSurfaceVariant.withValues(
+                        alpha: 0.70,
+                      ),
                       fontWeight: FontWeight.normal,
                     ),
                     border: InputBorder.none,
@@ -241,10 +246,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
     );
 
     if (widget.padding != null) {
-      return Padding(
-        padding: widget.padding!,
-        child: content,
-      );
+      return Padding(padding: widget.padding!, child: content);
     }
 
     return content;

@@ -114,27 +114,30 @@ void main() {
   group('SupportTicketEntity & SupportTicketModel Tests', () {
     final now = DateTime(2026, 10, 28, 10, 30);
 
-    test('SupportTicketEntity status, priority and category Arabic getters', () {
-      final ticket = SupportTicketEntity(
-        id: 1,
-        ticketNumber: 'SM-1',
-        userName: 'خالد',
-        userEmail: 'khaled@example.com',
-        subject: 'تأخر في الشحنة',
-        category: 'orders_shipping',
-        priority: 'urgent',
-        status: 'open',
-        createdAt: now,
-      );
+    test(
+      'SupportTicketEntity status, priority and category Arabic getters',
+      () {
+        final ticket = SupportTicketEntity(
+          id: 1,
+          ticketNumber: 'SM-1',
+          userName: 'خالد',
+          userEmail: 'khaled@example.com',
+          subject: 'تأخر في الشحنة',
+          category: 'orders_shipping',
+          priority: 'urgent',
+          status: 'open',
+          createdAt: now,
+        );
 
-      expect(ticket.isOpen, isTrue);
-      expect(ticket.isUrgent, isTrue);
-      expect(ticket.isResolved, isFalse);
-      expect(ticket.isClosed, isFalse);
-      expect(ticket.statusArabic, 'تذكرة جديدة');
-      expect(ticket.priorityArabic, 'عاجلة جداً');
-      expect(ticket.categoryArabic, 'الطلبات والشحن');
-    });
+        expect(ticket.isOpen, isTrue);
+        expect(ticket.isUrgent, isTrue);
+        expect(ticket.isResolved, isFalse);
+        expect(ticket.isClosed, isFalse);
+        expect(ticket.statusArabic, 'تذكرة جديدة');
+        expect(ticket.priorityArabic, 'عاجلة جداً');
+        expect(ticket.categoryArabic, 'الطلبات والشحن');
+      },
+    );
 
     test('SupportTicketModel serialization and bidirectional mapping', () {
       final json = {
@@ -179,7 +182,7 @@ void main() {
             subject: 'طلب إلغاء',
             category: 'payment_refunds',
             createdAt: DateTime.now(),
-          )
+          ),
         ],
         stats: const SupportStatsModel(total: 1, open: 1),
         currentPage: 1,

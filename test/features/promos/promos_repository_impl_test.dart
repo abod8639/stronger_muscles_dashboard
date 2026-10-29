@@ -27,7 +27,10 @@ class MockPromoRemoteDataSource implements PromoRemoteDataSource {
   }
 
   @override
-  Future<PromoModel> updatePromo(String id, Map<String, dynamic> promoData) async {
+  Future<PromoModel> updatePromo(
+    String id,
+    Map<String, dynamic> promoData,
+  ) async {
     if (exceptionToThrow != null) throw exceptionToThrow!;
     return mockPromo!;
   }
@@ -119,61 +122,63 @@ void main() {
   });
 
   group('PromoRepositoryImpl.getPromos', () {
-    test('fetches from remote, updates Hive cache, and returns Right(List<PromoEntity>)', () async {
-      mockRemote.mockPromos = [testPromoModel];
+    test(
+      'fetches from remote, updates Hive cache, and returns Right(List<PromoEntity>)',
+      () async {
+        mockRemote.mockPromos = [testPromoModel];
 
-      final result = await repository.getPromos();
+        final result = await repository.getPromos();
 
-      expect(result.isRight(), isTrue);
-      result.fold(
-        (_) => fail('Expected Right'),
-        (entities) {
+        expect(result.isRight(), isTrue);
+        result.fold((_) => fail('Expected Right'), (entities) {
           expect(entities.length, 1);
           expect(entities.first.id, 'pr-1');
           expect(entities.first.displayTitle, 'عرض البداية');
-        },
-      );
-      expect(mockLocal.storedPromos.length, 1);
-    });
+        });
+        expect(mockLocal.storedPromos.length, 1);
+      },
+    );
 
-    test('falls back to local cache when remote fails if local cache has data', () async {
-      mockRemote.exceptionToThrow = DioException(
-        requestOptions: RequestOptions(path: '/promos'),
-        error: 'No internet connection',
-        type: DioExceptionType.connectionError,
-      );
-      mockLocal.storedPromos = [testPromoModel];
+    test(
+      'falls back to local cache when remote fails if local cache has data',
+      () async {
+        mockRemote.exceptionToThrow = DioException(
+          requestOptions: RequestOptions(path: '/promos'),
+          error: 'No internet connection',
+          type: DioExceptionType.connectionError,
+        );
+        mockLocal.storedPromos = [testPromoModel];
 
-      final result = await repository.getPromos();
+        final result = await repository.getPromos();
 
-      expect(result.isRight(), isTrue);
-      result.fold(
-        (_) => fail('Expected Right from cache fallback'),
-        (entities) {
+        expect(result.isRight(), isTrue);
+        result.fold((_) => fail('Expected Right from cache fallback'), (
+          entities,
+        ) {
           expect(entities.length, 1);
           expect(entities.first.id, 'pr-1');
-        },
-      );
-    });
+        });
+      },
+    );
 
-    test('returns Left(Failure) when remote fails and local cache is empty', () async {
-      mockRemote.exceptionToThrow = DioException(
-        requestOptions: RequestOptions(path: '/promos'),
-        error: 'Server unavailable',
-        type: DioExceptionType.badResponse,
-      );
-      mockLocal.storedPromos = [];
+    test(
+      'returns Left(Failure) when remote fails and local cache is empty',
+      () async {
+        mockRemote.exceptionToThrow = DioException(
+          requestOptions: RequestOptions(path: '/promos'),
+          error: 'Server unavailable',
+          type: DioExceptionType.badResponse,
+        );
+        mockLocal.storedPromos = [];
 
-      final result = await repository.getPromos();
+        final result = await repository.getPromos();
 
-      expect(result.isLeft(), isTrue);
-      result.fold(
-        (failure) {
+        expect(result.isLeft(), isTrue);
+        result.fold((failure) {
           expect(failure, isA<Failure>());
-        },
-        (_) => fail('Expected Left'),
-      );
-    });
+        }, (_) => fail('Expected Left'));
+      },
+    );
   });
 
   group('PromoRepositoryImpl Mutations', () {
@@ -186,66 +191,66 @@ void main() {
       isActive: true,
     );
 
-    test('addPromo sends to remote, caches locally, and returns Right(PromoEntity)', () async {
-      final addedModel = PromoModel(
-        id: 'pr-new',
-        title: const {'ar': 'جديد', 'en': 'New'},
-        imageUrl: 'https://example.com/new.png',
-        backgroundColor: '#111111',
-        targetType: 'none',
-        isActive: true,
-      );
-      mockRemote.mockPromo = addedModel;
+    test(
+      'addPromo sends to remote, caches locally, and returns Right(PromoEntity)',
+      () async {
+        final addedModel = PromoModel(
+          id: 'pr-new',
+          title: const {'ar': 'جديد', 'en': 'New'},
+          imageUrl: 'https://example.com/new.png',
+          backgroundColor: '#111111',
+          targetType: 'none',
+          isActive: true,
+        );
+        mockRemote.mockPromo = addedModel;
 
-      final result = await repository.addPromo(testEntity);
+        final result = await repository.addPromo(testEntity);
 
-      expect(result.isRight(), isTrue);
-      result.fold(
-        (_) => fail('Expected Right'),
-        (entity) {
+        expect(result.isRight(), isTrue);
+        result.fold((_) => fail('Expected Right'), (entity) {
           expect(entity.id, 'pr-new');
-        },
-      );
-      expect(mockLocal.storedPromos.any((p) => p.id == 'pr-new'), isTrue);
-    });
+        });
+        expect(mockLocal.storedPromos.any((p) => p.id == 'pr-new'), isTrue);
+      },
+    );
 
-    test('updatePromo updates remote, updates cache, and returns Right(PromoEntity)', () async {
-      final updatedModel = PromoModel(
-        id: 'pr-new',
-        title: const {'ar': 'محدث', 'en': 'Updated'},
-        imageUrl: 'https://example.com/new.png',
-        backgroundColor: '#111111',
-        targetType: 'none',
-        isActive: true,
-      );
-      mockRemote.mockPromo = updatedModel;
+    test(
+      'updatePromo updates remote, updates cache, and returns Right(PromoEntity)',
+      () async {
+        final updatedModel = PromoModel(
+          id: 'pr-new',
+          title: const {'ar': 'محدث', 'en': 'Updated'},
+          imageUrl: 'https://example.com/new.png',
+          backgroundColor: '#111111',
+          targetType: 'none',
+          isActive: true,
+        );
+        mockRemote.mockPromo = updatedModel;
 
-      final result = await repository.updatePromo(testEntity);
+        final result = await repository.updatePromo(testEntity);
 
-      expect(result.isRight(), isTrue);
-      result.fold(
-        (_) => fail('Expected Right'),
-        (entity) {
+        expect(result.isRight(), isTrue);
+        result.fold((_) => fail('Expected Right'), (entity) {
           expect(entity.displayTitle, 'محدث');
-        },
-      );
-      expect(mockLocal.storedPromos.first.title?['ar'], 'محدث');
-    });
+        });
+        expect(mockLocal.storedPromos.first.title?['ar'], 'محدث');
+      },
+    );
 
-    test('deletePromo removes from remote and local cache, returning Right(unit)', () async {
-      mockLocal.storedPromos = [testPromoModel];
+    test(
+      'deletePromo removes from remote and local cache, returning Right(unit)',
+      () async {
+        mockLocal.storedPromos = [testPromoModel];
 
-      final result = await repository.deletePromo('pr-1');
+        final result = await repository.deletePromo('pr-1');
 
-      expect(result.isRight(), isTrue);
-      result.fold(
-        (_) => fail('Expected Right'),
-        (u) {
+        expect(result.isRight(), isTrue);
+        result.fold((_) => fail('Expected Right'), (u) {
           expect(u, equals(unit));
-        },
-      );
-      expect(mockLocal.storedPromos.isEmpty, isTrue);
-    });
+        });
+        expect(mockLocal.storedPromos.isEmpty, isTrue);
+      },
+    );
 
     test('uploadImage returns public URL on success', () async {
       mockRemote.mockUploadedUrl = 'https://cdn.example.com/promo.jpg';
@@ -253,12 +258,9 @@ void main() {
       final result = await repository.uploadImage('/tmp/img.jpg');
 
       expect(result.isRight(), isTrue);
-      result.fold(
-        (_) => fail('Expected Right'),
-        (url) {
-          expect(url, 'https://cdn.example.com/promo.jpg');
-        },
-      );
+      result.fold((_) => fail('Expected Right'), (url) {
+        expect(url, 'https://cdn.example.com/promo.jpg');
+      });
     });
   });
 }

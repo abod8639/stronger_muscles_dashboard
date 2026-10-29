@@ -29,15 +29,17 @@ final supportLocalDataSourceProvider = Provider<SupportLocalDataSource>((ref) {
 });
 
 /// Provider for [SupportRemoteDataSource] backed by centralized [dioProvider].
-final supportRemoteDataSourceProvider =
-    Provider<SupportRemoteDataSource>((ref) {
+final supportRemoteDataSourceProvider = Provider<SupportRemoteDataSource>((
+  ref,
+) {
   final dio = ref.watch(dioProvider);
   return SupportRemoteDataSourceImpl(dio: dio);
 });
 
 /// Provider for [SupportRealtimeDataSource] WebSocket client.
-final supportRealtimeDataSourceProvider =
-    Provider<SupportRealtimeDataSource>((ref) {
+final supportRealtimeDataSourceProvider = Provider<SupportRealtimeDataSource>((
+  ref,
+) {
   final host = ApiConfigController().ip;
   final realtimeSource = SupportRealtimeDataSourceImpl(host: host);
   ref.onDispose(() {
@@ -56,40 +58,47 @@ final supportRepositoryProvider = Provider<SupportRepository>((ref) {
 });
 
 /// Providers for Domain UseCases
-final getSupportTicketsUseCaseProvider =
-    Provider<GetSupportTicketsUseCase>((ref) {
+final getSupportTicketsUseCaseProvider = Provider<GetSupportTicketsUseCase>((
+  ref,
+) {
   return GetSupportTicketsUseCase(ref.watch(supportRepositoryProvider));
 });
 
 final getSupportTicketDetailUseCaseProvider =
     Provider<GetSupportTicketDetailUseCase>((ref) {
-  return GetSupportTicketDetailUseCase(ref.watch(supportRepositoryProvider));
-});
+      return GetSupportTicketDetailUseCase(
+        ref.watch(supportRepositoryProvider),
+      );
+    });
 
-final sendSupportMessageUseCaseProvider =
-    Provider<SendSupportMessageUseCase>((ref) {
+final sendSupportMessageUseCaseProvider = Provider<SendSupportMessageUseCase>((
+  ref,
+) {
   return SendSupportMessageUseCase(ref.watch(supportRepositoryProvider));
 });
 
-final updateTicketStatusUseCaseProvider =
-    Provider<UpdateTicketStatusUseCase>((ref) {
+final updateTicketStatusUseCaseProvider = Provider<UpdateTicketStatusUseCase>((
+  ref,
+) {
   return UpdateTicketStatusUseCase(ref.watch(supportRepositoryProvider));
 });
 
 final updateTicketPriorityUseCaseProvider =
     Provider<UpdateTicketPriorityUseCase>((ref) {
-  return UpdateTicketPriorityUseCase(ref.watch(supportRepositoryProvider));
-});
+      return UpdateTicketPriorityUseCase(ref.watch(supportRepositoryProvider));
+    });
 
-final assignTicketAdminUseCaseProvider =
-    Provider<AssignTicketAdminUseCase>((ref) {
+final assignTicketAdminUseCaseProvider = Provider<AssignTicketAdminUseCase>((
+  ref,
+) {
   return AssignTicketAdminUseCase(ref.watch(supportRepositoryProvider));
 });
 
-final deleteSupportTicketUseCaseProvider =
-    Provider<DeleteSupportTicketUseCase>((ref) {
-  return DeleteSupportTicketUseCase(ref.watch(supportRepositoryProvider));
-});
+final deleteSupportTicketUseCaseProvider = Provider<DeleteSupportTicketUseCase>(
+  (ref) {
+    return DeleteSupportTicketUseCase(ref.watch(supportRepositoryProvider));
+  },
+);
 
 final getSupportStatsUseCaseProvider = Provider<GetSupportStatsUseCase>((ref) {
   return GetSupportStatsUseCase(ref.watch(supportRepositoryProvider));

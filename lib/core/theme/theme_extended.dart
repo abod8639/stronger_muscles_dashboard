@@ -108,7 +108,9 @@ class AppThemeExtended {
         style: FilledButton.styleFrom(
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           backgroundColor: colorScheme.primary,
           foregroundColor: colorScheme.onPrimary,
           textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
@@ -133,7 +135,9 @@ class AppThemeExtended {
         style: OutlinedButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           side: BorderSide(color: colorScheme.outlineVariant, width: 1.2),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           foregroundColor: colorScheme.onSurface,
           textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
@@ -143,7 +147,9 @@ class AppThemeExtended {
         style: TextButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           foregroundColor: colorScheme.onSurface,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
           textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
       ),
@@ -155,7 +161,9 @@ class AppThemeExtended {
           selectedForegroundColor: colorScheme.onPrimary,
           foregroundColor: colorScheme.onSurface.withValues(alpha: 0.75),
           side: BorderSide(color: colorScheme.outlineVariant),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
         ),
       ),
@@ -166,7 +174,9 @@ class AppThemeExtended {
           borderRadius: BorderRadius.circular(10),
           side: BorderSide(color: colorScheme.outlineVariant),
         ),
-        backgroundColor: colorScheme.surfaceContainerHigh.withValues(alpha: 0.4),
+        backgroundColor: colorScheme.surfaceContainerHigh.withValues(
+          alpha: 0.4,
+        ),
         selectedColor: colorScheme.primaryContainer,
         labelStyle: TextStyle(color: colorScheme.onSurface, fontSize: 13),
         secondaryLabelStyle: TextStyle(
@@ -369,7 +379,9 @@ class AppThemeExtended {
         style: FilledButton.styleFrom(
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           backgroundColor: colorScheme.primary,
           foregroundColor: colorScheme.onPrimary,
           textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
@@ -394,7 +406,9 @@ class AppThemeExtended {
         style: OutlinedButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           side: BorderSide(color: colorScheme.outlineVariant, width: 1.2),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           foregroundColor: colorScheme.onSurface,
           textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
@@ -404,7 +418,9 @@ class AppThemeExtended {
         style: TextButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           foregroundColor: colorScheme.onSurface,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
           textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
       ),
@@ -416,7 +432,9 @@ class AppThemeExtended {
           selectedForegroundColor: colorScheme.onPrimary,
           foregroundColor: colorScheme.onSurface.withValues(alpha: 0.75),
           side: BorderSide(color: colorScheme.outlineVariant),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
         ),
       ),

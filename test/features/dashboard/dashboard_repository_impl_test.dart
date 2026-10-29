@@ -82,7 +82,10 @@ class MockOrderRepository implements OrderRepository {
   }
 
   @override
-  Future<fp.Either<Failure, OrderEntity>> updateOrderStatus(String id, OrderStatus status) async {
+  Future<fp.Either<Failure, OrderEntity>> updateOrderStatus(
+    String id,
+    OrderStatus status,
+  ) async {
     throw UnimplementedError();
   }
 }
@@ -100,7 +103,9 @@ class MockProductRepository implements ProductRepository {
   }
 
   @override
-  Future<fp.Either<Failure, ProductEntity>> addProduct(Map<String, dynamic> data) async {
+  Future<fp.Either<Failure, ProductEntity>> addProduct(
+    Map<String, dynamic> data,
+  ) async {
     throw UnimplementedError();
   }
 
@@ -115,7 +120,10 @@ class MockProductRepository implements ProductRepository {
   }
 
   @override
-  Future<fp.Either<Failure, ProductEntity>> updateProduct(String id, Map<String, dynamic> data) async {
+  Future<fp.Either<Failure, ProductEntity>> updateProduct(
+    String id,
+    Map<String, dynamic> data,
+  ) async {
     throw UnimplementedError();
   }
 
@@ -139,7 +147,9 @@ class MockCategoryRepository implements CategoryRepository {
   }
 
   @override
-  Future<fp.Either<Failure, CategoryEntity>> addCategory(CategoryEntity category) async {
+  Future<fp.Either<Failure, CategoryEntity>> addCategory(
+    CategoryEntity category,
+  ) async {
     throw UnimplementedError();
   }
 
@@ -154,7 +164,9 @@ class MockCategoryRepository implements CategoryRepository {
   }
 
   @override
-  Future<fp.Either<Failure, CategoryEntity>> updateCategory(CategoryEntity category) async {
+  Future<fp.Either<Failure, CategoryEntity>> updateCategory(
+    CategoryEntity category,
+  ) async {
     throw UnimplementedError();
   }
 }
@@ -169,13 +181,17 @@ class MockUserRepository implements UserRepository {
   Failure? failureToReturn;
 
   @override
-  Future<fp.Either<Failure, UsersStatsEntity>> getUsersStats({bool forceRefresh = false}) async {
+  Future<fp.Either<Failure, UsersStatsEntity>> getUsersStats({
+    bool forceRefresh = false,
+  }) async {
     if (failureToReturn != null) return fp.Left(failureToReturn!);
     return fp.Right(stats);
   }
 
   @override
-  Future<fp.Either<Failure, List<UserEntity>>> getUsers({bool forceRefresh = false}) async {
+  Future<fp.Either<Failure, List<UserEntity>>> getUsers({
+    bool forceRefresh = false,
+  }) async {
     throw UnimplementedError();
   }
 }
@@ -210,65 +226,82 @@ void main() {
   });
 
   group('DashboardRepositoryImpl Tests', () {
-    test('returns cached stats immediately when cache is valid and forceRefresh is false', () async {
-      const cachedModel = testDashboardModel;
-      localDataSource.cachedStats = cachedModel;
-      localDataSource.cacheValid = true;
+    test(
+      'returns cached stats immediately when cache is valid and forceRefresh is false',
+      () async {
+        const cachedModel = testDashboardModel;
+        localDataSource.cachedStats = cachedModel;
+        localDataSource.cacheValid = true;
 
-      final result = await repository.getDashboardStats(forceRefresh: false);
+        final result = await repository.getDashboardStats(forceRefresh: false);
 
-      expect(result.isRight(), isTrue);
-      result.fold(
-        (failure) => fail('Expected Right, got Left: $failure'),
-        (entity) {
+        expect(result.isRight(), isTrue);
+        result.fold((failure) => fail('Expected Right, got Left: $failure'), (
+          entity,
+        ) {
           expect(entity.totalOrders, 50);
           expect(entity.totalRevenue, 2500.0);
-        },
-      );
-    });
+        });
+      },
+    );
 
-    test('fetches from remote data source when forceRefresh is true and caches result', () async {
-      final remoteModel = DashboardStatsModel.fromJson(const {
-        'total_orders': 100,
-        'total_revenue': 12000.0,
-        'total_users': 45,
-      });
-      remoteDataSource.remoteStats = remoteModel;
+    test(
+      'fetches from remote data source when forceRefresh is true and caches result',
+      () async {
+        final remoteModel = DashboardStatsModel.fromJson(const {
+          'total_orders': 100,
+          'total_revenue': 12000.0,
+          'total_users': 45,
+        });
+        remoteDataSource.remoteStats = remoteModel;
 
-      final result = await repository.getDashboardStats(forceRefresh: true);
+        final result = await repository.getDashboardStats(forceRefresh: true);
 
-      expect(result.isRight(), isTrue);
-      result.fold(
-        (failure) => fail('Expected Right, got Left: $failure'),
-        (entity) {
+        expect(result.isRight(), isTrue);
+        result.fold((failure) => fail('Expected Right, got Left: $failure'), (
+          entity,
+        ) {
           expect(entity.totalOrders, 100);
           expect(entity.totalRevenue, 12000.0);
-        },
-      );
-      expect(localDataSource.cachedStats?.totalOrders, 100);
-    });
+        });
+        expect(localDataSource.cachedStats?.totalOrders, 100);
+      },
+    );
 
-    test('falls back gracefully to stale cache if remote and constituent services fail', () async {
-      localDataSource.cachedStats = DashboardStatsModel.fromJson(const {
-        'total_orders': 15,
-        'total_revenue': 500.0,
-      });
-      localDataSource.cacheValid = false;
-      remoteDataSource.exceptionToThrow = ServerException(message: 'Connection failed');
-      orderRepository.failureToReturn = const ServerFailure(message: 'Orders failed');
-      productRepository.failureToReturn = const ServerFailure(message: 'Products failed');
-      categoryRepository.failureToReturn = const ServerFailure(message: 'Categories failed');
-      userRepository.failureToReturn = const ServerFailure(message: 'Users failed');
+    test(
+      'falls back gracefully to stale cache if remote and constituent services fail',
+      () async {
+        localDataSource.cachedStats = DashboardStatsModel.fromJson(const {
+          'total_orders': 15,
+          'total_revenue': 500.0,
+        });
+        localDataSource.cacheValid = false;
+        remoteDataSource.exceptionToThrow = ServerException(
+          message: 'Connection failed',
+        );
+        orderRepository.failureToReturn = const ServerFailure(
+          message: 'Orders failed',
+        );
+        productRepository.failureToReturn = const ServerFailure(
+          message: 'Products failed',
+        );
+        categoryRepository.failureToReturn = const ServerFailure(
+          message: 'Categories failed',
+        );
+        userRepository.failureToReturn = const ServerFailure(
+          message: 'Users failed',
+        );
 
-      final result = await repository.getDashboardStats(forceRefresh: true);
+        final result = await repository.getDashboardStats(forceRefresh: true);
 
-      expect(result.isRight(), isTrue);
-      result.fold(
-        (failure) => fail('Expected Right fallback, got Left: $failure'),
-        (entity) {
-          expect(entity.totalOrders, 15);
-        },
-      );
-    });
+        expect(result.isRight(), isTrue);
+        result.fold(
+          (failure) => fail('Expected Right fallback, got Left: $failure'),
+          (entity) {
+            expect(entity.totalOrders, 15);
+          },
+        );
+      },
+    );
   });
 }

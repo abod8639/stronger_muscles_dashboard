@@ -33,7 +33,11 @@ class PromoListItem extends ConsumerWidget {
     final isMobile = context.isMobile;
 
     final actions = [
-      SoftIconButton(icon: Icons.edit_rounded, tooltip: 'تعديل', onPressed: onEdit),
+      SoftIconButton(
+        icon: Icons.edit_rounded,
+        tooltip: 'تعديل',
+        onPressed: onEdit,
+      ),
       SoftIconButton(
         icon: Icons.delete_outline_rounded,
         tooltip: 'حذف',
@@ -154,7 +158,9 @@ class _Thumbnail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final placeholderColor = colorScheme.onSurfaceVariant.withValues(alpha: 0.5);
+    final placeholderColor = colorScheme.onSurfaceVariant.withValues(
+      alpha: 0.5,
+    );
 
     return Container(
       width: width,

@@ -68,7 +68,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     if (!isValid) return;
 
     final formState = ref.read(signupFormControllerProvider);
-    final success = await ref.read(authControllerProvider.notifier).signup(
+    final success = await ref
+        .read(authControllerProvider.notifier)
+        .signup(
           name: formState.name,
           email: formState.email,
           password: formState.password,
@@ -264,12 +266,14 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         Consumer(
           builder: (context, ref, child) {
             final isVisible = ref.watch(
-              signupFormControllerProvider
-                  .select((s) => s.isConfirmPasswordVisible),
+              signupFormControllerProvider.select(
+                (s) => s.isConfirmPasswordVisible,
+              ),
             );
             final confirmError = ref.watch(
-              signupFormControllerProvider
-                  .select((s) => s.confirmPasswordError),
+              signupFormControllerProvider.select(
+                (s) => s.confirmPasswordError,
+              ),
             );
             return AuthTextField(
               controller: _confirmPasswordController,
@@ -341,9 +345,7 @@ class _SignupErrorSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final failure = ref.watch(
-      authControllerProvider.select((s) => s.failure),
-    );
+    final failure = ref.watch(authControllerProvider.select((s) => s.failure));
 
     if (failure == null) return const SizedBox.shrink();
 
@@ -383,8 +385,8 @@ class _SignupTermsSection extends ConsumerWidget {
                 onChanged: isLoading
                     ? null
                     : (v) => ref
-                        .read(signupFormControllerProvider.notifier)
-                        .toggleAcceptTerms(v),
+                          .read(signupFormControllerProvider.notifier)
+                          .toggleAcceptTerms(v),
                 activeColor: AppColors.primary,
                 side: BorderSide(
                   color: termsError != null

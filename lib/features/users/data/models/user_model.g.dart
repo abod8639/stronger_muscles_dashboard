@@ -101,7 +101,8 @@ _$UserModelImpl _$$UserModelImplFromJson(Map<String, dynamic> json) =>
       lastLogin: json['last_login'] == null
           ? null
           : DateTime.parse(json['last_login'] as String),
-      addresses: (json['addresses'] as List<dynamic>?)
+      addresses:
+          (json['addresses'] as List<dynamic>?)
               ?.map((e) => UserAddress.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],

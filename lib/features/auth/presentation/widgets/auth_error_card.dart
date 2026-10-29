@@ -83,7 +83,11 @@ class AuthErrorCard extends StatelessWidget {
               ),
               if (onDismiss != null)
                 IconButton(
-                  icon: const Icon(Icons.close, size: 18, color: Colors.white70),
+                  icon: const Icon(
+                    Icons.close,
+                    size: 18,
+                    color: Colors.white70,
+                  ),
                   onPressed: onDismiss,
                   tooltip: 'إغلاق',
                 ),
@@ -95,7 +99,11 @@ class AuthErrorCard extends StatelessWidget {
               alignment: Alignment.centerLeft,
               child: TextButton.icon(
                 onPressed: onRetry,
-                icon: const Icon(Icons.refresh_rounded, size: 18, color: Colors.white),
+                icon: const Icon(
+                  Icons.refresh_rounded,
+                  size: 18,
+                  color: Colors.white,
+                ),
                 label: const Text(
                   'إعادة المحاولة',
                   style: TextStyle(
@@ -105,7 +113,10 @@ class AuthErrorCard extends StatelessWidget {
                 ),
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.redAccent.withValues(alpha: 0.3),
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),

@@ -5,7 +5,11 @@ final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey =
     GlobalKey<ScaffoldMessengerState>();
 
 class AppFeedback {
-  static void showSuccess(String message, {String? title, Duration duration = const Duration(seconds: 3)}) {
+  static void showSuccess(
+    String message, {
+    String? title,
+    Duration duration = const Duration(seconds: 3),
+  }) {
     final messenger = rootScaffoldMessengerKey.currentState;
     if (messenger == null) return;
 
@@ -14,12 +18,19 @@ class AppFeedback {
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.check_circle_rounded, color: Colors.white, size: 22),
+            const Icon(
+              Icons.check_circle_rounded,
+              color: Colors.white,
+              size: 22,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 title != null ? '$title: $message' : message,
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ],
@@ -33,7 +44,11 @@ class AppFeedback {
     );
   }
 
-  static void showError(String message, {String? title, Duration duration = const Duration(seconds: 4)}) {
+  static void showError(
+    String message, {
+    String? title,
+    Duration duration = const Duration(seconds: 4),
+  }) {
     final messenger = rootScaffoldMessengerKey.currentState;
     if (messenger == null) return;
 
@@ -42,12 +57,19 @@ class AppFeedback {
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.error_outline_rounded, color: Colors.white, size: 22),
+            const Icon(
+              Icons.error_outline_rounded,
+              color: Colors.white,
+              size: 22,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 title != null ? '$title: $message' : message,
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ],
@@ -61,7 +83,11 @@ class AppFeedback {
     );
   }
 
-  static void showWarning(String message, {String? title, Duration duration = const Duration(seconds: 3)}) {
+  static void showWarning(
+    String message, {
+    String? title,
+    Duration duration = const Duration(seconds: 3),
+  }) {
     final messenger = rootScaffoldMessengerKey.currentState;
     if (messenger == null) return;
 
@@ -70,12 +96,19 @@ class AppFeedback {
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.warning_amber_rounded, color: Colors.white, size: 22),
+            const Icon(
+              Icons.warning_amber_rounded,
+              color: Colors.white,
+              size: 22,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 title != null ? '$title: $message' : message,
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ],
@@ -89,7 +122,11 @@ class AppFeedback {
     );
   }
 
-  static void showInfo(String message, {String? title, Duration duration = const Duration(seconds: 3)}) {
+  static void showInfo(
+    String message, {
+    String? title,
+    Duration duration = const Duration(seconds: 3),
+  }) {
     final messenger = rootScaffoldMessengerKey.currentState;
     if (messenger == null) return;
 
@@ -98,12 +135,19 @@ class AppFeedback {
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.info_outline_rounded, color: Colors.white, size: 22),
+            const Icon(
+              Icons.info_outline_rounded,
+              color: Colors.white,
+              size: 22,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 title != null ? '$title: $message' : message,
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ],

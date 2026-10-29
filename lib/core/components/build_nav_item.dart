@@ -43,7 +43,9 @@ class _NavItemTileState extends ConsumerState<NavItemTile> {
           color: Colors.transparent,
           child: InkWell(
             onTap: () {
-              ref.read(navigationControllerProvider.notifier).selectTab(widget.index);
+              ref
+                  .read(navigationControllerProvider.notifier)
+                  .selectTab(widget.index);
               if (widget.isDrawer) {
                 Navigator.of(context).pop();
               }
@@ -63,29 +65,45 @@ class _NavItemTileState extends ConsumerState<NavItemTile> {
                         end: Alignment.bottomRight,
                         colors: isDark
                             ? [
-                                Color.lerp(colorScheme.surfaceContainerHigh, Colors.white, 0.04)!,
-                                Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.1)!,
+                                Color.lerp(
+                                  colorScheme.surfaceContainerHigh,
+                                  Colors.white,
+                                  0.04,
+                                )!,
+                                Color.lerp(
+                                  colorScheme.surfaceContainer,
+                                  Colors.black,
+                                  0.1,
+                                )!,
                               ]
                             : [
                                 Colors.white,
-                                Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.03)!,
+                                Color.lerp(
+                                  colorScheme.surfaceContainer,
+                                  Colors.black,
+                                  0.03,
+                                )!,
                               ],
                       )
                     : (_isHovered
-                        ? LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: isDark
-                                ? [
-                                    Color.lerp(colorScheme.surfaceContainer, Colors.white, 0.02)!,
-                                    colorScheme.surfaceContainer,
-                                  ]
-                                : [
-                                    Colors.white.withValues(alpha: 0.6),
-                                    colorScheme.surfaceContainer,
-                                  ],
-                          )
-                        : null),
+                          ? LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: isDark
+                                  ? [
+                                      Color.lerp(
+                                        colorScheme.surfaceContainer,
+                                        Colors.white,
+                                        0.02,
+                                      )!,
+                                      colorScheme.surfaceContainer,
+                                    ]
+                                  : [
+                                      Colors.white.withValues(alpha: 0.6),
+                                      colorScheme.surfaceContainer,
+                                    ],
+                            )
+                          : null),
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
@@ -104,16 +122,18 @@ class _NavItemTileState extends ConsumerState<NavItemTile> {
                         ),
                       ]
                     : (_isHovered
-                        ? [
-                            BoxShadow(
-                              color: isDark
-                              ? Colors.black.withValues(alpha: 0.25)
-                              : const Color(0xFFA3B1C6).withValues(alpha: 0.2),
-                              offset: const Offset(2, 2),
-                              blurRadius: 4,
-                            ),
-                          ]
-                        : null),
+                          ? [
+                              BoxShadow(
+                                color: isDark
+                                    ? Colors.black.withValues(alpha: 0.25)
+                                    : const Color(
+                                        0xFFA3B1C6,
+                                      ).withValues(alpha: 0.2),
+                                offset: const Offset(2, 2),
+                                blurRadius: 4,
+                              ),
+                            ]
+                          : null),
                 border: isSelected
                     ? Border.all(
                         color: isDark
@@ -122,13 +142,13 @@ class _NavItemTileState extends ConsumerState<NavItemTile> {
                         width: 1.0,
                       )
                     : (_isHovered
-                        ? Border.all(
-                            color: isDark
-                                ? Colors.white.withValues(alpha: 0.03)
-                                : Colors.black.withValues(alpha: 0.04),
-                            width: 1.0,
-                          )
-                        : null),
+                          ? Border.all(
+                              color: isDark
+                                  ? Colors.white.withValues(alpha: 0.03)
+                                  : Colors.black.withValues(alpha: 0.04),
+                              width: 1.0,
+                            )
+                          : null),
               ),
               child: Row(
                 children: [

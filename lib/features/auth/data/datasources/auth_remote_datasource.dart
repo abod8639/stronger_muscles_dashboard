@@ -5,10 +5,7 @@ import '../models/auth_model.dart';
 
 /// Contract for executing remote authentication network calls via HTTP.
 abstract class AuthRemoteDataSource {
-  Future<AuthModel> login({
-    required String email,
-    required String password,
-  });
+  Future<AuthModel> login({required String email, required String password});
 
   Future<AuthModel> signup({
     required String name,
@@ -34,10 +31,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       final response = await _dio.post(
         ApiConfig.adminLogin,
-        data: {
-          'email': email,
-          'password': password,
-        },
+        data: {'email': email, 'password': password},
         options: Options(
           sendTimeout: _defaultTimeout,
           receiveTimeout: _defaultTimeout,
@@ -77,11 +71,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       final response = await _dio.post(
         ApiConfig.adminRegister,
-        data: {
-          'name': name,
-          'email': email,
-          'password': password,
-        },
+        data: {'name': name, 'email': email, 'password': password},
         options: Options(
           sendTimeout: _defaultTimeout,
           receiveTimeout: _defaultTimeout,

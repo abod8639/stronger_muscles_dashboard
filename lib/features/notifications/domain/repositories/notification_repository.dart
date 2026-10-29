@@ -20,7 +20,5 @@ abstract class NotificationRepository {
   );
 
   /// Deletes a notification by its unique identifier.
-  Future<Either<Failure, void>> deleteNotification(
-    String id,
-  );
+  Future<Either<Failure, void>> deleteNotification(String id);
 }

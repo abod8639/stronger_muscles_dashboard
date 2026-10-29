@@ -35,10 +35,14 @@ void main() {
       const darkState = ThemeState(theme: ThemeEntity(mode: AppThemeMode.dark));
       expect(darkState.flutterThemeMode, ThemeMode.dark);
 
-      const lightState = ThemeState(theme: ThemeEntity(mode: AppThemeMode.light));
+      const lightState = ThemeState(
+        theme: ThemeEntity(mode: AppThemeMode.light),
+      );
       expect(lightState.flutterThemeMode, ThemeMode.light);
 
-      const systemState = ThemeState(theme: ThemeEntity(mode: AppThemeMode.system));
+      const systemState = ThemeState(
+        theme: ThemeEntity(mode: AppThemeMode.system),
+      );
       expect(systemState.flutterThemeMode, ThemeMode.system);
     });
   });

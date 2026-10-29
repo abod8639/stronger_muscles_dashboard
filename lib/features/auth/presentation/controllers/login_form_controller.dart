@@ -38,7 +38,9 @@ class LoginFormState {
       isPasswordVisible: isPasswordVisible ?? this.isPasswordVisible,
       rememberMe: rememberMe ?? this.rememberMe,
       emailError: clearEmailError ? null : (emailError ?? this.emailError),
-      passwordError: clearPasswordError ? null : (passwordError ?? this.passwordError),
+      passwordError: clearPasswordError
+          ? null
+          : (passwordError ?? this.passwordError),
     );
   }
 
@@ -72,17 +74,11 @@ class LoginFormController extends Notifier<LoginFormState> {
   }
 
   void onEmailChanged(String value) {
-    state = state.copyWith(
-      email: value.trim(),
-      clearEmailError: true,
-    );
+    state = state.copyWith(email: value.trim(), clearEmailError: true);
   }
 
   void onPasswordChanged(String value) {
-    state = state.copyWith(
-      password: value,
-      clearPasswordError: true,
-    );
+    state = state.copyWith(password: value, clearPasswordError: true);
   }
 
   void togglePasswordVisibility() {

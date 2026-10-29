@@ -49,11 +49,11 @@ class NavigationBadgesModel {
   }
 
   Map<String, dynamic> toJson() => {
-        'pending_orders': pendingOrdersCount,
-        'unread_notifications': unreadNotificationsCount,
-        'open_tickets': openTicketsCount,
-        'low_stock_products': lowStockProductsCount,
-      };
+    'pending_orders': pendingOrdersCount,
+    'unread_notifications': unreadNotificationsCount,
+    'open_tickets': openTicketsCount,
+    'low_stock_products': lowStockProductsCount,
+  };
 
   @override
   bool operator ==(Object other) =>

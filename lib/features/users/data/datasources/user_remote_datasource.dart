@@ -27,7 +27,9 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
     final decoded = response.data;
     final Map<String, dynamic> rawMap;
     if (decoded is Map<String, dynamic>) {
-      rawMap = (decoded.containsKey('data') && decoded['data'] is Map<String, dynamic>)
+      rawMap =
+          (decoded.containsKey('data') &&
+              decoded['data'] is Map<String, dynamic>)
           ? decoded['data'] as Map<String, dynamic>
           : decoded;
     } else {

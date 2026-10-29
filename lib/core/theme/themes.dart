@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // --- Minimal Monochrome Palette (Eye-Friendly, Neutral, Crisp) ---
-  static const Color primary = Color(0xFFF4F4F5); // Crisp White/Off-white for actions
+  static const Color primary = Color(
+    0xFFF4F4F5,
+  ); // Crisp White/Off-white for actions
   static const Color primaryDark = Color(0xFFD4D4D8);
   static const Color primaryglow = Color(0xFFFFFFFF);
 
   static const Color accent = Color(0xFFA1A1AA); // Neutral Zinc
 
   // --- Backgrounds ---
-  static const Color backgroundDark = Color(0xFF121214); // Deep neutral charcoal/zinc
+  static const Color backgroundDark = Color(
+    0xFF121214,
+  ); // Deep neutral charcoal/zinc
   static const Color surfaceDark = Color(0xFF18181B); // Surface
   static const Color glassLow = Color(0x0FFFFFFF);
   static const Color glassHigh = Color(0x1AFFFFFF);

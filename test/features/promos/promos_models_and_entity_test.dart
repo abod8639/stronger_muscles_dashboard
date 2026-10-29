@@ -42,43 +42,46 @@ void main() {
       expect(p3.targetId, 'brand-456');
     });
 
-    test('computed getters display localized text and target formatting correctly', () {
-      const p = PromoEntity(
-        id: 'promo-1',
-        title: {'ar': 'بانر تجريبي', 'en': 'Demo Banner'},
-        subtitle: {'ar': 'وصف فرعي', 'en': 'Demo Subtitle'},
-        buttonText: {'ar': 'اضغط هنا', 'en': 'Click Here'},
-        imageUrl: 'https://example.com/img.png',
-        backgroundColor: '#FFFFFF',
-        targetType: 'product',
-        targetId: '101',
-        isActive: true,
-      );
+    test(
+      'computed getters display localized text and target formatting correctly',
+      () {
+        const p = PromoEntity(
+          id: 'promo-1',
+          title: {'ar': 'بانر تجريبي', 'en': 'Demo Banner'},
+          subtitle: {'ar': 'وصف فرعي', 'en': 'Demo Subtitle'},
+          buttonText: {'ar': 'اضغط هنا', 'en': 'Click Here'},
+          imageUrl: 'https://example.com/img.png',
+          backgroundColor: '#FFFFFF',
+          targetType: 'product',
+          targetId: '101',
+          isActive: true,
+        );
 
-      expect(p.displayTitle, 'بانر تجريبي');
-      expect(p.displaySubtitle, 'وصف فرعي');
-      expect(p.displayButtonText, 'اضغط هنا');
-      expect(p.displayTarget, 'منتج: 101');
+        expect(p.displayTitle, 'بانر تجريبي');
+        expect(p.displaySubtitle, 'وصف فرعي');
+        expect(p.displayButtonText, 'اضغط هنا');
+        expect(p.displayTarget, 'منتج: 101');
 
-      const brandPromo = PromoEntity(
-        id: 'promo-2',
-        imageUrl: '',
-        backgroundColor: '#000000',
-        targetType: 'brand',
-        targetId: '55',
-        isActive: false,
-      );
-      expect(brandPromo.displayTarget, 'ماركة: 55');
+        const brandPromo = PromoEntity(
+          id: 'promo-2',
+          imageUrl: '',
+          backgroundColor: '#000000',
+          targetType: 'brand',
+          targetId: '55',
+          isActive: false,
+        );
+        expect(brandPromo.displayTarget, 'ماركة: 55');
 
-      const nonePromo = PromoEntity(
-        id: 'promo-3',
-        imageUrl: '',
-        backgroundColor: '#000000',
-        targetType: 'none',
-        isActive: false,
-      );
-      expect(nonePromo.displayTarget, 'بدون توجيه');
-    });
+        const nonePromo = PromoEntity(
+          id: 'promo-3',
+          imageUrl: '',
+          backgroundColor: '#000000',
+          targetType: 'none',
+          isActive: false,
+        );
+        expect(nonePromo.displayTarget, 'بدون توجيه');
+      },
+    );
   });
 
   group('PromoModel & Mapper Tests', () {
@@ -134,31 +137,34 @@ void main() {
       expect(mappedEntity, equals(entity));
     });
 
-    test('parsePromoListCompute & parsePromoCompute handle unexpected data formats gracefully', () {
-      final list = parsePromoListCompute([
-        {
-          'id': '1',
-          'image_url': 'https://example.com/1.png',
-          'background_color': '#FFFFFF',
-          'is_active': true,
-        }
-      ]);
-      expect(list.length, 1);
-      expect(list.first.id, '1');
+    test(
+      'parsePromoListCompute & parsePromoCompute handle unexpected data formats gracefully',
+      () {
+        final list = parsePromoListCompute([
+          {
+            'id': '1',
+            'image_url': 'https://example.com/1.png',
+            'background_color': '#FFFFFF',
+            'is_active': true,
+          },
+        ]);
+        expect(list.length, 1);
+        expect(list.first.id, '1');
 
-      final empty = parsePromoListCompute(null);
-      expect(empty, isEmpty);
+        final empty = parsePromoListCompute(null);
+        expect(empty, isEmpty);
 
-      final single = parsePromoCompute({
-        'data': {
-          'id': '2',
-          'image_url': 'https://example.com/2.png',
-          'background_color': '#000000',
-          'is_active': false,
-        }
-      });
-      expect(single.id, '2');
-      expect(single.isActive, isFalse);
-    });
+        final single = parsePromoCompute({
+          'data': {
+            'id': '2',
+            'image_url': 'https://example.com/2.png',
+            'background_color': '#000000',
+            'is_active': false,
+          },
+        });
+        expect(single.id, '2');
+        expect(single.isActive, isFalse);
+      },
+    );
   });
 }

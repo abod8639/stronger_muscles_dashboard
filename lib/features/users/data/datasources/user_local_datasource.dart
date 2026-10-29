@@ -24,8 +24,8 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
   UserLocalDataSourceImpl({
     required Box statsBox,
     required Box<UserModel> usersBox,
-  })  : _statsBox = statsBox,
-        _usersBox = usersBox;
+  }) : _statsBox = statsBox,
+       _usersBox = usersBox;
 
   @override
   Future<UsersStatsModel?> getCachedUsersStats() async {

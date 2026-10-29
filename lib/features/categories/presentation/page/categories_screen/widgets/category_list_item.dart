@@ -55,7 +55,9 @@ class CategoryListItem extends StatelessWidget {
                 height: 60,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
-                  color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                  color: colorScheme.surfaceContainerHighest.withValues(
+                    alpha: 0.5,
+                  ),
                   border: Border.all(
                     color: colorScheme.outlineVariant.withValues(alpha: 0.4),
                   ),
@@ -99,7 +101,10 @@ class CategoryListItem extends StatelessWidget {
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: statusBg,
                             borderRadius: BorderRadius.circular(100),
@@ -128,7 +133,8 @@ class CategoryListItem extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    if (category.descriptionAr != null && category.descriptionAr!.isNotEmpty) ...[
+                    if (category.descriptionAr != null &&
+                        category.descriptionAr!.isNotEmpty) ...[
                       const SizedBox(height: 2),
                       Text(
                         category.descriptionAr!,
@@ -151,12 +157,20 @@ class CategoryListItem extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
-                    icon: Icon(Icons.edit_outlined, size: 20, color: colorScheme.primary),
+                    icon: Icon(
+                      Icons.edit_outlined,
+                      size: 20,
+                      color: colorScheme.primary,
+                    ),
                     tooltip: 'تعديل',
                     onPressed: onEdit,
                   ),
                   IconButton(
-                    icon: Icon(Icons.delete_outline_rounded, size: 20, color: colorScheme.error),
+                    icon: Icon(
+                      Icons.delete_outline_rounded,
+                      size: 20,
+                      color: colorScheme.error,
+                    ),
                     tooltip: 'حذف',
                     onPressed: onDelete,
                   ),

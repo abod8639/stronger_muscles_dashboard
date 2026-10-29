@@ -33,13 +33,16 @@ class SupportTicketsPageModel {
     final stats = SupportStatsModel.fromJson(statsMap);
 
     final meta = json['meta'] is Map ? json['meta'] as Map : {};
-    final currentPage = (meta['current_page'] as num?)?.toInt() ??
+    final currentPage =
+        (meta['current_page'] as num?)?.toInt() ??
         (json['current_page'] as num?)?.toInt() ??
         1;
-    final lastPage = (meta['last_page'] as num?)?.toInt() ??
+    final lastPage =
+        (meta['last_page'] as num?)?.toInt() ??
         (json['last_page'] as num?)?.toInt() ??
         1;
-    final total = (meta['total'] as num?)?.toInt() ??
+    final total =
+        (meta['total'] as num?)?.toInt() ??
         (json['total'] as num?)?.toInt() ??
         tickets.length;
 
@@ -56,10 +59,7 @@ class SupportTicketsPageModel {
     return {
       'data': tickets.map((t) => t.toJson()).toList(),
       'stats': stats.toJson(),
-      'meta': {
-        'current_page': currentPage,
-        'total': totalCount,
-      },
+      'meta': {'current_page': currentPage, 'total': totalCount},
       'has_more': hasMore,
     };
   }

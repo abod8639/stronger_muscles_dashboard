@@ -32,11 +32,7 @@ class IconCardWithShadow extends StatelessWidget {
         compact: true,
         borderRadius: BorderRadius.circular(borderRadius),
       ),
-      child: Icon(
-        icon,
-        size: size,
-        color: iconColor ?? colorScheme.primary,
-      ),
+      child: Icon(icon, size: size, color: iconColor ?? colorScheme.primary),
     );
   }
 }

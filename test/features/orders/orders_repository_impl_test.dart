@@ -116,89 +116,98 @@ void main() {
   });
 
   group('OrderRepositoryImpl.getOrders', () {
-    test('returns cached orders when cache is valid and forceRefresh is false', () async {
-      mockLocalDataSource.storedOrders = [testOrderModel];
-      mockLocalDataSource.cacheValid = true;
+    test(
+      'returns cached orders when cache is valid and forceRefresh is false',
+      () async {
+        mockLocalDataSource.storedOrders = [testOrderModel];
+        mockLocalDataSource.cacheValid = true;
 
-      final result = await repository.getOrders(forceRefresh: false);
+        final result = await repository.getOrders(forceRefresh: false);
 
-      expect(result.isRight(), isTrue);
-      result.fold(
-        (l) => fail('Expected right'),
-        (orders) {
+        expect(result.isRight(), isTrue);
+        result.fold((l) => fail('Expected right'), (orders) {
           expect(orders.length, 1);
           expect(orders.first.id, 'ord-1');
-        },
-      );
-    });
+        });
+      },
+    );
 
-    test('fetches from remote and updates cache when forceRefresh is true', () async {
-      mockRemoteDataSource.mockOrders = [testOrderModel];
+    test(
+      'fetches from remote and updates cache when forceRefresh is true',
+      () async {
+        mockRemoteDataSource.mockOrders = [testOrderModel];
 
-      final result = await repository.getOrders(forceRefresh: true);
+        final result = await repository.getOrders(forceRefresh: true);
 
-      expect(result.isRight(), isTrue);
-      result.fold(
-        (l) => fail('Expected right'),
-        (orders) {
+        expect(result.isRight(), isTrue);
+        result.fold((l) => fail('Expected right'), (orders) {
           expect(orders.length, 1);
           expect(orders.first.id, 'ord-1');
-        },
-      );
-      expect(mockLocalDataSource.storedOrders.length, 1);
-    });
+        });
+        expect(mockLocalDataSource.storedOrders.length, 1);
+      },
+    );
 
-    test('falls back to cache when remote fails and cached data exists', () async {
-      mockLocalDataSource.storedOrders = [testOrderModel];
-      mockLocalDataSource.cacheValid = false;
-      mockRemoteDataSource.exceptionToThrow = const ServerException(
-        message: 'Server error',
-        statusCode: 500,
-      );
+    test(
+      'falls back to cache when remote fails and cached data exists',
+      () async {
+        mockLocalDataSource.storedOrders = [testOrderModel];
+        mockLocalDataSource.cacheValid = false;
+        mockRemoteDataSource.exceptionToThrow = const ServerException(
+          message: 'Server error',
+          statusCode: 500,
+        );
 
-      final result = await repository.getOrders(forceRefresh: true);
+        final result = await repository.getOrders(forceRefresh: true);
 
-      expect(result.isRight(), isTrue);
-      result.fold(
-        (l) => fail('Expected right fallback'),
-        (orders) {
+        expect(result.isRight(), isTrue);
+        result.fold((l) => fail('Expected right fallback'), (orders) {
           expect(orders.length, 1);
           expect(orders.first.id, 'ord-1');
-        },
-      );
-    });
+        });
+      },
+    );
 
-    test('returns Left(Failure) when remote fails and cache is empty', () async {
-      mockLocalDataSource.storedOrders = [];
-      mockRemoteDataSource.exceptionToThrow = const ServerException(
-        message: 'Server offline',
-        statusCode: 503,
-      );
+    test(
+      'returns Left(Failure) when remote fails and cache is empty',
+      () async {
+        mockLocalDataSource.storedOrders = [];
+        mockRemoteDataSource.exceptionToThrow = const ServerException(
+          message: 'Server offline',
+          statusCode: 503,
+        );
 
-      final result = await repository.getOrders(forceRefresh: true);
+        final result = await repository.getOrders(forceRefresh: true);
 
-      expect(result.isLeft(), isTrue);
-      result.fold(
-        (failure) => expect(failure, isA<Failure>()),
-        (orders) => fail('Expected left failure'),
-      );
-    });
+        expect(result.isLeft(), isTrue);
+        result.fold(
+          (failure) => expect(failure, isA<Failure>()),
+          (orders) => fail('Expected left failure'),
+        );
+      },
+    );
   });
 
   group('OrderRepositoryImpl.updateOrderStatus', () {
-    test('updates status remotely, updates local cache and returns updated entity', () async {
-      mockRemoteDataSource.mockOrder = testOrderModel;
+    test(
+      'updates status remotely, updates local cache and returns updated entity',
+      () async {
+        mockRemoteDataSource.mockOrder = testOrderModel;
 
-      final result = await repository.updateOrderStatus('ord-1', OrderStatus.shipped);
+        final result = await repository.updateOrderStatus(
+          'ord-1',
+          OrderStatus.shipped,
+        );
 
-      expect(result.isRight(), isTrue);
-      result.fold(
-        (l) => fail('Expected right'),
-        (order) {
+        expect(result.isRight(), isTrue);
+        result.fold((l) => fail('Expected right'), (order) {
           expect(order.status, OrderStatus.shipped);
-        },
-      );
-      expect(mockLocalDataSource.storedOrders.first.status, OrderStatus.shipped);
-    });
+        });
+        expect(
+          mockLocalDataSource.storedOrders.first.status,
+          OrderStatus.shipped,
+        );
+      },
+    );
   });
 }

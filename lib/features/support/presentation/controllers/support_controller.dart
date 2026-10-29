@@ -41,15 +41,15 @@ class SupportNotifier extends Notifier<SupportState> {
     DeleteSupportTicketUseCase? deleteTicketUseCase,
     GetSupportStatsUseCase? getStatsUseCase,
     SupportRepository? repository,
-  })  : _customGetTicketsUseCase = getTicketsUseCase,
-        _customGetTicketDetailUseCase = getTicketDetailUseCase,
-        _customSendMessageUseCase = sendMessageUseCase,
-        _customUpdateStatusUseCase = updateStatusUseCase,
-        _customUpdatePriorityUseCase = updatePriorityUseCase,
-        _customAssignAdminUseCase = assignAdminUseCase,
-        _customDeleteTicketUseCase = deleteTicketUseCase,
-        _customGetStatsUseCase = getStatsUseCase,
-        _customRepository = repository;
+  }) : _customGetTicketsUseCase = getTicketsUseCase,
+       _customGetTicketDetailUseCase = getTicketDetailUseCase,
+       _customSendMessageUseCase = sendMessageUseCase,
+       _customUpdateStatusUseCase = updateStatusUseCase,
+       _customUpdatePriorityUseCase = updatePriorityUseCase,
+       _customAssignAdminUseCase = assignAdminUseCase,
+       _customDeleteTicketUseCase = deleteTicketUseCase,
+       _customGetStatsUseCase = getStatsUseCase,
+       _customRepository = repository;
 
   GetSupportTicketsUseCase get _getTickets =>
       _customGetTicketsUseCase ?? ref.read(getSupportTicketsUseCaseProvider);
@@ -66,7 +66,8 @@ class SupportNotifier extends Notifier<SupportState> {
   AssignTicketAdminUseCase get _assignAdmin =>
       _customAssignAdminUseCase ?? ref.read(assignTicketAdminUseCaseProvider);
   DeleteSupportTicketUseCase get _deleteTicket =>
-      _customDeleteTicketUseCase ?? ref.read(deleteSupportTicketUseCaseProvider);
+      _customDeleteTicketUseCase ??
+      ref.read(deleteSupportTicketUseCaseProvider);
   GetSupportStatsUseCase get _getStats =>
       _customGetStatsUseCase ?? ref.read(getSupportStatsUseCaseProvider);
   SupportRepository get _repo =>
@@ -103,7 +104,9 @@ class SupportNotifier extends Notifier<SupportState> {
   void _listenToRealtimeEvents() {
     _streamSubscriptions.add(
       _repo.ticketCreatedStream.listen((ticket) {
-        final existingIndex = state.tickets.indexWhere((t) => t.id == ticket.id);
+        final existingIndex = state.tickets.indexWhere(
+          (t) => t.id == ticket.id,
+        );
         List<SupportTicketEntity> updatedTickets;
         if (existingIndex == -1) {
           updatedTickets = [ticket, ...state.tickets];
@@ -165,11 +168,15 @@ class SupportNotifier extends Notifier<SupportState> {
         final ticketId = event.$1;
         final newMsg = event.$2;
 
-        if (state.selectedTicket != null && state.selectedTicket!.id == ticketId) {
-          final exists = state.selectedTicket!.messages.any((m) => m.id == newMsg.id);
+        if (state.selectedTicket != null &&
+            state.selectedTicket!.id == ticketId) {
+          final exists = state.selectedTicket!.messages.any(
+            (m) => m.id == newMsg.id,
+          );
           if (!exists) {
-            final updatedMessages = List<SupportMessageEntity>.from(state.selectedTicket!.messages)
-              ..add(newMsg);
+            final updatedMessages = List<SupportMessageEntity>.from(
+              state.selectedTicket!.messages,
+            )..add(newMsg);
             final updatedSelected = state.selectedTicket!.copyWith(
               messages: updatedMessages,
               messagesCount: state.selectedTicket!.messagesCount + 1,
@@ -263,7 +270,9 @@ class SupportNotifier extends Notifier<SupportState> {
         if (selected == null && page.tickets.isNotEmpty) {
           selected = page.tickets.first;
         } else if (selected != null) {
-          final exists = page.tickets.where((t) => t.id == selected!.id).firstOrNull;
+          final exists = page.tickets
+              .where((t) => t.id == selected!.id)
+              .firstOrNull;
           if (exists == null && page.tickets.isNotEmpty) {
             selected = page.tickets.first;
           }
@@ -444,8 +453,11 @@ class SupportNotifier extends Notifier<SupportState> {
         return false;
       },
       (newMsg) {
-        final currentMessages = List<SupportMessageEntity>.from(ticket.messages)..add(newMsg);
-        final newStatus = state.isInternalNote ? ticket.status : state.replyStatus;
+        final currentMessages = List<SupportMessageEntity>.from(ticket.messages)
+          ..add(newMsg);
+        final newStatus = state.isInternalNote
+            ? ticket.status
+            : state.replyStatus;
 
         final updatedTicket = ticket.copyWith(
           status: newStatus,
@@ -453,7 +465,9 @@ class SupportNotifier extends Notifier<SupportState> {
           messagesCount: ticket.messagesCount + 1,
           unreadMessagesCount: 0,
           lastReplyAt: DateTime.now(),
-          resolvedAt: newStatus == 'resolved' ? DateTime.now() : ticket.resolvedAt,
+          resolvedAt: newStatus == 'resolved'
+              ? DateTime.now()
+              : ticket.resolvedAt,
           closedAt: newStatus == 'closed' ? DateTime.now() : ticket.closedAt,
         );
 
@@ -490,7 +504,8 @@ class SupportNotifier extends Notifier<SupportState> {
 
   Future<void> updateTicketStatus(String newStatus) async {
     final ticket = state.selectedTicket;
-    if (ticket == null || ticket.status == newStatus || state.isUpdating) return;
+    if (ticket == null || ticket.status == newStatus || state.isUpdating)
+      return;
 
     state = state.copyWith(isUpdating: true, errorMessage: () => null);
 
@@ -524,7 +539,8 @@ class SupportNotifier extends Notifier<SupportState> {
           selectedTicket: () => updated,
           tickets: updatedTickets,
           filteredTickets: filtered,
-          successMessage: () => 'تم تغيير حالة التذكرة إلى: ${updated.statusArabic}',
+          successMessage: () =>
+              'تم تغيير حالة التذكرة إلى: ${updated.statusArabic}',
         );
 
         fetchTickets(showLoading: false);
@@ -534,7 +550,8 @@ class SupportNotifier extends Notifier<SupportState> {
 
   Future<void> updateTicketPriority(String newPriority) async {
     final ticket = state.selectedTicket;
-    if (ticket == null || ticket.priority == newPriority || state.isUpdating) return;
+    if (ticket == null || ticket.priority == newPriority || state.isUpdating)
+      return;
 
     state = state.copyWith(isUpdating: true, errorMessage: () => null);
 
@@ -568,7 +585,8 @@ class SupportNotifier extends Notifier<SupportState> {
           selectedTicket: () => updated,
           tickets: updatedTickets,
           filteredTickets: filtered,
-          successMessage: () => 'تم تعديل الأولوية إلى: ${updated.priorityArabic}',
+          successMessage: () =>
+              'تم تعديل الأولوية إلى: ${updated.priorityArabic}',
         );
 
         fetchTickets(showLoading: false);
@@ -635,7 +653,9 @@ class SupportNotifier extends Notifier<SupportState> {
         );
       },
       (_) {
-        final updatedTickets = state.tickets.where((t) => t.id != ticketId).toList();
+        final updatedTickets = state.tickets
+            .where((t) => t.id != ticketId)
+            .toList();
         final filtered = _applyLocalFilters(
           updatedTickets,
           state.selectedStatus,

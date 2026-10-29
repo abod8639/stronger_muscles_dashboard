@@ -79,8 +79,8 @@ class UsersSearchQueryNotifier extends Notifier<String> {
 
 final usersSearchQueryProvider =
     NotifierProvider<UsersSearchQueryNotifier, String>(
-  UsersSearchQueryNotifier.new,
-);
+      UsersSearchQueryNotifier.new,
+    );
 
 // ==================== Presentation Main Users Notifier ====================
 
@@ -88,7 +88,7 @@ class UsersNotifier extends AsyncNotifier<UsersStatsEntity> {
   final GetUsersStatsUseCase? _injectedUseCase;
 
   UsersNotifier({GetUsersStatsUseCase? getUsersStatsUseCase})
-      : _injectedUseCase = getUsersStatsUseCase;
+    : _injectedUseCase = getUsersStatsUseCase;
 
   @override
   FutureOr<UsersStatsEntity> build() async {
@@ -96,10 +96,7 @@ class UsersNotifier extends AsyncNotifier<UsersStatsEntity> {
         _injectedUseCase ?? ref.watch(getUsersStatsUseCaseProvider);
     final result = await useCase();
 
-    return result.fold(
-      (failure) => throw failure,
-      (stats) => stats,
-    );
+    return result.fold((failure) => throw failure, (stats) => stats);
   }
 
   Future<void> refresh() async {

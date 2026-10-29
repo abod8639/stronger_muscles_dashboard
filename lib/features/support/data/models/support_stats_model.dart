@@ -28,8 +28,10 @@ class SupportStatsModel {
   factory SupportStatsModel.fromJson(Map<String, dynamic> json) {
     Map<String, int> parseMap(dynamic map) {
       if (map is Map) {
-        return map.map((key, value) =>
-            MapEntry(key.toString(), (value as num?)?.toInt() ?? 0));
+        return map.map(
+          (key, value) =>
+              MapEntry(key.toString(), (value as num?)?.toInt() ?? 0),
+        );
       }
       return {};
     }
@@ -105,13 +107,13 @@ class SupportStatsModel {
 
   @override
   int get hashCode => Object.hash(
-        total,
-        open,
-        inProgress,
-        waitingUser,
-        resolved,
-        closed,
-        urgent,
-        resolvedToday,
-      );
+    total,
+    open,
+    inProgress,
+    waitingUser,
+    resolved,
+    closed,
+    urgent,
+    resolvedToday,
+  );
 }

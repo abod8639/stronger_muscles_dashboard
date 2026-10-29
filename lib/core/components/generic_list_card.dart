@@ -116,8 +116,9 @@ class _GenericListCardState<T> extends State<GenericListCard<T>>
                           Text(
                             widget.metadata!,
                             style: TextStyle(
-                              color: colorScheme.onSurfaceVariant
-                                  .withValues(alpha: 0.75),
+                              color: colorScheme.onSurfaceVariant.withValues(
+                                alpha: 0.75,
+                              ),
                               fontSize: 11,
                             ),
                             maxLines: 1,

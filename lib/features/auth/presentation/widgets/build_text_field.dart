@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'auth_text_field.dart';
 
-@Deprecated('Use AuthTextField widget directly for better performance and const support')
+@Deprecated(
+  'Use AuthTextField widget directly for better performance and const support',
+)
 Widget buildTextField({
   required TextEditingController controller,
   required String label,

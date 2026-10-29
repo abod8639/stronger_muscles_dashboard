@@ -19,13 +19,19 @@ class MockProductRemoteDataSource implements ProductRemoteDataSource {
   }
 
   @override
-  Future<ProductModel> getProductById(String id, {CancelToken? cancelToken}) async {
+  Future<ProductModel> getProductById(
+    String id, {
+    CancelToken? cancelToken,
+  }) async {
     if (exceptionToThrow != null) throw exceptionToThrow!;
     return mockProduct!;
   }
 
   @override
-  Future<ProductModel> addProduct(Map<String, dynamic> data, {CancelToken? cancelToken}) async {
+  Future<ProductModel> addProduct(
+    Map<String, dynamic> data, {
+    CancelToken? cancelToken,
+  }) async {
     if (exceptionToThrow != null) throw exceptionToThrow!;
     return mockProduct!;
   }
@@ -47,7 +53,10 @@ class MockProductRemoteDataSource implements ProductRemoteDataSource {
   }
 
   @override
-  Future<String> uploadImage(String filePath, {CancelToken? cancelToken}) async {
+  Future<String> uploadImage(
+    String filePath, {
+    CancelToken? cancelToken,
+  }) async {
     if (exceptionToThrow != null) throw exceptionToThrow!;
     return 'https://example.com/uploaded.png';
   }
@@ -136,73 +145,76 @@ void main() {
   });
 
   group('ProductRepositoryImpl.getProducts', () {
-    test('returns cached products when cache is valid and forceRefresh is false', () async {
-      mockLocalDataSource.storedProducts = [testProductModel];
-      mockLocalDataSource.cacheValid = true;
+    test(
+      'returns cached products when cache is valid and forceRefresh is false',
+      () async {
+        mockLocalDataSource.storedProducts = [testProductModel];
+        mockLocalDataSource.cacheValid = true;
 
-      final result = await repository.getProducts(forceRefresh: false);
+        final result = await repository.getProducts(forceRefresh: false);
 
-      expect(result.isRight(), isTrue);
-      result.fold(
-        (l) => fail('Expected Right'),
-        (products) {
+        expect(result.isRight(), isTrue);
+        result.fold((l) => fail('Expected Right'), (products) {
           expect(products.length, 1);
           expect(products.first.id, 'p-1');
-        },
-      );
-    });
+        });
+      },
+    );
 
-    test('fetches from remote and updates local cache when forceRefresh is true', () async {
-      mockRemoteDataSource.mockProducts = [testProductModel];
+    test(
+      'fetches from remote and updates local cache when forceRefresh is true',
+      () async {
+        mockRemoteDataSource.mockProducts = [testProductModel];
 
-      final result = await repository.getProducts(forceRefresh: true);
+        final result = await repository.getProducts(forceRefresh: true);
 
-      expect(result.isRight(), isTrue);
-      result.fold(
-        (l) => fail('Expected Right'),
-        (products) {
+        expect(result.isRight(), isTrue);
+        result.fold((l) => fail('Expected Right'), (products) {
           expect(products.length, 1);
           expect(products.first.id, 'p-1');
-        },
-      );
-      expect(mockLocalDataSource.storedProducts.length, 1);
-    });
+        });
+        expect(mockLocalDataSource.storedProducts.length, 1);
+      },
+    );
 
-    test('falls back to cache when remote fails and cached data exists', () async {
-      mockLocalDataSource.storedProducts = [testProductModel];
-      mockLocalDataSource.cacheValid = false;
-      mockRemoteDataSource.exceptionToThrow = const ServerException(
-        message: 'Network offline',
-        statusCode: 503,
-      );
+    test(
+      'falls back to cache when remote fails and cached data exists',
+      () async {
+        mockLocalDataSource.storedProducts = [testProductModel];
+        mockLocalDataSource.cacheValid = false;
+        mockRemoteDataSource.exceptionToThrow = const ServerException(
+          message: 'Network offline',
+          statusCode: 503,
+        );
 
-      final result = await repository.getProducts(forceRefresh: true);
+        final result = await repository.getProducts(forceRefresh: true);
 
-      expect(result.isRight(), isTrue);
-      result.fold(
-        (l) => fail('Expected Right fallback'),
-        (products) {
+        expect(result.isRight(), isTrue);
+        result.fold((l) => fail('Expected Right fallback'), (products) {
           expect(products.length, 1);
           expect(products.first.id, 'p-1');
-        },
-      );
-    });
+        });
+      },
+    );
 
-    test('returns Left(Failure) when remote fails and cache is empty', () async {
-      mockLocalDataSource.storedProducts = [];
-      mockRemoteDataSource.exceptionToThrow = const ServerException(
-        message: 'Server error',
-        statusCode: 500,
-      );
+    test(
+      'returns Left(Failure) when remote fails and cache is empty',
+      () async {
+        mockLocalDataSource.storedProducts = [];
+        mockRemoteDataSource.exceptionToThrow = const ServerException(
+          message: 'Server error',
+          statusCode: 500,
+        );
 
-      final result = await repository.getProducts(forceRefresh: true);
+        final result = await repository.getProducts(forceRefresh: true);
 
-      expect(result.isLeft(), isTrue);
-      result.fold(
-        (failure) => expect(failure, isA<Failure>()),
-        (products) => fail('Expected Left failure'),
-      );
-    });
+        expect(result.isLeft(), isTrue);
+        result.fold(
+          (failure) => expect(failure, isA<Failure>()),
+          (products) => fail('Expected Left failure'),
+        );
+      },
+    );
   });
 
   group('ProductRepositoryImpl mutations', () {

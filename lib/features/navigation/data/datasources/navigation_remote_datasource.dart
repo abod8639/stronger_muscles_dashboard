@@ -51,7 +51,9 @@ class NavigationRemoteDataSourceImpl implements NavigationRemoteDataSource {
       );
     } catch (e) {
       if (e is AppException) rethrow;
-      throw ServerException(message: 'حدث خطأ غير متوقع أثناء معالجة شارات التنقل: $e');
+      throw ServerException(
+        message: 'حدث خطأ غير متوقع أثناء معالجة شارات التنقل: $e',
+      );
     }
   }
 }

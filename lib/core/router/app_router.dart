@@ -71,7 +71,11 @@ final GoRouter appRouter = GoRouter(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.error_outline_rounded, size: 64, color: Colors.redAccent),
+          const Icon(
+            Icons.error_outline_rounded,
+            size: 64,
+            color: Colors.redAccent,
+          ),
           const SizedBox(height: 16),
           Text(
             'الصفحة المطلوبة غير موجودة:\n${state.uri.toString()}',

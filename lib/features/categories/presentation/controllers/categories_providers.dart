@@ -29,13 +29,17 @@ final categoriesHiveBoxProvider = Provider<Box<CategoryModel>>((ref) {
 });
 
 /// Provider for [CategoryLocalDataSource] backed by Hive
-final categoryLocalDataSourceProvider = Provider<CategoryLocalDataSource>((ref) {
+final categoryLocalDataSourceProvider = Provider<CategoryLocalDataSource>((
+  ref,
+) {
   final box = ref.watch(categoriesHiveBoxProvider);
   return CategoryLocalDataSourceImpl(box: box);
 });
 
 /// Provider for [CategoryRemoteDataSource] backed by centralized [dioProvider]
-final categoryRemoteDataSourceProvider = Provider<CategoryRemoteDataSource>((ref) {
+final categoryRemoteDataSourceProvider = Provider<CategoryRemoteDataSource>((
+  ref,
+) {
   final dio = ref.watch(dioProvider);
   return CategoryRemoteDataSourceImpl(dio: dio);
 });
@@ -85,11 +89,15 @@ final deleteCategoryUseCaseProvider = Provider<DeleteCategoryUseCase>((ref) {
 
 /// Primary Notifier provider managing immutable [CategoriesState]
 final categoriesNotifierProvider =
-    NotifierProvider<CategoriesNotifier, CategoriesState>(CategoriesNotifier.new);
+    NotifierProvider<CategoriesNotifier, CategoriesState>(
+      CategoriesNotifier.new,
+    );
 
 /// Backward-compatible selector for filtered categories list
 final filteredCategoriesProvider = Provider<List<CategoryEntity>>((ref) {
-  return ref.watch(categoriesNotifierProvider.select((s) => s.filteredCategories));
+  return ref.watch(
+    categoriesNotifierProvider.select((s) => s.filteredCategories),
+  );
 });
 
 /// Backward-compatible selector for search query string
@@ -98,17 +106,18 @@ final categoriesSearchQueryProvider = Provider<String>((ref) {
 });
 
 /// Backward-compatible provider for CategoryFormController
-final categoryFormControllerProvider =
-    Provider.autoDispose.family<CategoriesController, CategoryEntity?>((ref, category) {
-  final controller = CategoriesController();
-  final allCategories =
-      ref.watch(categoriesNotifierProvider.select((s) => s.categories));
-  controller.categories = allCategories;
-  if (category != null) {
-    controller.prepareFormForEdit(category);
-  } else {
-    controller.clearForm();
-  }
-  ref.onDispose(controller.dispose);
-  return controller;
-});
+final categoryFormControllerProvider = Provider.autoDispose
+    .family<CategoriesController, CategoryEntity?>((ref, category) {
+      final controller = CategoriesController();
+      final allCategories = ref.watch(
+        categoriesNotifierProvider.select((s) => s.categories),
+      );
+      controller.categories = allCategories;
+      if (category != null) {
+        controller.prepareFormForEdit(category);
+      } else {
+        controller.clearForm();
+      }
+      ref.onDispose(controller.dispose);
+      return controller;
+    });

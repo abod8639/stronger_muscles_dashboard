@@ -101,9 +101,15 @@ class CategoriesController extends ChangeNotifier {
       id: idController.text.trim(),
       nameAr: nameArController.text.trim(),
       nameEn: nameEnController.text.trim(),
-      imageUrl: imageController.text.trim().isNotEmpty ? imageController.text.trim() : null,
-      descriptionAr: descArController.text.trim().isNotEmpty ? descArController.text.trim() : null,
-      descriptionEn: descEnController.text.trim().isNotEmpty ? descEnController.text.trim() : null,
+      imageUrl: imageController.text.trim().isNotEmpty
+          ? imageController.text.trim()
+          : null,
+      descriptionAr: descArController.text.trim().isNotEmpty
+          ? descArController.text.trim()
+          : null,
+      descriptionEn: descEnController.text.trim().isNotEmpty
+          ? descEnController.text.trim()
+          : null,
       parentId: _parentId.isNotEmpty ? _parentId : null,
       isActive: _isActive,
     );

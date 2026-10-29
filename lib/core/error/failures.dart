@@ -3,11 +3,7 @@ abstract class Failure {
   final int? statusCode;
   final dynamic originalError;
 
-  const Failure({
-    required this.message,
-    this.statusCode,
-    this.originalError,
-  });
+  const Failure({required this.message, this.statusCode, this.originalError});
 
   String toMessage() => message;
 

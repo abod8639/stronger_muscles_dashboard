@@ -12,7 +12,8 @@ class MockNotificationLocalDataSource implements NotificationLocalDataSource {
   bool cacheValid = false;
 
   @override
-  Future<NotificationsResultModel?> getCachedNotifications() async => cachedModel;
+  Future<NotificationsResultModel?> getCachedNotifications() async =>
+      cachedModel;
 
   @override
   Future<void> cacheNotifications(NotificationsResultModel model) async {
@@ -63,10 +64,7 @@ class MockNotificationRemoteDataSource implements NotificationRemoteDataSource {
   }
 
   @override
-  Future<void> deleteNotification(
-    String id, {
-    CancelToken? cancelToken,
-  }) async {
+  Future<void> deleteNotification(String id, {CancelToken? cancelToken}) async {
     if (exceptionToThrow != null) throw exceptionToThrow!;
   }
 }
@@ -102,54 +100,64 @@ void main() {
       targetedCount: 0,
     );
 
-    test('returns cached notifications immediately when cache is valid and not forced', () async {
-      localDataSource.cachedModel = tModel;
-      localDataSource.cacheValid = true;
+    test(
+      'returns cached notifications immediately when cache is valid and not forced',
+      () async {
+        localDataSource.cachedModel = tModel;
+        localDataSource.cacheValid = true;
 
-      final result = await repository.getNotifications();
+        final result = await repository.getNotifications();
 
-      expect(result.isRight(), isTrue);
-      result.fold(
-        (l) => fail('Should succeed with cache'),
-        (r) {
+        expect(result.isRight(), isTrue);
+        result.fold((l) => fail('Should succeed with cache'), (r) {
           expect(r.totalCount, 1);
           expect(r.notifications.first.title, 'System update');
-        },
-      );
-    });
+        });
+      },
+    );
 
-    test('calls remote and updates local cache when cache is invalid', () async {
-      localDataSource.cacheValid = false;
-      remoteDataSource.remoteResult = tModel;
+    test(
+      'calls remote and updates local cache when cache is invalid',
+      () async {
+        localDataSource.cacheValid = false;
+        remoteDataSource.remoteResult = tModel;
 
-      final result = await repository.getNotifications();
+        final result = await repository.getNotifications();
 
-      expect(result.isRight(), isTrue);
-      expect(localDataSource.cachedModel, equals(tModel));
-      result.fold(
-        (l) => fail('Should succeed from remote'),
-        (r) => expect(r.totalCount, 1),
-      );
-    });
+        expect(result.isRight(), isTrue);
+        expect(localDataSource.cachedModel, equals(tModel));
+        result.fold(
+          (l) => fail('Should succeed from remote'),
+          (r) => expect(r.totalCount, 1),
+        );
+      },
+    );
 
-    test('falls back to cache when remote throws exception (offline resilience)', () async {
-      localDataSource.cachedModel = tModel;
-      localDataSource.cacheValid = false;
-      remoteDataSource.exceptionToThrow = ServerException(message: 'Server offline');
+    test(
+      'falls back to cache when remote throws exception (offline resilience)',
+      () async {
+        localDataSource.cachedModel = tModel;
+        localDataSource.cacheValid = false;
+        remoteDataSource.exceptionToThrow = ServerException(
+          message: 'Server offline',
+        );
 
-      final result = await repository.getNotifications();
+        final result = await repository.getNotifications();
 
-      expect(result.isRight(), isTrue);
-      result.fold(
-        (l) => fail('Should fallback to cached data'),
-        (r) => expect(r.totalCount, 1),
-      );
-    });
+        expect(result.isRight(), isTrue);
+        result.fold(
+          (l) => fail('Should fallback to cached data'),
+          (r) => expect(r.totalCount, 1),
+        );
+      },
+    );
 
     test('returns Failure when remote fails and no cache exists', () async {
       localDataSource.cachedModel = null;
       localDataSource.cacheValid = false;
-      remoteDataSource.exceptionToThrow = ServerException(message: 'No connection');
+      remoteDataSource.exceptionToThrow = ServerException(
+        message: 'No connection',
+      );
 
       final result = await repository.getNotifications();
 
@@ -160,38 +168,41 @@ void main() {
       );
     });
 
-    test('sendNotification invalidates cache and returns Right(entity)', () async {
-      localDataSource.cachedModel = tModel;
-      localDataSource.cacheValid = true;
+    test(
+      'sendNotification invalidates cache and returns Right(entity)',
+      () async {
+        localDataSource.cachedModel = tModel;
+        localDataSource.cacheValid = true;
 
-      final payload = {
-        'title': 'New Promo',
-        'body': 'Check our discounts',
-        'type': 'promo',
-        'target_type': 'all',
-      };
+        final payload = {
+          'title': 'New Promo',
+          'body': 'Check our discounts',
+          'type': 'promo',
+          'target_type': 'all',
+        };
 
-      final result = await repository.sendNotification(payload);
+        final result = await repository.sendNotification(payload);
 
-      expect(result.isRight(), isTrue);
-      expect(localDataSource.cachedModel, isNull);
-      result.fold(
-        (l) => fail('Should send notification'),
-        (entity) {
+        expect(result.isRight(), isTrue);
+        expect(localDataSource.cachedModel, isNull);
+        result.fold((l) => fail('Should send notification'), (entity) {
           expect(entity.id, 'new_1');
           expect(entity.title, 'New Promo');
-        },
-      );
-    });
+        });
+      },
+    );
 
-    test('deleteNotification invalidates cache and returns Right(null)', () async {
-      localDataSource.cachedModel = tModel;
-      localDataSource.cacheValid = true;
+    test(
+      'deleteNotification invalidates cache and returns Right(null)',
+      () async {
+        localDataSource.cachedModel = tModel;
+        localDataSource.cacheValid = true;
 
-      final result = await repository.deleteNotification('1');
+        final result = await repository.deleteNotification('1');
 
-      expect(result.isRight(), isTrue);
-      expect(localDataSource.cachedModel, isNull);
-    });
+        expect(result.isRight(), isTrue);
+        expect(localDataSource.cachedModel, isNull);
+      },
+    );
   });
 }

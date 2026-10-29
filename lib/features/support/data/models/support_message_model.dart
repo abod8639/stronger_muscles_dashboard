@@ -28,8 +28,9 @@ class SupportMessageModel {
   factory SupportMessageModel.fromJson(Map<String, dynamic> json) {
     List<String> parsedAttachments = [];
     if (json['attachments'] is List) {
-      parsedAttachments =
-          (json['attachments'] as List).map((e) => e.toString()).toList();
+      parsedAttachments = (json['attachments'] as List)
+          .map((e) => e.toString())
+          .toList();
     }
 
     return SupportMessageModel(
@@ -46,10 +47,12 @@ class SupportMessageModel {
       senderName: json['sender_name']?.toString() ?? 'مستخدم',
       message: json['message']?.toString() ?? '',
       attachments: parsedAttachments,
-      isInternalNote: json['is_internal_note'] == true ||
+      isInternalNote:
+          json['is_internal_note'] == true ||
           json['is_internal_note'] == 1 ||
           json['is_internal_note']?.toString() == 'true',
-      isRead: json['is_read'] == true ||
+      isRead:
+          json['is_read'] == true ||
           json['is_read'] == 1 ||
           json['is_read']?.toString() == 'true',
       createdAt: json['created_at'] != null
@@ -116,14 +119,14 @@ class SupportMessageModel {
 
   @override
   int get hashCode => Object.hash(
-        id,
-        ticketId,
-        senderType,
-        senderId,
-        senderName,
-        message,
-        isInternalNote,
-        isRead,
-        createdAt,
-      );
+    id,
+    ticketId,
+    senderType,
+    senderId,
+    senderName,
+    message,
+    isInternalNote,
+    isRead,
+    createdAt,
+  );
 }

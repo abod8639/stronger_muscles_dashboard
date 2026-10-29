@@ -19,7 +19,9 @@ class MockSettingsRemoteDataSource implements SettingsRemoteDataSource {
   }
 
   @override
-  Future<SettingsModel> updateSettings(Map<String, dynamic> settingsData) async {
+  Future<SettingsModel> updateSettings(
+    Map<String, dynamic> settingsData,
+  ) async {
     if (exceptionToThrow != null) throw exceptionToThrow!;
     return SettingsModel.fromJson(settingsData);
   }
@@ -81,21 +83,21 @@ void main() {
   });
 
   group('SettingsRepositoryImpl.getSettings', () {
-    test('fetches from remote, updates Hive cache, and returns Right(SettingsEntity)', () async {
-      mockRemote.mockSettings = testModel;
+    test(
+      'fetches from remote, updates Hive cache, and returns Right(SettingsEntity)',
+      () async {
+        mockRemote.mockSettings = testModel;
 
-      final result = await repository.getSettings();
+        final result = await repository.getSettings();
 
-      expect(result.isRight(), isTrue);
-      result.fold(
-        (_) => fail('Expected Right'),
-        (entity) {
+        expect(result.isRight(), isTrue);
+        result.fold((_) => fail('Expected Right'), (entity) {
           expect(entity.storeName, 'Test Store');
           expect(entity.currency, 'IQD');
-        },
-      );
-      expect(mockLocal.storedSettings?.storeName, 'Test Store');
-    });
+        });
+        expect(mockLocal.storedSettings?.storeName, 'Test Store');
+      },
+    );
 
     test('falls back to local Hive cache when remote call fails', () async {
       mockRemote.exceptionToThrow = DioException(
@@ -108,32 +110,29 @@ void main() {
       final result = await repository.getSettings();
 
       expect(result.isRight(), isTrue);
-      result.fold(
-        (_) => fail('Expected Right from cache fallback'),
-        (entity) {
-          expect(entity.storeName, 'Test Store');
-        },
-      );
+      result.fold((_) => fail('Expected Right from cache fallback'), (entity) {
+        expect(entity.storeName, 'Test Store');
+      });
     });
 
-    test('returns Left(Failure) when remote and local cache both fail on network error', () async {
-      mockRemote.exceptionToThrow = DioException(
-        requestOptions: RequestOptions(path: '/settings'),
-        error: 'Internal server error',
-        type: DioExceptionType.badResponse,
-      );
-      mockLocal.storedSettings = null;
+    test(
+      'returns Left(Failure) when remote and local cache both fail on network error',
+      () async {
+        mockRemote.exceptionToThrow = DioException(
+          requestOptions: RequestOptions(path: '/settings'),
+          error: 'Internal server error',
+          type: DioExceptionType.badResponse,
+        );
+        mockLocal.storedSettings = null;
 
-      final result = await repository.getSettings();
+        final result = await repository.getSettings();
 
-      expect(result.isLeft(), isTrue);
-      result.fold(
-        (failure) {
+        expect(result.isLeft(), isTrue);
+        result.fold((failure) {
           expect(failure, isA<Failure>());
-        },
-        (_) => fail('Expected Left'),
-      );
-    });
+        }, (_) => fail('Expected Left'));
+      },
+    );
   });
 
   group('SettingsRepositoryImpl.updateSettings & clearAppCache', () {
@@ -150,20 +149,20 @@ void main() {
       allowedAdminRoles: ['super_admin'],
     );
 
-    test('updateSettings updates remote, saves to local cache, and returns Right(SettingsEntity)', () async {
-      final result = await repository.updateSettings(updatedEntity);
+    test(
+      'updateSettings updates remote, saves to local cache, and returns Right(SettingsEntity)',
+      () async {
+        final result = await repository.updateSettings(updatedEntity);
 
-      expect(result.isRight(), isTrue);
-      result.fold(
-        (_) => fail('Expected Right'),
-        (entity) {
+        expect(result.isRight(), isTrue);
+        result.fold((_) => fail('Expected Right'), (entity) {
           expect(entity.storeName, 'Updated Stronger Muscles');
           expect(entity.currency, 'USD');
           expect(entity.isStoreOpen, isFalse);
-        },
-      );
-      expect(mockLocal.storedSettings?.storeName, 'Updated Stronger Muscles');
-    });
+        });
+        expect(mockLocal.storedSettings?.storeName, 'Updated Stronger Muscles');
+      },
+    );
 
     test('clearAppCache clears local cache and returns Right(unit)', () async {
       mockLocal.storedSettings = testModel;
@@ -171,12 +170,9 @@ void main() {
       final result = await repository.clearAppCache();
 
       expect(result.isRight(), isTrue);
-      result.fold(
-        (_) => fail('Expected Right'),
-        (u) {
-          expect(u, equals(unit));
-        },
-      );
+      result.fold((_) => fail('Expected Right'), (u) {
+        expect(u, equals(unit));
+      });
       expect(mockLocal.storedSettings, isNull);
     });
   });

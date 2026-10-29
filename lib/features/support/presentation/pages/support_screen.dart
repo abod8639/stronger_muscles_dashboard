@@ -38,17 +38,17 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
     final isDark = theme.brightness == Brightness.dark;
     final isDesktop = responsive.screenWidth >= 950;
 
-    final hasSelectedTicket = !isDesktop &&
+    final hasSelectedTicket =
+        !isDesktop &&
         ref.watch(
-            supportControllerProvider.select((s) => s.selectedTicket != null));
+          supportControllerProvider.select((s) => s.selectedTicket != null),
+        );
 
     return PopScope(
       canPop: !hasSelectedTicket,
       onPopInvokedWithResult: (didPop, result) {
         if (!didPop && hasSelectedTicket) {
-          ref
-              .read(supportControllerProvider.notifier)
-              .setSelectedTicket(null);
+          ref.read(supportControllerProvider.notifier).setSelectedTicket(null);
         }
       },
       child: Scaffold(
@@ -79,8 +79,9 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                               ),
                             );
                             final tickets = ref.watch(
-                              supportControllerProvider
-                                  .select((s) => s.tickets),
+                              supportControllerProvider.select(
+                                (s) => s.tickets,
+                              ),
                             );
 
                             if (isLoading) {
@@ -102,9 +103,7 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                                     child: _buildTicketsList(context, isDark),
                                   ),
                                   const SizedBox(width: 14),
-                                  const Expanded(
-                                    child: SupportChatView(),
-                                  ),
+                                  const Expanded(child: SupportChatView()),
                                 ],
                               );
                             } else {
@@ -142,8 +141,11 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
               shape: BoxShape.circle,
               color: colorScheme.primary.withValues(alpha: 0.12),
             ),
-            child: Icon(Icons.support_agent_rounded,
-                color: colorScheme.primary, size: 24),
+            child: Icon(
+              Icons.support_agent_rounded,
+              color: colorScheme.primary,
+              size: 24,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -184,9 +186,8 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
               padding: const EdgeInsets.all(10),
             ),
             icon: const Icon(Icons.refresh_rounded, size: 20),
-            onPressed: () => ref
-                .read(supportControllerProvider.notifier)
-                .fetchTickets(),
+            onPressed: () =>
+                ref.read(supportControllerProvider.notifier).fetchTickets(),
           ),
         ],
       ),
@@ -199,9 +200,11 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
     final responsive = context.responsive;
 
     final selectedPriority = ref.watch(
-        supportControllerProvider.select((s) => s.selectedPriority));
-    final searchQuery =
-        ref.watch(supportControllerProvider.select((s) => s.searchQuery));
+      supportControllerProvider.select((s) => s.selectedPriority),
+    );
+    final searchQuery = ref.watch(
+      supportControllerProvider.select((s) => s.searchQuery),
+    );
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: responsive.defaultPadding.left),
@@ -215,9 +218,7 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                   decoration: BoxDecoration(
                     color: colorScheme.surfaceContainerHigh,
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(
-                      color: colorScheme.outlineVariant,
-                    ),
+                    border: Border.all(color: colorScheme.outlineVariant),
                   ),
                   child: TextField(
                     controller: _searchController,
@@ -234,16 +235,22 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                           : 'ابحث برقم التذكرة، اسم العميل، البريد، أو الموضوع...',
                       hintStyle: TextStyle(
                         fontSize: 12,
-                        color:
-                            colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                        color: colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.7,
+                        ),
                       ),
-                      prefixIcon: Icon(Icons.search_rounded,
-                          size: 18, color: colorScheme.onSurfaceVariant),
+                      prefixIcon: Icon(
+                        Icons.search_rounded,
+                        size: 18,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
                       suffixIcon: searchQuery.isNotEmpty
                           ? IconButton(
-                              icon: Icon(Icons.clear_rounded,
-                                  size: 16,
-                                  color: colorScheme.onSurfaceVariant),
+                              icon: Icon(
+                                Icons.clear_rounded,
+                                size: 16,
+                                color: colorScheme.onSurfaceVariant,
+                              ),
                               onPressed: () {
                                 _searchController.clear();
                                 ref
@@ -254,7 +261,9 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                           : const SizedBox.shrink(),
                       border: InputBorder.none,
                       contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 11),
+                        horizontal: 10,
+                        vertical: 11,
+                      ),
                     ),
                   ),
                 ),
@@ -266,39 +275,56 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                 decoration: BoxDecoration(
                   color: colorScheme.surfaceContainerHigh,
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: colorScheme.outlineVariant,
-                  ),
+                  border: Border.all(color: colorScheme.outlineVariant),
                 ),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
                     value: selectedPriority,
                     dropdownColor: colorScheme.surfaceContainer,
-                    icon: Icon(Icons.arrow_drop_down,
-                        color: colorScheme.onSurfaceVariant),
+                    icon: Icon(
+                      Icons.arrow_drop_down,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
                     style: TextStyle(
-                        fontSize: 12.5, color: colorScheme.onSurface),
+                      fontSize: 12.5,
+                      color: colorScheme.onSurface,
+                    ),
                     items: [
                       DropdownMenuItem(
-                          value: 'all',
-                          child: Text('جميع الأولويات',
-                              style: TextStyle(color: colorScheme.onSurface))),
+                        value: 'all',
+                        child: Text(
+                          'جميع الأولويات',
+                          style: TextStyle(color: colorScheme.onSurface),
+                        ),
+                      ),
                       DropdownMenuItem(
-                          value: 'urgent',
-                          child: Text('عاجلة جداً 🔥',
-                              style: TextStyle(color: colorScheme.onSurface))),
+                        value: 'urgent',
+                        child: Text(
+                          'عاجلة جداً 🔥',
+                          style: TextStyle(color: colorScheme.onSurface),
+                        ),
+                      ),
                       DropdownMenuItem(
-                          value: 'high',
-                          child: Text('أولوية مرتفعة',
-                              style: TextStyle(color: colorScheme.onSurface))),
+                        value: 'high',
+                        child: Text(
+                          'أولوية مرتفعة',
+                          style: TextStyle(color: colorScheme.onSurface),
+                        ),
+                      ),
                       DropdownMenuItem(
-                          value: 'normal',
-                          child: Text('أولوية عادية',
-                              style: TextStyle(color: colorScheme.onSurface))),
+                        value: 'normal',
+                        child: Text(
+                          'أولوية عادية',
+                          style: TextStyle(color: colorScheme.onSurface),
+                        ),
+                      ),
                       DropdownMenuItem(
-                          value: 'low',
-                          child: Text('منخفضة',
-                              style: TextStyle(color: colorScheme.onSurface))),
+                        value: 'low',
+                        child: Text(
+                          'منخفضة',
+                          style: TextStyle(color: colorScheme.onSurface),
+                        ),
+                      ),
                     ],
                     onChanged: (val) {
                       if (val != null) {
@@ -325,16 +351,19 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                 _buildStatusChip(context, 'closed', 'مغلقة'),
                 const SizedBox(width: 12),
                 Container(
-                    width: 1,
-                    height: 20,
-                    color: colorScheme.outlineVariant),
+                  width: 1,
+                  height: 20,
+                  color: colorScheme.outlineVariant,
+                ),
                 const SizedBox(width: 12),
                 _buildCategoryChip(context, 'all', 'كل الأقسام'),
                 _buildCategoryChip(
-                    context, 'orders_shipping', 'الطلبات والشحن'),
+                  context,
+                  'orders_shipping',
+                  'الطلبات والشحن',
+                ),
                 _buildCategoryChip(context, 'supplements', 'المكملات'),
-                _buildCategoryChip(
-                    context, 'payment_refunds', 'المدفوعات'),
+                _buildCategoryChip(context, 'payment_refunds', 'المدفوعات'),
                 _buildCategoryChip(context, 'complaint', 'شكاوى رسمية'),
                 _buildCategoryChip(context, 'technical', 'مشاكل تقنية'),
               ],
@@ -345,30 +374,32 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
     );
   }
 
-  Widget _buildStatusChip(
-      BuildContext context, String value, String label) {
+  Widget _buildStatusChip(BuildContext context, String value, String label) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final selectedStatus = ref.watch(
-        supportControllerProvider.select((s) => s.selectedStatus));
+      supportControllerProvider.select((s) => s.selectedStatus),
+    );
     final isSelected = selectedStatus == value;
 
     return Padding(
       padding: const EdgeInsets.only(right: 6),
       child: FilterChip(
-        label: Text(label,
-            style: TextStyle(
-                fontSize: 11,
-                color: isSelected
-                    ? colorScheme.onPrimaryContainer
-                    : colorScheme.onSurface)),
+        label: Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            color: isSelected
+                ? colorScheme.onPrimaryContainer
+                : colorScheme.onSurface,
+          ),
+        ),
         selected: isSelected,
         selectedColor: colorScheme.primaryContainer,
         backgroundColor: colorScheme.surfaceContainerHigh,
         side: BorderSide(
-            color: isSelected
-                ? colorScheme.primary
-                : colorScheme.outlineVariant),
+          color: isSelected ? colorScheme.primary : colorScheme.outlineVariant,
+        ),
         onSelected: (_) => ref
             .read(supportControllerProvider.notifier)
             .updateSelectedStatus(value),
@@ -376,30 +407,32 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
     );
   }
 
-  Widget _buildCategoryChip(
-      BuildContext context, String value, String label) {
+  Widget _buildCategoryChip(BuildContext context, String value, String label) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final selectedCategory = ref.watch(
-        supportControllerProvider.select((s) => s.selectedCategory));
+      supportControllerProvider.select((s) => s.selectedCategory),
+    );
     final isSelected = selectedCategory == value;
 
     return Padding(
       padding: const EdgeInsets.only(right: 6),
       child: ChoiceChip(
-        label: Text(label,
-            style: TextStyle(
-                fontSize: 11,
-                color: isSelected
-                    ? colorScheme.onPrimaryContainer
-                    : colorScheme.onSurface)),
+        label: Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            color: isSelected
+                ? colorScheme.onPrimaryContainer
+                : colorScheme.onSurface,
+          ),
+        ),
         selected: isSelected,
         selectedColor: colorScheme.primaryContainer,
         backgroundColor: colorScheme.surfaceContainerHigh,
         side: BorderSide(
-            color: isSelected
-                ? colorScheme.primary
-                : colorScheme.outlineVariant),
+          color: isSelected ? colorScheme.primary : colorScheme.outlineVariant,
+        ),
         onSelected: (_) => ref
             .read(supportControllerProvider.notifier)
             .updateSelectedCategory(value),
@@ -409,9 +442,11 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
 
   Widget _buildTicketsList(BuildContext context, bool isDark) {
     final filteredTickets = ref.watch(
-        supportControllerProvider.select((s) => s.filteredTickets));
+      supportControllerProvider.select((s) => s.filteredTickets),
+    );
     final selectedTicketId = ref.watch(
-        supportControllerProvider.select((s) => s.selectedTicket?.id));
+      supportControllerProvider.select((s) => s.selectedTicket?.id),
+    );
 
     return ListView.builder(
       itemCount: filteredTickets.length,
@@ -422,9 +457,8 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
         return SupportTicketCard(
           ticket: ticket,
           isSelected: isSelected,
-          onTap: () => ref
-              .read(supportControllerProvider.notifier)
-              .selectTicket(ticket),
+          onTap: () =>
+              ref.read(supportControllerProvider.notifier).selectTicket(ticket),
         );
       },
     );
@@ -438,9 +472,11 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.inbox_outlined,
-              size: 54,
-              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4)),
+          Icon(
+            Icons.inbox_outlined,
+            size: 54,
+            color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+          ),
           const SizedBox(height: 12),
           Text(
             'لا توجد تذاكر تطابق هذا الفلتر',

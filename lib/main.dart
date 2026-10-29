@@ -15,11 +15,7 @@ Future<void> main() async {
   await GetStorage.init();
   await hiveInit();
 
-  runApp(
-    const ProviderScope(
-      child: StrongerMusclesDashboard(),
-    ),
-  );
+  runApp(const ProviderScope(child: StrongerMusclesDashboard()));
 }
 
 class StrongerMusclesDashboard extends ConsumerWidget {

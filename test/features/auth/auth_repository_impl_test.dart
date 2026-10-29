@@ -12,7 +12,10 @@ class MockRemoteDataSource implements AuthRemoteDataSource {
   Exception? exceptionToThrow;
 
   @override
-  Future<AuthModel> login({required String email, required String password}) async {
+  Future<AuthModel> login({
+    required String email,
+    required String password,
+  }) async {
     if (exceptionToThrow != null) throw exceptionToThrow!;
     return mockModel!;
   }
@@ -103,48 +106,48 @@ void main() {
   );
 
   group('AuthRepositoryImpl.login', () {
-    test('should cache token & user, and return Right(AuthEntity) on success', () async {
-      remoteDataSource.mockModel = tAuthModel;
+    test(
+      'should cache token & user, and return Right(AuthEntity) on success',
+      () async {
+        remoteDataSource.mockModel = tAuthModel;
 
-      final result = await repository.login(
-        email: 'admin@gym.com',
-        password: 'password123',
-      );
+        final result = await repository.login(
+          email: 'admin@gym.com',
+          password: 'password123',
+        );
 
-      expect(result.isRight(), true);
-      result.fold(
-        (failure) => fail('Expected Right but got Left'),
-        (entity) {
+        expect(result.isRight(), true);
+        result.fold((failure) => fail('Expected Right but got Left'), (entity) {
           expect(entity.id, '1');
           expect(entity.name, 'Admin');
           expect(entity.token, 'jwt-xyz');
           expect(entity.isSuperAdmin, true);
-        },
-      );
-      expect(localDataSource.token, 'jwt-xyz');
-      expect(localDataSource.userJson?['id'], '1');
-    });
+        });
+        expect(localDataSource.token, 'jwt-xyz');
+        expect(localDataSource.userJson?['id'], '1');
+      },
+    );
 
-    test('should return Left(ServerFailure) without throwing when remote fails', () async {
-      remoteDataSource.exceptionToThrow = const ServerException(
-        message: 'Invalid credentials',
-        statusCode: 401,
-      );
+    test(
+      'should return Left(ServerFailure) without throwing when remote fails',
+      () async {
+        remoteDataSource.exceptionToThrow = const ServerException(
+          message: 'Invalid credentials',
+          statusCode: 401,
+        );
 
-      final result = await repository.login(
-        email: 'bad@gym.com',
-        password: 'wrong',
-      );
+        final result = await repository.login(
+          email: 'bad@gym.com',
+          password: 'wrong',
+        );
 
-      expect(result.isLeft(), true);
-      result.fold(
-        (failure) {
+        expect(result.isLeft(), true);
+        result.fold((failure) {
           expect(failure, isA<AuthFailure>());
           expect(failure.message, 'Invalid credentials');
-        },
-        (entity) => fail('Expected Left but got Right'),
-      );
-    });
+        }, (entity) => fail('Expected Left but got Right'));
+      },
+    );
   });
 
   group('AuthRepositoryImpl.logout', () {

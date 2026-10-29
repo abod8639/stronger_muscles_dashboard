@@ -69,8 +69,9 @@ class SignupFormState {
       acceptTerms: acceptTerms ?? this.acceptTerms,
       nameError: clearNameError ? null : (nameError ?? this.nameError),
       emailError: clearEmailError ? null : (emailError ?? this.emailError),
-      passwordError:
-          clearPasswordError ? null : (passwordError ?? this.passwordError),
+      passwordError: clearPasswordError
+          ? null
+          : (passwordError ?? this.passwordError),
       confirmPasswordError: clearConfirmPasswordError
           ? null
           : (confirmPasswordError ?? this.confirmPasswordError),

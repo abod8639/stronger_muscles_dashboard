@@ -19,8 +19,8 @@ class NavigationRepositoryImpl implements NavigationRepository {
   NavigationRepositoryImpl({
     required NavigationRemoteDataSource remoteDataSource,
     required NavigationLocalDataSource localDataSource,
-  })  : _remoteDataSource = remoteDataSource,
-        _localDataSource = localDataSource;
+  }) : _remoteDataSource = remoteDataSource,
+       _localDataSource = localDataSource;
 
   @override
   Future<Either<Failure, NavigationBadgesEntity>> getNavigationBadges({

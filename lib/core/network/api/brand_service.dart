@@ -8,7 +8,7 @@ class BrandService extends ApiBase {
     try {
       final response = await dio.get(ApiConfig.adminBrands);
       final decoded = response.data;
-      
+
       if (decoded is Map && decoded.containsKey('data')) {
         return decoded['data'] as List<dynamic>;
       } else if (decoded is List) {

@@ -74,7 +74,10 @@ class AdminNotificationModel {
       adminName: adminName,
       imageUrl: json['image_url']?.toString(),
       data: dataMap,
-      isRead: json['is_read'] == true || json['is_read'] == 1 || json['is_read'] == '1',
+      isRead:
+          json['is_read'] == true ||
+          json['is_read'] == 1 ||
+          json['is_read'] == '1',
       createdAt: parsedDate,
     );
   }
@@ -92,10 +95,7 @@ class AdminNotificationModel {
           if (userName != null) 'name': userName,
           if (userEmail != null) 'email': userEmail,
         },
-      if (adminName != null)
-        'admin': {
-          'name': adminName,
-        },
+      if (adminName != null) 'admin': {'name': adminName},
       if (imageUrl != null) 'image_url': imageUrl,
       if (data != null) 'data': data,
       'is_read': isRead,
@@ -148,17 +148,21 @@ class NotificationsResultModel {
   });
 
   const NotificationsResultModel.empty()
-      : notifications = const [],
-        totalCount = 0,
-        todayCount = 0,
-        broadcastCount = 0,
-        targetedCount = 0;
+    : notifications = const [],
+      totalCount = 0,
+      todayCount = 0,
+      broadcastCount = 0,
+      targetedCount = 0;
 
   factory NotificationsResultModel.fromJson(Map<String, dynamic> json) {
-    final List<dynamic> items = json['data'] is List ? (json['data'] as List) : [];
+    final List<dynamic> items = json['data'] is List
+        ? (json['data'] as List)
+        : [];
     final notifications = items
         .whereType<Map>()
-        .map((e) => AdminNotificationModel.fromJson(Map<String, dynamic>.from(e)))
+        .map(
+          (e) => AdminNotificationModel.fromJson(Map<String, dynamic>.from(e)),
+        )
         .toList();
 
     final stats = json['stats'] is Map ? (json['stats'] as Map) : const {};
@@ -221,7 +225,9 @@ NotificationsResultModel parseNotificationsResultCompute(dynamic rawJson) {
     if (rawJson is Map<String, dynamic>) {
       return NotificationsResultModel.fromJson(rawJson);
     } else if (rawJson is Map) {
-      return NotificationsResultModel.fromJson(Map<String, dynamic>.from(rawJson));
+      return NotificationsResultModel.fromJson(
+        Map<String, dynamic>.from(rawJson),
+      );
     }
     return const NotificationsResultModel.empty();
   } catch (e) {

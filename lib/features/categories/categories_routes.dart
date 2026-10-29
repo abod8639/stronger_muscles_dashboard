@@ -7,18 +7,18 @@ import 'presentation/page/category_form_page/category_form_page.dart';
 /// Modular GoRouter route definitions for the Categories feature.
 class CategoriesRoutes {
   static List<RouteBase> get routes => [
-        GoRoute(
-          path: AppRoutes.categories,
-          name: 'categories',
-          builder: (context, state) => const CategoriesScreen(),
-        ),
-        GoRoute(
-          path: AppRoutes.categoryForm,
-          name: 'categoryForm',
-          builder: (context, state) {
-            final category = state.extra as CategoryEntity?;
-            return CategoryFormPage(category: category);
-          },
-        ),
-      ];
+    GoRoute(
+      path: AppRoutes.categories,
+      name: 'categories',
+      builder: (context, state) => const CategoriesScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.categoryForm,
+      name: 'categoryForm',
+      builder: (context, state) {
+        final category = state.extra as CategoryEntity?;
+        return CategoryFormPage(category: category);
+      },
+    ),
+  ];
 }

@@ -67,58 +67,55 @@ void main() {
       final result = await repository.getTheme();
 
       expect(result.isRight(), isTrue);
-      result.fold(
-        (_) => fail('Expected Right'),
-        (entity) {
-          expect(entity.mode, AppThemeMode.light);
-        },
-      );
+      result.fold((_) => fail('Expected Right'), (entity) {
+        expect(entity.mode, AppThemeMode.light);
+      });
     });
 
-    test('checks remote and caches in Hive when local cache is empty', () async {
-      mockLocal.storedModel = null;
-      mockRemote.remoteModel = const ThemeModel(mode: 'system');
+    test(
+      'checks remote and caches in Hive when local cache is empty',
+      () async {
+        mockLocal.storedModel = null;
+        mockRemote.remoteModel = const ThemeModel(mode: 'system');
 
-      final result = await repository.getTheme();
+        final result = await repository.getTheme();
 
-      expect(result.isRight(), isTrue);
-      result.fold(
-        (_) => fail('Expected Right'),
-        (entity) {
+        expect(result.isRight(), isTrue);
+        result.fold((_) => fail('Expected Right'), (entity) {
           expect(entity.mode, AppThemeMode.system);
-        },
-      );
-      expect(mockLocal.storedModel?.mode, 'system');
-    });
+        });
+        expect(mockLocal.storedModel?.mode, 'system');
+      },
+    );
 
-    test('defaults to dark mode when both local and remote are empty', () async {
-      mockLocal.storedModel = null;
-      mockRemote.remoteModel = null;
+    test(
+      'defaults to dark mode when both local and remote are empty',
+      () async {
+        mockLocal.storedModel = null;
+        mockRemote.remoteModel = null;
 
-      final result = await repository.getTheme();
+        final result = await repository.getTheme();
 
-      expect(result.isRight(), isTrue);
-      result.fold(
-        (_) => fail('Expected Right'),
-        (entity) {
+        expect(result.isRight(), isTrue);
+        result.fold((_) => fail('Expected Right'), (entity) {
           expect(entity.mode, AppThemeMode.dark);
-        },
-      );
-    });
+        });
+      },
+    );
 
-    test('returns Left(Failure) when local cache throws an unexpected error', () async {
-      mockLocal.exceptionToThrow = CacheException(message: 'Disk error');
+    test(
+      'returns Left(Failure) when local cache throws an unexpected error',
+      () async {
+        mockLocal.exceptionToThrow = CacheException(message: 'Disk error');
 
-      final result = await repository.getTheme();
+        final result = await repository.getTheme();
 
-      expect(result.isLeft(), isTrue);
-      result.fold(
-        (failure) {
+        expect(result.isLeft(), isTrue);
+        result.fold((failure) {
           expect(failure, isA<Failure>());
-        },
-        (_) => fail('Expected Left'),
-      );
-    });
+        }, (_) => fail('Expected Left'));
+      },
+    );
   });
 
   group('ThemeRepositoryImpl.setTheme & toggleTheme', () {
@@ -126,12 +123,9 @@ void main() {
       final result = await repository.setTheme(AppThemeMode.light);
 
       expect(result.isRight(), isTrue);
-      result.fold(
-        (_) => fail('Expected Right'),
-        (entity) {
-          expect(entity.mode, AppThemeMode.light);
-        },
-      );
+      result.fold((_) => fail('Expected Right'), (entity) {
+        expect(entity.mode, AppThemeMode.light);
+      });
       expect(mockLocal.storedModel?.mode, 'light');
       expect(mockRemote.remoteModel?.mode, 'light');
     });
@@ -142,12 +136,9 @@ void main() {
       final result = await repository.toggleTheme();
 
       expect(result.isRight(), isTrue);
-      result.fold(
-        (_) => fail('Expected Right'),
-        (entity) {
-          expect(entity.mode, AppThemeMode.light);
-        },
-      );
+      result.fold((_) => fail('Expected Right'), (entity) {
+        expect(entity.mode, AppThemeMode.light);
+      });
       expect(mockLocal.storedModel?.mode, 'light');
     });
   });

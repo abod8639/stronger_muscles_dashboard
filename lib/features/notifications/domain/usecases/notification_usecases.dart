@@ -44,9 +44,7 @@ class DeleteNotificationUseCase {
 
   const DeleteNotificationUseCase(this.repository);
 
-  Future<Either<Failure, void>> call(
-    String id,
-  ) {
+  Future<Either<Failure, void>> call(String id) {
     return repository.deleteNotification(id);
   }
 }

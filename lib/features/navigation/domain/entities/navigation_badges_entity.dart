@@ -14,10 +14,10 @@ class NavigationBadgesEntity {
   });
 
   const NavigationBadgesEntity.initial()
-      : pendingOrdersCount = 0,
-        unreadNotificationsCount = 0,
-        openTicketsCount = 0,
-        lowStockProductsCount = 0;
+    : pendingOrdersCount = 0,
+      unreadNotificationsCount = 0,
+      openTicketsCount = 0,
+      lowStockProductsCount = 0;
 
   NavigationBadgesEntity copyWith({
     int? pendingOrdersCount,

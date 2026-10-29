@@ -8,10 +8,10 @@ class NavigationRoutes {
   const NavigationRoutes._();
 
   static List<RouteBase> get routes => [
-        GoRoute(
-          path: AppRoutes.dashboard,
-          name: 'dashboard',
-          builder: (context, state) => const MainNavigationScreen(),
-        ),
-      ];
+    GoRoute(
+      path: AppRoutes.dashboard,
+      name: 'dashboard',
+      builder: (context, state) => const MainNavigationScreen(),
+    ),
+  ];
 }

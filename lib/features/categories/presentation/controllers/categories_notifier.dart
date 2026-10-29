@@ -21,10 +21,10 @@ class CategoriesNotifier extends Notifier<CategoriesState> {
     AddCategoryUseCase? addCategoryUseCase,
     UpdateCategoryUseCase? updateCategoryUseCase,
     DeleteCategoryUseCase? deleteCategoryUseCase,
-  })  : _injectedGetCategoriesUseCase = getCategoriesUseCase,
-        _injectedAddCategoryUseCase = addCategoryUseCase,
-        _injectedUpdateCategoryUseCase = updateCategoryUseCase,
-        _injectedDeleteCategoryUseCase = deleteCategoryUseCase;
+  }) : _injectedGetCategoriesUseCase = getCategoriesUseCase,
+       _injectedAddCategoryUseCase = addCategoryUseCase,
+       _injectedUpdateCategoryUseCase = updateCategoryUseCase,
+       _injectedDeleteCategoryUseCase = deleteCategoryUseCase;
 
   GetCategoriesUseCase get _getCategoriesUseCase =>
       _injectedGetCategoriesUseCase ?? ref.read(getCategoriesUseCaseProvider);
@@ -55,7 +55,10 @@ class CategoriesNotifier extends Notifier<CategoriesState> {
       actionSuccessMessage: null,
     );
 
-    final result = await _getCategoriesUseCase(tree: useTree, forceRefresh: forceRefresh);
+    final result = await _getCategoriesUseCase(
+      tree: useTree,
+      forceRefresh: forceRefresh,
+    );
 
     result.fold(
       (failure) {
@@ -145,7 +148,10 @@ class CategoriesNotifier extends Notifier<CategoriesState> {
   }
 
   /// Backward-compatible helper to update category from raw JSON map.
-  Future<bool> updateCategoryFromData(String id, Map<String, dynamic> data) async {
+  Future<bool> updateCategoryFromData(
+    String id,
+    Map<String, dynamic> data,
+  ) async {
     final model = CategoryModel.fromJson({...data, 'id': id});
     return updateCategory(model.toEntity());
   }
@@ -204,23 +210,33 @@ class CategoriesNotifier extends Notifier<CategoriesState> {
   }
 
   /// In-memory bilingual and ID search filtering.
-  List<CategoryEntity> _filterCategories(List<CategoryEntity> list, String query) {
+  List<CategoryEntity> _filterCategories(
+    List<CategoryEntity> list,
+    String query,
+  ) {
     if (query.isEmpty) return list;
     final lower = query.toLowerCase();
 
     List<CategoryEntity> filterTree(List<CategoryEntity> items) {
       final matches = <CategoryEntity>[];
       for (final cat in items) {
-        final matchesSelf = cat.nameAr.toLowerCase().contains(lower) ||
+        final matchesSelf =
+            cat.nameAr.toLowerCase().contains(lower) ||
             cat.nameEn.toLowerCase().contains(lower) ||
             cat.id.toLowerCase().contains(lower);
 
-        final matchingChildren = cat.hasChildren ? filterTree(cat.children) : <CategoryEntity>[];
+        final matchingChildren = cat.hasChildren
+            ? filterTree(cat.children)
+            : <CategoryEntity>[];
 
         if (matchesSelf || matchingChildren.isNotEmpty) {
-          matches.add(cat.copyWith(
-            children: matchingChildren.isNotEmpty ? matchingChildren : cat.children,
-          ));
+          matches.add(
+            cat.copyWith(
+              children: matchingChildren.isNotEmpty
+                  ? matchingChildren
+                  : cat.children,
+            ),
+          );
         }
       }
       return matches;

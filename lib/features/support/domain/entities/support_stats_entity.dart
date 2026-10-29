@@ -69,15 +69,15 @@ class SupportStatsEntity {
 
   @override
   int get hashCode => Object.hash(
-        total,
-        open,
-        inProgress,
-        waitingUser,
-        resolved,
-        closed,
-        urgent,
-        resolvedToday,
-      );
+    total,
+    open,
+    inProgress,
+    waitingUser,
+    resolved,
+    closed,
+    urgent,
+    resolvedToday,
+  );
 
   @override
   String toString() =>

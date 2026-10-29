@@ -100,8 +100,9 @@ class SupportTicketModel {
     if (json['messages'] is List) {
       msgs = (json['messages'] as List)
           .whereType<Map>()
-          .map((m) =>
-              SupportMessageModel.fromJson(Map<String, dynamic>.from(m)))
+          .map(
+            (m) => SupportMessageModel.fromJson(Map<String, dynamic>.from(m)),
+          )
           .toList();
     }
 
@@ -174,17 +175,11 @@ class SupportTicketModel {
       'status': status,
       'order_id': orderId,
       'order': orderNumber != null
-          ? {
-              'order_number': orderNumber,
-              'total_amount': orderTotal,
-            }
+          ? {'order_number': orderNumber, 'total_amount': orderTotal}
           : null,
       'admin_id': adminId,
       'assigned_admin': adminName != null
-          ? {
-              'name': adminName,
-              'role': adminRole,
-            }
+          ? {'name': adminName, 'role': adminRole}
           : null,
       'messages_count': messagesCount,
       'unread_messages_count': unreadMessagesCount,
@@ -274,18 +269,18 @@ class SupportTicketModel {
 
   @override
   int get hashCode => Object.hash(
-        id,
-        ticketNumber,
-        userId,
-        userName,
-        userEmail,
-        subject,
-        category,
-        priority,
-        status,
-        adminId,
-        messagesCount,
-        unreadMessagesCount,
-        createdAt,
-      );
+    id,
+    ticketNumber,
+    userId,
+    userName,
+    userEmail,
+    subject,
+    category,
+    priority,
+    status,
+    adminId,
+    messagesCount,
+    unreadMessagesCount,
+    createdAt,
+  );
 }

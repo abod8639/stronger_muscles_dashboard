@@ -12,7 +12,8 @@ class NetworkErrorHandler {
       case DioExceptionType.sendTimeout:
       case DioExceptionType.receiveTimeout:
         return NetworkFailure(
-          message: 'انتهت مهلة الاتصال بالخادم. يرجى التحقق من سرعة الإنترنت والمحاولة مجدداً.',
+          message:
+              'انتهت مهلة الاتصال بالخادم. يرجى التحقق من سرعة الإنترنت والمحاولة مجدداً.',
           statusCode: e.response?.statusCode,
           originalError: e,
         );
@@ -43,7 +44,8 @@ class NetworkErrorHandler {
 
       case DioExceptionType.unknown:
       default:
-        if (e.message != null && e.message!.toLowerCase().contains('socketexception')) {
+        if (e.message != null &&
+            e.message!.toLowerCase().contains('socketexception')) {
           return NetworkFailure(
             message: 'لا يوجد اتصال بالإنترنت.',
             statusCode: e.response?.statusCode,
@@ -61,7 +63,9 @@ class NetworkErrorHandler {
   /// معالجة استجابات الخادم غير الناجحة (4xx, 5xx)
   static Failure _handleBadResponse(Response? response) {
     if (response == null) {
-      return const ServerFailure(message: 'لم يتم استلام أي استجابة من الخادم.');
+      return const ServerFailure(
+        message: 'لم يتم استلام أي استجابة من الخادم.',
+      );
     }
 
     final statusCode = response.statusCode ?? 500;
@@ -76,8 +80,9 @@ class NetworkErrorHandler {
         final rawErrors = data['errors'] as Map;
         rawErrors.forEach((key, value) {
           if (value is List) {
-            validationErrors[key.toString()] =
-                value.map((e) => e.toString()).toList();
+            validationErrors[key.toString()] = value
+                .map((e) => e.toString())
+                .toList();
           } else if (value != null) {
             validationErrors[key.toString()] = [value.toString()];
           }
@@ -95,14 +100,17 @@ class NetworkErrorHandler {
 
       case 401:
         return AuthFailure(
-          message: serverMessage ?? 'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
+          message:
+              serverMessage ?? 'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
           statusCode: statusCode,
           originalError: data,
         );
 
       case 403:
         return AuthFailure(
-          message: serverMessage ?? 'ليس لديك الصلاحيات الكافية للوصول إلى هذا القسم.',
+          message:
+              serverMessage ??
+              'ليس لديك الصلاحيات الكافية للوصول إلى هذا القسم.',
           statusCode: statusCode,
           originalError: data,
         );
@@ -116,7 +124,9 @@ class NetworkErrorHandler {
 
       case 422:
         return ValidationFailure(
-          message: serverMessage ?? 'البيانات المدخلة غير صالحة. يرجى مراجعة الحقول.',
+          message:
+              serverMessage ??
+              'البيانات المدخلة غير صالحة. يرجى مراجعة الحقول.',
           fieldErrors: validationErrors,
           statusCode: statusCode,
           originalError: data,
@@ -124,7 +134,9 @@ class NetworkErrorHandler {
 
       case 429:
         return ServerFailure(
-          message: serverMessage ?? 'تم تجاوز الحد الأقصى للطلبات. يرجى الانتظار قليلاً.',
+          message:
+              serverMessage ??
+              'تم تجاوز الحد الأقصى للطلبات. يرجى الانتظار قليلاً.',
           statusCode: statusCode,
           originalError: data,
         );
@@ -134,14 +146,18 @@ class NetworkErrorHandler {
       case 503:
       case 504:
         return ServerFailure(
-          message: serverMessage ?? 'حدث خطأ في خادم النظام ($statusCode). يرجى المحاولة لاحقاً.',
+          message:
+              serverMessage ??
+              'حدث خطأ في خادم النظام ($statusCode). يرجى المحاولة لاحقاً.',
           statusCode: statusCode,
           originalError: data,
         );
 
       default:
         return ServerFailure(
-          message: serverMessage ?? 'استجابة غير متوقعة من الخادم (كود: $statusCode).',
+          message:
+              serverMessage ??
+              'استجابة غير متوقعة من الخادم (كود: $statusCode).',
           statusCode: statusCode,
           originalError: data,
         );
@@ -212,9 +228,6 @@ class NetworkErrorHandler {
       );
     }
 
-    return UnknownFailure(
-      message: error.toString(),
-      originalError: error,
-    );
+    return UnknownFailure(message: error.toString(), originalError: error);
   }
 }

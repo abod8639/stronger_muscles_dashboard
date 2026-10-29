@@ -42,11 +42,7 @@ void main() {
       expect(cBoth.getName('en'), 'Amino Acids');
       expect(cBoth.getName('ar'), 'أحماض أمينية');
 
-      const cEnOnly = CategoryEntity(
-        id: '2',
-        nameAr: '',
-        nameEn: 'Creatine',
-      );
+      const cEnOnly = CategoryEntity(id: '2', nameAr: '', nameEn: 'Creatine');
       expect(cEnOnly.displayName, 'Creatine');
     });
 

@@ -21,7 +21,9 @@ class ThemeRemoteDataSourceImpl implements ThemeRemoteDataSource {
     try {
       final response = await _dio.get(_themeEndpoint);
       if (response.data is Map) {
-        final data = response.data['data'] is Map ? response.data['data'] as Map : response.data as Map;
+        final data = response.data['data'] is Map
+            ? response.data['data'] as Map
+            : response.data as Map;
         return ThemeModel.fromJson(Map<String, dynamic>.from(data));
       }
       return null;
@@ -34,10 +36,7 @@ class ThemeRemoteDataSourceImpl implements ThemeRemoteDataSource {
   @override
   Future<void> updateRemoteTheme(ThemeModel theme) async {
     try {
-      await _dio.put(
-        _themeEndpoint,
-        data: theme.toJson(),
-      );
+      await _dio.put(_themeEndpoint, data: theme.toJson());
     } catch (_) {
       // Silently proceed if backend theme endpoint is not available
     }

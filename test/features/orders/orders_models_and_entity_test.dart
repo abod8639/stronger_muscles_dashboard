@@ -180,28 +180,31 @@ void main() {
       expect(model.toEntity().toModel().taxAmount, 14.0);
     });
 
-    test('OrderModel.fromJson defaults tax to 0 and includes it in a missing total', () {
-      final withoutTax = OrderModel.fromJson({
-        'id': 'order-old',
-        'user_id': '7',
-        'order_date': '2026-10-29T10:00:00Z',
-        'address_id': '3',
-        'subtotal': 100,
-        'shippingCost': 50,
-      });
-      final missingTotal = OrderModel.fromJson({
-        'id': 'order-no-total',
-        'user_id': '7',
-        'order_date': '2026-10-29T10:00:00Z',
-        'address_id': '3',
-        'subtotal': 100,
-        'shippingCost': 50,
-        'taxAmount': 14,
-      });
+    test(
+      'OrderModel.fromJson defaults tax to 0 and includes it in a missing total',
+      () {
+        final withoutTax = OrderModel.fromJson({
+          'id': 'order-old',
+          'user_id': '7',
+          'order_date': '2026-10-29T10:00:00Z',
+          'address_id': '3',
+          'subtotal': 100,
+          'shippingCost': 50,
+        });
+        final missingTotal = OrderModel.fromJson({
+          'id': 'order-no-total',
+          'user_id': '7',
+          'order_date': '2026-10-29T10:00:00Z',
+          'address_id': '3',
+          'subtotal': 100,
+          'shippingCost': 50,
+          'taxAmount': 14,
+        });
 
-      expect(withoutTax.taxAmount, 0.0);
-      expect(withoutTax.totalAmount, 150.0);
-      expect(missingTotal.totalAmount, 164.0);
-    });
+        expect(withoutTax.taxAmount, 0.0);
+        expect(withoutTax.totalAmount, 150.0);
+        expect(missingTotal.totalAmount, 164.0);
+      },
+    );
   });
 }

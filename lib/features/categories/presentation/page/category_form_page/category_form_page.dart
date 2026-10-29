@@ -55,7 +55,10 @@ class _CategoryFormPageState extends ConsumerState<CategoryFormPage> {
 
     if (controller.nameArController.text.trim().isEmpty &&
         controller.nameEnController.text.trim().isEmpty) {
-      _showSnackbar('اسم التصنيف مطلوب (بالعربية أو بالإنجليزية)', isError: true);
+      _showSnackbar(
+        'اسم التصنيف مطلوب (بالعربية أو بالإنجليزية)',
+        isError: true,
+      );
       return;
     }
 
@@ -140,7 +143,9 @@ class _CategoryFormPageState extends ConsumerState<CategoryFormPage> {
                     child: FilledButton.icon(
                       onPressed: _submitForm,
                       icon: Icon(
-                        isEditing ? Icons.save_rounded : Icons.check_circle_rounded,
+                        isEditing
+                            ? Icons.save_rounded
+                            : Icons.check_circle_rounded,
                         size: 18,
                       ),
                       label: Text(isEditing ? 'حفظ' : 'إنشاء'),
@@ -160,7 +165,7 @@ class _CategoryFormPageState extends ConsumerState<CategoryFormPage> {
                 // 1. ترويسة معلوماتية
                 CategoryTopBanner(isEditing: isEditing),
                 const SizedBox(height: 20),
-            
+
                 // 2. شبكة المحتوى (متجاوبة: عمودان للشاشات العريضة، عمود واحد للموبايل)
                 if (isWide)
                   Row(
@@ -192,7 +197,7 @@ class _CategoryFormPageState extends ConsumerState<CategoryFormPage> {
                         ),
                       ),
                       const SizedBox(width: 20),
-            
+
                       // العمود الجانبي: الصورة + حالة التفعيل + زر الحفظ
                       Expanded(
                         flex: 2,
@@ -241,25 +246,19 @@ class _CategoryFormPageState extends ConsumerState<CategoryFormPage> {
                       CategorySectionCard(
                         title: 'التبعية الهرمية (التصنيف الأب)',
                         icon: Icons.account_tree_outlined,
-                        child: CategoryParentSection(
-                          controller: controller,
-                        ),
+                        child: CategoryParentSection(controller: controller),
                       ),
                       const SizedBox(height: 16),
                       CategorySectionCard(
                         title: 'صورة وشعار التصنيف',
                         icon: Icons.image_outlined,
-                        child: CategoryImageSection(
-                          controller: controller,
-                        ),
+                        child: CategoryImageSection(controller: controller),
                       ),
                       const SizedBox(height: 16),
                       CategorySectionCard(
                         title: 'حالة الظهور والتفعيل',
                         icon: Icons.visibility_outlined,
-                        child: CategoryStatusSection(
-                          controller: controller,
-                        ),
+                        child: CategoryStatusSection(controller: controller),
                       ),
                       const SizedBox(height: 24),
                       CategorySaveActionCard(

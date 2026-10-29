@@ -73,13 +73,15 @@ class HorizontalChipsSelector extends StatelessWidget {
 
   String _getValue(dynamic item, String key) {
     if (item == null) return '';
-    
+
     // 1. Try Map access
     if (item is Map) return item[key]?.toString() ?? '';
 
     // 2. Try common entity properties directly if key is known
     if (key == 'id') {
-      try { return item.id.toString(); } catch (_) {}
+      try {
+        return item.id.toString();
+      } catch (_) {}
     }
 
     // 3. Try toJson logic

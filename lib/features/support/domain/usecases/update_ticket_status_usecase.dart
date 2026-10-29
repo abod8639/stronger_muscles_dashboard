@@ -9,7 +9,10 @@ class UpdateTicketStatusUseCase {
 
   const UpdateTicketStatusUseCase(this._repository);
 
-  Future<Either<Failure, SupportTicketEntity>> call(int ticketId, String status) {
+  Future<Either<Failure, SupportTicketEntity>> call(
+    int ticketId,
+    String status,
+  ) {
     return _repository.updateStatus(ticketId, status);
   }
 }

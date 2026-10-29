@@ -13,12 +13,20 @@ class AppDesignTokens {
   static const double radiusPillValue = 24.0;
   static const double radiusCircularValue = 999.0;
 
-  static final BorderRadius radiusSmall = BorderRadius.circular(radiusSmallValue);
-  static final BorderRadius radiusMedium = BorderRadius.circular(radiusMediumValue);
+  static final BorderRadius radiusSmall = BorderRadius.circular(
+    radiusSmallValue,
+  );
+  static final BorderRadius radiusMedium = BorderRadius.circular(
+    radiusMediumValue,
+  );
   static final BorderRadius radiusCard = BorderRadius.circular(radiusCardValue);
-  static final BorderRadius radiusLarge = BorderRadius.circular(radiusLargeValue);
+  static final BorderRadius radiusLarge = BorderRadius.circular(
+    radiusLargeValue,
+  );
   static final BorderRadius radiusPill = BorderRadius.circular(radiusPillValue);
-  static final BorderRadius radiusCircular = BorderRadius.circular(radiusCircularValue);
+  static final BorderRadius radiusCircular = BorderRadius.circular(
+    radiusCircularValue,
+  );
 
   // Convenient aliases
   static BorderRadius get borderRadiusSmall => radiusSmall;
@@ -41,47 +49,53 @@ class AppDesignTokens {
   static const double space24 = 24.0;
   static const double space32 = 32.0;
 
-  static const EdgeInsets paddingScreen = EdgeInsets.symmetric(horizontal: 24, vertical: 20);
+  static const EdgeInsets paddingScreen = EdgeInsets.symmetric(
+    horizontal: 24,
+    vertical: 20,
+  );
   static const EdgeInsets paddingCard = EdgeInsets.all(16);
-  static const EdgeInsets paddingCompact = EdgeInsets.symmetric(horizontal: 12, vertical: 8);
+  static const EdgeInsets paddingCompact = EdgeInsets.symmetric(
+    horizontal: 12,
+    vertical: 8,
+  );
 
   // ── الظلال الموحدة (BoxShadows & Elevations) ───────────────────────────────
   static List<BoxShadow> subtleShadow(bool isDark) => [
-        BoxShadow(
-          color: isDark
-              ? Colors.black.withValues(alpha: 0.3)
-              : const Color(0xFFA3B1C6).withValues(alpha: 0.2),
-          offset: const Offset(0, 2),
-          blurRadius: 6,
-        ),
-      ];
+    BoxShadow(
+      color: isDark
+          ? Colors.black.withValues(alpha: 0.3)
+          : const Color(0xFFA3B1C6).withValues(alpha: 0.2),
+      offset: const Offset(0, 2),
+      blurRadius: 6,
+    ),
+  ];
 
   static List<BoxShadow> cardShadow(bool isDark) => [
-        BoxShadow(
-          color: isDark
-              ? Colors.black.withValues(alpha: 0.45)
-              : const Color(0xFFA3B1C6).withValues(alpha: 0.3),
-          offset: const Offset(0, 4),
-          blurRadius: 12,
-        ),
-      ];
+    BoxShadow(
+      color: isDark
+          ? Colors.black.withValues(alpha: 0.45)
+          : const Color(0xFFA3B1C6).withValues(alpha: 0.3),
+      offset: const Offset(0, 4),
+      blurRadius: 12,
+    ),
+  ];
 
   static List<BoxShadow> neumorphicRaised(bool isDark) => [
-        BoxShadow(
-          color: isDark
-              ? Colors.black.withValues(alpha: 0.5)
-              : const Color(0xFFA3B1C6).withValues(alpha: 0.35),
-          offset: const Offset(4, 5),
-          blurRadius: 10,
-        ),
-        BoxShadow(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.04)
-              : Colors.white.withValues(alpha: 0.85),
-          offset: const Offset(-3, -3),
-          blurRadius: 8,
-        ),
-      ];
+    BoxShadow(
+      color: isDark
+          ? Colors.black.withValues(alpha: 0.5)
+          : const Color(0xFFA3B1C6).withValues(alpha: 0.35),
+      offset: const Offset(4, 5),
+      blurRadius: 10,
+    ),
+    BoxShadow(
+      color: isDark
+          ? Colors.white.withValues(alpha: 0.04)
+          : Colors.white.withValues(alpha: 0.85),
+      offset: const Offset(-3, -3),
+      blurRadius: 8,
+    ),
+  ];
 
   // ── السطح الناعم الموحد (Soft UI / Neumorphism) ────────────────────────────
   static const Color _lightShadow = Color(0xFFA3B1C6);
@@ -106,7 +120,11 @@ class AppDesignTokens {
       colors = isDark
           ? [
               Color.lerp(colorScheme.primaryContainer, Colors.white, 0.03)!,
-              Color.lerp(colorScheme.surfaceContainer, colorScheme.primary, 0.12)!,
+              Color.lerp(
+                colorScheme.surfaceContainer,
+                colorScheme.primary,
+                0.12,
+              )!,
             ]
           : [
               Color.lerp(colorScheme.primaryContainer, Colors.white, 0.60)!,
@@ -115,7 +133,11 @@ class AppDesignTokens {
     } else if (depth == SoftDepth.inset) {
       colors = isDark
           ? [
-              Color.lerp(colorScheme.surfaceContainerLowest, Colors.black, 0.20)!,
+              Color.lerp(
+                colorScheme.surfaceContainerLowest,
+                Colors.black,
+                0.20,
+              )!,
               Color.lerp(colorScheme.surfaceContainerLow, Colors.black, 0.10)!,
             ]
           : [
@@ -135,8 +157,9 @@ class AppDesignTokens {
     }
 
     final shadowOffset = compact ? const Offset(1.5, 2) : const Offset(3, 4);
-    final highlightOffset =
-        compact ? const Offset(-1.5, -1.5) : const Offset(-2.5, -2.5);
+    final highlightOffset = compact
+        ? const Offset(-1.5, -1.5)
+        : const Offset(-2.5, -2.5);
 
     return BoxDecoration(
       borderRadius: borderRadius ?? (compact ? radiusSmall : radiusLarge),
@@ -171,8 +194,8 @@ class AppDesignTokens {
         color: selected
             ? colorScheme.primary.withValues(alpha: isDark ? 0.70 : 0.85)
             : (isDark
-                ? Colors.white.withValues(alpha: 0.03)
-                : Colors.white.withValues(alpha: 0.85)),
+                  ? Colors.white.withValues(alpha: 0.03)
+                  : Colors.white.withValues(alpha: 0.85)),
         width: selected && !compact ? 1.6 : 1.0,
       ),
     );

@@ -17,10 +17,7 @@ abstract class NotificationRemoteDataSource {
     CancelToken? cancelToken,
   });
 
-  Future<void> deleteNotification(
-    String id, {
-    CancelToken? cancelToken,
-  });
+  Future<void> deleteNotification(String id, {CancelToken? cancelToken});
 }
 
 /// Production implementation of [NotificationRemoteDataSource] using [Dio] and isolate computation.
@@ -72,10 +69,7 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
   }
 
   @override
-  Future<void> deleteNotification(
-    String id, {
-    CancelToken? cancelToken,
-  }) async {
+  Future<void> deleteNotification(String id, {CancelToken? cancelToken}) async {
     await _dio.delete(
       ApiConfig.adminNotificationDetail(id),
       cancelToken: cancelToken,

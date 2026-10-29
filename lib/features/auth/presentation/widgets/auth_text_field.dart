@@ -51,9 +51,7 @@ class AuthTextField extends StatelessWidget {
             style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
               labelText: label,
-              labelStyle: TextStyle(
-                color: Colors.white.withValues(alpha: 0.7),
-              ),
+              labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
               prefixIcon: Icon(
                 icon,
                 color: Colors.white.withValues(alpha: 0.7),
@@ -82,10 +80,7 @@ class AuthTextField extends StatelessWidget {
             padding: const EdgeInsets.only(top: 8, right: 12),
             child: Text(
               errorText!,
-              style: const TextStyle(
-                color: AppColors.error,
-                fontSize: 12,
-              ),
+              style: const TextStyle(color: AppColors.error, fontSize: 12),
             ),
           ),
       ],

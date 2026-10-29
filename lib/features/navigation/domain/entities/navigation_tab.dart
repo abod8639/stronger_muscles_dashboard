@@ -15,11 +15,7 @@ enum NavigationTab {
   final String titleEn;
   final String titleAr;
 
-  const NavigationTab(
-    this.tabIndex,
-    this.titleEn,
-    this.titleAr,
-  );
+  const NavigationTab(this.tabIndex, this.titleEn, this.titleAr);
 
   String title(String langCode) => langCode == 'ar' ? titleAr : titleEn;
 

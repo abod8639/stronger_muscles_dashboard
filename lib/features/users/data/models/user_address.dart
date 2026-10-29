@@ -29,19 +29,19 @@ class UserAddress with _$UserAddress {
       _$UserAddressFromJson(_mapAddressJson(json));
 
   UserAddressEntity toEntity() => UserAddressEntity(
-        id: id,
-        label: label,
-        fullName: fullName,
-        phone: phone,
-        street: street,
-        city: city,
-        state: state,
-        postalCode: postalCode,
-        country: country,
-        isDefault: isDefault,
-        latitude: latitude,
-        longitude: longitude,
-      );
+    id: id,
+    label: label,
+    fullName: fullName,
+    phone: phone,
+    street: street,
+    city: city,
+    state: state,
+    postalCode: postalCode,
+    country: country,
+    isDefault: isDefault,
+    latitude: latitude,
+    longitude: longitude,
+  );
 
   String get fullAddress {
     final parts = [street, city, state, country].where((s) => s.isNotEmpty);

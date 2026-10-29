@@ -5,7 +5,10 @@ import '../models/category_model.dart';
 /// Contract for locally caching category data via Hive.
 abstract class CategoryLocalDataSource {
   Future<List<CategoryModel>> getCachedCategories({bool tree = false});
-  Future<void> cacheCategories(List<CategoryModel> categories, {bool tree = false});
+  Future<void> cacheCategories(
+    List<CategoryModel> categories, {
+    bool tree = false,
+  });
   Future<CategoryModel?> getCachedCategoryById(String id);
   Future<void> cacheCategory(CategoryModel category);
   Future<void> deleteCachedCategory(String id);
@@ -30,7 +33,9 @@ class CategoryLocalDataSourceImpl implements CategoryLocalDataSource {
     try {
       if (tree) {
         // Return top-level root categories (those without parentId or with parentId == '')
-        return _box.values.where((c) => c.parentId == null || c.parentId!.isEmpty).toList();
+        return _box.values
+            .where((c) => c.parentId == null || c.parentId!.isEmpty)
+            .toList();
       }
       return _box.values.toList();
     } catch (e) {
@@ -39,7 +44,10 @@ class CategoryLocalDataSourceImpl implements CategoryLocalDataSource {
   }
 
   @override
-  Future<void> cacheCategories(List<CategoryModel> categories, {bool tree = false}) async {
+  Future<void> cacheCategories(
+    List<CategoryModel> categories, {
+    bool tree = false,
+  }) async {
     try {
       final map = <String, CategoryModel>{};
       void flatten(List<CategoryModel> list) {
@@ -70,7 +78,9 @@ class CategoryLocalDataSourceImpl implements CategoryLocalDataSource {
     try {
       return _box.get(id);
     } catch (e) {
-      throw CacheException(message: 'Failed to retrieve cached category $id: $e');
+      throw CacheException(
+        message: 'Failed to retrieve cached category $id: $e',
+      );
     }
   }
 

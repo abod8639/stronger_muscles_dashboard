@@ -41,20 +41,12 @@ void main() {
       expect(b.getName('en'), 'Sport Co');
       expect(b.displayName, 'شركة الرياضة');
 
-      const bArOnly = BrandEntity(
-        id: '2',
-        nameAr: 'عربي فقط',
-        nameEn: '',
-      );
+      const bArOnly = BrandEntity(id: '2', nameAr: 'عربي فقط', nameEn: '');
       expect(bArOnly.displayName, 'عربي فقط');
     });
 
     test('copyWith produces expected updated clone', () {
-      const b = BrandEntity(
-        id: '1',
-        nameAr: 'قديم',
-        nameEn: 'Old',
-      );
+      const b = BrandEntity(id: '1', nameAr: 'قديم', nameEn: 'Old');
       final updated = b.copyWith(nameEn: 'New Name');
 
       expect(updated.id, '1');

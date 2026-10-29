@@ -21,7 +21,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   static const String _userKey = 'admin_user';
 
   const AuthLocalDataSourceImpl({required GetStorage storage})
-      : _storage = storage;
+    : _storage = storage;
 
   @override
   Future<void> saveToken(String token) async {

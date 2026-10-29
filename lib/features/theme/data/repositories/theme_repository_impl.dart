@@ -19,8 +19,8 @@ class ThemeRepositoryImpl implements ThemeRepository {
   const ThemeRepositoryImpl({
     required ThemeLocalDataSource localDataSource,
     required ThemeRemoteDataSource remoteDataSource,
-  })  : _localDataSource = localDataSource,
-        _remoteDataSource = remoteDataSource;
+  }) : _localDataSource = localDataSource,
+       _remoteDataSource = remoteDataSource;
 
   @override
   Future<Either<Failure, ThemeEntity>> getTheme() async {
@@ -69,7 +69,9 @@ class ThemeRepositoryImpl implements ThemeRepository {
   Future<Either<Failure, ThemeEntity>> toggleTheme() async {
     try {
       final currentRes = await getTheme();
-      final currentEntity = currentRes.getOrElse((_) => const ThemeEntity(mode: AppThemeMode.dark));
+      final currentEntity = currentRes.getOrElse(
+        (_) => const ThemeEntity(mode: AppThemeMode.dark),
+      );
 
       final newMode = currentEntity.mode == AppThemeMode.dark
           ? AppThemeMode.light

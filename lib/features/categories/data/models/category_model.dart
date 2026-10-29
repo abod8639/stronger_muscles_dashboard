@@ -31,18 +31,18 @@ class CategoryModel with _$CategoryModel {
   }
 
   CategoryEntity toEntity() => CategoryEntity(
-        id: id,
-        nameAr: name.ar,
-        nameEn: name.en,
-        descriptionAr: description?.ar,
-        descriptionEn: description?.en,
-        imageUrl: imageUrl,
-        parentId: parentId,
-        isActive: isActive,
-        sortOrder: sortOrder,
-        icon: icon,
-        children: children.map((e) => e.toEntity()).toList(),
-      );
+    id: id,
+    nameAr: name.ar,
+    nameEn: name.en,
+    descriptionAr: description?.ar,
+    descriptionEn: description?.en,
+    imageUrl: imageUrl,
+    parentId: parentId,
+    isActive: isActive,
+    sortOrder: sortOrder,
+    icon: icon,
+    children: children.map((e) => e.toEntity()).toList(),
+  );
 
   factory CategoryModel.fromJson(Map<String, dynamic> json) =>
       _$CategoryModelFromJson(_safeCategoryJson(json));
@@ -53,7 +53,9 @@ class CategoryModel with _$CategoryModel {
   }
 
   /// معالجة استخراج قائمة تصنيفات كاملة (أو شجرة التصنيفات) في Isolate خلفي
-  static Future<List<CategoryModel>> fromJsonListAsync(List<dynamic> jsonList) async {
+  static Future<List<CategoryModel>> fromJsonListAsync(
+    List<dynamic> jsonList,
+  ) async {
     return await compute(_parseCategoryListIsolate, jsonList);
   }
 }

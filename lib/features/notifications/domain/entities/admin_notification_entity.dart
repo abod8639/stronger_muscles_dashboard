@@ -32,12 +32,12 @@ class AdminNotificationEntity {
   });
 
   factory AdminNotificationEntity.initial() => const AdminNotificationEntity(
-        id: '',
-        title: '',
-        body: '',
-        type: 'general',
-        targetType: 'all',
-      );
+    id: '',
+    title: '',
+    body: '',
+    type: 'general',
+    targetType: 'all',
+  );
 
   AdminNotificationEntity copyWith({
     String? id,

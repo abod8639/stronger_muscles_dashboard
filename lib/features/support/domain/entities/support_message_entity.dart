@@ -72,16 +72,16 @@ class SupportMessageEntity {
 
   @override
   int get hashCode => Object.hash(
-        id,
-        ticketId,
-        senderType,
-        senderId,
-        senderName,
-        message,
-        isInternalNote,
-        isRead,
-        createdAt,
-      );
+    id,
+    ticketId,
+    senderType,
+    senderId,
+    senderName,
+    message,
+    isInternalNote,
+    isRead,
+    createdAt,
+  );
 
   @override
   String toString() =>

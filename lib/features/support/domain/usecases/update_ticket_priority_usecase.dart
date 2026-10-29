@@ -9,7 +9,10 @@ class UpdateTicketPriorityUseCase {
 
   const UpdateTicketPriorityUseCase(this._repository);
 
-  Future<Either<Failure, SupportTicketEntity>> call(int ticketId, String priority) {
+  Future<Either<Failure, SupportTicketEntity>> call(
+    int ticketId,
+    String priority,
+  ) {
     return _repository.updatePriority(ticketId, priority);
   }
 }

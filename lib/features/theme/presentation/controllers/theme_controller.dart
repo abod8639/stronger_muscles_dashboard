@@ -20,9 +20,9 @@ class ThemeNotifier extends Notifier<ThemeMode> {
     GetThemeUseCase? getThemeUseCase,
     SetThemeUseCase? setThemeUseCase,
     ToggleThemeUseCase? toggleThemeUseCase,
-  })  : _injectedGetThemeUseCase = getThemeUseCase,
-        _injectedSetThemeUseCase = setThemeUseCase,
-        _injectedToggleThemeUseCase = toggleThemeUseCase;
+  }) : _injectedGetThemeUseCase = getThemeUseCase,
+       _injectedSetThemeUseCase = setThemeUseCase,
+       _injectedToggleThemeUseCase = toggleThemeUseCase;
 
   GetThemeUseCase get _getThemeUseCase =>
       _injectedGetThemeUseCase ?? ref.read(getThemeUseCaseProvider);
@@ -58,23 +58,17 @@ class ThemeNotifier extends Notifier<ThemeMode> {
   Future<void> setThemeMode(ThemeMode mode) async {
     final appMode = _mapToAppThemeMode(mode);
     final result = await _setThemeUseCase.call(appMode);
-    result.fold(
-      (failure) {},
-      (themeEntity) {
-        state = _mapToFlutterThemeMode(themeEntity.mode);
-      },
-    );
+    result.fold((failure) {}, (themeEntity) {
+      state = _mapToFlutterThemeMode(themeEntity.mode);
+    });
   }
 
   /// Toggles between Light and Dark themes
   Future<void> toggleTheme() async {
     final result = await _toggleThemeUseCase.call();
-    result.fold(
-      (failure) {},
-      (themeEntity) {
-        state = _mapToFlutterThemeMode(themeEntity.mode);
-      },
-    );
+    result.fold((failure) {}, (themeEntity) {
+      state = _mapToFlutterThemeMode(themeEntity.mode);
+    });
   }
 
   static ThemeMode _mapToFlutterThemeMode(AppThemeMode mode) {

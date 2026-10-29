@@ -26,7 +26,8 @@ class CategoriesState {
 
   bool get isLoading => status == CategoriesStatus.loading;
   bool get hasError => status == CategoriesStatus.error && errorMessage != null;
-  bool get isEmpty => status == CategoriesStatus.success && filteredCategories.isEmpty;
+  bool get isEmpty =>
+      status == CategoriesStatus.success && filteredCategories.isEmpty;
 
   CategoriesState copyWith({
     CategoriesStatus? status,

@@ -6,15 +6,9 @@ class ThemeEntity {
   final AppThemeMode mode;
   final DateTime? updatedAt;
 
-  const ThemeEntity({
-    this.mode = AppThemeMode.dark,
-    this.updatedAt,
-  });
+  const ThemeEntity({this.mode = AppThemeMode.dark, this.updatedAt});
 
-  ThemeEntity copyWith({
-    AppThemeMode? mode,
-    DateTime? updatedAt,
-  }) {
+  ThemeEntity copyWith({AppThemeMode? mode, DateTime? updatedAt}) {
     return ThemeEntity(
       mode: mode ?? this.mode,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -33,5 +27,6 @@ class ThemeEntity {
   int get hashCode => Object.hash(mode, updatedAt);
 
   @override
-  String toString() => 'ThemeEntity(mode: ${mode.storageKey}, updatedAt: $updatedAt)';
+  String toString() =>
+      'ThemeEntity(mode: ${mode.storageKey}, updatedAt: $updatedAt)';
 }

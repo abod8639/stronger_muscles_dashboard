@@ -28,7 +28,9 @@ class NotificationRepositoryImpl implements NotificationRepository {
     bool forceRefresh = false,
   }) async {
     final isFilteredQuery =
-        (search != null && search.isNotEmpty) || (type != null && type != 'all') || page > 1;
+        (search != null && search.isNotEmpty) ||
+        (type != null && type != 'all') ||
+        page > 1;
 
     // Check Hive cache first for default initial query if not forced
     if (!forceRefresh && !isFilteredQuery) {
@@ -99,9 +101,7 @@ class NotificationRepositoryImpl implements NotificationRepository {
   }
 
   @override
-  Future<Either<Failure, void>> deleteNotification(
-    String id,
-  ) async {
+  Future<Either<Failure, void>> deleteNotification(String id) async {
     try {
       await remoteDataSource.deleteNotification(id);
       // Invalidate local cache on deletion
@@ -110,7 +110,9 @@ class NotificationRepositoryImpl implements NotificationRepository {
       } catch (_) {}
       return const Right(null);
     } catch (e, stackTrace) {
-      debugPrint('NotificationRepositoryImpl (deleteNotification) Exception: $e');
+      debugPrint(
+        'NotificationRepositoryImpl (deleteNotification) Exception: $e',
+      );
       final failure = NetworkErrorHandler.handleException(e, stackTrace);
       return Left(failure);
     }

@@ -104,22 +104,22 @@ void main() {
   });
 
   group('getUsersStats', () {
-    test('returns cached data when cache is valid and forceRefresh is false', () async {
-      fakeLocal.cachedStats = testStatsModel;
-      fakeLocal.cacheValid = true;
+    test(
+      'returns cached data when cache is valid and forceRefresh is false',
+      () async {
+        fakeLocal.cachedStats = testStatsModel;
+        fakeLocal.cacheValid = true;
 
-      final result = await repository.getUsersStats();
+        final result = await repository.getUsersStats();
 
-      expect(result.isRight(), true);
-      result.fold(
-        (failure) => fail('Should succeed'),
-        (stats) {
+        expect(result.isRight(), true);
+        result.fold((failure) => fail('Should succeed'), (stats) {
           expect(stats.totalUsers, 1);
           expect(stats.users.first.name, 'Test User');
-        },
-      );
-      expect(fakeRemote.getUsersStatsCallCount, 0);
-    });
+        });
+        expect(fakeRemote.getUsersStatsCallCount, 0);
+      },
+    );
 
     test('calls remote and updates cache when cache is invalid', () async {
       fakeLocal.cacheValid = false;
@@ -148,57 +148,63 @@ void main() {
       expect(fakeRemote.getUsersStatsCallCount, 1);
     });
 
-    test('falls back to cache when remote fails and cached data exists', () async {
-      fakeLocal.cacheValid = false;
-      fakeLocal.cachedStats = testStatsModel;
-      fakeRemote.errorToThrow = DioException(
-        requestOptions: RequestOptions(path: '/admin/users'),
-        type: DioExceptionType.connectionTimeout,
-      );
+    test(
+      'falls back to cache when remote fails and cached data exists',
+      () async {
+        fakeLocal.cacheValid = false;
+        fakeLocal.cachedStats = testStatsModel;
+        fakeRemote.errorToThrow = DioException(
+          requestOptions: RequestOptions(path: '/admin/users'),
+          type: DioExceptionType.connectionTimeout,
+        );
 
-      final result = await repository.getUsersStats();
+        final result = await repository.getUsersStats();
 
-      expect(result.isRight(), true);
-      result.fold(
-        (failure) => fail('Should return cached data on fallback'),
-        (stats) => expect(stats.totalUsers, 1),
-      );
-    });
+        expect(result.isRight(), true);
+        result.fold(
+          (failure) => fail('Should return cached data on fallback'),
+          (stats) => expect(stats.totalUsers, 1),
+        );
+      },
+    );
 
-    test('returns Left(Failure) when remote fails and no cache exists', () async {
-      fakeLocal.cacheValid = false;
-      fakeLocal.cachedStats = null;
-      fakeRemote.errorToThrow = DioException(
-        requestOptions: RequestOptions(path: '/admin/users'),
-        type: DioExceptionType.connectionTimeout,
-      );
+    test(
+      'returns Left(Failure) when remote fails and no cache exists',
+      () async {
+        fakeLocal.cacheValid = false;
+        fakeLocal.cachedStats = null;
+        fakeRemote.errorToThrow = DioException(
+          requestOptions: RequestOptions(path: '/admin/users'),
+          type: DioExceptionType.connectionTimeout,
+        );
 
-      final result = await repository.getUsersStats();
+        final result = await repository.getUsersStats();
 
-      expect(result.isLeft(), true);
-      result.fold(
-        (failure) => expect(failure, isA<Failure>()),
-        (stats) => fail('Should fail'),
-      );
-    });
+        expect(result.isLeft(), true);
+        result.fold(
+          (failure) => expect(failure, isA<Failure>()),
+          (stats) => fail('Should fail'),
+        );
+      },
+    );
   });
 
   group('getUsers', () {
-    test('returns cached users when cache has data and not force refreshing', () async {
-      fakeLocal.cachedUsers = [testUserModel];
+    test(
+      'returns cached users when cache has data and not force refreshing',
+      () async {
+        fakeLocal.cachedUsers = [testUserModel];
 
-      final result = await repository.getUsers();
+        final result = await repository.getUsers();
 
-      expect(result.isRight(), true);
-      result.fold(
-        (failure) => fail('Should succeed'),
-        (users) {
+        expect(result.isRight(), true);
+        result.fold((failure) => fail('Should succeed'), (users) {
           expect(users.length, 1);
           expect(users.first.name, 'Test User');
-        },
-      );
-      expect(fakeRemote.getUsersCallCount, 0);
-    });
+        });
+        expect(fakeRemote.getUsersCallCount, 0);
+      },
+    );
 
     test('calls remote and caches when local users are empty', () async {
       fakeLocal.cachedUsers = [];
@@ -215,20 +221,23 @@ void main() {
       expect(fakeLocal.cacheUsersCallCount, 1);
     });
 
-    test('returns Left(Failure) on remote failure when no cached users exist', () async {
-      fakeLocal.cachedUsers = [];
-      fakeRemote.errorToThrow = DioException(
-        requestOptions: RequestOptions(path: '/admin/users'),
-        type: DioExceptionType.badResponse,
-      );
+    test(
+      'returns Left(Failure) on remote failure when no cached users exist',
+      () async {
+        fakeLocal.cachedUsers = [];
+        fakeRemote.errorToThrow = DioException(
+          requestOptions: RequestOptions(path: '/admin/users'),
+          type: DioExceptionType.badResponse,
+        );
 
-      final result = await repository.getUsers();
+        final result = await repository.getUsers();
 
-      expect(result.isLeft(), true);
-      result.fold(
-        (failure) => expect(failure, isA<Failure>()),
-        (users) => fail('Should fail'),
-      );
-    });
+        expect(result.isLeft(), true);
+        result.fold(
+          (failure) => expect(failure, isA<Failure>()),
+          (users) => fail('Should fail'),
+        );
+      },
+    );
   });
 }

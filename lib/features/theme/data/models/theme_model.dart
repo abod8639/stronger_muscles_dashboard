@@ -4,10 +4,7 @@ class ThemeModel {
   final String mode; // 'light' | 'dark' | 'system'
   final DateTime? updatedAt;
 
-  const ThemeModel({
-    required this.mode,
-    this.updatedAt,
-  });
+  const ThemeModel({required this.mode, this.updatedAt});
 
   factory ThemeModel.fromJson(Map<String, dynamic> json) {
     return ThemeModel(
@@ -19,13 +16,8 @@ class ThemeModel {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'mode': mode,
-      'updated_at': updatedAt?.toIso8601String(),
-    };
+    return {'mode': mode, 'updated_at': updatedAt?.toIso8601String()};
   }
 
-  static const ThemeModel defaultModel = ThemeModel(
-    mode: 'dark',
-  );
+  static const ThemeModel defaultModel = ThemeModel(mode: 'dark');
 }

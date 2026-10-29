@@ -81,7 +81,8 @@ class _CategoryGridCardState extends State<CategoryGridCard> {
                           fit: BoxFit.cover,
                           cacheManager: CustomCacheManager.instance,
                           placeholder: (_, _) => Container(
-                            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+                            color: colorScheme.surfaceContainerHighest
+                                .withValues(alpha: 0.4),
                             child: Center(
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
@@ -89,7 +90,8 @@ class _CategoryGridCardState extends State<CategoryGridCard> {
                               ),
                             ),
                           ),
-                          errorWidget: (_, _, _) => _buildFallbackImage(colorScheme),
+                          errorWidget: (_, _, _) =>
+                              _buildFallbackImage(colorScheme),
                         )
                       else
                         _buildFallbackImage(colorScheme),
@@ -119,7 +121,10 @@ class _CategoryGridCardState extends State<CategoryGridCard> {
                         top: 10,
                         right: 10,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
                           decoration: BoxDecoration(
                             color: statusBg,
                             borderRadius: BorderRadius.circular(100),
@@ -184,7 +189,10 @@ class _CategoryGridCardState extends State<CategoryGridCard> {
                 Expanded(
                   flex: 2,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 10,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -204,7 +212,9 @@ class _CategoryGridCardState extends State<CategoryGridCard> {
                             Icon(
                               Icons.tag_rounded,
                               size: 13,
-                              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                              color: colorScheme.onSurfaceVariant.withValues(
+                                alpha: 0.7,
+                              ),
                             ),
                             const SizedBox(width: 3),
                             Expanded(
@@ -221,7 +231,8 @@ class _CategoryGridCardState extends State<CategoryGridCard> {
                             ),
                           ],
                         ),
-                        if (category.descriptionAr != null && category.descriptionAr!.isNotEmpty) ...[
+                        if (category.descriptionAr != null &&
+                            category.descriptionAr!.isNotEmpty) ...[
                           const SizedBox(height: 3),
                           Text(
                             category.descriptionAr!,

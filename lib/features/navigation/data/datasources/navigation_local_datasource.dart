@@ -34,7 +34,9 @@ class NavigationLocalDataSourceImpl implements NavigationLocalDataSource {
 
       return NavigationBadgesModel.fromJson(map);
     } catch (e) {
-      throw CacheException(message: 'فشل في قراءة شارات التنقل من الذاكرة المحلية: $e');
+      throw CacheException(
+        message: 'فشل في قراءة شارات التنقل من الذاكرة المحلية: $e',
+      );
     }
   }
 
@@ -44,7 +46,9 @@ class NavigationLocalDataSourceImpl implements NavigationLocalDataSource {
       await _box.put(_keyData, badges.toJson());
       await _box.put(_keyTimestamp, DateTime.now().millisecondsSinceEpoch);
     } catch (e) {
-      throw CacheException(message: 'فشل في حفظ شارات التنقل في الذاكرة المحلية: $e');
+      throw CacheException(
+        message: 'فشل في حفظ شارات التنقل في الذاكرة المحلية: $e',
+      );
     }
   }
 

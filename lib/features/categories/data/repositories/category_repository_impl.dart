@@ -18,8 +18,8 @@ class CategoryRepositoryImpl implements CategoryRepository {
   CategoryRepositoryImpl({
     required CategoryRemoteDataSource remoteDataSource,
     required CategoryLocalDataSource localDataSource,
-  })  : _remoteDataSource = remoteDataSource,
-        _localDataSource = localDataSource;
+  }) : _remoteDataSource = remoteDataSource,
+       _localDataSource = localDataSource;
 
   @override
   Future<Either<Failure, List<CategoryEntity>>> getCategories({
@@ -31,7 +31,9 @@ class CategoryRepositoryImpl implements CategoryRepository {
       final isCacheValid = await _localDataSource.isCacheValid(tree: tree);
       if (isCacheValid) {
         try {
-          final cachedModels = await _localDataSource.getCachedCategories(tree: tree);
+          final cachedModels = await _localDataSource.getCachedCategories(
+            tree: tree,
+          );
           if (cachedModels.isNotEmpty) {
             return Right(cachedModels.toEntities());
           }
@@ -52,7 +54,9 @@ class CategoryRepositoryImpl implements CategoryRepository {
     } on AppException catch (e) {
       // 3. Resilient fallback: If remote fails, attempt to serve stale cached data
       try {
-        final fallbackCache = await _localDataSource.getCachedCategories(tree: tree);
+        final fallbackCache = await _localDataSource.getCachedCategories(
+          tree: tree,
+        );
         if (fallbackCache.isNotEmpty) {
           return Right(fallbackCache.toEntities());
         }
@@ -86,7 +90,9 @@ class CategoryRepositoryImpl implements CategoryRepository {
   }
 
   @override
-  Future<Either<Failure, CategoryEntity>> addCategory(CategoryEntity category) async {
+  Future<Either<Failure, CategoryEntity>> addCategory(
+    CategoryEntity category,
+  ) async {
     try {
       final remoteJson = category.toRemoteJson();
       final newModel = await _remoteDataSource.addCategory(remoteJson);
@@ -102,10 +108,15 @@ class CategoryRepositoryImpl implements CategoryRepository {
   }
 
   @override
-  Future<Either<Failure, CategoryEntity>> updateCategory(CategoryEntity category) async {
+  Future<Either<Failure, CategoryEntity>> updateCategory(
+    CategoryEntity category,
+  ) async {
     try {
       final remoteJson = category.toRemoteJson();
-      final updatedModel = await _remoteDataSource.updateCategory(category.id, remoteJson);
+      final updatedModel = await _remoteDataSource.updateCategory(
+        category.id,
+        remoteJson,
+      );
       try {
         await _localDataSource.cacheCategory(updatedModel);
       } catch (_) {}

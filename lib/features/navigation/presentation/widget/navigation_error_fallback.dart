@@ -8,16 +8,13 @@ class NavigationErrorFallback extends StatelessWidget {
   final Object error;
   final VoidCallback? onRetry;
 
-  const NavigationErrorFallback({
-    super.key,
-    required this.error,
-    this.onRetry,
-  });
+  const NavigationErrorFallback({super.key, required this.error, this.onRetry});
 
   @override
   Widget build(BuildContext context) {
-    final errorMessage =
-        error is Failure ? (error as Failure).toMessage() : error.toString();
+    final errorMessage = error is Failure
+        ? (error as Failure).toMessage()
+        : error.toString();
 
     return Scaffold(
       backgroundColor: Colors.black,
