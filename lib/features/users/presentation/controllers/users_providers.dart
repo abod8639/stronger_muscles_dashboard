@@ -1,8 +1,10 @@
 import 'dart:async';
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:stronger_muscles_dashboard/features/auth/presentation/controllers/auth_providers.dart';
+import 'package:hive/hive.dart';
+import 'package:stronger_muscles_dashboard/core/network/dio_provider.dart';
+import '../../data/datasources/user_local_datasource.dart';
 import '../../data/datasources/user_remote_datasource.dart';
+import '../../data/models/user_model.dart';
 import '../../data/repositories/user_repository_impl.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/entities/users_stats_entity.dart';
@@ -10,14 +12,36 @@ import '../../domain/repositories/user_repository.dart';
 import '../../domain/usecases/get_users_stats_usecase.dart';
 import '../../domain/usecases/get_users_usecase.dart';
 
+// ==================== Data Layer Scoped Providers ====================
+
+final usersStatsHiveBoxProvider = Provider<Box>((ref) {
+  return Hive.box('users_stats_cache');
+});
+
+final usersHiveBoxProvider = Provider<Box<UserModel>>((ref) {
+  return Hive.box<UserModel>('users');
+});
+
+final userLocalDataSourceProvider = Provider<UserLocalDataSource>((ref) {
+  return UserLocalDataSourceImpl(
+    statsBox: ref.watch(usersStatsHiveBoxProvider),
+    usersBox: ref.watch(usersHiveBoxProvider),
+  );
+});
+
 final userRemoteDataSourceProvider = Provider<UserRemoteDataSource>((ref) {
   final dio = ref.watch(dioProvider);
   return UserRemoteDataSourceImpl(dio);
 });
 
 final userRepositoryProvider = Provider<UserRepository>((ref) {
-  return UserRepositoryImpl(ref.watch(userRemoteDataSourceProvider));
+  return UserRepositoryImpl(
+    remoteDataSource: ref.watch(userRemoteDataSourceProvider),
+    localDataSource: ref.watch(userLocalDataSourceProvider),
+  );
 });
+
+// ==================== Domain Layer UseCases Providers ====================
 
 final getUsersStatsUseCaseProvider = Provider<GetUsersStatsUseCase>((ref) {
   return GetUsersStatsUseCase(ref.watch(userRepositoryProvider));
@@ -27,59 +51,67 @@ final getUsersUseCaseProvider = Provider<GetUsersUseCase>((ref) {
   return GetUsersUseCase(ref.watch(userRepositoryProvider));
 });
 
-final usersSearchQueryProvider = NotifierProvider<UsersSearchQueryNotifier, String>(
+// ==================== Presentation Search Query Notifier ====================
+
+class UsersSearchQueryNotifier extends Notifier<String> {
+  Timer? _debounceTimer;
+
+  @override
+  String build() {
+    ref.onDispose(() {
+      _debounceTimer?.cancel();
+    });
+    return '';
+  }
+
+  void setQuery(String query) {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+      state = query;
+    });
+  }
+
+  void setQueryImmediately(String query) {
+    _debounceTimer?.cancel();
+    state = query;
+  }
+}
+
+final usersSearchQueryProvider =
+    NotifierProvider<UsersSearchQueryNotifier, String>(
   UsersSearchQueryNotifier.new,
 );
 
-class UsersSearchQueryNotifier extends Notifier<String> {
-  @override
-  String build() => '';
-
-  void setQuery(String query) => state = query;
-}
+// ==================== Presentation Main Users Notifier ====================
 
 class UsersNotifier extends AsyncNotifier<UsersStatsEntity> {
-  CancelToken? _cancelToken;
+  final GetUsersStatsUseCase? _injectedUseCase;
+
+  UsersNotifier({GetUsersStatsUseCase? getUsersStatsUseCase})
+      : _injectedUseCase = getUsersStatsUseCase;
 
   @override
   FutureOr<UsersStatsEntity> build() async {
-    ref.onDispose(() {
-      if (_cancelToken != null && !_cancelToken!.isCancelled) {
-        _cancelToken!.cancel('cancelled by riverpod onDispose');
-      }
-    });
-    return _fetchStats();
-  }
-
-  Future<UsersStatsEntity> _fetchStats() async {
-    if (_cancelToken != null && !_cancelToken!.isCancelled) {
-      _cancelToken!.cancel('new request');
-    }
-    _cancelToken = CancelToken();
-
-    final useCase = ref.watch(getUsersStatsUseCaseProvider);
-    final result = await useCase(cancelToken: _cancelToken);
+    final GetUsersStatsUseCase useCase =
+        _injectedUseCase ?? ref.watch(getUsersStatsUseCaseProvider);
+    final result = await useCase();
 
     return result.fold(
-      (failure) => throw Exception(failure.toMessage()),
+      (failure) => throw failure,
       (stats) => stats,
     );
   }
 
   Future<void> refresh() async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
-      _cancelToken?.cancel('new refresh request');
-      _cancelToken = CancelToken();
+    final GetUsersStatsUseCase useCase =
+        _injectedUseCase ?? ref.read(getUsersStatsUseCaseProvider);
+    final result = await useCase(forceRefresh: true);
 
-      final useCase = ref.read(getUsersStatsUseCaseProvider);
-      final result = await useCase(cancelToken: _cancelToken);
-
-      return result.fold(
-        (failure) => throw Exception(failure.toMessage()),
-        (stats) => stats,
-      );
-    });
+    state = result.fold(
+      (failure) => AsyncError(failure, StackTrace.current),
+      (stats) => AsyncData(stats),
+    );
   }
 
   void updateUserInfo(UserEntity updatedUser) {
@@ -95,7 +127,8 @@ class UsersNotifier extends AsyncNotifier<UsersStatsEntity> {
 final usersNotifierProvider =
     AsyncNotifierProvider<UsersNotifier, UsersStatsEntity>(UsersNotifier.new);
 
-/// قائمة المستخدمين المفلترة بحسب نص البحث
+// ==================== Filtered Users Provider ====================
+
 final filteredUsersProvider = Provider<List<UserEntity>>((ref) {
   final usersState = ref.watch(usersNotifierProvider);
   final query = ref.watch(usersSearchQueryProvider).trim().toLowerCase();
