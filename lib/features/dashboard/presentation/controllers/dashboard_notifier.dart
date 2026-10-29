@@ -18,10 +18,7 @@ class DashboardStatsNotifier extends AsyncNotifier<DashboardStatsEntity> {
         _injectedUseCase ?? ref.watch(getDashboardDataUseCaseProvider);
     final result = await useCase();
 
-    return result.fold(
-      (failure) => throw failure,
-      (stats) => stats,
-    );
+    return result.fold((failure) => throw failure, (stats) => stats);
   }
 
   /// Reloads dashboard data with fresh remote fetch, bypassing local cache

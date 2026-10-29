@@ -1,96 +1,84 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:stronger_muscles_dashboard/core/theme/app_colors.dart';
-import 'package:stronger_muscles_dashboard/core/theme/responsive.dart';
-import 'package:stronger_muscles_dashboard/core/error/failures.dart';
+import 'package:stronger_muscles_dashboard/core/components/base_app_bar.dart';
 import 'package:stronger_muscles_dashboard/core/components/enhanced_error_widget.dart';
 import 'package:stronger_muscles_dashboard/core/components/enhanced_loading_widget.dart';
+import 'package:stronger_muscles_dashboard/core/components/generic_empty_state.dart';
 import 'package:stronger_muscles_dashboard/core/components/my_refresh_indicator.dart';
+import 'package:stronger_muscles_dashboard/core/theme/responsive.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_providers.dart';
 import '../widgets/categories_summary_section.dart';
 import '../widgets/dashboard_charts_section.dart';
-import '../widgets/dashboard_header_status.dart';
 import '../widgets/dashboard_indicators_section.dart';
 import '../widgets/dashboard_period_selector.dart';
 import '../widgets/recent_orders_section.dart';
 
-/// Dumb presentation widget for the Dashboard screen.
-/// Adheres to:
-/// - Zero business or data calculation logic inside UI
-/// - No cross-feature private imports (uses core EnhancedErrorWidget)
-/// - Selective state listening via Riverpod
+/// شاشة لوحة التحكم: المؤشرات، الرسم البياني، آخر الطلبات، والتصنيفات
 class DashboardPage extends ConsumerWidget {
   const DashboardPage({super.key});
+
+  /// أقصى عرض للمحتوى على الشاشات العريضة
+  static const double _maxContentWidth = 1400;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final res = context.responsive;
     final dashboardAsync = ref.watch(dashboardStatsNotifierProvider);
+    Future<void> refresh() =>
+        ref.read(dashboardStatsNotifierProvider.notifier).refreshDashboard();
 
     return Scaffold(
-      backgroundColor: AppColorsExtended.backgroundColor,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      appBar: BaseAppBar(title: 'لوحة التحكم', onPressed: refresh),
       body: dashboardAsync.when(
-        loading: () => const EnhancedLoadingWidget(
-          message: 'جاري تحميل لوحة التحكم...',
+        loading: () =>
+            const EnhancedLoadingWidget(message: 'جاري تحميل لوحة التحكم...'),
+        error: (error, _) => EnhancedErrorWidget.fromError(
+          error,
+          fallbackTitle: 'خطأ في تحميل البيانات',
+          onRetry: refresh,
         ),
-        error: (error, stackTrace) {
-          final errorMessage = error is Failure ? error.toMessage() : error.toString();
-          return EnhancedErrorWidget(
-            title: 'خطأ في تحميل البيانات',
-            message: errorMessage,
-            onRetry: () => ref
-                .read(dashboardStatsNotifierProvider.notifier)
-                .refreshDashboard(),
-          );
-        },
         data: (stats) {
-          final hasAnyData = stats.totalOrders > 0 ||
+          final hasAnyData =
+              stats.totalOrders > 0 ||
               stats.totalProducts > 0 ||
               stats.totalUsers > 0 ||
               stats.orders.isNotEmpty ||
               stats.products.isNotEmpty ||
               stats.categories.isNotEmpty;
+          final sectionGap = SizedBox(height: res.itemSpacing * 2.5);
 
           return MyRefreshIndicator(
-            onRefresh: () => ref
-                .read(dashboardStatsNotifierProvider.notifier)
-                .refreshDashboard(),
+            onRefresh: refresh,
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: res.defaultPadding.left,
-                  vertical: res.defaultPadding.top,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const DashboardHeaderStatus(),
-                    SizedBox(height: res.itemSpacing),
-                    const DashboardPeriodSelector(),
-                    SizedBox(height: res.itemSpacing),
-                    const DashboardIndicatorsSection(),
-                    SizedBox(height: res.itemSpacing * 3),
-                    if (!hasAnyData)
-                      const Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(40.0),
-                          child: Text(
-                            'لا توجد بيانات متاحة حالياً',
-                            style: TextStyle(color: Colors.white60),
-                          ),
-                        ),
-                      )
-                    else ...[
-                      const DashboardChartsSection(),
-                      SizedBox(height: res.itemSpacing * 3),
-                      const RecentOrdersSection(),
-                      SizedBox(height: res.itemSpacing * 2),
-                      const CategoriesSummarySection(),
-                      SizedBox(height: res.itemSpacing * 2),
+              padding: res.defaultPadding,
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: _maxContentWidth),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const DashboardPeriodSelector(),
+                      SizedBox(height: res.itemSpacing),
+                      const DashboardIndicatorsSection(),
+                      sectionGap,
+                      if (!hasAnyData)
+                        const GenericEmptyState(
+                          title: 'لا توجد بيانات',
+                          message: 'لا توجد بيانات متاحة حالياً',
+                          icon: Icons.insights_outlined,
+                        )
+                      else ...[
+                        const DashboardChartsSection(),
+                        sectionGap,
+                        const RecentOrdersSection(),
+                        sectionGap,
+                        const CategoriesSummarySection(),
+                      ],
+                      sectionGap,
                     ],
-                    SizedBox(height: res.itemSpacing * 3),
-                  ],
+                  ),
                 ),
               ),
             ),

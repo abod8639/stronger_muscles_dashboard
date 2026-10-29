@@ -13,11 +13,12 @@ class DashboardPeriodSelector extends ConsumerWidget {
     return HorizontalChipsSelector(
       items: dashboardPeriodItems,
       selectedId: selectedPeriod,
-      onSelect: (id) => ref.read(dashboardPeriodProvider.notifier).setPeriod(id),
+      onSelect: (id) =>
+          ref.read(dashboardPeriodProvider.notifier).setPeriod(id),
       labelKey: 'name',
       idKey: 'id',
       showAllOption: false,
-      allLabel: 'الكل',
+      padding: EdgeInsets.zero,
     );
   }
 }

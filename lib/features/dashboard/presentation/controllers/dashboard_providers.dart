@@ -22,12 +22,16 @@ final dashboardHiveBoxProvider = Provider<Box>((ref) {
 });
 
 /// Scoped provider for [DashboardLocalDataSource]
-final dashboardLocalDataSourceProvider = Provider<DashboardLocalDataSource>((ref) {
+final dashboardLocalDataSourceProvider = Provider<DashboardLocalDataSource>((
+  ref,
+) {
   return DashboardLocalDataSourceImpl(box: ref.watch(dashboardHiveBoxProvider));
 });
 
 /// Scoped provider for [DashboardRemoteDataSource]
-final dashboardRemoteDataSourceProvider = Provider<DashboardRemoteDataSource>((ref) {
+final dashboardRemoteDataSourceProvider = Provider<DashboardRemoteDataSource>((
+  ref,
+) {
   return DashboardRemoteDataSourceImpl(dio: ref.watch(dioProvider));
 });
 
@@ -46,7 +50,9 @@ final dashboardRepositoryProvider = Provider<DashboardRepository>((ref) {
 });
 
 /// Scoped provider for [GetDashboardDataUseCase]
-final getDashboardDataUseCaseProvider = Provider<GetDashboardDataUseCase>((ref) {
+final getDashboardDataUseCaseProvider = Provider<GetDashboardDataUseCase>((
+  ref,
+) {
   return GetDashboardDataUseCase(ref.watch(dashboardRepositoryProvider));
 });
 
@@ -67,27 +73,38 @@ class DashboardPeriodNotifier extends Notifier<String> {
 }
 
 final dashboardPeriodProvider =
-    NotifierProvider<DashboardPeriodNotifier, String>(DashboardPeriodNotifier.new);
+    NotifierProvider<DashboardPeriodNotifier, String>(
+      DashboardPeriodNotifier.new,
+    );
 
 /// State notifier provider managing dashboard entity lifecycle
 final dashboardStatsNotifierProvider =
     AsyncNotifierProvider<DashboardStatsNotifier, DashboardStatsEntity>(
-  DashboardStatsNotifier.new,
-);
+      DashboardStatsNotifier.new,
+    );
 
 /// Scoped reactive provider calculating order graph points based on active period filter
 final ordersChartDataProvider = Provider<OrdersChartData>((ref) {
-  final stats = ref.watch(dashboardStatsNotifierProvider).value ??
+  final stats =
+      ref.watch(dashboardStatsNotifierProvider).value ??
       const DashboardStatsEntity.initial();
   final period = ref.watch(dashboardPeriodProvider);
-  return DashboardChartCalculator.calculateOrdersChartData(stats.orders, period);
+  return DashboardChartCalculator.calculateOrdersChartData(
+    stats.orders,
+    period,
+  );
 });
 
 /// Scoped family provider calculating percentage trend and sparklines per order status
 final statusTrendDataProvider =
     Provider.family<IndicatorTrendData, OrderStatus>((ref, status) {
-  final stats = ref.watch(dashboardStatsNotifierProvider).value ??
-      const DashboardStatsEntity.initial();
-  final period = ref.watch(dashboardPeriodProvider);
-  return DashboardChartCalculator.calculateStatusTrendData(stats.orders, status, period);
-});
+      final stats =
+          ref.watch(dashboardStatsNotifierProvider).value ??
+          const DashboardStatsEntity.initial();
+      final period = ref.watch(dashboardPeriodProvider);
+      return DashboardChartCalculator.calculateStatusTrendData(
+        stats.orders,
+        status,
+        period,
+      );
+    });

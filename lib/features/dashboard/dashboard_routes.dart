@@ -8,10 +8,10 @@ class DashboardRoutes {
   const DashboardRoutes._();
 
   static List<RouteBase> get routes => [
-        GoRoute(
-          path: AppRoutes.dashboard,
-          name: 'dashboard',
-          builder: (context, state) => const DashboardPage(),
-        ),
-      ];
+    GoRoute(
+      path: AppRoutes.dashboard,
+      name: 'dashboard',
+      builder: (context, state) => const DashboardPage(),
+    ),
+  ];
 }

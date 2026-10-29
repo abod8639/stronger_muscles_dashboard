@@ -15,7 +15,8 @@ class RecentOrdersSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final res = context.responsive;
-    final stats = ref.watch(dashboardStatsNotifierProvider).value ??
+    final stats =
+        ref.watch(dashboardStatsNotifierProvider).value ??
         DashboardStatsEntity.initial();
     final orders = stats.orders;
 
@@ -23,6 +24,7 @@ class RecentOrdersSection extends ConsumerWidget {
       title: 'الطلبات الأخيرة',
       crossAxisCount: res.isDesktop ? 2 : 1,
       items: orders,
+      horizontalPadding: 0,
       onSeeAll: () =>
           ref.read(navigationControllerProvider.notifier).selectTab(4),
       useListView: res.isTablet,

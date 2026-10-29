@@ -71,7 +71,10 @@ class DashboardChartCalculator {
   static OrdersChartData _calculateMonthOrdersData(List<OrderEntity> orders) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final days = List.generate(30, (i) => today.subtract(Duration(days: 29 - i)));
+    final days = List.generate(
+      30,
+      (i) => today.subtract(Duration(days: 29 - i)),
+    );
 
     final spots = <FlSpot>[];
     final bottomTitles = <String>[];
@@ -148,8 +151,9 @@ class DashboardChartCalculator {
   }
 
   static (double, double) _calculateMaxYAndInterval(List<FlSpot> spots) {
-    double maxCount =
-        spots.isEmpty ? 0.0 : spots.map((s) => s.y).reduce(math.max);
+    double maxCount = spots.isEmpty
+        ? 0.0
+        : spots.map((s) => s.y).reduce(math.max);
     double maxY;
     double interval;
 
@@ -196,10 +200,14 @@ class DashboardChartCalculator {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
 
-    final currentDays =
-        List.generate(7, (i) => today.subtract(Duration(days: 6 - i)));
-    final previousDays =
-        List.generate(7, (i) => today.subtract(Duration(days: 13 - i)));
+    final currentDays = List.generate(
+      7,
+      (i) => today.subtract(Duration(days: 6 - i)),
+    );
+    final previousDays = List.generate(
+      7,
+      (i) => today.subtract(Duration(days: 13 - i)),
+    );
 
     final spots = <FlSpot>[];
     int currentTotal = 0;
@@ -228,14 +236,12 @@ class DashboardChartCalculator {
       previousTotal += count;
     }
 
-    final (trend, trendUp) =
-        _calculateTrendPercentage(currentTotal, previousTotal);
-
-    return IndicatorTrendData(
-      spots: spots,
-      trend: trend,
-      trendUp: trendUp,
+    final (trend, trendUp) = _calculateTrendPercentage(
+      currentTotal,
+      previousTotal,
     );
+
+    return IndicatorTrendData(spots: spots, trend: trend, trendUp: trendUp);
   }
 
   static IndicatorTrendData _calculateStatusMonthData(
@@ -245,10 +251,14 @@ class DashboardChartCalculator {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
 
-    final currentDays =
-        List.generate(30, (i) => today.subtract(Duration(days: 29 - i)));
-    final previousDays =
-        List.generate(30, (i) => today.subtract(Duration(days: 59 - i)));
+    final currentDays = List.generate(
+      30,
+      (i) => today.subtract(Duration(days: 29 - i)),
+    );
+    final previousDays = List.generate(
+      30,
+      (i) => today.subtract(Duration(days: 59 - i)),
+    );
 
     final spots = <FlSpot>[];
     int currentTotal = 0;
@@ -277,14 +287,12 @@ class DashboardChartCalculator {
       previousTotal += count;
     }
 
-    final (trend, trendUp) =
-        _calculateTrendPercentage(currentTotal, previousTotal);
-
-    return IndicatorTrendData(
-      spots: spots,
-      trend: trend,
-      trendUp: trendUp,
+    final (trend, trendUp) = _calculateTrendPercentage(
+      currentTotal,
+      previousTotal,
     );
+
+    return IndicatorTrendData(spots: spots, trend: trend, trendUp: trendUp);
   }
 
   static IndicatorTrendData _calculateStatusYearData(
@@ -310,14 +318,12 @@ class DashboardChartCalculator {
       return o.status == status && o.orderDate.year == (now.year - 1);
     }).length;
 
-    final (trend, trendUp) =
-        _calculateTrendPercentage(currentTotal, previousTotal);
-
-    return IndicatorTrendData(
-      spots: spots,
-      trend: trend,
-      trendUp: trendUp,
+    final (trend, trendUp) = _calculateTrendPercentage(
+      currentTotal,
+      previousTotal,
     );
+
+    return IndicatorTrendData(spots: spots, trend: trend, trendUp: trendUp);
   }
 
   static (String, bool) _calculateTrendPercentage(int current, int previous) {

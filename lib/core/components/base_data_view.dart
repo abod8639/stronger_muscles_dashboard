@@ -1,6 +1,10 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/core/components/icon_card_with_shadow.dart';
+import 'package:stronger_muscles_dashboard/core/components/section_header.dart';
+import 'package:stronger_muscles_dashboard/core/components/soft_surface.dart';
 import 'package:stronger_muscles_dashboard/core/theme/responsive.dart';
+import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 
 /// مكون عرض البيانات العام بأسلوب Neumorphism / Soft UI
 class BaseDataView<T> extends StatelessWidget {
@@ -15,6 +19,9 @@ class BaseDataView<T> extends StatelessWidget {
   final double? childAspectRatio;
   final bool useListView;
 
+  /// الحشوة الأفقية؛ مرّر 0 عندما تكون الصفحة المضيفة محشوة مسبقاً
+  final double? horizontalPadding;
+
   const BaseDataView({
     super.key,
     required this.title,
@@ -25,8 +32,12 @@ class BaseDataView<T> extends StatelessWidget {
     this.mainAxisExtent,
     this.childAspectRatio,
     this.useListView = false,
+    this.horizontalPadding,
     this.showCount,
   });
+
+  double _hPadding(ResponsiveLayout res) =>
+      horizontalPadding ?? res.defaultPadding.left;
 
   int get _displayCount =>
       showCount != null ? min(showCount!, items.length) : items.length;
@@ -42,7 +53,7 @@ class BaseDataView<T> extends StatelessWidget {
 
     if (items.isEmpty) {
       return Padding(
-        padding: EdgeInsets.symmetric(horizontal: res.defaultPadding.left),
+        padding: EdgeInsets.symmetric(horizontal: _hPadding(res)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -65,57 +76,16 @@ class BaseDataView<T> extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context, ResponsiveLayout res) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Padding(
+    return SectionHeader(
+      title: title,
+      count: items.length,
+      onSeeAll:
+          onSeeAll != null && (showCount == null || items.length > showCount!)
+          ? onSeeAll
+          : null,
       padding: EdgeInsets.symmetric(
-        horizontal: res.defaultPadding.left,
+        horizontal: _hPadding(res),
         vertical: res.defaultPadding.top / 2,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 4,
-                height: 20,
-                decoration: BoxDecoration(
-                  color: colorScheme.primary,
-                  borderRadius: BorderRadius.circular(4),
-                  // boxShadow: [
-                  //   BoxShadow(
-                  //     color: colorScheme.primary.withValues(alpha: 0.1),
-                  //     blurRadius: 6,
-                  //   ),
-                  // ],
-                ),
-              ),
-              const SizedBox(width: 10),
-              Text(
-                title,
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: res.getTitleFontSize(),
-                  color: colorScheme.onSurface,
-                  letterSpacing: 0.3,
-                ),
-              ),
-              if (items.isNotEmpty) ...[
-                const SizedBox(width: 10),
-                _NeumorphicCountBadge(count: items.length),
-              ],
-            ],
-          ),
-          if (onSeeAll != null &&
-              (showCount == null || items.length > showCount!))
-            _NeumorphicSeeAllButton(
-              onTap: onSeeAll!,
-              fontSize: res.getBodyFontSize() - 1,
-            ),
-        ],
       ),
     );
   }
@@ -126,7 +96,7 @@ class BaseDataView<T> extends StatelessWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: displayList.length,
-      padding: EdgeInsets.symmetric(horizontal: res.defaultPadding.left),
+      padding: EdgeInsets.symmetric(horizontal: _hPadding(res)),
       itemBuilder: (context, index) => Padding(
         padding: const EdgeInsets.only(bottom: 12),
         child: itemBuilder(context, displayList[index], index),
@@ -140,7 +110,7 @@ class BaseDataView<T> extends StatelessWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       padding: EdgeInsets.symmetric(
-        horizontal: res.defaultPadding.left,
+        horizontal: _hPadding(res),
         vertical: spacing / 2,
       ),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -157,159 +127,6 @@ class BaseDataView<T> extends StatelessWidget {
   }
 }
 
-/// زر "عرض الكل" بتصميم ناعم ومجسم مع استجابة ملموسة عند التفاعل
-class _NeumorphicSeeAllButton extends StatefulWidget {
-  final VoidCallback onTap;
-  final double fontSize;
-
-  const _NeumorphicSeeAllButton({
-    required this.onTap,
-    required this.fontSize,
-  });
-
-  @override
-  State<_NeumorphicSeeAllButton> createState() => _NeumorphicSeeAllButtonState();
-}
-
-class _NeumorphicSeeAllButtonState extends State<_NeumorphicSeeAllButton> {
-  // bool _isHovered = false;
-  // bool _isPressed = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final isDark = theme.brightness == Brightness.dark;
-
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 160),
-      curve: Curves.easeOutCubic,
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(100),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: (isDark
-                  ? [
-                      Color.lerp(colorScheme.surfaceContainerHigh, Colors.white, 0.03)!,
-                      Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.1)!,
-                    ]
-                  : [
-                      Color.lerp(colorScheme.surfaceContainer,Colors.white , 0.8)!,
-                      Color.lerp(colorScheme.surfaceContainer,Colors.black , 0.01)!,
-                    ]
-                    ),
-        ),
-        boxShadow:  [
-                BoxShadow(
-                  color: isDark
-                      ? Colors.black.withValues(alpha:  0.45)
-                      : const Color(0xFFA3B1C6).withValues(alpha: 0.38),
-                  offset: const Offset(2.5, 3),
-                  blurRadius:  5,
-                ),
-                BoxShadow(
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.04)
-                      : Colors.white.withValues(alpha: 0.9),
-                  offset: const Offset(-2, -2),
-                  blurRadius:  4,
-                ),
-              ],
-        border: Border.all(
-          color: colorScheme.primary.withValues(alpha: 0.3),
-          width: 1.0,
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'عرض الكل',
-            style: TextStyle(
-              color: colorScheme.primary,
-              fontWeight: FontWeight.w700,
-              fontSize: widget.fontSize,
-              letterSpacing: 0.2,
-            ),
-          ),
-          const SizedBox(width: 6),
-          Icon(
-            Icons.arrow_forward_ios_rounded,
-            size: widget.fontSize - 1,
-            color: colorScheme.primary,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// شارة مجسمة لعرض عدد العناصر
-class _NeumorphicCountBadge extends StatelessWidget {
-  final int count;
-
-  const _NeumorphicCountBadge({required this.count});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final isDark = theme.brightness == Brightness.dark;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3.5),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(100),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isDark
-              ? [
-                  Color.lerp(colorScheme.surfaceContainerHighest, Colors.white, 0.04)!,
-                  Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.12)!,
-                ]
-              : [
-                  Colors.white,
-                  Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.05)!,
-                ],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: isDark
-                ? Colors.black.withValues(alpha: 0.35)
-                : const Color(0xFFA3B1C6).withValues(alpha: 0.3),
-            offset: const Offset(1.5, 2),
-            blurRadius: 3,
-          ),
-          BoxShadow(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.04)
-                : Colors.white.withValues(alpha: 0.8),
-            offset: const Offset(-1.5, -1.5),
-            blurRadius: 3,
-          ),
-        ],
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.06)
-              : Colors.white.withValues(alpha: 0.8),
-          width: 1.0,
-        ),
-      ),
-      child: Text(
-        '$count',
-        style: theme.textTheme.labelSmall?.copyWith(
-          color: colorScheme.onSurfaceVariant,
-          fontWeight: FontWeight.bold,
-          fontSize: 11,
-        ),
-      ),
-    );
-  }
-}
-
 /// واجهة الحالة الفارغة بأسلوب Soft UI
 class _NeumorphicEmptyView extends StatelessWidget {
   final String title;
@@ -320,95 +137,25 @@ class _NeumorphicEmptyView extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final isDark = theme.brightness == Brightness.dark;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 36),
-      width: double.infinity,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isDark
-              ? [
-                  Color.lerp(colorScheme.surfaceContainer, Colors.white, 0.02)!,
-                  Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.08)!,
-                ]
-              : [
-                  Color.lerp(colorScheme.surfaceContainer, Colors.white, 0.5)!,
-                  Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.03)!,
-                ],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: isDark
-                ? Colors.black.withValues(alpha: 0.45)
-                : const Color(0xFFA3B1C6).withValues(alpha: 0.35),
-            offset: const Offset(4, 5),
-            blurRadius: 12,
-          ),
-          BoxShadow(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.04)
-                : Colors.white.withValues(alpha: 0.9),
-            offset: const Offset(-3, -3),
-            blurRadius: 10,
-          ),
-        ],
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.05)
-              : Colors.white.withValues(alpha: 0.8),
-          width: 1.0,
-        ),
+    return SoftSurface(
+      margin: const EdgeInsets.symmetric(vertical: AppDesignTokens.space8),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppDesignTokens.space24,
+        vertical: 36,
       ),
+      width: double.infinity,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(18),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: isDark
-                    ? [
-                        Color.lerp(colorScheme.surfaceContainerHigh, Colors.white, 0.04)!,
-                        Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.12)!,
-                      ]
-                    : [
-                        Colors.white,
-                        Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.05)!,
-                      ],
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: isDark
-                      ? Colors.black.withValues(alpha: 0.4)
-                      : const Color(0xFFA3B1C6).withValues(alpha: 0.3),
-                  offset: const Offset(2.5, 3),
-                  blurRadius: 6,
-                ),
-                BoxShadow(
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.05)
-                      : Colors.white.withValues(alpha: 0.85),
-                  offset: const Offset(-2, -2),
-                  blurRadius: 5,
-                ),
-              ],
-            ),
-            child: Icon(
-              Icons.inbox_rounded,
-              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
-              size: 28,
-            ),
+          IconCardWithShadow(
+            icon: Icons.inbox_rounded,
+            size: 28,
+            padding: const EdgeInsets.all(14),
+            borderRadius: 18,
+            iconColor: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: AppDesignTokens.space14),
           Text(
             'لا توجد $title متاحة حالياً',
             style: theme.textTheme.bodyMedium?.copyWith(

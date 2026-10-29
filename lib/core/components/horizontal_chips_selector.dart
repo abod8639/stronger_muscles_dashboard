@@ -14,6 +14,9 @@ class HorizontalChipsSelector extends StatelessWidget {
   final String Function(dynamic item)? labelBuilder;
   final String Function(dynamic item)? idBuilder;
 
+  /// الحشوة حول الشرائح؛ الافتراضي حشوة الشاشة الأفقية
+  final EdgeInsetsGeometry? padding;
+
   const HorizontalChipsSelector({
     super.key,
     required this.items,
@@ -25,6 +28,7 @@ class HorizontalChipsSelector extends StatelessWidget {
     this.allLabel = 'الكل',
     this.labelBuilder,
     this.idBuilder,
+    this.padding,
   });
 
   @override
@@ -35,9 +39,9 @@ class HorizontalChipsSelector extends StatelessWidget {
       height: 50,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        padding: EdgeInsets.symmetric(
-          horizontal: responsive.defaultPadding.left,
-        ),
+        padding:
+            padding ??
+            EdgeInsets.symmetric(horizontal: responsive.defaultPadding.left),
         itemCount: showAllOption ? items.length + 1 : items.length,
         itemBuilder: (context, index) {
           final bool isAllItem = showAllOption && index == 0;

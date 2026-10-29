@@ -34,7 +34,9 @@ class DashboardLocalDataSourceImpl implements DashboardLocalDataSource {
 
       return DashboardStatsModel.fromJson(map);
     } catch (e) {
-      throw CacheException(message: 'Failed to read cached dashboard stats: $e');
+      throw CacheException(
+        message: 'Failed to read cached dashboard stats: $e',
+      );
     }
   }
 

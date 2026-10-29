@@ -32,12 +32,12 @@ class DashboardRepositoryImpl implements DashboardRepository {
     required UserRepository userRepository,
     required DashboardLocalDataSource localDataSource,
     DashboardRemoteDataSource? remoteDataSource,
-  })  : _orderRepository = orderRepository,
-        _productRepository = productRepository,
-        _categoryRepository = categoryRepository,
-        _userRepository = userRepository,
-        _localDataSource = localDataSource,
-        _remoteDataSource = remoteDataSource;
+  }) : _orderRepository = orderRepository,
+       _productRepository = productRepository,
+       _categoryRepository = categoryRepository,
+       _userRepository = userRepository,
+       _localDataSource = localDataSource,
+       _remoteDataSource = remoteDataSource;
 
   @override
   Future<Either<Failure, DashboardStatsEntity>> getDashboardStats({
@@ -74,8 +74,10 @@ class DashboardRepositoryImpl implements DashboardRepository {
 
       final ordersResult = results[0] as Either<Failure, List<OrderEntity>>;
       final productsResult = results[1] as Either<Failure, List<ProductEntity>>;
-      final categoriesResult = results[2] as Either<Failure, List<CategoryEntity>>;
-      final remoteModel = (results[3] as DashboardStatsModel?) ?? cachedStatsModel;
+      final categoriesResult =
+          results[2] as Either<Failure, List<CategoryEntity>>;
+      final remoteModel =
+          (results[3] as DashboardStatsModel?) ?? cachedStatsModel;
       final usersResult = results[4] as Either<Failure, UsersStatsEntity>;
 
       if (ordersResult.isLeft() &&
@@ -83,32 +85,31 @@ class DashboardRepositoryImpl implements DashboardRepository {
           categoriesResult.isLeft() &&
           usersResult.isLeft() &&
           remoteModel == null) {
-        throw const ServerException(message: 'Constituent dashboard services failed');
+        throw const ServerException(
+          message: 'Constituent dashboard services failed',
+        );
       }
 
-      final orders = ordersResult.fold(
-        (failure) {
-          debugPrint('Dashboard: Orders fetch returned failure: ${failure.message}');
-          return <OrderEntity>[];
-        },
-        (ords) => ords,
-      );
+      final orders = ordersResult.fold((failure) {
+        debugPrint(
+          'Dashboard: Orders fetch returned failure: ${failure.message}',
+        );
+        return <OrderEntity>[];
+      }, (ords) => ords);
 
-      final products = productsResult.fold(
-        (failure) {
-          debugPrint('Dashboard: Products fetch returned failure: ${failure.message}');
-          return <ProductEntity>[];
-        },
-        (prods) => prods,
-      );
+      final products = productsResult.fold((failure) {
+        debugPrint(
+          'Dashboard: Products fetch returned failure: ${failure.message}',
+        );
+        return <ProductEntity>[];
+      }, (prods) => prods);
 
-      final categories = categoriesResult.fold(
-        (failure) {
-          debugPrint('Dashboard: Categories fetch returned failure: ${failure.message}');
-          return <CategoryEntity>[];
-        },
-        (cats) => cats,
-      );
+      final categories = categoriesResult.fold((failure) {
+        debugPrint(
+          'Dashboard: Categories fetch returned failure: ${failure.message}',
+        );
+        return <CategoryEntity>[];
+      }, (cats) => cats);
 
       final totalUsers = usersResult.fold(
         (failure) => remoteModel?.totalUsers ?? 0,
@@ -121,9 +122,15 @@ class DashboardRepositoryImpl implements DashboardRepository {
 
         final entity = DashboardStatsEntity(
           totalRevenue: remoteModel.totalRevenue,
-          totalOrders: remoteModel.totalOrders > 0 ? remoteModel.totalOrders : orders.length,
-          totalUsers: remoteModel.totalUsers > 0 ? remoteModel.totalUsers : totalUsers,
-          totalProducts: remoteModel.totalProducts > 0 ? remoteModel.totalProducts : products.length,
+          totalOrders: remoteModel.totalOrders > 0
+              ? remoteModel.totalOrders
+              : orders.length,
+          totalUsers: remoteModel.totalUsers > 0
+              ? remoteModel.totalUsers
+              : totalUsers,
+          totalProducts: remoteModel.totalProducts > 0
+              ? remoteModel.totalProducts
+              : products.length,
           orders: orders,
           products: products,
           categories: categories,
@@ -187,7 +194,9 @@ class _DashboardComputationParams {
 }
 
 /// Pure computation function executing in background Isolate
-DashboardStatsEntity _computeDashboardStats(_DashboardComputationParams params) {
+DashboardStatsEntity _computeDashboardStats(
+  _DashboardComputationParams params,
+) {
   final orders = params.orders;
   final products = params.products;
   final categories = params.categories;

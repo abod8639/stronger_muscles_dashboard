@@ -50,10 +50,16 @@ class DashboardStatsModel {
       totalUsers: parseInt(json['total_users'] ?? json['totalUsers']),
       totalProducts: parseInt(json['total_products'] ?? json['totalProducts']),
       pendingOrders: parseInt(json['pending_orders'] ?? json['pendingOrders']),
-      processingOrders: parseInt(json['processing_orders'] ?? json['processingOrders']),
+      processingOrders: parseInt(
+        json['processing_orders'] ?? json['processingOrders'],
+      ),
       shippedOrders: parseInt(json['shipped_orders'] ?? json['shippedOrders']),
-      deliveredOrders: parseInt(json['delivered_orders'] ?? json['deliveredOrders']),
-      cancelledOrders: parseInt(json['cancelled_orders'] ?? json['cancelledOrders']),
+      deliveredOrders: parseInt(
+        json['delivered_orders'] ?? json['deliveredOrders'],
+      ),
+      cancelledOrders: parseInt(
+        json['cancelled_orders'] ?? json['cancelledOrders'],
+      ),
       inStock: parseInt(json['in_stock'] ?? json['inStock']),
       lowStock: parseInt(json['low_stock'] ?? json['lowStock']),
       outOfStock: parseInt(json['out_of_stock'] ?? json['outOfStock']),

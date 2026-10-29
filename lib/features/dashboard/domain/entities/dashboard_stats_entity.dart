@@ -44,21 +44,21 @@ class DashboardStatsEntity {
   });
 
   const DashboardStatsEntity.initial()
-      : totalRevenue = 0.0,
-        totalOrders = 0,
-        totalUsers = 0,
-        totalProducts = 0,
-        orders = const [],
-        products = const [],
-        categories = const [],
-        pendingOrders = 0,
-        processingOrders = 0,
-        shippedOrders = 0,
-        deliveredOrders = 0,
-        cancelledOrders = 0,
-        inStock = 0,
-        lowStock = 0,
-        outOfStock = 0;
+    : totalRevenue = 0.0,
+      totalOrders = 0,
+      totalUsers = 0,
+      totalProducts = 0,
+      orders = const [],
+      products = const [],
+      categories = const [],
+      pendingOrders = 0,
+      processingOrders = 0,
+      shippedOrders = 0,
+      deliveredOrders = 0,
+      cancelledOrders = 0,
+      inStock = 0,
+      lowStock = 0,
+      outOfStock = 0;
 
   DashboardStatsEntity copyWith({
     double? totalRevenue,
@@ -116,19 +116,19 @@ class DashboardStatsEntity {
 
   @override
   int get hashCode => Object.hash(
-        totalRevenue,
-        totalOrders,
-        totalUsers,
-        totalProducts,
-        pendingOrders,
-        processingOrders,
-        shippedOrders,
-        deliveredOrders,
-        cancelledOrders,
-        inStock,
-        lowStock,
-        outOfStock,
-      );
+    totalRevenue,
+    totalOrders,
+    totalUsers,
+    totalProducts,
+    pendingOrders,
+    processingOrders,
+    shippedOrders,
+    deliveredOrders,
+    cancelledOrders,
+    inStock,
+    lowStock,
+    outOfStock,
+  );
 
   @override
   String toString() =>

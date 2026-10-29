@@ -26,3 +26,4 @@ export 'orders_routes.dart';
 export 'presentation/pages/order_details_screen/order_details_screen.dart';
 export 'presentation/pages/orders_page.dart';
 export 'presentation/widgets/order_list_tile.dart';
+export 'presentation/widgets/order_status_ui.dart';
