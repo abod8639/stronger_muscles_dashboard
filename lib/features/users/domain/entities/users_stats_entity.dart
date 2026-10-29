@@ -26,4 +26,25 @@ class UsersStatsEntity {
       users: users ?? this.users,
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UsersStatsEntity &&
+          runtimeType == other.runtimeType &&
+          totalUsers == other.totalUsers &&
+          activeUsers == other.activeUsers &&
+          inactiveUsers == other.inactiveUsers &&
+          users.length == other.users.length;
+
+  @override
+  int get hashCode =>
+      totalUsers.hashCode ^
+      activeUsers.hashCode ^
+      inactiveUsers.hashCode ^
+      users.length.hashCode;
+
+  @override
+  String toString() =>
+      'UsersStatsEntity(totalUsers: $totalUsers, activeUsers: $activeUsers, inactiveUsers: $inactiveUsers, usersCount: ${users.length})';
 }
