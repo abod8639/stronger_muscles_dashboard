@@ -70,18 +70,18 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
 
         final double hPadding = isVeryCompact ? 10.0 : (isCompact ? 12.0 : 16.0);
         final double vPadding = isVeryCompact ? 6.0 : (isCompact ? 8.0 : 12.0);
-        final double borderRadiusValue = isCompact ? 18.0 : 22.0;
+        final double borderRadiusValue = isCompact ? 16.0 : 20.0;
 
-        final double iconBadgeSize = isVeryCompact ? 30.0 : (isCompact ? 34.0 : 40.0);
-        final double iconSize = isVeryCompact ? 15.0 : (isCompact ? 17.0 : 20.0);
+        final double iconBadgeSize = isVeryCompact ? 30.0 : (isCompact ? 32.0 : 38.0);
+        final double iconSize = isVeryCompact ? 15.0 : (isCompact ? 16.0 : 19.0);
 
-        final double trendHPad = isVeryCompact ? 6.0 : (isCompact ? 8.0 : 10.0);
-        final double trendVPad = isVeryCompact ? 2.5 : (isCompact ? 3.0 : 4.5);
-        final double trendFontSize = isVeryCompact ? 9.5 : (isCompact ? 10.0 : 11.0);
-        final double trendIconSize = isVeryCompact ? 10.5 : (isCompact ? 11.0 : 12.5);
+        final double trendHPad = isVeryCompact ? 5.5 : (isCompact ? 7.0 : 9.0);
+        final double trendVPad = isVeryCompact ? 2.0 : (isCompact ? 2.5 : 3.5);
+        final double trendFontSize = isVeryCompact ? 9.0 : (isCompact ? 10.0 : 11.0);
+        final double trendIconSize = isVeryCompact ? 10.0 : (isCompact ? 11.0 : 12.0);
 
         final double titleFontSize = isVeryCompact ? 10.5 : (isCompact ? 11.5 : 13.0);
-        final double valueFontSize = isVeryCompact ? 17.0 : (isCompact ? 19.0 : 24.0);
+        final double valueFontSize = isVeryCompact ? 17.0 : (isCompact ? 19.0 : 23.0);
         final double chartHeight = isVeryCompact ? 20.0 : (isCompact ? 24.0 : 32.0);
 
         Widget content = Padding(
@@ -102,14 +102,16 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
                     size: iconBadgeSize,
                     iconSize: iconSize,
                   ),
-                  _buildNeumorphicTrendBadge(
-                    trendColor,
-                    colorScheme,
-                    isDark,
-                    hPad: trendHPad,
-                    vPad: trendVPad,
-                    fontSize: trendFontSize,
-                    iconSize: trendIconSize,
+                  Flexible(
+                    child: _buildNeumorphicTrendBadge(
+                      trendColor,
+                      colorScheme,
+                      isDark,
+                      hPad: trendHPad,
+                      vPad: trendVPad,
+                      fontSize: trendFontSize,
+                      iconSize: trendIconSize,
+                    ),
                   ),
                 ],
               ),
