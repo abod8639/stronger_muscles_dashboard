@@ -85,7 +85,7 @@ class ProductBulkActionsBar extends ConsumerWidget {
   Widget _buildActionBar(
     BuildContext context,
     ProductsController controller,
-    dynamic responsive,
+    ResponsiveLayout responsive,
     int selectedCount,
     ThemeData theme,
   ) {
@@ -115,8 +115,10 @@ class ProductBulkActionsBar extends ConsumerWidget {
                 ),
                 const SizedBox(width: 8),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: selectedCount > 0
                         ? colorScheme.primaryContainer
@@ -124,9 +126,7 @@ class ProductBulkActionsBar extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    selectedCount > 0
-                        ? '$selectedCount محدد'
-                        : 'تحديد الكل',
+                    selectedCount > 0 ? '$selectedCount محدد' : 'تحديد الكل',
                     style: theme.textTheme.labelMedium?.copyWith(
                       color: selectedCount > 0
                           ? colorScheme.onPrimaryContainer
@@ -260,39 +260,23 @@ class ProductBulkActionsBar extends ConsumerWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (sheetContext) => Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: colorScheme.surfaceContainer,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-          border: Border.all(
-            color: colorScheme.outlineVariant.withValues(alpha: 0.5),
-          ),
-        ),
+      showDragHandle: true,
+      builder: (sheetContext) => Padding(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-              child: Container(
-                width: 36,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: colorScheme.outlineVariant,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'اختر القسم الجديد للمنتجات المحددة',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    color: colorScheme.onSurface,
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Text(
+                    'اختر القسم الجديد للمنتجات المحددة',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: colorScheme.onSurface,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 IconButton(
@@ -321,7 +305,9 @@ class ProductBulkActionsBar extends ConsumerWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                       side: BorderSide(
-                        color: colorScheme.outlineVariant.withValues(alpha: 0.4),
+                        color: colorScheme.outlineVariant.withValues(
+                          alpha: 0.4,
+                        ),
                       ),
                     ),
                     tileColor: colorScheme.surfaceContainerHigh,
@@ -347,7 +333,6 @@ class ProductBulkActionsBar extends ConsumerWidget {
                 },
               ),
             ),
-            const SizedBox(height: 12),
           ],
         ),
       ),

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
 import 'category_picker/category_search_field.dart';
 import 'category_picker/category_selection_banner.dart';
 import 'category_picker/category_tree_utils.dart';
 import 'category_picker/category_tree_view.dart';
-import 'form_section_card.dart';
+import 'package:stronger_muscles_dashboard/core/components/form_section_card.dart';
 
 /// قسم تصنيف المنتج بتصميم Neumorphism / Soft UI وفق معايير Clean Architecture
 /// منسق رئيسي يفصل المسؤوليات بين مكونات البحث، والراية التوجيهية، والشجرة الهرمية
@@ -90,43 +91,12 @@ class _ProductCategorySectionState extends State<ProductCategorySection> {
           icon: Icons.category_rounded,
           trailing: Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
+            decoration: AppDesignTokens.softSurface(
+              colorScheme,
+              isDark: isDark,
               borderRadius: BorderRadius.circular(8),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: isDark
-                    ? [
-                        Color.lerp(colorScheme.surfaceContainer, Colors.white, 0.02)!,
-                        Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.06)!,
-                      ]
-                    : [
-                        Color.lerp(colorScheme.surface, Colors.white, 0.85)!,
-                        Color.lerp(colorScheme.surface, const Color(0xFFA3B1C6), 0.08)!,
-                      ],
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: isDark
-                      ? Colors.black.withValues(alpha: 0.30)
-                      : const Color(0xFFA3B1C6).withValues(alpha: 0.20),
-                  offset: const Offset(1, 1.5),
-                  blurRadius: 2.5,
-                ),
-                BoxShadow(
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.02)
-                      : Colors.white.withValues(alpha: 0.90),
-                  offset: const Offset(-1, -1),
-                  blurRadius: 2,
-                ),
-              ],
-              border: Border.all(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.03)
-                    : Colors.white.withValues(alpha: 0.85),
-                width: 1.0,
-              ),
+              depth: SoftDepth.inset,
+              compact: true,
             ),
             child: Text(
               '${categories.length} أقسام متاحة',

@@ -2,8 +2,6 @@
 // جميع أقسام استمارة المنتج تم تفكيكها وتنظيمها داخل مجلد form_sections/
 // مع تطبيق تصميم Neumorphism / Soft UI المتناسق مع السمة وبدون أي حركات غير ضرورية.
 
-export 'form_sections/form_section_card.dart';
-export 'form_sections/modern_form_field.dart';
 export 'form_sections/product_basic_info_section.dart';
 export 'form_sections/product_category_section.dart';
 export 'form_sections/product_pricing_stock_section.dart';

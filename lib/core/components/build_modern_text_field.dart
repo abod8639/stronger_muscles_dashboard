@@ -18,6 +18,10 @@ class ModernTextField extends StatelessWidget {
   final String? Function(String?)? validator;
   final TextInputType? keyboardType;
 
+  /// يضيف * للعنوان ويتحقق من أن الحقل غير فارغ (عند عدم تمرير [validator])
+  final bool isRequired;
+  final String? suffixText;
+
   const ModernTextField({
     super.key,
     required this.controller,
@@ -33,6 +37,8 @@ class ModernTextField extends StatelessWidget {
     this.hint,
     this.validator,
     this.keyboardType,
+    this.isRequired = false,
+    this.suffixText,
   });
 
   @override
@@ -46,7 +52,12 @@ class ModernTextField extends StatelessWidget {
       focusNode: focusNode,
       onFieldSubmitted: onSubmitted != null ? (_) => onSubmitted!() : null,
       onChanged: onChanged,
-      validator: validator,
+      validator: validator ??
+          (isRequired
+              ? (val) => (val == null || val.trim().isEmpty)
+                    ? 'هذا الحقل مطلوب'
+                    : null
+              : null),
       keyboardType: keyboardType ??
           (isNumber
               ? const TextInputType.numberWithOptions(decimal: true)
@@ -57,9 +68,10 @@ class ModernTextField extends StatelessWidget {
       ),
       cursorColor: colorScheme.primary,
       decoration: InputDecoration(
-        labelText: label,
+        labelText: isRequired ? '$label *' : label,
         hintText: hint,
         alignLabelWithHint: maxLines > 1,
+        suffixText: suffixText,
         prefixIcon: Icon(
           icon,
           size: 20,

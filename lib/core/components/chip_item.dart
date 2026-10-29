@@ -6,6 +6,7 @@ class ChipItem extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
   final int index;
+  final IconData? icon;
 
   const ChipItem({
     super.key,
@@ -13,6 +14,7 @@ class ChipItem extends StatelessWidget {
     required this.isSelected,
     required this.onTap,
     required this.index,
+    this.icon,
   });
 
   @override
@@ -28,6 +30,15 @@ class ChipItem extends StatelessWidget {
           selected: isSelected,
           onSelected: (_) => onTap(),
           label: Text(label),
+          avatar: icon == null
+              ? null
+              : Icon(
+                  icon,
+                  size: 16,
+                  color: isSelected
+                      ? colorScheme.onPrimary
+                      : colorScheme.onSurfaceVariant,
+                ),
           labelStyle: theme.textTheme.labelLarge?.copyWith(
             color: isSelected
                 ? colorScheme.onPrimary

@@ -45,18 +45,10 @@ class NotificationsScreen extends ConsumerWidget {
         loading: () => const EnhancedLoadingWidget(
           message: 'جاري تحميل قائمة الإشعارات...',
         ),
-        error: (error, stackTrace) => Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(AppDesignTokens.space24),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 550),
-              child: EnhancedErrorWidget(
-                title: 'خطأ في تحميل الإشعارات',
-                message: error.toString(),
-                onRetry: notifier.refreshNotifications,
-              ),
-            ),
-          ),
+        error: (error, stackTrace) => EnhancedErrorWidget.fromError(
+          error,
+          fallbackTitle: 'خطأ في تحميل الإشعارات',
+          onRetry: notifier.refreshNotifications,
         ),
         data: (data) => MyRefreshIndicator(
           onRefresh: notifier.refreshNotifications,

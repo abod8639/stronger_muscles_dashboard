@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
 
 /// شريط الإجراءات السفلي المثبت لاستمارة المنتج بتصميم Neumorphism / Soft UI
@@ -76,43 +77,11 @@ class ProductStickyBottomBar extends StatelessWidget {
               // Status Chip
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
+                decoration: AppDesignTokens.softSurface(
+                  colorScheme,
+                  isDark: isDark,
                   borderRadius: BorderRadius.circular(10),
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: isDark
-                        ? [
-                            Color.lerp(colorScheme.surfaceContainerHigh, Colors.white, 0.02)!,
-                            Color.lerp(colorScheme.surfaceContainerHigh, Colors.black, 0.10)!,
-                          ]
-                        : [
-                            Colors.white,
-                            Color.lerp(colorScheme.surfaceContainerLow, Colors.black, 0.02)!,
-                          ],
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: isDark
-                          ? Colors.black.withValues(alpha: 0.30)
-                          : const Color(0xFFA3B1C6).withValues(alpha: 0.25),
-                      offset: const Offset(1, 1.5),
-                      blurRadius: 2.5,
-                    ),
-                    BoxShadow(
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.02)
-                          : Colors.white.withValues(alpha: 0.85),
-                      offset: const Offset(-1, -1),
-                      blurRadius: 2,
-                    ),
-                  ],
-                  border: Border.all(
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.03)
-                        : Colors.white.withValues(alpha: 0.80),
-                    width: 0.8,
-                  ),
+                  compact: true,
                 ),
                 child: InkWell(
                   onTap: () => controller.isActive = !isActive,

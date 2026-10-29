@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
-import 'form_section_card.dart';
-import 'modern_form_field.dart';
+import 'package:stronger_muscles_dashboard/core/components/form_section_card.dart';
+import 'package:stronger_muscles_dashboard/core/components/build_modern_text_field.dart';
 
 /// قسم التسعير والمخزون والحصص للمنتج بتصميم Neumorphism / Soft UI
 class ProductPricingStockSection extends StatelessWidget {
@@ -34,47 +35,11 @@ class ProductPricingStockSection extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 14, vertical: 12),
-                    decoration: BoxDecoration(
+                    decoration: AppDesignTokens.softSurface(
+                      colorScheme,
+                      isDark: isDark,
                       borderRadius: BorderRadius.circular(12),
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: isDark
-                            ? [
-                                Color.lerp(colorScheme.secondaryContainer,
-                                    Colors.white, 0.02)!,
-                                Color.lerp(colorScheme.secondaryContainer,
-                                    Colors.black, 0.12)!,
-                              ]
-                            : [
-                                Color.lerp(colorScheme.secondaryContainer,
-                                    Colors.white, 0.40)!,
-                                Color.lerp(colorScheme.secondaryContainer,
-                                    Colors.black, 0.02)!,
-                              ],
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: isDark
-                              ? Colors.black.withValues(alpha: 0.30)
-                              : const Color(0xFFA3B1C6).withValues(alpha: 0.25),
-                          offset: const Offset(1.5, 2),
-                          blurRadius: 3,
-                        ),
-                        BoxShadow(
-                          color: isDark
-                              ? Colors.white.withValues(alpha: 0.02)
-                              : Colors.white.withValues(alpha: 0.85),
-                          offset: const Offset(-1.5, -1.5),
-                          blurRadius: 2.5,
-                        ),
-                      ],
-                      border: Border.all(
-                        color: isDark
-                            ? Colors.white.withValues(alpha: 0.03)
-                            : Colors.white.withValues(alpha: 0.80),
-                        width: 0.8,
-                      ),
+                      compact: true,
                     ),
                     child: Row(
                       children: [
@@ -120,53 +85,11 @@ class ProductPricingStockSection extends StatelessWidget {
                               horizontal: 16,
                               vertical: 14,
                             ),
-                            decoration: BoxDecoration(
+                            decoration: AppDesignTokens.softSurface(
+                              colorScheme,
+                              isDark: isDark,
                               borderRadius: BorderRadius.circular(12),
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: isDark
-                                    ? [
-                                        Color.lerp(
-                                            colorScheme.surfaceContainerHigh,
-                                            Colors.white,
-                                            0.02)!,
-                                        Color.lerp(
-                                            colorScheme.surfaceContainerHigh,
-                                            Colors.black,
-                                            0.10)!,
-                                      ]
-                                    : [
-                                        Colors.white,
-                                        Color.lerp(
-                                            colorScheme.surfaceContainerLow,
-                                            Colors.black,
-                                            0.03)!,
-                                      ],
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: isDark
-                                      ? Colors.black.withValues(alpha: 0.35)
-                                      : const Color(0xFFA3B1C6)
-                                          .withValues(alpha: 0.30),
-                                  offset: const Offset(1.5, 2),
-                                  blurRadius: 3,
-                                ),
-                                BoxShadow(
-                                  color: isDark
-                                      ? Colors.white.withValues(alpha: 0.02)
-                                      : Colors.white.withValues(alpha: 0.90),
-                                  offset: const Offset(-1.5, -1.5),
-                                  blurRadius: 2.5,
-                                ),
-                              ],
-                              border: Border.all(
-                                color: isDark
-                                    ? Colors.white.withValues(alpha: 0.03)
-                                    : Colors.white.withValues(alpha: 0.85),
-                                width: 1.0,
-                              ),
+                              compact: true,
                             ),
                             child: Text(
                               size.size,
@@ -176,7 +99,7 @@ class ProductPricingStockSection extends StatelessWidget {
                           ),
                           const SizedBox(width: 12),
                           Expanded(
-                            child: ModernFormField(
+                            child: ModernTextField(
                               controller: priceCtrl,
                               label: 'سعر (${size.size})',
                               icon: Icons.price_change_outlined,
@@ -186,7 +109,7 @@ class ProductPricingStockSection extends StatelessWidget {
                           ),
                           const SizedBox(width: 12),
                           Expanded(
-                            child: ModernFormField(
+                            child: ModernTextField(
                               controller: discountCtrl,
                               label: 'سعر الخصم',
                               icon: Icons.sell_outlined,
@@ -206,7 +129,7 @@ class ProductPricingStockSection extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: ModernFormField(
+                  child: ModernTextField(
                     controller: controller.textcontrollers['price']!,
                     label: 'السعر الأساسي',
                     hint: '0.00',
@@ -218,7 +141,7 @@ class ProductPricingStockSection extends StatelessWidget {
                 ),
                 const SizedBox(width: 14),
                 Expanded(
-                  child: ModernFormField(
+                  child: ModernTextField(
                     controller: controller.textcontrollers['discount']!,
                     label: 'سعر الخصم (اختياري)',
                     hint: '0.00',
@@ -239,7 +162,7 @@ class ProductPricingStockSection extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                child: ModernFormField(
+                child: ModernTextField(
                   controller: controller.textcontrollers['stock']!,
                   label: 'الكمية في المخزن',
                   hint: '50',
@@ -251,7 +174,7 @@ class ProductPricingStockSection extends StatelessWidget {
               ),
               const SizedBox(width: 14),
               Expanded(
-                child: ModernFormField(
+                child: ModernTextField(
                   controller: controller.textcontrollers['serving']!,
                   label: 'حجم الحصة',
                   hint: 'مثال: 30g',
@@ -260,7 +183,7 @@ class ProductPricingStockSection extends StatelessWidget {
               ),
               const SizedBox(width: 14),
               Expanded(
-                child: ModernFormField(
+                child: ModernTextField(
                   controller: controller.textcontrollers['sessions']!,
                   label: 'عدد الحصص',
                   hint: 'مثال: 60',

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 
 /// بطاقة عرض التصنيف المختار حالياً بتصميم Neumorphism / Soft UI
 /// تتضمن مسار الفتات الهرمي مع زر ملموس لإلغاء التحديد، أو تنبيه توجيهي في حال عدم الاختيار
@@ -24,41 +25,11 @@ class CategorySelectionBanner extends StatelessWidget {
       return Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(
+        decoration: AppDesignTokens.softSurface(
+          colorScheme,
+          isDark: isDark,
           borderRadius: BorderRadius.circular(12),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: isDark
-                ? [
-                    Color.lerp(colorScheme.primaryContainer, Colors.white, 0.02)!,
-                    Color.lerp(colorScheme.surfaceContainer, colorScheme.primary, 0.14)!,
-                  ]
-                : [
-                    Color.lerp(colorScheme.primaryContainer, Colors.white, 0.40)!,
-                    Color.lerp(colorScheme.primaryContainer, Colors.black, 0.02)!,
-                  ],
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: isDark
-                  ? Colors.black.withValues(alpha: 0.35)
-                  : const Color(0xFFA3B1C6).withValues(alpha: 0.25),
-              offset: const Offset(1.5, 2),
-              blurRadius: 3,
-            ),
-            BoxShadow(
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.02)
-                  : Colors.white.withValues(alpha: 0.90),
-              offset: const Offset(-1.5, -1.5),
-              blurRadius: 2.5,
-            ),
-          ],
-          border: Border.all(
-            color: colorScheme.primary.withValues(alpha: isDark ? 0.5 : 0.6),
-            width: 1.0,
-          ),
+          compact: true,
         ),
         child: Row(
           children: [
@@ -117,43 +88,12 @@ class CategorySelectionBanner extends StatelessWidget {
             ),
             // زر إلغاء التحديد
             Container(
-              decoration: BoxDecoration(
+              decoration: AppDesignTokens.softSurface(
+                colorScheme,
+                isDark: isDark,
                 borderRadius: BorderRadius.circular(8),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: isDark
-                      ? [
-                          Color.lerp(colorScheme.surfaceContainer, Colors.white, 0.02)!,
-                          Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.06)!,
-                        ]
-                      : [
-                          Color.lerp(colorScheme.surface, Colors.white, 0.85)!,
-                          Color.lerp(colorScheme.surface, const Color(0xFFA3B1C6), 0.08)!,
-                        ],
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: isDark
-                        ? Colors.black.withValues(alpha: 0.30)
-                        : const Color(0xFFA3B1C6).withValues(alpha: 0.20),
-                    offset: const Offset(1, 1.5),
-                    blurRadius: 2.5,
-                  ),
-                  BoxShadow(
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.02)
-                        : Colors.white.withValues(alpha: 0.90),
-                    offset: const Offset(-1, -1),
-                    blurRadius: 2,
-                  ),
-                ],
-                border: Border.all(
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.03)
-                      : Colors.white.withValues(alpha: 0.85),
-                  width: 1.0,
-                ),
+                depth: SoftDepth.inset,
+                compact: true,
               ),
               child: Material(
                 color: Colors.transparent,
@@ -191,33 +131,12 @@ class CategorySelectionBanner extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(
+      decoration: AppDesignTokens.softSurface(
+        colorScheme,
+        isDark: isDark,
         borderRadius: BorderRadius.circular(12),
-        color: isDark
-            ? Color.lerp(colorScheme.surfaceContainerLowest, Colors.black, 0.15)!
-            : Color.lerp(colorScheme.surfaceContainerLow, Colors.white, 0.50)!,
-        boxShadow: [
-          BoxShadow(
-            color: isDark
-                ? Colors.black.withValues(alpha: 0.35)
-                : const Color(0xFFA3B1C6).withValues(alpha: 0.20),
-            offset: const Offset(1.5, 1.5),
-            blurRadius: 2.5,
-          ),
-          BoxShadow(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.015)
-                : Colors.white.withValues(alpha: 0.85),
-            offset: const Offset(-1.5, -1.5),
-            blurRadius: 2.5,
-          ),
-        ],
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.03)
-              : Colors.white.withValues(alpha: 0.85),
-          width: 1.0,
-        ),
+        depth: SoftDepth.inset,
+        compact: true,
       ),
       child: Row(
         children: [

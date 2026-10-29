@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
-import 'form_section_card.dart';
-import 'modern_form_field.dart';
+import 'package:stronger_muscles_dashboard/core/components/form_section_card.dart';
+import 'package:stronger_muscles_dashboard/core/components/build_modern_text_field.dart';
 
 /// قسم البيانات الأساسية للمنتج بتصميم Neumorphism / Soft UI
 /// يتضمن مفتاح تبديل لغات ناعم، حقول إدخال مجسمة، وقائمة إكمال تلقائي ملموسة
@@ -45,7 +46,7 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
               ? Column(
                   key: const ValueKey('lang_ar'),
                   children: [
-                    ModernFormField(
+                    ModernTextField(
                       controller: ctrl.textcontrollers['name_ar']!,
                       label: 'اسم المنتج باللغة العربية',
                       hint: 'مثال: واي بروتين جولد ستاندرد 2 كجم',
@@ -53,7 +54,7 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
                       isRequired: true,
                     ),
                     const SizedBox(height: 16),
-                    ModernFormField(
+                    ModernTextField(
                       controller: ctrl.textcontrollers['desc_ar']!,
                       label: 'وصف المنتج باللغة العربية',
                       hint: 'اكتب وصفاً مفصلاً للمنتج...',
@@ -65,14 +66,14 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
               : Column(
                   key: const ValueKey('lang_en'),
                   children: [
-                    ModernFormField(
+                    ModernTextField(
                       controller: ctrl.textcontrollers['name_en']!,
                       label: 'Product Name (English)',
                       hint: 'e.g. Gold Standard 100% Whey 2kg',
                       icon: Icons.translate_rounded,
                     ),
                     const SizedBox(height: 16),
-                    ModernFormField(
+                    ModernTextField(
                       controller: ctrl.textcontrollers['desc_en']!,
                       label: 'Product Description (English)',
                       hint: 'Write a detailed description in English...',
@@ -94,33 +95,12 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
   Widget _buildLanguageSelector(ColorScheme colorScheme, bool isDark) {
     return Container(
       padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
+      decoration: AppDesignTokens.softSurface(
+        colorScheme,
+        isDark: isDark,
         borderRadius: BorderRadius.circular(12),
-        color: isDark
-            ? colorScheme.surfaceContainerLowest.withValues(alpha: 0.6)
-            : colorScheme.surfaceContainerLow.withValues(alpha: 0.6),
-        boxShadow: [
-          BoxShadow(
-            color: isDark
-                ? Colors.black.withValues(alpha: 0.25)
-                : const Color(0xFFA3B1C6).withValues(alpha: 0.20),
-            offset: const Offset(1, 1),
-            blurRadius: 2,
-          ),
-          BoxShadow(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.02)
-                : Colors.white.withValues(alpha: 0.80),
-            offset: const Offset(-1, -1),
-            blurRadius: 1.5,
-          ),
-        ],
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.03)
-              : Colors.white.withValues(alpha: 0.70),
-          width: 0.8,
-        ),
+        depth: SoftDepth.inset,
+        compact: true,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -143,52 +123,12 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
       onTap: () => setState(() => _selectedLang = lang),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
+        decoration: AppDesignTokens.softSurface(
+          colorScheme,
+          isDark: isDark,
           borderRadius: BorderRadius.circular(9),
-          gradient: isSelected
-              ? LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: isDark
-                      ? [
-                          Color.lerp(colorScheme.surfaceContainerHigh,
-                              Colors.white, 0.02)!,
-                          Color.lerp(colorScheme.surfaceContainerHigh,
-                              Colors.black, 0.10)!,
-                        ]
-                      : [
-                          Colors.white,
-                          Color.lerp(colorScheme.surfaceContainerLow,
-                              Colors.black, 0.02)!,
-                        ],
-                )
-              : null,
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: isDark
-                        ? Colors.black.withValues(alpha: 0.35)
-                        : const Color(0xFFA3B1C6).withValues(alpha: 0.30),
-                    offset: const Offset(1.5, 2),
-                    blurRadius: 3,
-                  ),
-                  BoxShadow(
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.02)
-                        : Colors.white.withValues(alpha: 0.90),
-                    offset: const Offset(-1.5, -1.5),
-                    blurRadius: 2.5,
-                  ),
-                ]
-              : null,
-          border: isSelected
-              ? Border.all(
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.03)
-                      : Colors.white.withValues(alpha: 0.85),
-                  width: 1.0,
-                )
-              : null,
+          compact: true,
+          selected: isSelected,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -292,46 +232,10 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
             width: 280,
             margin: const EdgeInsets.only(top: 8),
             constraints: const BoxConstraints(maxHeight: 220),
-            decoration: BoxDecoration(
+            decoration: AppDesignTokens.softSurface(
+              colorScheme,
+              isDark: isDark,
               borderRadius: BorderRadius.circular(14),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: isDark
-                    ? [
-                        Color.lerp(colorScheme.surfaceContainerHigh,
-                            Colors.white, 0.02)!,
-                        Color.lerp(colorScheme.surfaceContainerHigh,
-                            Colors.black, 0.10)!,
-                      ]
-                    : [
-                        Colors.white,
-                        Color.lerp(colorScheme.surfaceContainerLow,
-                            Colors.black, 0.035)!,
-                      ],
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: isDark
-                      ? Colors.black.withValues(alpha: 0.45)
-                      : const Color(0xFFA3B1C6).withValues(alpha: 0.35),
-                  offset: const Offset(2, 3),
-                  blurRadius: 8,
-                ),
-                BoxShadow(
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.02)
-                      : Colors.white.withValues(alpha: 0.90),
-                  offset: const Offset(-1.5, -1.5),
-                  blurRadius: 4,
-                ),
-              ],
-              border: Border.all(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.03)
-                    : Colors.white.withValues(alpha: 0.85),
-                width: 1.0,
-              ),
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(14),

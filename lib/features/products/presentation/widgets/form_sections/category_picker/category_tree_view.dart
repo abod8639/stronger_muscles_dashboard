@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
 import 'category_tile.dart';
 import 'category_tree_utils.dart';
@@ -40,33 +41,12 @@ class CategoryTreeView extends StatelessWidget {
 
     return Container(
       constraints: const BoxConstraints(maxHeight: 290),
-      decoration: BoxDecoration(
+      decoration: AppDesignTokens.softSurface(
+        colorScheme,
+        isDark: isDark,
         borderRadius: BorderRadius.circular(14),
-        color: isDark
-            ? Color.lerp(colorScheme.surfaceContainerLowest, Colors.black, 0.12)!
-            : Color.lerp(colorScheme.surfaceContainerLowest, Colors.white, 0.50)!,
-        boxShadow: [
-          BoxShadow(
-            color: isDark
-                ? Colors.black.withValues(alpha: 0.35)
-                : const Color(0xFFA3B1C6).withValues(alpha: 0.20),
-            offset: const Offset(1.5, 1.5),
-            blurRadius: 2.5,
-          ),
-          BoxShadow(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.015)
-                : Colors.white.withValues(alpha: 0.85),
-            offset: const Offset(-1.5, -1.5),
-            blurRadius: 2.5,
-          ),
-        ],
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.03)
-              : Colors.white.withValues(alpha: 0.85),
-          width: 1.0,
-        ),
+        depth: SoftDepth.inset,
+        compact: true,
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(14),

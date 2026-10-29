@@ -3,7 +3,7 @@ import 'package:stronger_muscles_dashboard/features/products/presentation/contro
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/flavor_multi_select.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_size_selector.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_variant_manager.dart';
-import 'form_section_card.dart';
+import 'package:stronger_muscles_dashboard/core/components/form_section_card.dart';
 
 /// قسم الخيارات والتنويعات (الأحجام، النكهات، ومصفوفة الـ SKU)
 class ProductVariantsSection extends StatelessWidget {

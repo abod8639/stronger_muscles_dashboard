@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 
 class EnhancedErrorWidget extends StatelessWidget {
@@ -15,86 +16,96 @@ class EnhancedErrorWidget extends StatelessWidget {
     this.icon,
   });
 
+  /// يبني واجهة الخطأ من أي كائن خطأ: إن كان [Failure] تُستخرج الأيقونة والعنوان
+  /// والرسالة حسب نوعه، وإلا يُعرض [fallbackTitle] مع نص الخطأ
+  factory EnhancedErrorWidget.fromError(
+    Object error, {
+    Key? key,
+    required VoidCallback onRetry,
+    String fallbackTitle = 'حدث خطأ غير متوقع',
+  }) {
+    final failure = error is Failure
+        ? error
+        : UnknownFailure(message: error.toString());
+
+    final (IconData icon, String title) = switch (failure) {
+      NetworkFailure() => (Icons.wifi_off_rounded, 'تعذر الاتصال بالشبكة'),
+      AuthFailure() => (
+        Icons.lock_outline_rounded,
+        'خطأ في المصادقة والصلاحيات',
+      ),
+      ValidationFailure() => (
+        Icons.warning_amber_rounded,
+        'البيانات غير صالحة',
+      ),
+      ParsingFailure() => (Icons.data_array_rounded, 'خطأ في معالجة البيانات'),
+      ServerFailure() => (Icons.dns_rounded, 'خطأ في خادم النظام'),
+      _ => (Icons.error_outline_rounded, fallbackTitle),
+    };
+
+    return EnhancedErrorWidget(
+      key: key,
+      title: title,
+      message: failure.toMessage(),
+      icon: icon,
+      onRetry: onRetry,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Center(
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: AppColors.error.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(20),
+          padding: const EdgeInsets.all(AppDesignTokens.space24),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 550),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: colorScheme.error.withValues(alpha: 0.1),
+                    borderRadius: AppDesignTokens.radiusLarge,
+                  ),
+                  child: Icon(
+                    icon ?? Icons.error_outline,
+                    color: colorScheme.error,
+                    size: 40,
+                  ),
                 ),
-                child: Icon(
-                  icon ?? Icons.error_outline,
-                  color: AppColors.error,
-                  size: 40,
+                const SizedBox(height: AppDesignTokens.space24),
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onSurface,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                title,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textMuted,
+                const SizedBox(height: AppDesignTokens.space12),
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                    height: 1.5,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                message,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textMuted,
-                  height: 1.5,
-                ),
-              ),
-              const SizedBox(height: 32),
-              Container(
-                decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.2),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: ElevatedButton(
+                const SizedBox(height: AppDesignTokens.space32),
+                FilledButton.icon(
                   onPressed: onRetry,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 40,
-                      vertical: 16,
-                    ),
-                    backgroundColor: AppColors.primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      Icon(Icons.refresh_outlined, size: 20),
-                      SizedBox(width: 8),
-                      Text(
-                        'إعادة المحاولة',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
+                  icon: const Icon(Icons.refresh_outlined, size: 20),
+                  label: const Text('إعادة المحاولة'),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

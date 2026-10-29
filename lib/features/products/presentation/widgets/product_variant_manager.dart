@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
 
@@ -31,46 +32,11 @@ class ProductVariantManager extends StatelessWidget {
               ),
               // Neumorphic Add Variant Button
               Container(
-                decoration: BoxDecoration(
+                decoration: AppDesignTokens.softSurface(
+                  colorScheme,
+                  isDark: isDark,
                   borderRadius: BorderRadius.circular(10),
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: isDark
-                        ? [
-                            Color.lerp(colorScheme.primaryContainer,
-                                Colors.white, 0.02)!,
-                            Color.lerp(colorScheme.surfaceContainer,
-                                colorScheme.primary, 0.12)!,
-                          ]
-                        : [
-                            Color.lerp(colorScheme.primaryContainer,
-                                Colors.white, 0.40)!,
-                            Color.lerp(colorScheme.primaryContainer,
-                                Colors.black, 0.02)!,
-                          ],
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: isDark
-                          ? Colors.black.withValues(alpha: 0.35)
-                          : const Color(0xFFA3B1C6).withValues(alpha: 0.30),
-                      offset: const Offset(1.5, 2),
-                      blurRadius: 3,
-                    ),
-                    BoxShadow(
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.02)
-                          : Colors.white.withValues(alpha: 0.90),
-                      offset: const Offset(-1.5, -1.5),
-                      blurRadius: 2.5,
-                    ),
-                  ],
-                  border: Border.all(
-                    color: colorScheme.primary
-                        .withValues(alpha: isDark ? 0.6 : 0.7),
-                    width: 1.0,
-                  ),
+                  compact: true,
                 ),
                 child: Material(
                   color: Colors.transparent,
@@ -108,46 +74,11 @@ class ProductVariantManager extends StatelessWidget {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
+              decoration: AppDesignTokens.softSurface(
+                colorScheme,
+                isDark: isDark,
                 borderRadius: BorderRadius.circular(16),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: isDark
-                      ? [
-                          Color.lerp(colorScheme.surfaceContainerHigh,
-                              Colors.white, 0.02)!,
-                          Color.lerp(colorScheme.surfaceContainerHigh,
-                              Colors.black, 0.12)!,
-                        ]
-                      : [
-                          Colors.white,
-                          Color.lerp(colorScheme.surfaceContainerLow,
-                              Colors.black, 0.03)!,
-                        ],
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: isDark
-                        ? Colors.black.withValues(alpha: 0.35)
-                        : const Color(0xFFA3B1C6).withValues(alpha: 0.30),
-                    offset: const Offset(2, 2.5),
-                    blurRadius: 4,
-                  ),
-                  BoxShadow(
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.02)
-                        : Colors.white.withValues(alpha: 0.90),
-                    offset: const Offset(-1.5, -1.5),
-                    blurRadius: 3,
-                  ),
-                ],
-                border: Border.all(
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.03)
-                      : Colors.white.withValues(alpha: 0.85),
-                  width: 1.0,
-                ),
+                compact: true,
               ),
               child: Center(
                 child: Column(
@@ -266,46 +197,11 @@ class _VariantItemEditorState extends State<_VariantItemEditor> {
     final isDark = theme.brightness == Brightness.dark;
 
     return Container(
-      decoration: BoxDecoration(
+      decoration: AppDesignTokens.softSurface(
+        colorScheme,
+        isDark: isDark,
         borderRadius: BorderRadius.circular(16),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isDark
-              ? [
-                  Color.lerp(colorScheme.surfaceContainerHigh, Colors.white,
-                      0.02)!,
-                  Color.lerp(colorScheme.surfaceContainerHigh, Colors.black,
-                      0.10)!,
-                ]
-              : [
-                  Colors.white,
-                  Color.lerp(colorScheme.surfaceContainerLow, Colors.black,
-                      0.03)!,
-                ],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: isDark
-                ? Colors.black.withValues(alpha: 0.35)
-                : const Color(0xFFA3B1C6).withValues(alpha: 0.30),
-            offset: const Offset(2, 2.5),
-            blurRadius: 4,
-          ),
-          BoxShadow(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.02)
-                : Colors.white.withValues(alpha: 0.90),
-            offset: const Offset(-1.5, -1.5),
-            blurRadius: 3,
-          ),
-        ],
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.03)
-              : Colors.white.withValues(alpha: 0.85),
-          width: 1.0,
-        ),
+        compact: true,
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -383,46 +279,11 @@ class _VariantItemEditorState extends State<_VariantItemEditor> {
                 Container(
                   width: 32,
                   height: 32,
-                  decoration: BoxDecoration(
+                  decoration: AppDesignTokens.softSurface(
+                    colorScheme,
+                    isDark: isDark,
                     borderRadius: BorderRadius.circular(8),
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: isDark
-                          ? [
-                              Color.lerp(colorScheme.surfaceContainerHigh,
-                                  Colors.white, 0.02)!,
-                              Color.lerp(colorScheme.surfaceContainerHigh,
-                                  Colors.black, 0.10)!,
-                            ]
-                          : [
-                              Colors.white,
-                              Color.lerp(colorScheme.surfaceContainerLow,
-                                  Colors.black, 0.02)!,
-                            ],
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: isDark
-                            ? Colors.black.withValues(alpha: 0.30)
-                            : const Color(0xFFA3B1C6).withValues(alpha: 0.25),
-                        offset: const Offset(1, 1.5),
-                        blurRadius: 2,
-                      ),
-                      BoxShadow(
-                        color: isDark
-                            ? Colors.white.withValues(alpha: 0.02)
-                            : Colors.white.withValues(alpha: 0.85),
-                        offset: const Offset(-1, -1),
-                        blurRadius: 1.5,
-                      ),
-                    ],
-                    border: Border.all(
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.03)
-                          : Colors.white.withValues(alpha: 0.80),
-                      width: 0.8,
-                    ),
+                    compact: true,
                   ),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(8),
@@ -606,62 +467,11 @@ class _VariantItemEditorState extends State<_VariantItemEditor> {
           .toList(),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
+        decoration: AppDesignTokens.softSurface(
+          colorScheme,
+          isDark: isDark,
           borderRadius: BorderRadius.circular(8),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: hasVal
-                ? (isDark
-                    ? [
-                        Color.lerp(colorScheme.primaryContainer, Colors.white,
-                            0.02)!,
-                        Color.lerp(colorScheme.surfaceContainer,
-                            colorScheme.primary, 0.10)!,
-                      ]
-                    : [
-                        Color.lerp(colorScheme.primaryContainer, Colors.white,
-                            0.50)!,
-                        Color.lerp(colorScheme.primaryContainer, Colors.black,
-                            0.02)!,
-                      ])
-                : (isDark
-                    ? [
-                        Color.lerp(colorScheme.surfaceContainerHigh,
-                            Colors.white, 0.02)!,
-                        Color.lerp(colorScheme.surfaceContainerHigh,
-                            Colors.black, 0.10)!,
-                      ]
-                    : [
-                        Colors.white,
-                        Color.lerp(colorScheme.surfaceContainerLow,
-                            Colors.black, 0.02)!,
-                      ]),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: isDark
-                  ? Colors.black.withValues(alpha: 0.30)
-                  : const Color(0xFFA3B1C6).withValues(alpha: 0.25),
-              offset: const Offset(1, 1.5),
-              blurRadius: 2.5,
-            ),
-            BoxShadow(
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.02)
-                  : Colors.white.withValues(alpha: 0.85),
-              offset: const Offset(-1, -1),
-              blurRadius: 2,
-            ),
-          ],
-          border: Border.all(
-            color: hasVal
-                ? colorScheme.primary.withValues(alpha: isDark ? 0.6 : 0.7)
-                : (isDark
-                    ? Colors.white.withValues(alpha: 0.03)
-                    : Colors.white.withValues(alpha: 0.80)),
-            width: 0.8,
-          ),
+          compact: true,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,

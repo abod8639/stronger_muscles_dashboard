@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 
 /// حقل بحث الأقسام بتصميم غائر Neumorphic Recessed
 class CategorySearchField extends StatelessWidget {
@@ -22,33 +23,12 @@ class CategorySearchField extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Container(
-      decoration: BoxDecoration(
+      decoration: AppDesignTokens.softSurface(
+        colorScheme,
+        isDark: isDark,
         borderRadius: BorderRadius.circular(12),
-        color: isDark
-            ? Color.lerp(colorScheme.surfaceContainerLowest, Colors.black, 0.20)!
-            : Color.lerp(colorScheme.surfaceContainerHighest, Colors.white, 0.40)!,
-        boxShadow: [
-          BoxShadow(
-            color: isDark
-                ? Colors.black.withValues(alpha: 0.35)
-                : const Color(0xFFA3B1C6).withValues(alpha: 0.22),
-            offset: const Offset(1.5, 1.5),
-            blurRadius: 2.5,
-          ),
-          BoxShadow(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.015)
-                : Colors.white.withValues(alpha: 0.85),
-            offset: const Offset(-1.5, -1.5),
-            blurRadius: 2.5,
-          ),
-        ],
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.03)
-              : Colors.white.withValues(alpha: 0.85),
-          width: 1.0,
-        ),
+        depth: SoftDepth.inset,
+        compact: true,
       ),
       child: TextField(
         controller: controller,

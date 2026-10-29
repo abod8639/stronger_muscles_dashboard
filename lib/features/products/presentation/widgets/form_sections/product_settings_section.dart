@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
-import 'form_section_card.dart';
+import 'package:stronger_muscles_dashboard/core/components/form_section_card.dart';
 
 /// قسم إعدادات النشر والظهور للمنتج بتصميم Neumorphism / Soft UI
 class ProductSettingsSection extends StatelessWidget {
@@ -63,69 +64,12 @@ class ProductSettingsSection extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Container(
-      decoration: BoxDecoration(
+      decoration: AppDesignTokens.softSurface(
+        colorScheme,
+        isDark: isDark,
         borderRadius: BorderRadius.circular(14),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: value
-              ? (isDark
-                  ? [
-                      Color.lerp(colorScheme.primaryContainer, Colors.white,
-                          0.02)!,
-                      Color.lerp(colorScheme.surfaceContainer,
-                          colorScheme.primary, 0.10)!,
-                    ]
-                  : [
-                      Color.lerp(colorScheme.primaryContainer, Colors.white,
-                          0.50)!,
-                      Color.lerp(colorScheme.primaryContainer, Colors.black,
-                          0.02)!,
-                    ])
-              : (isDark
-                  ? [
-                      Color.lerp(colorScheme.surfaceContainerHigh,
-                          Colors.white, 0.02)!,
-                      Color.lerp(colorScheme.surfaceContainerHigh,
-                          Colors.black, 0.10)!,
-                    ]
-                  : [
-                      Colors.white,
-                      Color.lerp(colorScheme.surfaceContainerLow,
-                          Colors.black, 0.03)!,
-                    ]),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: isDark
-                ? Colors.black.withValues(alpha: 0.35)
-                : const Color(0xFFA3B1C6).withValues(alpha: 0.30),
-            offset: const Offset(1.5, 2),
-            blurRadius: 3,
-          ),
-          BoxShadow(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.02)
-                : Colors.white.withValues(alpha: 0.90),
-            offset: const Offset(-1.5, -1.5),
-            blurRadius: 2.5,
-          ),
-          if (value)
-            BoxShadow(
-              color: colorScheme.primary
-                  .withValues(alpha: isDark ? 0.15 : 0.18),
-              offset: const Offset(0, 2),
-              blurRadius: 8,
-            ),
-        ],
-        border: Border.all(
-          color: value
-              ? colorScheme.primary.withValues(alpha: isDark ? 0.6 : 0.7)
-              : (isDark
-                  ? Colors.white.withValues(alpha: 0.03)
-                  : Colors.white.withValues(alpha: 0.85)),
-          width: value ? 1.4 : 1.0,
-        ),
+        compact: true,
+        selected: value,
       ),
       child: SwitchListTile(
         value: value,

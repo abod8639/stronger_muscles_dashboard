@@ -1,9 +1,10 @@
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
-import 'form_section_card.dart';
+import 'package:stronger_muscles_dashboard/core/components/form_section_card.dart';
 
 /// قسم معرض صور المنتج ورفعها بتصميم Neumorphism / Soft UI
 class ProductMediaSection extends StatelessWidget {
@@ -71,49 +72,12 @@ class ProductMediaSection extends StatelessWidget {
                         key: ValueKey('img_${url}_$index'),
                         margin: const EdgeInsets.symmetric(horizontal: 6),
                         width: 130,
-                        decoration: BoxDecoration(
+                        decoration: AppDesignTokens.softSurface(
+                          colorScheme,
+                          isDark: isDark,
                           borderRadius: BorderRadius.circular(16),
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: isDark
-                                ? [
-                                    Color.lerp(colorScheme.surfaceContainerHigh,
-                                        Colors.white, 0.02)!,
-                                    Color.lerp(colorScheme.surfaceContainerHigh,
-                                        Colors.black, 0.12)!,
-                                  ]
-                                : [
-                                    Colors.white,
-                                    Color.lerp(colorScheme.surfaceContainerLow,
-                                        Colors.black, 0.03)!,
-                                  ],
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: isDark
-                                  ? Colors.black.withValues(alpha: 0.35)
-                                  : const Color(0xFFA3B1C6)
-                                      .withValues(alpha: 0.35),
-                              offset: const Offset(2, 2.5),
-                              blurRadius: 4,
-                            ),
-                            BoxShadow(
-                              color: isDark
-                                  ? Colors.white.withValues(alpha: 0.02)
-                                  : Colors.white.withValues(alpha: 0.90),
-                              offset: const Offset(-1.5, -1.5),
-                              blurRadius: 3,
-                            ),
-                          ],
-                          border: Border.all(
-                            color: isCover
-                                ? colorScheme.primary
-                                : (isDark
-                                    ? Colors.white.withValues(alpha: 0.03)
-                                    : Colors.white.withValues(alpha: 0.85)),
-                            width: isCover ? 2.0 : 1.0,
-                          ),
+                          compact: true,
+                          selected: isCover,
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(15),
@@ -202,41 +166,11 @@ class ProductMediaSection extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Container(
-      decoration: BoxDecoration(
+      decoration: AppDesignTokens.softSurface(
+        colorScheme,
+        isDark: isDark,
         borderRadius: BorderRadius.circular(16),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isDark
-              ? [
-                  Color.lerp(colorScheme.surfaceContainerHigh, Colors.white, 0.02)!,
-                  Color.lerp(colorScheme.surfaceContainerHigh, Colors.black, 0.12)!,
-                ]
-              : [
-                  Colors.white,
-                  Color.lerp(colorScheme.surfaceContainerLow, Colors.black, 0.03)!,
-                ],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: isDark
-                ? Colors.black.withValues(alpha: 0.35)
-                : const Color(0xFFA3B1C6).withValues(alpha: 0.30),
-            offset: const Offset(2, 2.5),
-            blurRadius: 4,
-          ),
-          BoxShadow(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.02)
-                : Colors.white.withValues(alpha: 0.90),
-            offset: const Offset(-1.5, -1.5),
-            blurRadius: 3,
-          ),
-        ],
-        border: Border.all(
-          color: colorScheme.primary.withValues(alpha: isDark ? 0.35 : 0.45),
-          width: 1.2,
-        ),
+        compact: true,
       ),
       child: Material(
         color: Colors.transparent,
@@ -293,43 +227,11 @@ class ProductMediaSection extends StatelessWidget {
 
     return Container(
       width: 120,
-      decoration: BoxDecoration(
+      decoration: AppDesignTokens.softSurface(
+        colorScheme,
+        isDark: isDark,
         borderRadius: BorderRadius.circular(16),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isDark
-              ? [
-                  Color.lerp(colorScheme.surfaceContainerHigh, Colors.white, 0.02)!,
-                  Color.lerp(colorScheme.surfaceContainerHigh, Colors.black, 0.10)!,
-                ]
-              : [
-                  Colors.white,
-                  Color.lerp(colorScheme.surfaceContainerLow, Colors.black, 0.03)!,
-                ],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: isDark
-                ? Colors.black.withValues(alpha: 0.35)
-                : const Color(0xFFA3B1C6).withValues(alpha: 0.30),
-            offset: const Offset(1.5, 2),
-            blurRadius: 3,
-          ),
-          BoxShadow(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.02)
-                : Colors.white.withValues(alpha: 0.90),
-            offset: const Offset(-1.5, -1.5),
-            blurRadius: 2.5,
-          ),
-        ],
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.03)
-              : Colors.white.withValues(alpha: 0.85),
-          width: 1.0,
-        ),
+        compact: true,
       ),
       child: Material(
         color: Colors.transparent,
