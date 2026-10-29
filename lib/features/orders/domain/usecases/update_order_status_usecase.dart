@@ -9,13 +9,7 @@ class UpdateOrderStatusUseCase {
 
   const UpdateOrderStatusUseCase(this.repository);
 
-  Future<Either<Failure, OrderEntity>> call(
-    String id,
-    OrderStatus status,
-  ) {
-    return repository.updateOrderStatus(
-      id,
-      status,
-    );
+  Future<Either<Failure, OrderEntity>> call(String id, OrderStatus status) {
+    return repository.updateOrderStatus(id, status);
   }
 }

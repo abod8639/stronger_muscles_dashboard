@@ -1,19 +1,8 @@
 import 'address_entity.dart';
 
-enum OrderStatus {
-  pending,
-  processing,
-  shipped,
-  delivered,
-  cancelled,
-}
+enum OrderStatus { pending, processing, shipped, delivered, cancelled }
 
-enum PaymentStatus {
-  pending,
-  paid,
-  failed,
-  refunded,
-}
+enum PaymentStatus { pending, paid, failed, refunded }
 
 /// Pure Dart Domain Entity representing a customer order.
 /// 100% pure Dart - decoupled from Flutter UI, Hive, and Dio.
@@ -203,10 +192,7 @@ class OrderItemEntity {
 
   @override
   int get hashCode =>
-      id.hashCode ^
-      productId.hashCode ^
-      quantity.hashCode ^
-      unitPrice.hashCode;
+      id.hashCode ^ productId.hashCode ^ quantity.hashCode ^ unitPrice.hashCode;
 
   @override
   String toString() =>

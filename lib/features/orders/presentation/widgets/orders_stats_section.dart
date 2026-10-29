@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stronger_muscles_dashboard/core/components/premium_indicator_card.dart';
+import 'package:stronger_muscles_dashboard/core/components/price_text.dart';
+import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
+import 'package:stronger_muscles_dashboard/features/settings/settings_feature.dart';
 import 'package:stronger_muscles_dashboard/core/components/responsive_stats_grid.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/controllers/orders_providers.dart';
 
@@ -16,41 +19,32 @@ class OrdersStatsSection extends ConsumerWidget {
       return const SizedBox.shrink();
     }
 
+    final currency = ref.watch(storeCurrencyProvider);
+    final colorScheme = Theme.of(context).colorScheme;
+
     final cards = [
       PremiumIndicatorCard(
         title: 'إجمالي الطلبات',
         value: stats.totalOrders.toString(),
-        trend: '+12%',
-        trendUp: true,
-        accentColor: Colors.blue,
-        chartColor: Colors.blueAccent,
+        accentColor: AppColors.info,
         icon: Icons.shopping_basket_rounded,
       ),
       PremiumIndicatorCard(
         title: 'قيد الانتظار',
         value: stats.pendingOrders.toString(),
-        trend: '-2%',
-        trendUp: false,
-        accentColor: Colors.orange,
-        chartColor: Colors.orangeAccent,
+        accentColor: AppColors.warning,
         icon: Icons.timer_rounded,
       ),
       PremiumIndicatorCard(
         title: 'تم التوصيل',
         value: stats.deliveredOrders.toString(),
-        trend: '+5%',
-        trendUp: true,
-        accentColor: Colors.green,
-        chartColor: Colors.greenAccent,
+        accentColor: AppColors.success,
         icon: Icons.check_circle_rounded,
       ),
       PremiumIndicatorCard(
         title: 'الإيرادات',
-        value: stats.totalRevenue.toStringAsFixed(0),
-        trend: '+18%',
-        trendUp: true,
-        accentColor: Colors.purple,
-        chartColor: Colors.purpleAccent,
+        value: formatPrice(stats.totalRevenue, currency),
+        accentColor: colorScheme.primary,
         icon: Icons.payments_rounded,
       ),
     ];

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:stronger_muscles_dashboard/features/settings/settings_feature.dart';
 import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
@@ -46,12 +48,17 @@ class ProductVariantManager extends StatelessWidget {
                     onTap: controller.addNewVariant,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 8),
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.add_rounded,
-                              size: 18, color: colorScheme.primary),
+                          Icon(
+                            Icons.add_rounded,
+                            size: 18,
+                            color: colorScheme.primary,
+                          ),
                           const SizedBox(width: 6),
                           Text(
                             'إضافة تنويع',
@@ -85,8 +92,9 @@ class ProductVariantManager extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.inventory_2_outlined,
-                      color:
-                          colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                      color: colorScheme.onSurfaceVariant.withValues(
+                        alpha: 0.6,
+                      ),
                       size: 36,
                     ),
                     const SizedBox(height: 8),
@@ -127,7 +135,7 @@ class ProductVariantManager extends StatelessWidget {
   }
 }
 
-class _VariantItemEditor extends StatefulWidget {
+class _VariantItemEditor extends ConsumerStatefulWidget {
   final int index;
   final ProductVariantEntity variant;
   final Function(ProductVariantEntity) onUpdate;
@@ -145,10 +153,10 @@ class _VariantItemEditor extends StatefulWidget {
   });
 
   @override
-  State<_VariantItemEditor> createState() => _VariantItemEditorState();
+  ConsumerState<_VariantItemEditor> createState() => _VariantItemEditorState();
 }
 
-class _VariantItemEditorState extends State<_VariantItemEditor> {
+class _VariantItemEditorState extends ConsumerState<_VariantItemEditor> {
   late TextEditingController skuCtrl;
   late TextEditingController priceCtrl;
   late TextEditingController discountCtrl;
@@ -192,6 +200,7 @@ class _VariantItemEditorState extends State<_VariantItemEditor> {
 
   @override
   Widget build(BuildContext context) {
+    final currency = ref.watch(storeCurrencyProvider);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
@@ -221,16 +230,28 @@ class _VariantItemEditorState extends State<_VariantItemEditor> {
                       end: Alignment.bottomRight,
                       colors: isDark
                           ? [
-                              Color.lerp(colorScheme.primaryContainer,
-                                  Colors.white, 0.02)!,
-                              Color.lerp(colorScheme.surfaceContainer,
-                                  colorScheme.primary, 0.10)!,
+                              Color.lerp(
+                                colorScheme.primaryContainer,
+                                Colors.white,
+                                0.02,
+                              )!,
+                              Color.lerp(
+                                colorScheme.surfaceContainer,
+                                colorScheme.primary,
+                                0.10,
+                              )!,
                             ]
                           : [
-                              Color.lerp(colorScheme.primaryContainer,
-                                  Colors.white, 0.40)!,
-                              Color.lerp(colorScheme.primaryContainer,
-                                  Colors.black, 0.02)!,
+                              Color.lerp(
+                                colorScheme.primaryContainer,
+                                Colors.white,
+                                0.40,
+                              )!,
+                              Color.lerp(
+                                colorScheme.primaryContainer,
+                                Colors.black,
+                                0.02,
+                              )!,
                             ],
                     ),
                     boxShadow: [
@@ -250,8 +271,9 @@ class _VariantItemEditorState extends State<_VariantItemEditor> {
                       ),
                     ],
                     border: Border.all(
-                      color: colorScheme.primary
-                          .withValues(alpha: isDark ? 0.5 : 0.6),
+                      color: colorScheme.primary.withValues(
+                        alpha: isDark ? 0.5 : 0.6,
+                      ),
                       width: 0.8,
                     ),
                   ),
@@ -336,7 +358,7 @@ class _VariantItemEditorState extends State<_VariantItemEditor> {
                     colorScheme: colorScheme,
                     isDark: isDark,
                     isNumber: true,
-                    suffixText: 'ر.س',
+                    suffixText: currency,
                     onChanged: (_) => _triggerUpdate(),
                   ),
                 ),
@@ -349,7 +371,7 @@ class _VariantItemEditorState extends State<_VariantItemEditor> {
                     colorScheme: colorScheme,
                     isDark: isDark,
                     isNumber: true,
-                    suffixText: 'ر.س',
+                    suffixText: currency,
                     onChanged: (_) => _triggerUpdate(),
                   ),
                 ),
@@ -368,10 +390,22 @@ class _VariantItemEditorState extends State<_VariantItemEditor> {
               spacing: 8,
               runSpacing: 8,
               children: [
-                _buildAttributeSelector(context, 'المقاس',
-                    widget.availableSizes, 'size', colorScheme, isDark),
-                _buildAttributeSelector(context, 'النكهة',
-                    widget.availableFlavors, 'flavor', colorScheme, isDark),
+                _buildAttributeSelector(
+                  context,
+                  'المقاس',
+                  widget.availableSizes,
+                  'size',
+                  colorScheme,
+                  isDark,
+                ),
+                _buildAttributeSelector(
+                  context,
+                  'النكهة',
+                  widget.availableFlavors,
+                  'flavor',
+                  colorScheme,
+                  isDark,
+                ),
               ],
             ),
           ],
@@ -423,13 +457,12 @@ class _VariantItemEditorState extends State<_VariantItemEditor> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: colorScheme.primary,
-            width: 1.4,
-          ),
+          borderSide: BorderSide(color: colorScheme.primary, width: 1.4),
         ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 12,
+        ),
       ),
     );
   }
@@ -451,16 +484,18 @@ class _VariantItemEditorState extends State<_VariantItemEditor> {
       onSelected: (val) {
         final newAttrs = Map<String, dynamic>.from(widget.variant.attributes);
         newAttrs[key] = val;
-        widget.onUpdate(ProductVariantEntity(
-          id: widget.variant.id,
-          sku: widget.variant.sku,
-          price: widget.variant.price,
-          discountPrice: widget.variant.discountPrice,
-          effectivePrice: widget.variant.effectivePrice,
-          stockQuantity: widget.variant.stockQuantity,
-          attributes: newAttrs,
-          isActive: widget.variant.isActive,
-        ));
+        widget.onUpdate(
+          ProductVariantEntity(
+            id: widget.variant.id,
+            sku: widget.variant.sku,
+            price: widget.variant.price,
+            discountPrice: widget.variant.discountPrice,
+            effectivePrice: widget.variant.effectivePrice,
+            stockQuantity: widget.variant.stockQuantity,
+            attributes: newAttrs,
+            isActive: widget.variant.isActive,
+          ),
+        );
       },
       itemBuilder: (context) => options
           .map((opt) => PopupMenuItem(value: opt, child: Text(opt)))
@@ -479,8 +514,9 @@ class _VariantItemEditorState extends State<_VariantItemEditor> {
             Icon(
               Icons.arrow_drop_down_rounded,
               size: 18,
-              color:
-                  hasVal ? colorScheme.primary : colorScheme.onSurfaceVariant,
+              color: hasVal
+                  ? colorScheme.primary
+                  : colorScheme.onSurfaceVariant,
             ),
             const SizedBox(width: 4),
             Text(
@@ -488,8 +524,9 @@ class _VariantItemEditorState extends State<_VariantItemEditor> {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: hasVal ? FontWeight.bold : FontWeight.w500,
-                color:
-                    hasVal ? colorScheme.primary : colorScheme.onSurfaceVariant,
+                color: hasVal
+                    ? colorScheme.primary
+                    : colorScheme.onSurfaceVariant,
               ),
             ),
           ],

@@ -3,20 +3,33 @@ import 'package:intl/intl.dart' as intl;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:stronger_muscles_dashboard/core/components/price_text.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
+import 'package:stronger_muscles_dashboard/features/orders/presentation/widgets/order_status_ui.dart';
 
 class InvoicePdfService {
   /// توليد وتخطيط ملف الـ PDF للطباعة أو الحفظ
-  static Future<void> printInvoice(OrderEntity order) async {
+  static Future<void> printInvoice(
+    OrderEntity order, {
+    required String currency,
+  }) async {
     await Printing.layoutPdf(
-      onLayout: (PdfPageFormat format) async => generateInvoiceBytes(order, format),
+      onLayout: (PdfPageFormat format) async =>
+          generateInvoiceBytes(order, format, currency: currency),
       name: 'فاتورة_طلب_${order.id}.pdf',
     );
   }
 
   /// مشاركة ملف الـ PDF كملف جاهز
-  static Future<void> shareInvoice(OrderEntity order) async {
-    final bytes = await generateInvoiceBytes(order, PdfPageFormat.a4);
+  static Future<void> shareInvoice(
+    OrderEntity order, {
+    required String currency,
+  }) async {
+    final bytes = await generateInvoiceBytes(
+      order,
+      PdfPageFormat.a4,
+      currency: currency,
+    );
     await Printing.sharePdf(
       bytes: bytes,
       filename: 'فاتورة_طلب_${order.id}.pdf',
@@ -26,8 +39,9 @@ class InvoicePdfService {
   /// إنشاء مصفوفة بايتس الفاتورة بتنسيق احترافي يدعم العربية
   static Future<Uint8List> generateInvoiceBytes(
     OrderEntity order,
-    PdfPageFormat format,
-  ) async {
+    PdfPageFormat format, {
+    required String currency,
+  }) async {
     final pdf = pw.Document();
 
     // تحميل خط عربي من Google Fonts
@@ -40,10 +54,7 @@ class InvoicePdfService {
     pdf.addPage(
       pw.Page(
         pageFormat: format,
-        theme: pw.ThemeData.withFont(
-          base: arabicFont,
-          bold: arabicBoldFont,
-        ),
+        theme: pw.ThemeData.withFont(base: arabicFont, bold: arabicBoldFont),
         build: (pw.Context context) {
           return pw.Directionality(
             textDirection: pw.TextDirection.rtl,
@@ -146,17 +157,27 @@ class InvoicePdfService {
                               pw.SizedBox(height: 6),
                               pw.Text(
                                 'الاسم: ${order.userName.isNotEmpty ? order.userName : 'غير محدد'}',
-                                style: pw.TextStyle(font: arabicFont, fontSize: 10),
+                                style: pw.TextStyle(
+                                  font: arabicFont,
+                                  fontSize: 10,
+                                ),
                               ),
-                              if (order.phoneNumber != null && order.phoneNumber!.isNotEmpty)
+                              if (order.phoneNumber != null &&
+                                  order.phoneNumber!.isNotEmpty)
                                 pw.Text(
                                   'الهاتف: ${order.phoneNumber}',
-                                  style: pw.TextStyle(font: arabicFont, fontSize: 10),
+                                  style: pw.TextStyle(
+                                    font: arabicFont,
+                                    fontSize: 10,
+                                  ),
                                 ),
                               if (order.userEmail.isNotEmpty)
                                 pw.Text(
                                   'البريد: ${order.userEmail}',
-                                  style: pw.TextStyle(font: arabicFont, fontSize: 10),
+                                  style: pw.TextStyle(
+                                    font: arabicFont,
+                                    fontSize: 10,
+                                  ),
                                 ),
                             ],
                           ),
@@ -186,16 +207,25 @@ class InvoicePdfService {
                               pw.SizedBox(height: 6),
                               pw.Text(
                                 'طريقة الدفع: ${order.paymentMethod.isNotEmpty ? order.paymentMethod : 'غير محدد'}',
-                                style: pw.TextStyle(font: arabicFont, fontSize: 10),
+                                style: pw.TextStyle(
+                                  font: arabicFont,
+                                  fontSize: 10,
+                                ),
                               ),
                               pw.Text(
-                                'حالة الدفع: ${_getPaymentStatusText(order.paymentStatus)}',
-                                style: pw.TextStyle(font: arabicFont, fontSize: 10),
+                                'حالة الدفع: ${order.paymentStatus.label}',
+                                style: pw.TextStyle(
+                                  font: arabicFont,
+                                  fontSize: 10,
+                                ),
                               ),
                               if (order.shippingAddress?.fullAddress != null)
                                 pw.Text(
                                   'العنوان: ${order.shippingAddress!.fullAddress}',
-                                  style: pw.TextStyle(font: arabicFont, fontSize: 10),
+                                  style: pw.TextStyle(
+                                    font: arabicFont,
+                                    fontSize: 10,
+                                  ),
                                   maxLines: 2,
                                 ),
                             ],
@@ -226,13 +256,36 @@ class InvoicePdfService {
                     children: [
                       // Table Header
                       pw.TableRow(
-                        decoration: const pw.BoxDecoration(color: PdfColors.grey200),
+                        decoration: const pw.BoxDecoration(
+                          color: PdfColors.grey200,
+                        ),
                         children: [
-                          _buildTableCell('#', isHeader: true, font: arabicBoldFont),
-                          _buildTableCell('المنتج', isHeader: true, font: arabicBoldFont, flex: 3),
-                          _buildTableCell('السعر', isHeader: true, font: arabicBoldFont),
-                          _buildTableCell('الكمية', isHeader: true, font: arabicBoldFont),
-                          _buildTableCell('الإجمالي', isHeader: true, font: arabicBoldFont),
+                          _buildTableCell(
+                            '#',
+                            isHeader: true,
+                            font: arabicBoldFont,
+                          ),
+                          _buildTableCell(
+                            'المنتج',
+                            isHeader: true,
+                            font: arabicBoldFont,
+                            flex: 3,
+                          ),
+                          _buildTableCell(
+                            'السعر',
+                            isHeader: true,
+                            font: arabicBoldFont,
+                          ),
+                          _buildTableCell(
+                            'الكمية',
+                            isHeader: true,
+                            font: arabicBoldFont,
+                          ),
+                          _buildTableCell(
+                            'الإجمالي',
+                            isHeader: true,
+                            font: arabicBoldFont,
+                          ),
                         ],
                       ),
                       // Table Rows
@@ -242,10 +295,23 @@ class InvoicePdfService {
                         return pw.TableRow(
                           children: [
                             _buildTableCell('$index', font: arabicFont),
-                            _buildTableCell(item.productName, font: arabicFont, flex: 3),
-                            _buildTableCell('${item.unitPrice.toStringAsFixed(2)} ر.س', font: arabicFont),
-                            _buildTableCell('${item.quantity}', font: arabicFont),
-                            _buildTableCell('${item.subtotal.toStringAsFixed(2)} ر.س', font: arabicBoldFont),
+                            _buildTableCell(
+                              item.productName,
+                              font: arabicFont,
+                              flex: 3,
+                            ),
+                            _buildTableCell(
+                              formatPrice(item.unitPrice, currency),
+                              font: arabicFont,
+                            ),
+                            _buildTableCell(
+                              '${item.quantity}',
+                              font: arabicFont,
+                            ),
+                            _buildTableCell(
+                              formatPrice(item.subtotal, currency),
+                              font: arabicBoldFont,
+                            ),
                           ],
                         );
                       }),
@@ -268,21 +334,38 @@ class InvoicePdfService {
                         ),
                         child: pw.Column(
                           children: [
-                            _buildSummaryLine('المجموع الفرعي:', '${order.subtotal.toStringAsFixed(2)} ر.س', font: arabicFont),
+                            _buildSummaryLine(
+                              'المجموع الفرعي:',
+                              formatPrice(order.subtotal, currency),
+                              font: arabicFont,
+                            ),
                             pw.SizedBox(height: 4),
-                            _buildSummaryLine('تكلفة الشحن:', '${order.shippingCost.toStringAsFixed(2)} ر.س', font: arabicFont),
+                            _buildSummaryLine(
+                              'تكلفة الشحن:',
+                              formatPrice(order.shippingCost, currency),
+                              font: arabicFont,
+                            ),
                             if (order.taxAmount > 0) ...[
                               pw.SizedBox(height: 4),
-                              _buildSummaryLine('الضريبة:', '${order.taxAmount.toStringAsFixed(2)} ر.س', font: arabicFont),
+                              _buildSummaryLine(
+                                'الضريبة:',
+                                formatPrice(order.taxAmount, currency),
+                                font: arabicFont,
+                              ),
                             ],
                             if (order.discount > 0) ...[
                               pw.SizedBox(height: 4),
-                              _buildSummaryLine('الخصم:', '-${order.discount.toStringAsFixed(2)} ر.س', font: arabicFont, color: PdfColors.red700),
+                              _buildSummaryLine(
+                                'الخصم:',
+                                '-${formatPrice(order.discount, currency)}',
+                                font: arabicFont,
+                                color: PdfColors.red700,
+                              ),
                             ],
                             pw.Divider(color: PdfColors.grey400),
                             _buildSummaryLine(
                               'الإجمالي النهائي:',
-                              '${order.totalAmount.toStringAsFixed(2)} ر.س',
+                              formatPrice(order.totalAmount, currency),
                               font: arabicBoldFont,
                               fontSize: 12,
                               color: PdfColors.black,
@@ -367,18 +450,5 @@ class InvoicePdfService {
         ),
       ],
     );
-  }
-
-  static String _getPaymentStatusText(PaymentStatus status) {
-    switch (status) {
-      case PaymentStatus.paid:
-        return 'مدفوع';
-      case PaymentStatus.pending:
-        return 'معلق / قيد الانتظار';
-      case PaymentStatus.failed:
-        return 'فشل الدفع';
-      case PaymentStatus.refunded:
-        return 'مسترد';
-    }
   }
 }

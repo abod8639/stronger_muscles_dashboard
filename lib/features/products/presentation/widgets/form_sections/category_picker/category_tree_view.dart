@@ -31,12 +31,17 @@ class CategoryTreeView extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     final isSearching = searchQuery.trim().isNotEmpty;
-    final flatList = isSearching ? CategoryTreeUtils.flatten(categories) : <CategoryEntity>[];
+    final flatList = isSearching
+        ? CategoryTreeUtils.flatten(categories)
+        : <CategoryEntity>[];
     final searchResults = isSearching
         ? flatList
-            .where((c) =>
-                c.displayName.toLowerCase().contains(searchQuery.toLowerCase()))
-            .toList()
+              .where(
+                (c) => c.displayName.toLowerCase().contains(
+                  searchQuery.toLowerCase(),
+                ),
+              )
+              .toList()
         : <CategoryEntity>[];
 
     return Container(
@@ -52,28 +57,32 @@ class CategoryTreeView extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         child: isSearching
             ? (searchResults.isEmpty
-                ? _buildEmptyState(
-                    message: 'لا توجد أقسام تطابق: "$searchQuery"',
-                    icon: Icons.search_off_rounded,
-                    colorScheme: colorScheme,
-                  )
-                : ListView.separated(
-                    padding: const EdgeInsets.all(10),
-                    itemCount: searchResults.length,
-                    separatorBuilder: (context, index) => const SizedBox(height: 8),
-                    itemBuilder: (context, index) {
-                      final cat = searchResults[index];
-                      final isSelected = selectedCategoryId == cat.id;
-                      final breadcrumbs = CategoryTreeUtils.findBreadcrumbs(categories, cat.id);
+                  ? _buildEmptyState(
+                      message: 'لا توجد أقسام تطابق: "$searchQuery"',
+                      icon: Icons.search_off_rounded,
+                      colorScheme: colorScheme,
+                    )
+                  : ListView.separated(
+                      padding: const EdgeInsets.all(10),
+                      itemCount: searchResults.length,
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 8),
+                      itemBuilder: (context, index) {
+                        final cat = searchResults[index];
+                        final isSelected = selectedCategoryId == cat.id;
+                        final breadcrumbs = CategoryTreeUtils.findBreadcrumbs(
+                          categories,
+                          cat.id,
+                        );
 
-                      return CategoryTile(
-                        category: cat,
-                        isSelected: isSelected,
-                        onTap: () => onSelectCategory(cat.id),
-                        breadcrumbs: breadcrumbs,
-                      );
-                    },
-                  ))
+                        return CategoryTile(
+                          category: cat,
+                          isSelected: isSelected,
+                          onTap: () => onSelectCategory(cat.id),
+                          breadcrumbs: breadcrumbs,
+                        );
+                      },
+                    ))
             : ListView(
                 padding: const EdgeInsets.all(10),
                 children: categories
@@ -93,10 +102,7 @@ class CategoryTreeView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.only(
-            right: depth * 16.0,
-            bottom: 8.0,
-          ),
+          padding: EdgeInsets.only(right: depth * 16.0, bottom: 8.0),
           child: CategoryTile(
             category: cat,
             isSelected: isSelected,

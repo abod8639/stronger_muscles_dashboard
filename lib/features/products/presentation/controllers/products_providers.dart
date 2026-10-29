@@ -36,7 +36,9 @@ final productLocalDataSourceProvider = Provider<ProductLocalDataSource>((ref) {
 });
 
 /// Remote DataSource Provider
-final productRemoteDataSourceProvider = Provider<ProductRemoteDataSource>((ref) {
+final productRemoteDataSourceProvider = Provider<ProductRemoteDataSource>((
+  ref,
+) {
   final dio = ref.watch(dioProvider);
   return ProductRemoteDataSourceImpl(dio);
 });
@@ -78,7 +80,9 @@ final deleteProductUseCaseProvider = Provider<DeleteProductUseCase>((ref) {
   return DeleteProductUseCase(ref.watch(productRepositoryProvider));
 });
 
-final uploadProductImageUseCaseProvider = Provider<UploadProductImageUseCase>((ref) {
+final uploadProductImageUseCaseProvider = Provider<UploadProductImageUseCase>((
+  ref,
+) {
   return UploadProductImageUseCase(ref.watch(productRepositoryProvider));
 });
 
@@ -95,8 +99,8 @@ class ProductsSearchQueryNotifier extends Notifier<String> {
 
 final productsSearchQueryProvider =
     NotifierProvider<ProductsSearchQueryNotifier, String>(
-  ProductsSearchQueryNotifier.new,
-);
+      ProductsSearchQueryNotifier.new,
+    );
 
 class ProductsSelectedCategoryNotifier extends Notifier<String> {
   @override
@@ -107,8 +111,8 @@ class ProductsSelectedCategoryNotifier extends Notifier<String> {
 
 final productsSelectedCategoryProvider =
     NotifierProvider<ProductsSelectedCategoryNotifier, String>(
-  ProductsSelectedCategoryNotifier.new,
-);
+      ProductsSelectedCategoryNotifier.new,
+    );
 
 class ProductsSelectedFlavorNotifier extends Notifier<String> {
   @override
@@ -119,8 +123,8 @@ class ProductsSelectedFlavorNotifier extends Notifier<String> {
 
 final productsSelectedFlavorProvider =
     NotifierProvider<ProductsSelectedFlavorNotifier, String>(
-  ProductsSelectedFlavorNotifier.new,
-);
+      ProductsSelectedFlavorNotifier.new,
+    );
 
 // ==========================================
 // Core Products State via AsyncNotifier
@@ -128,13 +132,13 @@ final productsSelectedFlavorProvider =
 
 final productsControllerProvider =
     AsyncNotifierProvider<ProductsNotifier, List<ProductEntity>>(() {
-  return ProductsNotifier(
-    getProductsUseCase: getProductsUseCaseProvider.read,
-    addProductUseCase: addProductUseCaseProvider.read,
-    updateProductUseCase: updateProductUseCaseProvider.read,
-    deleteProductUseCase: deleteProductUseCaseProvider.read,
-  );
-});
+      return ProductsNotifier(
+        getProductsUseCase: getProductsUseCaseProvider.read,
+        addProductUseCase: addProductUseCaseProvider.read,
+        updateProductUseCase: updateProductUseCaseProvider.read,
+        deleteProductUseCase: deleteProductUseCaseProvider.read,
+      );
+    });
 
 extension ProductProviderRead<T> on Provider<T> {
   T get read => ProviderContainer().read(this);
@@ -149,7 +153,9 @@ final productsUIControllerProvider = Provider<ProductsController>((ref) {
   final addProductUseCase = ref.watch(addProductUseCaseProvider);
   final updateProductUseCase = ref.watch(updateProductUseCaseProvider);
   final deleteProductUseCase = ref.watch(deleteProductUseCaseProvider);
-  final uploadProductImageUseCase = ref.watch(uploadProductImageUseCaseProvider);
+  final uploadProductImageUseCase = ref.watch(
+    uploadProductImageUseCaseProvider,
+  );
   final categoryRepository = ref.watch(categoryRepositoryProvider);
   final brandRepository = ref.watch(brandRepositoryProvider);
 
@@ -164,15 +170,14 @@ final productsUIControllerProvider = Provider<ProductsController>((ref) {
   );
 
   // Sync with Riverpod state updates
-  ref.listen<AsyncValue<List<ProductEntity>>>(
-    productsControllerProvider,
-    (_, next) {
-      next.whenData((products) {
-        controller.syncWithRiverpod(products);
-      });
-    },
-    fireImmediately: true,
-  );
+  ref.listen<AsyncValue<List<ProductEntity>>>(productsControllerProvider, (
+    _,
+    next,
+  ) {
+    next.whenData((products) {
+      controller.syncWithRiverpod(products);
+    });
+  }, fireImmediately: true);
 
   ref.onDispose(controller.dispose);
   return controller;
@@ -197,15 +202,19 @@ final filteredProductsProvider = Provider<List<ProductEntity>>((ref) {
       }
 
       if (selectedFlavor != 'all') {
-        result = result.where((p) => p.flavors?.contains(selectedFlavor) ?? false);
+        result = result.where(
+          (p) => p.flavors?.contains(selectedFlavor) ?? false,
+        );
       }
 
       if (query.isNotEmpty) {
-        result = result.where((p) =>
-            p.nameAr.toLowerCase().contains(query) ||
-            p.nameEn.toLowerCase().contains(query) ||
-            (p.brand != null && p.brand!.toLowerCase().contains(query)) ||
-            p.id.contains(query));
+        result = result.where(
+          (p) =>
+              p.nameAr.toLowerCase().contains(query) ||
+              p.nameEn.toLowerCase().contains(query) ||
+              (p.brand != null && p.brand!.toLowerCase().contains(query)) ||
+              p.id.contains(query),
+        );
       }
 
       return result.toList();

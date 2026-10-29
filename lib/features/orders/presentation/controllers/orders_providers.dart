@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:stronger_muscles_dashboard/core/network/dio_provider.dart';
+import 'package:stronger_muscles_dashboard/features/settings/settings_feature.dart';
 import '../../data/datasources/order_local_datasource.dart';
 import '../../data/datasources/order_remote_datasource.dart';
 import '../../data/models/order_model.dart';
@@ -60,8 +61,9 @@ final getOrderDetailUseCaseProvider = Provider<GetOrderDetailUseCase>((ref) {
 });
 
 /// Scoped provider for [UpdateOrderStatusUseCase]
-final updateOrderStatusUseCaseProvider =
-    Provider<UpdateOrderStatusUseCase>((ref) {
+final updateOrderStatusUseCaseProvider = Provider<UpdateOrderStatusUseCase>((
+  ref,
+) {
   return UpdateOrderStatusUseCase(ref.watch(orderRepositoryProvider));
 });
 
@@ -79,8 +81,8 @@ class OrdersSearchQueryNotifier extends Notifier<String> {
 
 final ordersSearchQueryProvider =
     NotifierProvider<OrdersSearchQueryNotifier, String>(
-  OrdersSearchQueryNotifier.new,
-);
+      OrdersSearchQueryNotifier.new,
+    );
 
 /// Notifier managing selected order status filter ('all', 'pending', etc.)
 class OrdersSelectedStatusNotifier extends Notifier<String> {
@@ -92,8 +94,8 @@ class OrdersSelectedStatusNotifier extends Notifier<String> {
 
 final ordersSelectedStatusProvider =
     NotifierProvider<OrdersSelectedStatusNotifier, String>(
-  OrdersSelectedStatusNotifier.new,
-);
+      OrdersSelectedStatusNotifier.new,
+    );
 
 /// Notifier managing current table pagination index
 class OrdersCurrentPageNotifier extends Notifier<int> {
@@ -112,8 +114,8 @@ class OrdersCurrentPageNotifier extends Notifier<int> {
 
 final ordersCurrentPageProvider =
     NotifierProvider<OrdersCurrentPageNotifier, int>(
-  OrdersCurrentPageNotifier.new,
-);
+      OrdersCurrentPageNotifier.new,
+    );
 
 /// Page size configuration
 final ordersItemsPerPageProvider = Provider<int>((ref) => 6);
@@ -125,23 +127,26 @@ final ordersItemsPerPageProvider = Provider<int>((ref) => 6);
 /// Main state controller provider managing orders list
 final ordersControllerProvider =
     AsyncNotifierProvider<OrdersNotifier, List<OrderEntity>>(
-  OrdersNotifier.new,
-);
+      OrdersNotifier.new,
+    );
 
 /// Auto-disposing family provider for order details controller
 final orderDetailsControllerProvider = Provider.autoDispose
     .family<OrderDetailsController, OrderEntity>((ref, initialOrder) {
-  final updateUseCase = ref.watch(updateOrderStatusUseCaseProvider);
-  final controller = OrderDetailsController(
-    initialOrder: initialOrder,
-    updateOrderStatusUseCase: updateUseCase,
-    onStatusUpdated: () {
-      ref.read(ordersControllerProvider.notifier).refreshOrders(forceRefresh: true);
-    },
-  );
-  ref.onDispose(controller.dispose);
-  return controller;
-});
+      final updateUseCase = ref.watch(updateOrderStatusUseCaseProvider);
+      final controller = OrderDetailsController(
+        initialOrder: initialOrder,
+        updateOrderStatusUseCase: updateUseCase,
+        currency: () => ref.read(storeCurrencyProvider),
+        onStatusUpdated: () {
+          ref
+              .read(ordersControllerProvider.notifier)
+              .refreshOrders(forceRefresh: true);
+        },
+      );
+      ref.onDispose(controller.dispose);
+      return controller;
+    });
 
 // ==========================================
 // Computed Selectors
@@ -159,7 +164,8 @@ final filteredOrdersProvider = Provider<List<OrderEntity>>((ref) {
         final matchesStatus =
             selectedStatus == 'all' || order.status.name == selectedStatus;
 
-        final matchesQuery = query.isEmpty ||
+        final matchesQuery =
+            query.isEmpty ||
             order.id.toLowerCase().contains(query) ||
             order.userId.toLowerCase().contains(query) ||
             order.userName.toLowerCase().contains(query) ||
@@ -237,7 +243,9 @@ final ordersStatsProvider = Provider<OrdersStats>((ref) {
   final total = orders.length;
   final revenue = orders.fold<double>(0.0, (sum, o) => sum + o.totalAmount);
   final pending = orders.where((o) => o.status == OrderStatus.pending).length;
-  final delivered = orders.where((o) => o.status == OrderStatus.delivered).length;
+  final delivered = orders
+      .where((o) => o.status == OrderStatus.delivered)
+      .length;
 
   return OrdersStats(
     totalOrders: total,

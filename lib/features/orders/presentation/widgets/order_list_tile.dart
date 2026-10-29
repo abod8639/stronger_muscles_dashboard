@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:stronger_muscles_dashboard/core/components/icon_card_with_shadow.dart';
+import 'package:stronger_muscles_dashboard/core/components/info_pill.dart';
+import 'package:stronger_muscles_dashboard/core/components/price_text.dart';
+import 'package:stronger_muscles_dashboard/core/components/soft_surface.dart';
 import 'package:stronger_muscles_dashboard/core/theme/responsive.dart';
-import 'package:stronger_muscles_dashboard/core/components/status_badge.dart';
+import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
-import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/orders_screen/widgets/build_enhanced_order_images.dart';
-import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/orders_screen/widgets/build_info_section.dart';
-import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/orders_screen/widgets/build_order_header.dart';
-import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/orders_screen/widgets/build_price_section.dart';
+import 'package:stronger_muscles_dashboard/features/orders/presentation/widgets/order_images_stack.dart';
+import 'package:stronger_muscles_dashboard/features/orders/presentation/widgets/order_status_ui.dart';
+import 'package:stronger_muscles_dashboard/features/settings/settings_feature.dart';
 
-/// بطاقة عرض عنصر الطلب بتصميم Neumorphism / Soft UI
-/// متناسقة ديناميكياً مع ألوان وثيم التطبيق وتدعم الوضع الفاتح والداكن ومتجاوبة بالكامل لمنع أي Overflow
-class OrderListTile extends StatefulWidget {
+/// بطاقة الطلب في القوائم (صفحة الطلبات على الهاتف/اللوحي، والطلبات الأخيرة في لوحة التحكم)
+class OrderListTile extends ConsumerWidget {
   final OrderEntity order;
   final VoidCallback? onTap;
   final int index;
@@ -22,191 +25,265 @@ class OrderListTile extends StatefulWidget {
   });
 
   @override
-  State<OrderListTile> createState() => _OrderListTileState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final currency = ref.watch(storeCurrencyProvider);
+
+    return SoftSurface(
+      onTap: onTap,
+      borderRadius: context.isMobile
+          ? AppDesignTokens.radiusCard
+          : AppDesignTokens.radiusLarge,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final isCompact = context.isMobile || constraints.maxWidth < 320;
+          final gap = isCompact
+              ? AppDesignTokens.space8
+              : AppDesignTokens.space10;
+
+          final content = Padding(
+            padding: EdgeInsets.all(
+              isCompact ? AppDesignTokens.space10 : AppDesignTokens.space12,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: _OrderHeader(order: order)),
+                    const SizedBox(width: AppDesignTokens.space8),
+                    OrderStatusBadge(status: order.status),
+                  ],
+                ),
+                SizedBox(height: gap),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _InfoTile(
+                        icon: Icons.person_outline_rounded,
+                        label: order.userName.isNotEmpty
+                            ? order.userName
+                            : order.userId.toString(),
+                        sublabel: 'العميل',
+                      ),
+                    ),
+                    SizedBox(width: gap),
+                    Expanded(
+                      child: _InfoTile(
+                        icon: Icons.shopping_bag_outlined,
+                        label: '${order.items.length}',
+                        sublabel: order.items.length == 1
+                            ? 'منتج واحد'
+                            : 'منتجات',
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: gap),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppDesignTokens.space10,
+                          vertical: AppDesignTokens.space6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: colorScheme.primaryContainer.withValues(
+                            alpha: 0.3,
+                          ),
+                          borderRadius: AppDesignTokens.radiusSmall,
+                          border: Border.all(
+                            color: colorScheme.primary.withValues(alpha: 0.25),
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'الإجمالي',
+                              style: Theme.of(context).textTheme.labelSmall
+                                  ?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                            ),
+                            PriceText(
+                              amount: order.totalAmount,
+                              currency: currency,
+                              color: colorScheme.primary,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    if (order.items.isNotEmpty) ...[
+                      SizedBox(width: gap),
+                      OrderImagesStack(order: order, size: isCompact ? 36 : 42),
+                    ],
+                  ],
+                ),
+              ],
+            ),
+          );
+
+          // عند تقييد الارتفاع (شبكة لوحة التحكم) نصغّر المحتوى بدلاً من حدوث Overflow
+          if (constraints.maxHeight.isFinite && constraints.maxHeight < 175) {
+            return FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.topCenter,
+              child: SizedBox(width: constraints.maxWidth, child: content),
+            );
+          }
+          return content;
+        },
+      ),
+    );
+  }
 }
 
-class _OrderListTileState extends State<OrderListTile> {
-  bool _isHovered = false;
-  bool _isPressed = false;
+/// رقم الطلب المختصر + حالة الدفع + التاريخ النسبي
+class _OrderHeader extends StatelessWidget {
+  final OrderEntity order;
+
+  const _OrderHeader({required this.order});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final isDark = theme.brightness == Brightness.dark;
-    final isMobile = context.isMobile;
 
-    final borderRadius = BorderRadius.circular(isMobile ? 18 : 22);
-
-    final double currentScale = _isPressed
-        ? 0.985
-        : (_isHovered ? 1.012 : 1.0);
-
-    return MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
-      cursor: widget.onTap != null ? SystemMouseCursors.click : SystemMouseCursors.basic,
-      child: GestureDetector(
-        onTapDown: widget.onTap != null ? (_) => setState(() => _isPressed = true) : null,
-        onTapUp: widget.onTap != null
-            ? (_) {
-                setState(() => _isPressed = false);
-                widget.onTap?.call();
-              }
-            : null,
-        onTapCancel: widget.onTap != null ? () => setState(() => _isPressed = false) : null,
-        child: AnimatedScale(
-          scale: currentScale,
-          duration: const Duration(milliseconds: 180),
-          curve: Curves.easeOutCubic,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 220),
-            curve: Curves.easeOutCubic,
-            decoration: BoxDecoration(
-              borderRadius: borderRadius,
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: isDark
-                    ? [
-                        Color.lerp(colorScheme.surfaceContainer, Colors.white, _isHovered ? 0.05 : 0.03)!,
-                        Color.lerp(colorScheme.surfaceContainer, Colors.black, _isHovered ? 0.05 : 0.09)!,
-                      ]
-                    : [
-                        Color.lerp(colorScheme.surfaceContainer, Colors.white, _isHovered ? 0.75 : 0.65)!,
-                        Color.lerp(colorScheme.surfaceContainer, Colors.black, _isHovered ? 0.01 : 0.035)!,
-                      ],
-              ),
-              boxShadow: _isPressed
-                  ? [
-                      // في حالة الضغط، تتراجع الظلال لمحاكاة انضغاط السطح
-                      BoxShadow(
-                        color: isDark
-                            ? Colors.black.withValues(alpha: 0.3)
-                            : const Color(0xFFA3B1C6).withValues(alpha: 0.25),
-                        offset: const Offset(2, 2.5),
-                        blurRadius: 5,
-                      ),
-                    ]
-                  : [
-                      // الظل السفلي الغامق (Drop Shadow)
-                      BoxShadow(
-                        color: isDark
-                            ? Colors.black.withValues(alpha: _isHovered ? 0.65 : 0.55)
-                            : const Color(0xFFA3B1C6).withValues(alpha: _isHovered ? 0.55 : 0.42),
-                        offset: _isHovered ? const Offset(6, 8) : const Offset(4, 6),
-                        blurRadius: _isHovered ? 18 : 14,
-                        spreadRadius: 0,
-                      ),
-                      // الظل العلوي الفاتح العاكس للضوء (Highlight Glow)
-                      BoxShadow(
-                        color: isDark
-                            ? Colors.white.withValues(alpha: _isHovered ? 0.06 : 0.04)
-                            : Colors.white.withValues(alpha: _isHovered ? 1.0 : 0.95),
-                        offset: _isHovered ? const Offset(-4, -4) : const Offset(-3, -3),
-                        blurRadius: _isHovered ? 14 : 10,
-                        spreadRadius: 0,
-                      ),
-                      // وهج ناعم بلون السمة عند التحويم
-                      if (_isHovered)
-                        BoxShadow(
-                          color: colorScheme.primary.withValues(alpha: isDark ? 0.10 : 0.12),
-                          offset: const Offset(0, 4),
-                          blurRadius: 16,
-                          spreadRadius: -2,
-                        ),
-                    ],
-              border: Border.all(
-                color: isDark
-                    ? (_isHovered
-                        ? colorScheme.primary.withValues(alpha: 0.35)
-                        : Colors.white.withValues(alpha: 0.06))
-                    : (_isHovered
-                        ? colorScheme.primary.withValues(alpha: 0.4)
-                        : Colors.white.withValues(alpha: 0.85)),
-                width: _isHovered ? 1.3 : 1.0,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: AppDesignTokens.space6,
+          runSpacing: AppDesignTokens.space4,
+          children: [
+            Tooltip(
+              message: '#${order.id}',
+              child: InfoPill(label: _shortId(context)),
+            ),
+            PaymentStatusBadge(status: order.paymentStatus),
+          ],
+        ),
+        const SizedBox(height: AppDesignTokens.space4),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.access_time_rounded,
+              size: 13,
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+            ),
+            const SizedBox(width: AppDesignTokens.space4),
+            Flexible(
+              child: Text(
+                _relativeDate(order.orderDate),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
               ),
             ),
-            child: Material(
-              color: Colors.transparent,
-              borderRadius: borderRadius,
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final isNarrow = constraints.maxWidth < 320;
-                  final isCompact = isMobile ||
-                      isNarrow ||
-                      (constraints.maxHeight.isFinite && constraints.maxHeight < 210);
+          ],
+        ),
+      ],
+    );
+  }
 
-                  final padding = isCompact ? 10.0 : 12.0;
-                  final verticalSpacing = isCompact ? 8.0 : 10.0;
+  String _shortId(BuildContext context) {
+    final id = order.id.toString();
+    final maxLength = context.isMobile ? 8 : (context.isTablet ? 12 : 20);
+    return id.length > maxLength
+        ? '#${id.substring(0, maxLength - 2)}…'
+        : '#$id';
+  }
 
-                  Widget content = Padding(
-                    padding: EdgeInsets.all(padding),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // 1. ترويسة الطلب: المعرف والتاريخ + شارة الحالة
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: OrderHeader(order: widget.order),
-                            ),
-                            const SizedBox(width: 8),
-                            OrderStatusBadge(status: widget.order.status),
-                          ],
-                        ),
+  String _relativeDate(DateTime date) {
+    final diff = DateTime.now().difference(date);
+    if (diff.inDays == 0) {
+      final hour = date.hour.toString().padLeft(2, '0');
+      final minute = date.minute.toString().padLeft(2, '0');
+      return 'اليوم $hour:$minute';
+    }
+    if (diff.inDays == 1) return 'أمس';
+    if (diff.inDays < 7) return 'منذ ${diff.inDays} أيام';
+    return '${date.day}/${date.month}/${date.year}';
+  }
+}
 
-                        SizedBox(height: verticalSpacing),
+/// معلومة مصغرة (أيقونة + قيمة + وصف) داخل بطاقة الطلب
+class _InfoTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String sublabel;
 
-                        // 2. معلومات العميل وعدد المنتجات بنمط M3
-                        buildInfoSection(widget.order, isCompact: isCompact),
+  const _InfoTile({
+    required this.icon,
+    required this.label,
+    required this.sublabel,
+  });
 
-                        SizedBox(height: verticalSpacing),
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
-                        // 3. الجزء السفلي: الإجمالي + معرض صور المنتجات المضمنة
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Expanded(
-                              child: buildPriceSection(
-                                widget.order,
-                                isCompact: isCompact,
-                              ),
-                            ),
-                            if (widget.order.items.isNotEmpty) ...[
-                              SizedBox(width: isCompact ? 6 : 10),
-                              buildEnhancedOrderImages(
-                                widget.order,
-                                _isHovered,
-                                size: isCompact ? 36.0 : 42.0,
-                              ),
-                            ],
-                          ],
-                        ),
-                      ],
-                    ),
-                  );
-
-                  // في حال كان الارتفاع مقيداً جداً، يتم تصغير المحتوى بنعومة لمنع أي RenderFlex Overflow
-                  if (constraints.maxHeight.isFinite && constraints.maxHeight < 175) {
-                    return FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.topCenter,
-                      child: SizedBox(
-                        width: constraints.maxWidth,
-                        child: content,
-                      ),
-                    );
-                  }
-
-                  return content;
-                },
-              ),
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppDesignTokens.space8,
+        vertical: AppDesignTokens.space6,
+      ),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
+        borderRadius: AppDesignTokens.radiusSmall,
+        border: Border.all(
+          color: colorScheme.outlineVariant.withValues(alpha: 0.45),
+        ),
+      ),
+      child: Row(
+        children: [
+          IconCardWithShadow(
+            icon: icon,
+            size: 14,
+            padding: const EdgeInsets.all(AppDesignTokens.space6),
+            borderRadius: AppDesignTokens.radiusSmallValue,
+          ),
+          const SizedBox(width: AppDesignTokens.space8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+                Text(
+                  sublabel,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontSize: 10,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
             ),
           ),
-        ),
+        ],
       ),
     );
   }

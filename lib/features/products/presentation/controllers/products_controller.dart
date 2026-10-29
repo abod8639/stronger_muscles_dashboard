@@ -31,13 +31,13 @@ class ProductsController extends ChangeNotifier {
     required UploadProductImageUseCase uploadProductImageUseCase,
     required CategoryRepository categoryRepository,
     required BrandRepository brandRepository,
-  })  : _getProductsUseCase = getProductsUseCase,
-        _addProductUseCase = addProductUseCase,
-        _updateProductUseCase = updateProductUseCase,
-        _deleteProductUseCase = deleteProductUseCase,
-        _uploadProductImageUseCase = uploadProductImageUseCase,
-        _categoryRepository = categoryRepository,
-        _brandRepository = brandRepository {
+  }) : _getProductsUseCase = getProductsUseCase,
+       _addProductUseCase = addProductUseCase,
+       _updateProductUseCase = updateProductUseCase,
+       _deleteProductUseCase = deleteProductUseCase,
+       _uploadProductImageUseCase = uploadProductImageUseCase,
+       _categoryRepository = categoryRepository,
+       _brandRepository = brandRepository {
     fetchData();
   }
 
@@ -215,14 +215,13 @@ class ProductsController extends ChangeNotifier {
     );
 
     final prodResult = await _getProductsUseCase(forceRefresh: forceRefresh);
-    prodResult.fold(
-      (failure) => AppFeedback.showError(failure.toMessage()),
-      (prods) {
-        products
-          ..clear()
-          ..addAll(prods);
-      },
-    );
+    prodResult.fold((failure) => AppFeedback.showError(failure.toMessage()), (
+      prods,
+    ) {
+      products
+        ..clear()
+        ..addAll(prods);
+    });
 
     final brandsResult = await _brandRepository.getBrands();
     brandsResult.fold(
@@ -282,14 +281,17 @@ class ProductsController extends ChangeNotifier {
       ..clear()
       ..addAll(
         products.where((product) {
-          final matchesCategory = _selectedCategoryId == 'all' ||
+          final matchesCategory =
+              _selectedCategoryId == 'all' ||
               product.categoryId == _selectedCategoryId;
 
-          final matchesFlavor = _selectedFlavorId == 'all' ||
+          final matchesFlavor =
+              _selectedFlavorId == 'all' ||
               (product.flavors != null &&
                   product.flavors!.contains(_selectedFlavorId));
 
-          final matchesSearch = query.isEmpty ||
+          final matchesSearch =
+              query.isEmpty ||
               product.nameAr.toLowerCase().contains(query) ||
               product.nameEn.toLowerCase().contains(query) ||
               (product.brand != null &&
@@ -312,7 +314,8 @@ class ProductsController extends ChangeNotifier {
       textcontrollers['name_ar']?.text = product.nameAr;
       textcontrollers['name_en']?.text = product.nameEn;
       textcontrollers['price']?.text = product.price.toString();
-      textcontrollers['discount']?.text = product.discountPrice?.toString() ?? '';
+      textcontrollers['discount']?.text =
+          product.discountPrice?.toString() ?? '';
       textcontrollers['desc_ar']?.text = product.descriptionAr;
       textcontrollers['desc_en']?.text = product.descriptionEn;
       textcontrollers['stock']?.text = product.stockQuantity.toString();
@@ -330,10 +333,12 @@ class ProductsController extends ChangeNotifier {
       if (product.productSizes != null) {
         for (var ps in product.productSizes!) {
           productSizes.add(ps);
-          sizePriceControllers[ps.size] =
-              TextEditingController(text: ps.price.toString());
-          sizeDiscountControllers[ps.size] =
-              TextEditingController(text: ps.discountPrice?.toString() ?? '');
+          sizePriceControllers[ps.size] = TextEditingController(
+            text: ps.price.toString(),
+          );
+          sizeDiscountControllers[ps.size] = TextEditingController(
+            text: ps.discountPrice?.toString() ?? '',
+          );
         }
       }
 
@@ -356,11 +361,16 @@ class ProductsController extends ChangeNotifier {
   }
 
   void addProductSize(String size, double price, double? discount) {
-    final newSize = ProductSizeEntity(size: size, price: price, discountPrice: discount);
+    final newSize = ProductSizeEntity(
+      size: size,
+      price: price,
+      discountPrice: discount,
+    );
     productSizes.add(newSize);
     sizePriceControllers[size] = TextEditingController(text: price.toString());
-    sizeDiscountControllers[size] =
-        TextEditingController(text: discount?.toString() ?? '');
+    sizeDiscountControllers[size] = TextEditingController(
+      text: discount?.toString() ?? '',
+    );
     notifyListeners();
   }
 
@@ -411,7 +421,8 @@ class ProductsController extends ChangeNotifier {
       sku: 'SKU-${DateTime.now().millisecondsSinceEpoch % 10000}',
       price: double.tryParse(textcontrollers['price']?.text ?? '0') ?? 0.0,
       discountPrice: double.tryParse(textcontrollers['discount']?.text ?? ''),
-      effectivePrice: double.tryParse(textcontrollers['price']?.text ?? '0') ?? 0.0,
+      effectivePrice:
+          double.tryParse(textcontrollers['price']?.text ?? '0') ?? 0.0,
       stockQuantity: int.tryParse(textcontrollers['stock']?.text ?? '0') ?? 0,
       attributes: const {},
       isActive: true,
@@ -462,8 +473,9 @@ class ProductsController extends ChangeNotifier {
     final updatedSizes = productSizes.map((ps) {
       final price =
           double.tryParse(sizePriceControllers[ps.size]?.text ?? '0') ?? 0.0;
-      final discount =
-          double.tryParse(sizeDiscountControllers[ps.size]?.text ?? '');
+      final discount = double.tryParse(
+        sizeDiscountControllers[ps.size]?.text ?? '',
+      );
       return ProductSizeEntity(
         size: ps.size,
         price: price,
@@ -479,8 +491,8 @@ class ProductsController extends ChangeNotifier {
       discountPrice = updatedSizes.first.discountPrice;
     }
 
-    final String generatedId = existingProduct?.id ??
-        'PROD-${DateTime.now().millisecondsSinceEpoch}';
+    final String generatedId =
+        existingProduct?.id ?? 'PROD-${DateTime.now().millisecondsSinceEpoch}';
 
     final productData = {
       'id': generatedId,
@@ -506,23 +518,27 @@ class ProductsController extends ChangeNotifier {
           int.tryParse(textcontrollers['sessions']!.text) ?? 0,
       'flavors': productFlavors.toList(),
       'product_sizes': updatedSizes
-          .map((s) => {
-                'size': s.size,
-                'price': s.price,
-                'discount_price': s.discountPrice,
-              })
+          .map(
+            (s) => {
+              'size': s.size,
+              'price': s.price,
+              'discount_price': s.discountPrice,
+            },
+          )
           .toList(),
       'product_variants': variants
-          .map((v) => {
-                'id': v.id,
-                'sku': v.sku,
-                'price': v.price,
-                'discount_price': v.discountPrice,
-                'effective_price': v.effectivePrice,
-                'stock_quantity': v.stockQuantity,
-                'attributes': v.attributes,
-                'is_active': v.isActive,
-              })
+          .map(
+            (v) => {
+              'id': v.id,
+              'sku': v.sku,
+              'price': v.price,
+              'discount_price': v.discountPrice,
+              'effective_price': v.effectivePrice,
+              'stock_quantity': v.stockQuantity,
+              'attributes': v.attributes,
+              'is_active': v.isActive,
+            },
+          )
           .toList(),
     };
 
@@ -543,16 +559,17 @@ class ProductsController extends ChangeNotifier {
         },
       );
     } else {
-      final result =
-          await _updateProductUseCase(existingProduct.id, productData);
+      final result = await _updateProductUseCase(
+        existingProduct.id,
+        productData,
+      );
       isSuccess = result.fold<bool>(
         (failure) {
           AppFeedback.showError(failure.toMessage());
           return false;
         },
         (updatedProduct) {
-          final index =
-              products.indexWhere((p) => p.id == existingProduct.id);
+          final index = products.indexWhere((p) => p.id == existingProduct.id);
           if (index != -1) products[index] = updatedProduct;
           AppFeedback.showSuccess('تم تحديث المنتج بنجاح');
           _applyFiltering();
@@ -586,17 +603,16 @@ class ProductsController extends ChangeNotifier {
 
   Future<void> _executeDelete(String id) async {
     final result = await _deleteProductUseCase(id);
-    result.fold(
-      (failure) => AppFeedback.showError(failure.toMessage()),
-      (success) {
-        if (success) {
-          products.removeWhere((p) => p.id == id);
-          _applyFiltering();
-          notifyListeners();
-          AppFeedback.showSuccess('تم حذف المنتج بنجاح');
-        }
-      },
-    );
+    result.fold((failure) => AppFeedback.showError(failure.toMessage()), (
+      success,
+    ) {
+      if (success) {
+        products.removeWhere((p) => p.id == id);
+        _applyFiltering();
+        notifyListeners();
+        AppFeedback.showSuccess('تم حذف المنتج بنجاح');
+      }
+    });
   }
 
   // --- Selection Methods ---
@@ -718,18 +734,14 @@ class ProductsController extends ChangeNotifier {
     int failCount = 0;
 
     for (final id in idsToUpdate) {
-      final result =
-          await _updateProductUseCase(id, {'is_active': activate});
-      result.fold(
-        (l) => failCount++,
-        (updatedProduct) {
-          final index = products.indexWhere((p) => p.id == id);
-          if (index != -1) {
-            products[index] = updatedProduct;
-          }
-          successCount++;
-        },
-      );
+      final result = await _updateProductUseCase(id, {'is_active': activate});
+      result.fold((l) => failCount++, (updatedProduct) {
+        final index = products.indexWhere((p) => p.id == id);
+        if (index != -1) {
+          products[index] = updatedProduct;
+        }
+        successCount++;
+      });
     }
 
     _applyFiltering();
@@ -737,7 +749,9 @@ class ProductsController extends ChangeNotifier {
     if (failCount == 0) {
       AppFeedback.showSuccess('تم $actionName $successCount منتج(ات) بنجاح');
     } else {
-      AppFeedback.showWarning('تم $actionName $successCount وفشل $failCount منتج');
+      AppFeedback.showWarning(
+        'تم $actionName $successCount وفشل $failCount منتج',
+      );
     }
 
     _isBulkOperating = false;
@@ -755,18 +769,16 @@ class ProductsController extends ChangeNotifier {
     int failCount = 0;
 
     for (final id in idsToUpdate) {
-      final result = await _updateProductUseCase(
-          id, {'category_id': newCategoryId});
-      result.fold(
-        (l) => failCount++,
-        (updatedProduct) {
-          final index = products.indexWhere((p) => p.id == id);
-          if (index != -1) {
-            products[index] = updatedProduct;
-          }
-          successCount++;
-        },
-      );
+      final result = await _updateProductUseCase(id, {
+        'category_id': newCategoryId,
+      });
+      result.fold((l) => failCount++, (updatedProduct) {
+        final index = products.indexWhere((p) => p.id == id);
+        if (index != -1) {
+          products[index] = updatedProduct;
+        }
+        successCount++;
+      });
     }
 
     _applyFiltering();
@@ -788,13 +800,10 @@ class ProductsController extends ChangeNotifier {
     notifyListeners();
 
     final result = await _uploadProductImageUseCase(filePath);
-    final uploadedUrl = result.fold<String?>(
-      (failure) {
-        AppFeedback.showError(failure.toMessage());
-        return null;
-      },
-      (url) => url,
-    );
+    final uploadedUrl = result.fold<String?>((failure) {
+      AppFeedback.showError(failure.toMessage());
+      return null;
+    }, (url) => url);
 
     _isUploadingImage = false;
     notifyListeners();

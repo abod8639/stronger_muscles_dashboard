@@ -6,12 +6,16 @@ import 'package:stronger_muscles_dashboard/features/orders/domain/entities/addre
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/usecases/update_order_status_usecase.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/services/invoice_pdf_service.dart';
+import 'package:stronger_muscles_dashboard/features/orders/presentation/widgets/order_status_ui.dart';
 
 /// Pure Controller managing order details actions and PDF generation.
 /// Free of raw try-catch blocks in adherence to Clean Architecture.
 class OrderDetailsController extends ChangeNotifier {
   final UpdateOrderStatusUseCase _updateOrderStatusUseCase;
   final VoidCallback? _onStatusUpdated;
+
+  /// يقرأ عملة المتجر لحظة الطباعة حتى لا يُعاد إنشاء المتحكم عند تغيّرها
+  final String Function() _currency;
 
   OrderEntity order;
   bool _isUpdatingStatus = false;
@@ -24,9 +28,11 @@ class OrderDetailsController extends ChangeNotifier {
     required OrderEntity initialOrder,
     required UpdateOrderStatusUseCase updateOrderStatusUseCase,
     VoidCallback? onStatusUpdated,
-  })  : order = initialOrder,
-        _updateOrderStatusUseCase = updateOrderStatusUseCase,
-        _onStatusUpdated = onStatusUpdated;
+    required String Function() currency,
+  }) : order = initialOrder,
+       _currency = currency,
+       _updateOrderStatusUseCase = updateOrderStatusUseCase,
+       _onStatusUpdated = onStatusUpdated;
 
   /// Confirms order moving it to 'processing'
   Future<void> confirmOrder() async {
@@ -66,7 +72,7 @@ class OrderDetailsController extends ChangeNotifier {
         notifyListeners();
         _onStatusUpdated?.call();
         AppFeedback.showSuccess(
-          'تم تغيير حالة الطلب إلى "${getStatusText(newStatus)}" بنجاح',
+          'تم تغيير حالة الطلب إلى "${newStatus.label}" بنجاح',
         );
       },
     );
@@ -81,7 +87,7 @@ class OrderDetailsController extends ChangeNotifier {
 
     _isGeneratingPdf = true;
     notifyListeners();
-    await InvoicePdfService.printInvoice(order);
+    await InvoicePdfService.printInvoice(order, currency: _currency());
     _isGeneratingPdf = false;
     notifyListeners();
   }
@@ -92,7 +98,7 @@ class OrderDetailsController extends ChangeNotifier {
 
     _isGeneratingPdf = true;
     notifyListeners();
-    await InvoicePdfService.shareInvoice(order);
+    await InvoicePdfService.shareInvoice(order, currency: _currency());
     _isGeneratingPdf = false;
     notifyListeners();
   }
@@ -153,39 +159,13 @@ class OrderDetailsController extends ChangeNotifier {
       query = Uri.encodeComponent(address.fullAddress);
     }
 
-    final uri = Uri.parse('https://www.google.com/maps/search/?api=1&query=$query');
+    final uri = Uri.parse(
+      'https://www.google.com/maps/search/?api=1&query=$query',
+    );
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
       AppFeedback.showError('تعذر فتح تطبيق الخرائط');
-    }
-  }
-
-  String getStatusText(OrderStatus status) {
-    switch (status) {
-      case OrderStatus.pending:
-        return 'قيد الانتظار';
-      case OrderStatus.processing:
-        return 'قيد المعالجة';
-      case OrderStatus.shipped:
-        return 'تم الشحن';
-      case OrderStatus.delivered:
-        return 'تم التوصيل';
-      case OrderStatus.cancelled:
-        return 'ملغي';
-    }
-  }
-
-  String getPaymentStatusText(PaymentStatus status) {
-    switch (status) {
-      case PaymentStatus.pending:
-        return 'معلق';
-      case PaymentStatus.paid:
-        return 'مدفوع';
-      case PaymentStatus.failed:
-        return 'فشل الدفع';
-      case PaymentStatus.refunded:
-        return 'مسترجع';
     }
   }
 }

@@ -9,10 +9,23 @@ class ProductSizeSelector extends StatelessWidget {
   final double defaultPrice;
 
   final List<String> availableSizes = [
-    '500g', '1kg', '2kg', '4kg', '3kg', '5kg',
-    '2lb', '5lb', '10lb',
-    '30 Servings', '60 Servings', '100 Servings', '120 Servings',
-    '120 Caps', 'Medium', 'Large', 'Small',
+    '500g',
+    '1kg',
+    '2kg',
+    '4kg',
+    '3kg',
+    '5kg',
+    '2lb',
+    '5lb',
+    '10lb',
+    '30 Servings',
+    '60 Servings',
+    '100 Servings',
+    '120 Servings',
+    '120 Caps',
+    'Medium',
+    'Large',
+    'Small',
   ];
 
   ProductSizeSelector({
@@ -68,7 +81,9 @@ class ProductSizeSelector extends StatelessWidget {
                   tooltip: "إضافة من القائمة",
                   onSelected: (String sizeName) {
                     if (!selectedSizes.any((s) => s.size == sizeName)) {
-                      final updatedList = List<ProductSizeEntity>.from(selectedSizes);
+                      final updatedList = List<ProductSizeEntity>.from(
+                        selectedSizes,
+                      );
                       updatedList.add(
                         ProductSizeEntity(size: sizeName, price: defaultPrice),
                       );
@@ -116,7 +131,9 @@ class ProductSizeSelector extends StatelessWidget {
                       onSelectSize(index);
                     },
                     onDeleted: () {
-                      final updatedList = List<ProductSizeEntity>.from(selectedSizes);
+                      final updatedList = List<ProductSizeEntity>.from(
+                        selectedSizes,
+                      );
                       updatedList.removeAt(index);
                       onSelectionChanged(updatedList);
                       onSelectSize(-1);

@@ -30,7 +30,9 @@ class ProductRepositoryImpl implements ProductRepository {
         if (isCacheValid) {
           final cachedModels = await localDataSource.getCachedProducts();
           if (cachedModels.isNotEmpty) {
-            debugPrint('✓ Products retrieved from Hive cache (${cachedModels.length} products)');
+            debugPrint(
+              '✓ Products retrieved from Hive cache (${cachedModels.length} products)',
+            );
             return Right(cachedModels.map((m) => m.toEntity()).toList());
           }
         }
@@ -76,7 +78,9 @@ class ProductRepositoryImpl implements ProductRepository {
       try {
         await localDataSource.cacheProduct(model);
       } catch (e) {
-        debugPrint('⚠️ ProductRepositoryImpl: Hive caching single product failed: $e');
+        debugPrint(
+          '⚠️ ProductRepositoryImpl: Hive caching single product failed: $e',
+        );
       }
       return Right(model.toEntity());
     } catch (e, stackTrace) {
@@ -104,7 +108,9 @@ class ProductRepositoryImpl implements ProductRepository {
       try {
         await localDataSource.cacheProduct(model);
       } catch (e) {
-        debugPrint('⚠️ ProductRepositoryImpl: Hive caching newly added product failed: $e');
+        debugPrint(
+          '⚠️ ProductRepositoryImpl: Hive caching newly added product failed: $e',
+        );
       }
       return Right(model.toEntity());
     } catch (e, stackTrace) {
@@ -124,7 +130,9 @@ class ProductRepositoryImpl implements ProductRepository {
       try {
         await localDataSource.cacheProduct(model);
       } catch (e) {
-        debugPrint('⚠️ ProductRepositoryImpl: Hive updating product failed: $e');
+        debugPrint(
+          '⚠️ ProductRepositoryImpl: Hive updating product failed: $e',
+        );
       }
       return Right(model.toEntity());
     } catch (e, stackTrace) {
@@ -142,7 +150,9 @@ class ProductRepositoryImpl implements ProductRepository {
         try {
           await localDataSource.deleteCachedProduct(id);
         } catch (e) {
-          debugPrint('⚠️ ProductRepositoryImpl: Hive removing deleted product failed: $e');
+          debugPrint(
+            '⚠️ ProductRepositoryImpl: Hive removing deleted product failed: $e',
+          );
         }
       }
       return Right(result);

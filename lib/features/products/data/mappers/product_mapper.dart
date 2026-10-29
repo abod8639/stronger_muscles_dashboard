@@ -38,7 +38,9 @@ extension ProductEntityMapper on ProductEntity {
       discountPrice: discountPrice,
       description: TranslatableString(ar: descriptionAr, en: descriptionEn),
       imageUrls: imageUrls
-          .map((url) => ProductImage(thumbnail: url, medium: url, original: url))
+          .map(
+            (url) => ProductImage(thumbnail: url, medium: url, original: url),
+          )
           .toList(),
       categoryId: categoryId,
       stockQuantity: stockQuantity,
@@ -69,11 +71,7 @@ extension ProductSizeMapper on ProductSize {
 /// Extension mapper converting domain [ProductSizeEntity] to [ProductSize] DTO.
 extension ProductSizeEntityMapper on ProductSizeEntity {
   ProductSize toModel() {
-    return ProductSize(
-      size: size,
-      price: price,
-      discountPrice: discountPrice,
-    );
+    return ProductSize(size: size, price: price, discountPrice: discountPrice);
   }
 }
 

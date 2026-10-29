@@ -7,8 +7,15 @@ import '../models/product_model.dart';
 abstract class ProductRemoteDataSource {
   Future<List<ProductModel>> getProducts({CancelToken? cancelToken});
   Future<ProductModel> getProductById(String id, {CancelToken? cancelToken});
-  Future<ProductModel> addProduct(Map<String, dynamic> data, {CancelToken? cancelToken});
-  Future<ProductModel> updateProduct(String id, Map<String, dynamic> data, {CancelToken? cancelToken});
+  Future<ProductModel> addProduct(
+    Map<String, dynamic> data, {
+    CancelToken? cancelToken,
+  });
+  Future<ProductModel> updateProduct(
+    String id,
+    Map<String, dynamic> data, {
+    CancelToken? cancelToken,
+  });
   Future<bool> deleteProduct(String id, {CancelToken? cancelToken});
   Future<String> uploadImage(String filePath, {CancelToken? cancelToken});
 }
@@ -22,10 +29,10 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   ProductRemoteDataSourceImpl(this.dio);
 
   Options get _options => Options(
-        sendTimeout: _defaultTimeout,
-        receiveTimeout: _defaultTimeout,
-        headers: {'Accept': 'application/json'},
-      );
+    sendTimeout: _defaultTimeout,
+    receiveTimeout: _defaultTimeout,
+    headers: {'Accept': 'application/json'},
+  );
 
   @override
   Future<List<ProductModel>> getProducts({CancelToken? cancelToken}) async {
@@ -47,7 +54,8 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
           dynamic data;
 
           if (decoded is Map) {
-            lastPage = decoded['meta']?['last_page'] ?? decoded['last_page'] ?? 1;
+            lastPage =
+                decoded['meta']?['last_page'] ?? decoded['last_page'] ?? 1;
             data = decoded['data'];
 
             if (data is Map && data.containsKey('data')) {
@@ -64,7 +72,8 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
           }
         } else {
           throw ServerException(
-            message: 'فشل في استلام بيانات المنتجات (كود: ${response.statusCode})',
+            message:
+                'فشل في استلام بيانات المنتجات (كود: ${response.statusCode})',
             statusCode: response.statusCode,
           );
         }
@@ -85,7 +94,10 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   }
 
   @override
-  Future<ProductModel> getProductById(String id, {CancelToken? cancelToken}) async {
+  Future<ProductModel> getProductById(
+    String id, {
+    CancelToken? cancelToken,
+  }) async {
     try {
       final response = await dio.get(
         '${ApiConfig.adminProducts}/$id',
@@ -99,10 +111,14 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
             : response.data;
 
         if (data is! Map) {
-          throw const ParsingException(message: 'بنية استجابة تفاصيل المنتج غير صالحة');
+          throw const ParsingException(
+            message: 'بنية استجابة تفاصيل المنتج غير صالحة',
+          );
         }
 
-        return await ProductModel.fromJsonAsync(Map<String, dynamic>.from(data));
+        return await ProductModel.fromJsonAsync(
+          Map<String, dynamic>.from(data),
+        );
       }
 
       throw ServerException(
@@ -134,15 +150,20 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
       );
 
       if (response.statusCode == 201 || response.statusCode == 200) {
-        final responseData = (response.data is Map && response.data.containsKey('data'))
+        final responseData =
+            (response.data is Map && response.data.containsKey('data'))
             ? response.data['data']
             : response.data;
 
         if (responseData is! Map) {
-          throw const ParsingException(message: 'بنية استجابة إضافة المنتج غير صالحة');
+          throw const ParsingException(
+            message: 'بنية استجابة إضافة المنتج غير صالحة',
+          );
         }
 
-        return await ProductModel.fromJsonAsync(Map<String, dynamic>.from(responseData));
+        return await ProductModel.fromJsonAsync(
+          Map<String, dynamic>.from(responseData),
+        );
       }
 
       throw ServerException(
@@ -175,15 +196,20 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
       );
 
       if (response.statusCode == 200) {
-        final responseData = (response.data is Map && response.data.containsKey('data'))
+        final responseData =
+            (response.data is Map && response.data.containsKey('data'))
             ? response.data['data']
             : response.data;
 
         if (responseData is! Map) {
-          throw const ParsingException(message: 'بنية استجابة تحديث المنتج غير صالحة');
+          throw const ParsingException(
+            message: 'بنية استجابة تحديث المنتج غير صالحة',
+          );
         }
 
-        return await ProductModel.fromJsonAsync(Map<String, dynamic>.from(responseData));
+        return await ProductModel.fromJsonAsync(
+          Map<String, dynamic>.from(responseData),
+        );
       }
 
       throw ServerException(
@@ -219,9 +245,14 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   }
 
   @override
-  Future<String> uploadImage(String filePath, {CancelToken? cancelToken}) async {
+  Future<String> uploadImage(
+    String filePath, {
+    CancelToken? cancelToken,
+  }) async {
     if (!File(filePath).existsSync()) {
-      throw const ParsingException(message: 'ملف الصورة المحدد غير موجود في الذاكرة');
+      throw const ParsingException(
+        message: 'ملف الصورة المحدد غير موجود في الذاكرة',
+      );
     }
 
     try {
@@ -245,7 +276,8 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
 
       if (response.statusCode == 200) {
         final data = response.data;
-        String? imageUrl = data['url']?.toString() ??
+        String? imageUrl =
+            data['url']?.toString() ??
             data['data']?['url']?.toString() ??
             data['imageUrl']?.toString() ??
             data['path']?.toString();

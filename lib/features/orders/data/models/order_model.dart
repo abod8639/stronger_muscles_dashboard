@@ -43,19 +43,19 @@ class OrderModel with _$OrderModel {
       _$OrderModelFromJson(_mapOrderJson(json));
 
   factory OrderModel.empty() => OrderModel(
-        id: '',
-        userId: '',
-        orderDate: DateTime.now(),
-        status: OrderStatus.pending,
-        paymentStatus: PaymentStatus.pending,
-        paymentMethod: 'card',
-        addressId: '',
-        subtotal: 0.0,
-        shippingCost: 0.0,
-        discount: 0.0,
-        totalAmount: 0.0,
-        items: const [],
-      );
+    id: '',
+    userId: '',
+    orderDate: DateTime.now(),
+    status: OrderStatus.pending,
+    paymentStatus: PaymentStatus.pending,
+    paymentMethod: 'card',
+    addressId: '',
+    subtotal: 0.0,
+    shippingCost: 0.0,
+    discount: 0.0,
+    totalAmount: 0.0,
+    items: const [],
+  );
 
   /// تحليل كائن طلب منفرد بأمان في Isolate خلفي لمنع تجميد واجهة المستخدم
   static Future<OrderModel> fromJsonAsync(dynamic json) async {
@@ -192,12 +192,17 @@ Map<String, dynamic> _mapOrderJson(Map<String, dynamic> rawJson) {
   final itemsList = _sanitizeItems(json['order_items'] ?? json['items']);
 
   final subtotal = _parseDouble(json['subtotal']);
-  final shippingCost = _parseDouble(json['shippingCost'] ?? json['shipping_cost']);
+  final shippingCost = _parseDouble(
+    json['shippingCost'] ?? json['shipping_cost'],
+  );
   final discount = _parseDouble(json['discount'] ?? json['discount_amount']);
   final taxAmount = _parseDouble(json['taxAmount'] ?? json['tax_amount']);
   var totalAmount = _parseDouble(json['total_amount'] ?? json['totalAmount']);
   if (totalAmount == 0.0 && subtotal > 0.0) {
-    totalAmount = (subtotal + shippingCost + taxAmount - discount).clamp(0.0, double.infinity);
+    totalAmount = (subtotal + shippingCost + taxAmount - discount).clamp(
+      0.0,
+      double.infinity,
+    );
   }
 
   return {
@@ -216,8 +221,11 @@ Map<String, dynamic> _mapOrderJson(Map<String, dynamic> rawJson) {
     'subtotal': subtotal,
     'discount': discount,
     'items': itemsList,
-    'paymentMethod': (json['payment_method'] ?? json['paymentMethod'] ?? 'card').toString(),
-    'trackingNumber': json['tracking_number']?.toString() ?? json['trackingNumber']?.toString(),
+    'paymentMethod': (json['payment_method'] ?? json['paymentMethod'] ?? 'card')
+        .toString(),
+    'trackingNumber':
+        json['tracking_number']?.toString() ??
+        json['trackingNumber']?.toString(),
     'notes': json['notes']?.toString(),
     'phoneNumber':
         json['phone']?.toString() ??
@@ -281,7 +289,10 @@ Map<String, dynamic>? _mapUserJson(dynamic json, [String fallbackUserId = '']) {
   return {
     ...map,
     'id': userId,
-    'name': (map['name'] ?? (fallbackUserId.isNotEmpty ? 'User $fallbackUserId' : 'عميل')).toString(),
+    'name':
+        (map['name'] ??
+                (fallbackUserId.isNotEmpty ? 'User $fallbackUserId' : 'عميل'))
+            .toString(),
     'email': map['email']?.toString(),
     'photo_url': map['photo_url'] ?? map['photoUrl'],
     'phone_number': map['phone_number'] ?? map['phoneNumber'] ?? map['phone'],
@@ -301,7 +312,8 @@ Map<String, dynamic> _mapItemJson(Map<String, dynamic> json) {
     'id': (json['id'] ?? '').toString(),
     'orderId': (json['order_id'] ?? json['orderId'] ?? '').toString(),
     'productId': (json['product_id'] ?? json['productId'] ?? '').toString(),
-    'productName': (json['product_name'] ?? json['productName'] ?? 'منتج').toString(),
+    'productName': (json['product_name'] ?? json['productName'] ?? 'منتج')
+        .toString(),
     'unitPrice': unitPrice,
     'quantity': quantity < 1 ? 1 : quantity,
     'subtotal': subtotal,

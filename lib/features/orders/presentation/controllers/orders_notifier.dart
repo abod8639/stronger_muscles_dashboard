@@ -18,8 +18,8 @@ class OrdersNotifier extends AsyncNotifier<List<OrderEntity>> {
   OrdersNotifier({
     GetOrdersUseCase? getOrdersUseCase,
     UpdateOrderStatusUseCase? updateOrderStatusUseCase,
-  })  : _injectedGetOrdersUseCase = getOrdersUseCase,
-        _injectedUpdateOrderStatusUseCase = updateOrderStatusUseCase;
+  }) : _injectedGetOrdersUseCase = getOrdersUseCase,
+       _injectedUpdateOrderStatusUseCase = updateOrderStatusUseCase;
 
   @override
   FutureOr<List<OrderEntity>> build() async {
@@ -27,10 +27,7 @@ class OrdersNotifier extends AsyncNotifier<List<OrderEntity>> {
         _injectedGetOrdersUseCase ?? ref.watch(getOrdersUseCaseProvider);
     final result = await useCase();
 
-    return result.fold(
-      (failure) => throw failure,
-      (orders) => orders,
-    );
+    return result.fold((failure) => throw failure, (orders) => orders);
   }
 
   /// Reloads orders list with optional cache bypass.
@@ -54,22 +51,22 @@ class OrdersNotifier extends AsyncNotifier<List<OrderEntity>> {
     OrderStatus newStatus,
   ) async {
     final UpdateOrderStatusUseCase useCase =
-        _injectedUpdateOrderStatusUseCase ?? ref.read(updateOrderStatusUseCaseProvider);
+        _injectedUpdateOrderStatusUseCase ??
+        ref.read(updateOrderStatusUseCaseProvider);
     final previousState = state;
 
     final result = await useCase(orderId, newStatus);
 
-    result.fold(
-      (failure) {},
-      (updatedOrder) {
-        final currentList = List<OrderEntity>.from(previousState.value ?? const []);
-        final index = currentList.indexWhere((o) => o.id == orderId);
-        if (index != -1) {
-          currentList[index] = updatedOrder;
-          state = AsyncValue.data(currentList);
-        }
-      },
-    );
+    result.fold((failure) {}, (updatedOrder) {
+      final currentList = List<OrderEntity>.from(
+        previousState.value ?? const [],
+      );
+      final index = currentList.indexWhere((o) => o.id == orderId);
+      if (index != -1) {
+        currentList[index] = updatedOrder;
+        state = AsyncValue.data(currentList);
+      }
+    });
 
     return result;
   }

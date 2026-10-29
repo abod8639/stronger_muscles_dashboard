@@ -102,11 +102,18 @@ class CategorySelectionBanner extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                   onTap: onClear,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.clear_rounded, size: 14, color: colorScheme.error),
+                        Icon(
+                          Icons.clear_rounded,
+                          size: 14,
+                          color: colorScheme.error,
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           'إلغاء التحديد',

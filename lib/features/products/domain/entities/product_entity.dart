@@ -46,7 +46,8 @@ class ProductEntity {
   });
 
   String getName(String lang) => lang == 'ar' ? nameAr : nameEn;
-  String getDescription(String lang) => lang == 'ar' ? descriptionAr : descriptionEn;
+  String getDescription(String lang) =>
+      lang == 'ar' ? descriptionAr : descriptionEn;
 
   double get finalPrice => discountPrice ?? price;
   bool get isInStock => stockQuantity > 0;
@@ -119,7 +120,8 @@ class ProductEntity {
       isActive.hashCode;
 
   @override
-  String toString() => 'ProductEntity(id: $id, name: $nameAr, price: $price, stock: $stockQuantity)';
+  String toString() =>
+      'ProductEntity(id: $id, name: $nameAr, price: $price, stock: $stockQuantity)';
 }
 
 /// Pure Dart Domain Entity representing a Product Size variant.
@@ -228,5 +230,6 @@ class ProductVariantEntity {
       isActive.hashCode;
 
   @override
-  String toString() => 'ProductVariantEntity(id: $id, sku: $sku, price: $price)';
+  String toString() =>
+      'ProductVariantEntity(id: $id, sku: $sku, price: $price)';
 }

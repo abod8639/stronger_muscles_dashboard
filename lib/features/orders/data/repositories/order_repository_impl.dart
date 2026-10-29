@@ -30,7 +30,9 @@ class OrderRepositoryImpl implements OrderRepository {
         if (isCacheValid) {
           final cachedModels = await localDataSource.getCachedOrders();
           if (cachedModels.isNotEmpty) {
-            debugPrint('✓ Orders retrieved from Hive cache (${cachedModels.length} orders)');
+            debugPrint(
+              '✓ Orders retrieved from Hive cache (${cachedModels.length} orders)',
+            );
             return Right(cachedModels.map((m) => m.toEntity()).toList());
           }
         }
@@ -59,7 +61,9 @@ class OrderRepositoryImpl implements OrderRepository {
       try {
         final cachedModels = await localDataSource.getCachedOrders();
         if (cachedModels.isNotEmpty) {
-          debugPrint('✓ Falling back to cached orders during offline/network failure');
+          debugPrint(
+            '✓ Falling back to cached orders during offline/network failure',
+          );
           return Right(cachedModels.map((m) => m.toEntity()).toList());
         }
       } catch (_) {}
@@ -70,9 +74,7 @@ class OrderRepositoryImpl implements OrderRepository {
   }
 
   @override
-  Future<Either<Failure, OrderEntity>> getOrderDetails(
-    String orderId,
-  ) async {
+  Future<Either<Failure, OrderEntity>> getOrderDetails(String orderId) async {
     try {
       final model = await remoteDataSource.getOrderById(orderId);
 

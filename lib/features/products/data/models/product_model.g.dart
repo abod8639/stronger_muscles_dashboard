@@ -16,10 +16,7 @@ class TranslatableStringAdapter extends TypeAdapter<TranslatableString> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return TranslatableString(
-      ar: fields[0] as String,
-      en: fields[1] as String,
-    );
+    return TranslatableString(ar: fields[0] as String, en: fields[1] as String);
   }
 
   @override
@@ -344,18 +341,15 @@ class ProductModelAdapter extends TypeAdapter<ProductModel> {
 // **************************************************************************
 
 _$TranslatableStringImpl _$$TranslatableStringImplFromJson(
-        Map<String, dynamic> json) =>
-    _$TranslatableStringImpl(
-      ar: json['ar'] as String? ?? '',
-      en: json['en'] as String? ?? '',
-    );
+  Map<String, dynamic> json,
+) => _$TranslatableStringImpl(
+  ar: json['ar'] as String? ?? '',
+  en: json['en'] as String? ?? '',
+);
 
 Map<String, dynamic> _$$TranslatableStringImplToJson(
-        _$TranslatableStringImpl instance) =>
-    <String, dynamic>{
-      'ar': instance.ar,
-      'en': instance.en,
-    };
+  _$TranslatableStringImpl instance,
+) => <String, dynamic>{'ar': instance.ar, 'en': instance.en};
 
 _$ProductImageImpl _$$ProductImageImplFromJson(Map<String, dynamic> json) =>
     _$ProductImageImpl(
@@ -372,52 +366,49 @@ Map<String, dynamic> _$$ProductImageImplToJson(_$ProductImageImpl instance) =>
     };
 
 _$ProductCategoryImpl _$$ProductCategoryImplFromJson(
-        Map<String, dynamic> json) =>
-    _$ProductCategoryImpl(
-      id: json['id'] as String,
-      name: TranslatableString.fromJson(json['name'] as Map<String, dynamic>),
-    );
+  Map<String, dynamic> json,
+) => _$ProductCategoryImpl(
+  id: json['id'] as String,
+  name: TranslatableString.fromJson(json['name'] as Map<String, dynamic>),
+);
 
 Map<String, dynamic> _$$ProductCategoryImplToJson(
-        _$ProductCategoryImpl instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-    };
+  _$ProductCategoryImpl instance,
+) => <String, dynamic>{'id': instance.id, 'name': instance.name};
 
 _$ProductVariantModelImpl _$$ProductVariantModelImplFromJson(
-        Map<String, dynamic> json) =>
-    _$ProductVariantModelImpl(
-      id: json['id'] as String,
-      sku: json['sku'] as String,
-      price: (json['price'] as num).toDouble(),
-      discountPrice: (json['discount_price'] as num?)?.toDouble(),
-      effectivePrice: (json['effective_price'] as num).toDouble(),
-      stockQuantity: (json['stock_quantity'] as num).toInt(),
-      attributes: json['attributes'] as Map<String, dynamic>,
-      isActive: json['is_active'] as bool? ?? true,
-      discountStartDate: json['discount_start_date'] == null
-          ? null
-          : DateTime.parse(json['discount_start_date'] as String),
-      discountEndDate: json['discount_end_date'] == null
-          ? null
-          : DateTime.parse(json['discount_end_date'] as String),
-    );
+  Map<String, dynamic> json,
+) => _$ProductVariantModelImpl(
+  id: json['id'] as String,
+  sku: json['sku'] as String,
+  price: (json['price'] as num).toDouble(),
+  discountPrice: (json['discount_price'] as num?)?.toDouble(),
+  effectivePrice: (json['effective_price'] as num).toDouble(),
+  stockQuantity: (json['stock_quantity'] as num).toInt(),
+  attributes: json['attributes'] as Map<String, dynamic>,
+  isActive: json['is_active'] as bool? ?? true,
+  discountStartDate: json['discount_start_date'] == null
+      ? null
+      : DateTime.parse(json['discount_start_date'] as String),
+  discountEndDate: json['discount_end_date'] == null
+      ? null
+      : DateTime.parse(json['discount_end_date'] as String),
+);
 
 Map<String, dynamic> _$$ProductVariantModelImplToJson(
-        _$ProductVariantModelImpl instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'sku': instance.sku,
-      'price': instance.price,
-      'discount_price': instance.discountPrice,
-      'effective_price': instance.effectivePrice,
-      'stock_quantity': instance.stockQuantity,
-      'attributes': instance.attributes,
-      'is_active': instance.isActive,
-      'discount_start_date': instance.discountStartDate?.toIso8601String(),
-      'discount_end_date': instance.discountEndDate?.toIso8601String(),
-    };
+  _$ProductVariantModelImpl instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'sku': instance.sku,
+  'price': instance.price,
+  'discount_price': instance.discountPrice,
+  'effective_price': instance.effectivePrice,
+  'stock_quantity': instance.stockQuantity,
+  'attributes': instance.attributes,
+  'is_active': instance.isActive,
+  'discount_start_date': instance.discountStartDate?.toIso8601String(),
+  'discount_end_date': instance.discountEndDate?.toIso8601String(),
+};
 
 _$ProductSizeImpl _$$ProductSizeImplFromJson(Map<String, dynamic> json) =>
     _$ProductSizeImpl(
@@ -433,58 +424,61 @@ Map<String, dynamic> _$$ProductSizeImplToJson(_$ProductSizeImpl instance) =>
       'discount_price': instance.discountPrice,
     };
 
-_$ProductModelImpl _$$ProductModelImplFromJson(Map<String, dynamic> json) =>
-    _$ProductModelImpl(
-      id: json['id'] as String,
-      name: TranslatableString.fromJson(json['name'] as Map<String, dynamic>),
-      price: (json['price'] as num).toDouble(),
-      discountPrice: (json['discount_price'] as num?)?.toDouble(),
-      imageUrls: (json['imageUrls'] as List<dynamic>?)
-              ?.map((e) => ProductImage.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          const [],
-      description: TranslatableString.fromJson(
-          json['description'] as Map<String, dynamic>),
-      categoryId: json['categoryId'] as String? ?? '',
-      category: json['category'] == null
-          ? null
-          : ProductCategory.fromJson(json['category'] as Map<String, dynamic>),
-      stockQuantity: (json['stock_quantity'] as num?)?.toInt() ?? 0,
-      averageRating: (json['average_rating'] as num?)?.toDouble() ?? 0.0,
-      reviewCount: (json['review_count'] as num?)?.toInt() ?? 0,
-      brand: json['brand'] as String?,
-      servingSize: json['serving_size'] as String?,
-      servingsPerContainer: (json['servings_per_container'] as num?)?.toInt(),
-      isActive: json['is_active'] as bool? ?? true,
-      isBackgroundWhite: json['is_background_white'] as bool? ?? false,
-      sku: json['sku'] as String?,
-      tags:
-          (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
-              const [],
-      weight: (json['weight'] as num?)?.toDouble(),
-      size:
-          (json['size'] as List<dynamic>?)?.map((e) => e as String).toList() ??
-              const [],
-      productSizes: (json['product_sizes'] as List<dynamic>?)
-              ?.map((e) => ProductSize.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          const [],
-      flavor: (json['flavors'] as List<dynamic>?)
-              ?.map((e) => e as String)
-              .toList() ??
-          const [],
-      nutritionFacts: json['nutrition_facts'] as Map<String, dynamic>?,
-      featured: json['featured'] as bool? ?? false,
-      newArrival: json['new_arrival'] as bool? ?? false,
-      bestSeller: json['best_seller'] as bool? ?? false,
-      totalSales: (json['total_sales'] as num?)?.toInt() ?? 0,
-      variants: (json['product_variants'] as List<dynamic>?)
-              ?.map((e) =>
-                  ProductVariantModel.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          const [],
-      hasVariants: json['has_variants'] as bool? ?? false,
-    );
+_$ProductModelImpl _$$ProductModelImplFromJson(
+  Map<String, dynamic> json,
+) => _$ProductModelImpl(
+  id: json['id'] as String,
+  name: TranslatableString.fromJson(json['name'] as Map<String, dynamic>),
+  price: (json['price'] as num).toDouble(),
+  discountPrice: (json['discount_price'] as num?)?.toDouble(),
+  imageUrls:
+      (json['imageUrls'] as List<dynamic>?)
+          ?.map((e) => ProductImage.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
+  description: TranslatableString.fromJson(
+    json['description'] as Map<String, dynamic>,
+  ),
+  categoryId: json['categoryId'] as String? ?? '',
+  category: json['category'] == null
+      ? null
+      : ProductCategory.fromJson(json['category'] as Map<String, dynamic>),
+  stockQuantity: (json['stock_quantity'] as num?)?.toInt() ?? 0,
+  averageRating: (json['average_rating'] as num?)?.toDouble() ?? 0.0,
+  reviewCount: (json['review_count'] as num?)?.toInt() ?? 0,
+  brand: json['brand'] as String?,
+  servingSize: json['serving_size'] as String?,
+  servingsPerContainer: (json['servings_per_container'] as num?)?.toInt(),
+  isActive: json['is_active'] as bool? ?? true,
+  isBackgroundWhite: json['is_background_white'] as bool? ?? false,
+  sku: json['sku'] as String?,
+  tags:
+      (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
+      const [],
+  weight: (json['weight'] as num?)?.toDouble(),
+  size:
+      (json['size'] as List<dynamic>?)?.map((e) => e as String).toList() ??
+      const [],
+  productSizes:
+      (json['product_sizes'] as List<dynamic>?)
+          ?.map((e) => ProductSize.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
+  flavor:
+      (json['flavors'] as List<dynamic>?)?.map((e) => e as String).toList() ??
+      const [],
+  nutritionFacts: json['nutrition_facts'] as Map<String, dynamic>?,
+  featured: json['featured'] as bool? ?? false,
+  newArrival: json['new_arrival'] as bool? ?? false,
+  bestSeller: json['best_seller'] as bool? ?? false,
+  totalSales: (json['total_sales'] as num?)?.toInt() ?? 0,
+  variants:
+      (json['product_variants'] as List<dynamic>?)
+          ?.map((e) => ProductVariantModel.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
+  hasVariants: json['has_variants'] as bool? ?? false,
+);
 
 Map<String, dynamic> _$$ProductModelImplToJson(_$ProductModelImpl instance) =>
     <String, dynamic>{

@@ -33,14 +33,14 @@ class CategorySearchField extends StatelessWidget {
       child: TextField(
         controller: controller,
         onChanged: onChanged,
-        style: TextStyle(
-          fontSize: 13,
-          color: colorScheme.onSurface,
-        ),
+        style: TextStyle(fontSize: 13, color: colorScheme.onSurface),
         decoration: InputDecoration(
           border: InputBorder.none,
           isDense: true,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 14,
+            vertical: 12,
+          ),
           hintText: 'ابحث في الأقسام والتصنيفات بالاسم...',
           hintStyle: TextStyle(
             fontSize: 12.5,

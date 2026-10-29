@@ -36,12 +36,12 @@ class AddressEntity {
   });
 
   String get fullAddress => [
-        street,
-        city,
-        state,
-        postalCode,
-        country,
-      ].where((e) => e != null && e.isNotEmpty).join(', ');
+    street,
+    city,
+    state,
+    postalCode,
+    country,
+  ].where((e) => e != null && e.isNotEmpty).join(', ');
 
   String get shortAddress => '$city, ${country ?? ''}';
   bool get hasCoordinates => latitude != null && longitude != null;

@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:stronger_muscles_dashboard/features/settings/settings_feature.dart';
 import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
-import 'package:stronger_muscles_dashboard/core/components/form_section_card.dart';
+import 'package:stronger_muscles_dashboard/core/components/section_card.dart';
 import 'package:stronger_muscles_dashboard/core/components/build_modern_text_field.dart';
 
 /// قسم التسعير والمخزون والحصص للمنتج بتصميم Neumorphism / Soft UI
-class ProductPricingStockSection extends StatelessWidget {
+class ProductPricingStockSection extends ConsumerWidget {
   final ProductsController controller;
 
   const ProductPricingStockSection({super.key, required this.controller});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currency = ref.watch(storeCurrencyProvider);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
 
-    return FormSectionCard(
+    return SectionCard(
       title: 'التسعير والمخزون',
       subtitle: 'الأسعار، الخصومات، المخزون، والقيم الغذائية',
       icon: Icons.payments_outlined,
@@ -27,133 +30,137 @@ class ProductPricingStockSection extends StatelessWidget {
           ListenableBuilder(
             listenable: controller,
             builder: (context, _) {
-            final hasSizes = controller.productSizes.isNotEmpty;
-            if (hasSizes) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 12),
-                    decoration: AppDesignTokens.softSurface(
-                      colorScheme,
-                      isDark: isDark,
-                      borderRadius: BorderRadius.circular(12),
-                      compact: true,
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.info_outline_rounded,
-                          color: colorScheme.primary,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            'تم تفعيل تسعير مخصص حسب الأحجام المحددة أدناه:',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: colorScheme.onSurface,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: controller.productSizes.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: 12),
-                    itemBuilder: (context, i) {
-                      final size = controller.productSizes[i];
-                      final priceCtrl =
-                          controller.sizePriceControllers[size.size];
-                      final discountCtrl =
-                          controller.sizeDiscountControllers[size.size];
-
-                      if (priceCtrl == null || discountCtrl == null) {
-                        return const SizedBox.shrink();
-                      }
-
-                      return Row(
+              final hasSizes = controller.productSizes.isNotEmpty;
+              if (hasSizes) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
+                      decoration: AppDesignTokens.softSurface(
+                        colorScheme,
+                        isDark: isDark,
+                        borderRadius: BorderRadius.circular(12),
+                        compact: true,
+                      ),
+                      child: Row(
                         children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 14,
-                            ),
-                            decoration: AppDesignTokens.softSurface(
-                              colorScheme,
-                              isDark: isDark,
-                              borderRadius: BorderRadius.circular(12),
-                              compact: true,
-                            ),
+                          Icon(
+                            Icons.info_outline_rounded,
+                            color: colorScheme.primary,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
                             child: Text(
-                              size.size,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 13),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: ModernTextField(
-                              controller: priceCtrl,
-                              label: 'سعر (${size.size})',
-                              icon: Icons.price_change_outlined,
-                              isNumber: true,
-                              suffixText: 'ر.س',
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: ModernTextField(
-                              controller: discountCtrl,
-                              label: 'سعر الخصم',
-                              icon: Icons.sell_outlined,
-                              isNumber: true,
-                              suffixText: 'ر.س',
+                              'تم تفعيل تسعير مخصص حسب الأحجام المحددة أدناه:',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.onSurface,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
                         ],
-                      );
-                    },
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: controller.productSizes.length,
+                      separatorBuilder: (_, _) => const SizedBox(height: 12),
+                      itemBuilder: (context, i) {
+                        final size = controller.productSizes[i];
+                        final priceCtrl =
+                            controller.sizePriceControllers[size.size];
+                        final discountCtrl =
+                            controller.sizeDiscountControllers[size.size];
+
+                        if (priceCtrl == null || discountCtrl == null) {
+                          return const SizedBox.shrink();
+                        }
+
+                        return Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 14,
+                              ),
+                              decoration: AppDesignTokens.softSurface(
+                                colorScheme,
+                                isDark: isDark,
+                                borderRadius: BorderRadius.circular(12),
+                                compact: true,
+                              ),
+                              child: Text(
+                                size.size,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: ModernTextField(
+                                controller: priceCtrl,
+                                label: 'سعر (${size.size})',
+                                icon: Icons.price_change_outlined,
+                                isNumber: true,
+                                suffixText: currency,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: ModernTextField(
+                                controller: discountCtrl,
+                                label: 'سعر الخصم',
+                                icon: Icons.sell_outlined,
+                                isNumber: true,
+                                suffixText: currency,
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ],
+                );
+              }
+
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: ModernTextField(
+                      controller: controller.textcontrollers['price']!,
+                      label: 'السعر الأساسي',
+                      hint: '0.00',
+                      icon: Icons.price_change_outlined,
+                      isNumber: true,
+                      isRequired: true,
+                      suffixText: currency,
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: ModernTextField(
+                      controller: controller.textcontrollers['discount']!,
+                      label: 'سعر الخصم (اختياري)',
+                      hint: '0.00',
+                      icon: Icons.sell_outlined,
+                      isNumber: true,
+                      suffixText: currency,
+                    ),
                   ),
                 ],
               );
-            }
-
-            return Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: ModernTextField(
-                    controller: controller.textcontrollers['price']!,
-                    label: 'السعر الأساسي',
-                    hint: '0.00',
-                    icon: Icons.price_change_outlined,
-                    isNumber: true,
-                    isRequired: true,
-                    suffixText: 'ر.س',
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: ModernTextField(
-                    controller: controller.textcontrollers['discount']!,
-                    label: 'سعر الخصم (اختياري)',
-                    hint: '0.00',
-                    icon: Icons.sell_outlined,
-                    isNumber: true,
-                    suffixText: 'ر.س',
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
+            },
+          ),
 
           const SizedBox(height: 18),
 

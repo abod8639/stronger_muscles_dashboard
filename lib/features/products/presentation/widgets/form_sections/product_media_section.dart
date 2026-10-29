@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
-import 'package:stronger_muscles_dashboard/core/components/form_section_card.dart';
+import 'package:stronger_muscles_dashboard/core/components/section_card.dart';
 
 /// قسم معرض صور المنتج ورفعها بتصميم Neumorphism / Soft UI
 class ProductMediaSection extends StatelessWidget {
@@ -25,7 +25,7 @@ class ProductMediaSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FormSectionCard(
+    return SectionCard(
       title: 'معرض صور المنتج',
       subtitle: 'ارفع صور واضحة (الصورة الأولى هي صورة الغلاف)',
       icon: Icons.photo_library_outlined,

@@ -35,7 +35,11 @@ class ProductStickyBottomBar extends StatelessWidget {
                 ]
               : [
                   Colors.white,
-                  Color.lerp(colorScheme.surfaceContainerLow, Colors.black, 0.03)!,
+                  Color.lerp(
+                    colorScheme.surfaceContainerLow,
+                    Colors.black,
+                    0.03,
+                  )!,
                 ],
         ),
         boxShadow: [
@@ -76,7 +80,10 @@ class ProductStickyBottomBar extends StatelessWidget {
             children: [
               // Status Chip
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 decoration: AppDesignTokens.softSurface(
                   colorScheme,
                   isDark: isDark,
@@ -93,11 +100,16 @@ class ProductStickyBottomBar extends StatelessWidget {
                         height: 7,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: isActive ? colorScheme.primary : colorScheme.error,
+                          color: isActive
+                              ? colorScheme.primary
+                              : colorScheme.error,
                           boxShadow: [
                             BoxShadow(
-                              color: (isActive ? colorScheme.primary : colorScheme.error)
-                                  .withValues(alpha: 0.5),
+                              color:
+                                  (isActive
+                                          ? colorScheme.primary
+                                          : colorScheme.error)
+                                      .withValues(alpha: 0.5),
                               blurRadius: 4,
                             ),
                           ],

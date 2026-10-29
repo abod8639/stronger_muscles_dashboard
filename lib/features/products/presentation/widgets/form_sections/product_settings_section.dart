@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
-import 'package:stronger_muscles_dashboard/core/components/form_section_card.dart';
+import 'package:stronger_muscles_dashboard/core/components/section_card.dart';
 
 /// قسم إعدادات النشر والظهور للمنتج بتصميم Neumorphism / Soft UI
 class ProductSettingsSection extends StatelessWidget {
@@ -13,7 +13,7 @@ class ProductSettingsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListenableBuilder(
       listenable: controller,
-      builder: (context, _) => FormSectionCard(
+      builder: (context, _) => SectionCard(
         title: 'إعدادات النشر والعرض',
         subtitle: 'التحكم في ظهور المنتج وتفضيلاته بالمتجر',
         icon: Icons.toggle_on_outlined,
@@ -31,7 +31,8 @@ class ProductSettingsSection extends StatelessWidget {
             _buildSwitchCard(
               context: context,
               title: 'منتج مميز (Featured)',
-              subtitle: 'يظهر المنتج في الأقسام والبانرات الرئيسية بالصفحة الأولى',
+              subtitle:
+                  'يظهر المنتج في الأقسام والبانرات الرئيسية بالصفحة الأولى',
               icon: Icons.star_outline_rounded,
               value: controller.isFeatured,
               onChanged: (v) => controller.isFeatured = v,
@@ -80,14 +81,14 @@ class ProductSettingsSection extends StatelessWidget {
             color: value
                 ? colorScheme.primaryContainer
                 : (isDark
-                    ? colorScheme.surfaceContainerHighest
-                    : colorScheme.surfaceContainerLow),
+                      ? colorScheme.surfaceContainerHighest
+                      : colorScheme.surfaceContainerLow),
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
                 color: isDark
-                ? Colors.black.withValues(alpha: 0.25)
-                : const Color(0xFFA3B1C6).withValues(alpha: 0.20),
+                    ? Colors.black.withValues(alpha: 0.25)
+                    : const Color(0xFFA3B1C6).withValues(alpha: 0.20),
                 offset: const Offset(1, 1),
                 blurRadius: 2,
               ),
@@ -95,9 +96,7 @@ class ProductSettingsSection extends StatelessWidget {
           ),
           child: Icon(
             icon,
-            color: value
-                ? colorScheme.primary
-                : colorScheme.onSurfaceVariant,
+            color: value ? colorScheme.primary : colorScheme.onSurfaceVariant,
             size: 20,
           ),
         ),

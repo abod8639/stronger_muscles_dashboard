@@ -6,7 +6,10 @@ class CategoryTreeUtils {
   const CategoryTreeUtils._();
 
   /// إيجاد مسار الفتات (Breadcrumbs) للتصنيف المحدد بالمعرّف
-  static List<String> findBreadcrumbs(List<CategoryEntity> list, String targetId) {
+  static List<String> findBreadcrumbs(
+    List<CategoryEntity> list,
+    String targetId,
+  ) {
     for (final cat in list) {
       if (cat.id == targetId) {
         return [cat.displayName];

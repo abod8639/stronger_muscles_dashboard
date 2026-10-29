@@ -14,8 +14,8 @@ mixin ProductFormMixin {
       controller.textcontrollers['price']?.text = product!.price.toString();
       controller.textcontrollers['discount']?.text =
           product!.discountPrice?.toString() ?? '';
-      controller.textcontrollers['stock']?.text =
-          product!.stockQuantity.toString();
+      controller.textcontrollers['stock']?.text = product!.stockQuantity
+          .toString();
       controller.textcontrollers['brand']?.text = product!.brand ?? '';
       controller.textcontrollers['serving']?.text = product!.servingSize ?? '';
       controller.textcontrollers['sessions']?.text =

@@ -11,9 +11,7 @@ abstract class OrderRepository {
   });
 
   /// Fetches detailed order information by unique identifier.
-  Future<Either<Failure, OrderEntity>> getOrderDetails(
-    String orderId,
-  );
+  Future<Either<Failure, OrderEntity>> getOrderDetails(String orderId);
 
   /// Updates the status of an existing order.
   Future<Either<Failure, OrderEntity>> updateOrderStatus(

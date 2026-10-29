@@ -2,336 +2,281 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
 import 'package:stronger_muscles_dashboard/core/components/custom_search_bar.dart';
-import 'package:stronger_muscles_dashboard/core/components/glass_container.dart';
-import 'package:stronger_muscles_dashboard/core/components/status_badge.dart';
+import 'package:stronger_muscles_dashboard/core/components/divided_column.dart';
+import 'package:stronger_muscles_dashboard/core/components/generic_empty_state.dart';
+import 'package:stronger_muscles_dashboard/core/components/horizontal_chips_selector.dart';
+import 'package:stronger_muscles_dashboard/core/components/pagination_bar.dart';
+import 'package:stronger_muscles_dashboard/core/components/price_text.dart';
+import 'package:stronger_muscles_dashboard/core/components/soft_surface.dart';
+import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
+import 'package:stronger_muscles_dashboard/core/theme/responsive.dart';
+import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/controllers/orders_providers.dart';
-import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
-import 'package:stronger_muscles_dashboard/core/theme/responsive.dart';
-import 'package:stronger_muscles_dashboard/features/orders/presentation/widgets/build_recent_orders.dart';
+import 'package:stronger_muscles_dashboard/features/orders/presentation/widgets/order_list_tile.dart';
+import 'package:stronger_muscles_dashboard/features/orders/presentation/widgets/order_status_ui.dart';
+import 'package:stronger_muscles_dashboard/features/settings/settings_feature.dart';
 
+/// قائمة الطلبات: بحث + تصفية بالحالة + جدول (حاسوب) أو بطاقات (هاتف/لوحي) + ترقيم صفحات
 class OrdersTable extends ConsumerWidget {
   const OrdersTable({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final paginatedOrders = ref.watch(paginatedOrdersProvider);
+    final orders = ref.watch(paginatedOrdersProvider);
     final totalFiltered = ref.watch(filteredOrdersProvider).length;
     final currentPage = ref.watch(ordersCurrentPageProvider);
     final totalPages = ref.watch(ordersTotalPagesProvider);
-    final selectedStatus = ref.watch(ordersSelectedStatusProvider);
     final itemsPerPage = ref.watch(ordersItemsPerPageProvider);
-    final responsive = context.responsive;
+    final selectedStatus = ref.watch(ordersSelectedStatusProvider);
+    final colorScheme = Theme.of(context).colorScheme;
 
-    return GlassContainer(
-      padding: EdgeInsets.zero,
-      borderRadius: BorderRadius.circular(20),
-      child: Column(
-        children: [
-          _buildTableHeader(context, ref, responsive, selectedStatus),
-
-          responsive.isDesktop
-              ? _buildTableContent(paginatedOrders, responsive)
-              : buildRecentOrders(responsive, paginatedOrders),
-
-          _buildTableFooter(
-            ref: ref,
-            responsive: responsive,
-            currentPage: currentPage,
-            totalPages: totalPages,
-            itemsPerPage: itemsPerPage,
-            totalCount: totalFiltered,
-            currentCount: paginatedOrders.length,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTableHeader(
-    BuildContext context,
-    WidgetRef ref,
-    ResponsiveLayout responsive,
-    String selectedStatus,
-  ) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHigh.withValues(alpha: 0.25),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        border: Border(
-          bottom: BorderSide(color: colorScheme.outlineVariant, width: 1),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              if (!responsive.isMobile) ...[
-                Text(
-                  "Orders Management",
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.onSurface,
-                    letterSpacing: 0.3,
-                  ),
-                ),
-                if (responsive.isDesktop) const Spacer(),
-              ],
-              const SizedBox(width: 20),
-              Expanded(
-                child: CustomSearchBar(
-                  onSearch: (value) {
-                    ref.read(ordersSearchQueryProvider.notifier).setQuery(value);
-                    ref.read(ordersCurrentPageProvider.notifier).setPage(1);
-                  },
-                  hintText: "    Search orders...",
-                ),
-              ),
-            ],
-          ),
-
-          SizedBox(
-            height: 42,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              physics: const BouncingScrollPhysics(),
-              child: Row(
-                children: [
-                  _buildTab(context, ref, 'all', 'All Orders', selectedStatus),
-                  _buildTab(context, ref, 'pending', 'Pending', selectedStatus),
-                  _buildTab(context, ref, 'processing', 'Processing', selectedStatus),
-                  _buildTab(context, ref, 'shipped', 'Shipped', selectedStatus),
-                  _buildTab(context, ref, 'delivered', 'Delivered', selectedStatus),
-                  _buildTab(context, ref, 'cancelled', 'Cancelled', selectedStatus),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTab(
-    BuildContext context,
-    WidgetRef ref,
-    String id,
-    String label,
-    String selectedStatus,
-  ) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final isSelected = selectedStatus == id;
-
-    return Padding(
-      padding: const EdgeInsets.only(right: 8),
-      child: FilterChip(
-        selected: isSelected,
-        onSelected: (_) {
-          ref.read(ordersSelectedStatusProvider.notifier).setStatus(id);
-          ref.read(ordersCurrentPageProvider.notifier).setPage(1);
-        },
-        label: Text(label),
-        labelStyle: theme.textTheme.labelMedium?.copyWith(
-          color: isSelected
-              ? colorScheme.onPrimary
-              : colorScheme.onSurfaceVariant,
-          fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-        ),
-        backgroundColor: colorScheme.surfaceContainerLow,
-        selectedColor: colorScheme.primary,
-        showCheckmark: false,
-        side: BorderSide(
-          color: isSelected ? colorScheme.primary : colorScheme.outlineVariant,
-          width: 1.0,
-        ),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      ),
-    );
-  }
-
-  Widget _buildTableContent(
-    List<OrderEntity> orders,
-    ResponsiveLayout responsive,
-  ) {
-    Widget content = Column(
-      children: [
-        // Column Headers
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),
-          color: Colors.white.withValues(alpha: 0.02),
-          child: Row(
-            children: [
-              _buildColumnHeader('ORDER ID', flex: 3),
-              _buildColumnHeader('CUSTOMER', flex: 2),
-              _buildColumnHeader('DATE', flex: 2),
-              _buildColumnHeader('TOTAL AMOUNT', flex: 2),
-              _buildColumnHeader('STATUS', flex: 2),
-            ],
-          ),
-        ),
-
-        // Rows
-        ...List.generate(orders.length, (index) {
-          return _buildOrderRow(
-            orders[index],
-            isLast: index == orders.length - 1,
-          );
-        }),
-
-        if (orders.isEmpty)
-          Padding(
-            padding: const EdgeInsets.all(40.0),
-            child: Text(
-              'No orders found',
-              style: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
-            ),
-          ),
-      ],
-    );
-
-    if (responsive.isMobile || responsive.isTablet) {
-      return SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: SizedBox(
-          width: 800, // Minimum width for the table to remain readable
-          child: content,
-        ),
+    final Widget body;
+    if (orders.isEmpty) {
+      body = const GenericEmptyState(
+        title: 'لا توجد طلبات',
+        message: 'لا توجد طلبات تطابق البحث أو التصفية الحالية',
+        icon: Icons.receipt_long_outlined,
       );
+    } else if (context.isDesktop) {
+      body = _OrdersDataTable(orders: orders);
+    } else {
+      body = _OrdersCardList(orders: orders);
     }
 
-    return content;
-  }
-
-  Widget _buildColumnHeader(
-    String label, {
-    int flex = 1,
-    TextAlign textAlign = TextAlign.start,
-  }) {
-    return Expanded(
-      flex: flex,
-      child: Text(
-        label,
-        textAlign: textAlign,
-        style: TextStyle(
-          color: Colors.white.withValues(alpha: 0.3),
-          fontSize: 11,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 1,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildOrderRow(OrderEntity order, {bool isLast = false}) {
-    final dateFormat = DateFormat('MMM dd, yyyy');
-    return Builder(
-      builder: (context) {
-        bool isMobile = MediaQuery.of(context).size.width < 600;
-        return InkWell(
-          onTap: () => context.push(AppRoutes.orderDetails, extra: order),
-          hoverColor: Colors.white.withValues(alpha: 0.02),
-          child: Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: isMobile ? 16 : 24,
-              vertical: 16,
-            ),
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: Colors.white.withValues(alpha: 0.05),
-                  width: 1,
-                ),
+    return SoftSurface(
+      child: ClipRRect(
+        borderRadius: AppDesignTokens.radiusLarge,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: AppDesignTokens.space4),
+              child: CustomSearchBar(
+                hintText: 'ابحث برقم الطلب أو اسم العميل...',
+                padding: context.responsive.defaultPadding,
+                onSearch: (value) {
+                  ref.read(ordersSearchQueryProvider.notifier).setQuery(value);
+                  ref.read(ordersCurrentPageProvider.notifier).setPage(1);
+                },
               ),
             ),
-            child: isMobile
-                ? _buildMobileLayout(order, dateFormat)
-                : _buildDesktopLayout(order, dateFormat),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildDesktopLayout(OrderEntity order, DateFormat dateFormat) {
-    return Row(
-      children: [
-        Expanded(flex: 3, child: _buildOrderId(order)),
-        Expanded(flex: 2, child: _buildCustomerInfo(order)),
-        Expanded(flex: 2, child: _buildDate(order, dateFormat)),
-        Expanded(flex: 2, child: _buildPrice(order)),
-        Expanded(flex: 1, child: OrderStatusBadge(status: order.status)),
-        Expanded(flex: 1, child: _buildActionBtn(order)),
-      ],
-    );
-  }
-
-  Widget _buildMobileLayout(OrderEntity order, DateFormat dateFormat) {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _buildCustomerInfo(order),
-            OrderStatusBadge(status: order.status),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Divider(color: Colors.white.withValues(alpha: 0.05), thickness: 1),
-        const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildOrderId(order),
-                const SizedBox(height: 4),
-                _buildDate(order, dateFormat),
-              ],
+            HorizontalChipsSelector(
+              items: OrderStatus.values,
+              selectedId: selectedStatus,
+              allLabel: 'كل الطلبات',
+              labelBuilder: (status) => (status as OrderStatus).label,
+              idBuilder: (status) => (status as OrderStatus).name,
+              onSelect: (id) {
+                ref.read(ordersSelectedStatusProvider.notifier).setStatus(id);
+                ref.read(ordersCurrentPageProvider.notifier).setPage(1);
+              },
             ),
-            _buildPrice(order),
+            const SizedBox(height: AppDesignTokens.space8),
+            Divider(height: 1, color: colorScheme.outlineVariant),
+            body,
+            Divider(height: 1, color: colorScheme.outlineVariant),
+            PaginationBar(
+              currentPage: currentPage,
+              totalPages: totalPages,
+              itemsPerPage: itemsPerPage,
+              totalCount: totalFiltered,
+              currentCount: orders.length,
+              onPageChanged: ref
+                  .read(ordersCurrentPageProvider.notifier)
+                  .setPage,
+            ),
           ],
         ),
-      ],
-    );
-  }
-
-  Widget _buildOrderId(OrderEntity order) {
-    return Text(
-      '#ORD-${order.id.toString().padLeft(4, '0')}',
-      style: const TextStyle(
-        color: AppColors.accent,
-        fontWeight: FontWeight.bold,
-        fontSize: 12,
       ),
     );
   }
+}
 
-  Widget _buildCustomerInfo(OrderEntity order) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
+void _openOrder(BuildContext context, OrderEntity order) =>
+    context.push(AppRoutes.orderDetails, extra: order);
+
+/// الهاتف والجهاز اللوحي: بطاقات طلبات
+class _OrdersCardList extends StatelessWidget {
+  final List<OrderEntity> orders;
+
+  const _OrdersCardList({required this.orders});
+
+  @override
+  Widget build(BuildContext context) {
+    final responsive = context.responsive;
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.all(responsive.defaultPadding.left),
+      itemCount: orders.length,
+      separatorBuilder: (_, _) => SizedBox(height: responsive.itemSpacing),
+      itemBuilder: (context, index) => OrderListTile(
+        key: ValueKey(orders[index].id),
+        order: orders[index],
+        index: index,
+        onTap: () => _openOrder(context, orders[index]),
+      ),
+    );
+  }
+}
+
+/// الحاسوب: جدول بأعمدة ثابتة النسب
+class _OrdersDataTable extends ConsumerWidget {
+  final List<OrderEntity> orders;
+
+  const _OrdersDataTable({required this.orders});
+
+  static const _columns = [
+    ('رقم الطلب', 3),
+    ('العميل', 3),
+    ('التاريخ', 2),
+    ('الإجمالي', 2),
+    ('الحالة', 2),
+  ];
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final currency = ref.watch(storeCurrencyProvider);
+    final dateFormat = DateFormat('yyyy/MM/dd');
+
+    return Column(
       children: [
-        _buildAvatar(order),
-        const SizedBox(width: 10),
-        Flexible(
+        Container(
+          color: colorScheme.surfaceContainerHigh.withValues(alpha: 0.4),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppDesignTokens.space24,
+            vertical: AppDesignTokens.space14,
+          ),
+          child: Row(
+            children: [
+              for (final (label, flex) in _columns)
+                Expanded(
+                  flex: flex,
+                  child: Text(
+                    label,
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              const SizedBox(width: 24),
+            ],
+          ),
+        ),
+        DividedColumn(
+          children: [
+            for (final order in orders)
+              InkWell(
+                key: ValueKey(order.id),
+                onTap: () => _openOrder(context, order),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppDesignTokens.space24,
+                    vertical: AppDesignTokens.space14,
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: Text(
+                          '#${order.id}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.labelLarge?.copyWith(
+                            color: colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Expanded(flex: 3, child: _CustomerCell(order: order)),
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                          dateFormat.format(order.orderDate),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: PriceText(
+                          amount: order.totalAmount,
+                          currency: currency,
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: Align(
+                          alignment: AlignmentDirectional.centerStart,
+                          child: OrderStatusBadge(status: order.status),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 24,
+                        child: Icon(
+                          Icons.chevron_left_rounded,
+                          size: 20,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _CustomerCell extends StatelessWidget {
+  final OrderEntity order;
+
+  const _CustomerCell({required this.order});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final initial = order.userName.isNotEmpty
+        ? order.userName[0].toUpperCase()
+        : 'U';
+
+    return Row(
+      children: [
+        CircleAvatar(
+          radius: 16,
+          backgroundColor: colorScheme.primaryContainer,
+          foregroundImage: order.userPhoto != null
+              ? NetworkImage(order.userPhoto!)
+              : null,
+          child: Text(
+            initial,
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: colorScheme.onPrimaryContainer,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        const SizedBox(width: AppDesignTokens.space10),
+        Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Text(
                 order.userName,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 13,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -339,237 +284,14 @@ class OrdersTable extends ConsumerWidget {
                 order.userEmail,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.3),
-                  fontSize: 11,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildDate(OrderEntity order, DateFormat dateFormat) {
-    return Text(
-      dateFormat.format(order.orderDate),
-      style: TextStyle(
-        color: Colors.white.withValues(alpha: 0.5),
-        fontSize: 12,
-      ),
-    );
-  }
-
-  Widget _buildPrice(OrderEntity order) {
-    return Text(
-      '${order.totalAmount.toStringAsFixed(2)} L.E ',
-      style: const TextStyle(
-        color: Colors.white,
-        fontSize: 14,
-        fontWeight: FontWeight.w800,
-      ),
-    );
-  }
-
-  Widget _buildActionBtn(OrderEntity order) {
-    return const Align(
-      alignment: Alignment.centerRight,
-      child: Icon(Icons.chevron_right_rounded, size: 20, color: Colors.white24),
-    );
-  }
-
-  Widget _buildAvatar(OrderEntity order) {
-    return Container(
-      width: 32,
-      height: 32,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: LinearGradient(
-          colors: [
-            AppColors.primary.withValues(alpha: 0.4),
-            AppColors.primary.withValues(alpha: 0.1),
-          ],
-        ),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.1),
-          width: 1,
-        ),
-      ),
-      child: Center(
-        child: order.userPhoto != null
-            ? ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Image.network(order.userPhoto!, fit: BoxFit.cover),
-              )
-            : Text(
-                order.userName.isNotEmpty
-                    ? order.userName[0].toUpperCase()
-                    : 'U',
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-      ),
-    );
-  }
-
-  Widget _buildTableFooter({
-    required WidgetRef ref,
-    required ResponsiveLayout responsive,
-    required int currentPage,
-    required int totalPages,
-    required int itemsPerPage,
-    required int totalCount,
-    required int currentCount,
-  }) {
-    final start = totalCount == 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
-    final end = (start + currentCount - 1).clamp(0, totalCount);
-
-    Widget statsText = Text(
-      'Showing $start to $end of $totalCount entries',
-      style: TextStyle(
-        color: Colors.white.withValues(alpha: 0.4),
-        fontSize: 12,
-      ),
-    );
-
-    Widget paginationControls = Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _buildNavButton(
-          icon: Icons.chevron_left_rounded,
-          onPressed: currentPage > 1
-              ? () => ref.read(ordersCurrentPageProvider.notifier).previousPage()
-              : null,
-        ),
-        const SizedBox(width: 12),
-        ..._buildPageNumbers(ref, currentPage, totalPages),
-        const SizedBox(width: 12),
-        _buildNavButton(
-          icon: Icons.chevron_right_rounded,
-          onPressed: currentPage < totalPages
-              ? () => ref
-                  .read(ordersCurrentPageProvider.notifier)
-                  .nextPage(totalPages)
-              : null,
-        ),
-      ],
-    );
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.02),
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(20),
-          bottomRight: Radius.circular(20),
-        ),
-        border: Border(
-          top: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
-        ),
-      ),
-      child: responsive.isMobile
-          ? Column(
-              children: [
-                statsText,
-                const SizedBox(height: 16),
-                paginationControls,
-              ],
-            )
-          : Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [statsText, paginationControls],
-            ),
-    );
-  }
-
-  List<Widget> _buildPageNumbers(WidgetRef ref, int currentPage, int totalPages) {
-    List<Widget> pages = [];
-    for (int i = 1; i <= totalPages; i++) {
-      if (totalPages > 5) {
-        if (i != 1 &&
-            i != totalPages &&
-            (i < currentPage - 1 || i > currentPage + 1)) {
-          if (i == 2 || i == totalPages - 1) {
-            pages.add(
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: Text(
-                  '...',
-                  style: TextStyle(color: Colors.white.withValues(alpha: 0.2)),
-                ),
-              ),
-            );
-          }
-          continue;
-        }
-      }
-      pages.add(_buildPageButton(ref, i, currentPage));
-    }
-    return pages;
-  }
-
-  Widget _buildPageButton(WidgetRef ref, int pageNum, int currentPage) {
-    final isSelected = currentPage == pageNum;
-    return GestureDetector(
-      onTap: () => ref.read(ordersCurrentPageProvider.notifier).setPage(pageNum),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        margin: const EdgeInsets.symmetric(horizontal: 3),
-        width: 32,
-        height: 32,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.primary
-              : Colors.white.withValues(alpha: 0.05),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: isSelected
-                ? AppColors.primary
-                : Colors.white.withValues(alpha: 0.1),
-          ),
-        ),
-        child: Text(
-          '$pageNum',
-          style: TextStyle(
-            color: isSelected
-                ? Colors.black
-                : Colors.white.withValues(alpha: 0.6),
-            fontSize: 12,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavButton({required IconData icon, VoidCallback? onPressed}) {
-    bool isDisabled = onPressed == null;
-    return InkWell(
-      onTap: onPressed,
-      borderRadius: BorderRadius.circular(8),
-      child: Container(
-        padding: const EdgeInsets.all(6),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: isDisabled ? 0.02 : 0.05),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: Colors.white.withValues(alpha: isDisabled ? 0.02 : 0.1),
-          ),
-        ),
-        child: Icon(
-          icon,
-          size: 20,
-          color: isDisabled
-              ? Colors.white10
-              : Colors.white.withValues(alpha: 0.7),
-        ),
-      ),
     );
   }
 }

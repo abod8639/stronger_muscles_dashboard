@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
-import 'package:stronger_muscles_dashboard/core/components/form_section_card.dart';
+import 'package:stronger_muscles_dashboard/core/components/section_card.dart';
 import 'package:stronger_muscles_dashboard/core/components/build_modern_text_field.dart';
 
 /// قسم البيانات الأساسية للمنتج بتصميم Neumorphism / Soft UI
@@ -40,7 +40,7 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
     final isDark = theme.brightness == Brightness.dark;
     final ctrl = widget.controller;
 
-    return FormSectionCard(
+    return SectionCard(
       title: 'البيانات الأساسية',
       subtitle: 'الاسم، العلامة التجارية، والوصف للمنتج',
       icon: Icons.edit_note_rounded,
@@ -113,17 +113,32 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
         mainAxisSize: MainAxisSize.min,
         children: [
           _buildLangPill(
-              'ar', 'العربية 🇸🇦', Icons.language_rounded, colorScheme, isDark),
+            'ar',
+            'العربية 🇸🇦',
+            Icons.language_rounded,
+            colorScheme,
+            isDark,
+          ),
           const SizedBox(width: 4),
           _buildLangPill(
-              'en', 'English 🇬🇧', Icons.translate_rounded, colorScheme, isDark),
+            'en',
+            'English 🇬🇧',
+            Icons.translate_rounded,
+            colorScheme,
+            isDark,
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildLangPill(String lang, String label, IconData icon,
-      ColorScheme colorScheme, bool isDark) {
+  Widget _buildLangPill(
+    String lang,
+    String label,
+    IconData icon,
+    ColorScheme colorScheme,
+    bool isDark,
+  ) {
     final isSelected = _selectedLang == lang;
     return InkWell(
       borderRadius: BorderRadius.circular(9),
@@ -165,7 +180,10 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
   }
 
   Widget _buildBrandAutocomplete(
-      ProductsController ctrl, ColorScheme colorScheme, bool isDark) {
+    ProductsController ctrl,
+    ColorScheme colorScheme,
+    bool isDark,
+  ) {
     return Autocomplete<String>(
       focusNode: _brandFocusNode,
       textEditingController: ctrl.textcontrollers['brand'],
@@ -174,9 +192,11 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
           return const Iterable<String>.empty();
         }
         return ctrl.brands
-            .where((b) => b.displayName
-                .toLowerCase()
-                .contains(textEditingValue.text.toLowerCase()))
+            .where(
+              (b) => b.displayName.toLowerCase().contains(
+                textEditingValue.text.toLowerCase(),
+              ),
+            )
             .map((b) => b.displayName);
       },
       onSelected: (String selection) {
@@ -184,48 +204,48 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
       },
       fieldViewBuilder:
           (context, textEditingController, focusNode, onFieldSubmitted) {
-        return TextFormField(
-          controller: textEditingController,
-          focusNode: focusNode,
-          onFieldSubmitted: (_) => onFieldSubmitted(),
-          decoration: InputDecoration(
-            labelText: 'العلامة التجارية (البراند)',
-            hintText: 'اختر أو اكتب براند جديد...',
-            prefixIcon: Icon(
-              Icons.verified_outlined,
-              size: 20,
-              color: colorScheme.onSurfaceVariant,
-            ),
-            filled: true,
-            fillColor: isDark
-                ? colorScheme.surfaceContainerLowest.withValues(alpha: 0.5)
-                : colorScheme.surfaceContainerLow.withValues(alpha: 0.5),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.03)
-                    : colorScheme.outlineVariant.withValues(alpha: 0.5),
+            return TextFormField(
+              controller: textEditingController,
+              focusNode: focusNode,
+              onFieldSubmitted: (_) => onFieldSubmitted(),
+              decoration: InputDecoration(
+                labelText: 'العلامة التجارية (البراند)',
+                hintText: 'اختر أو اكتب براند جديد...',
+                prefixIcon: Icon(
+                  Icons.verified_outlined,
+                  size: 20,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+                filled: true,
+                fillColor: isDark
+                    ? colorScheme.surfaceContainerLowest.withValues(alpha: 0.5)
+                    : colorScheme.surfaceContainerLow.withValues(alpha: 0.5),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.03)
+                        : colorScheme.outlineVariant.withValues(alpha: 0.5),
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.03)
+                        : colorScheme.outlineVariant.withValues(alpha: 0.5),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: colorScheme.primary,
+                    width: 1.4,
+                  ),
+                ),
               ),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.03)
-                    : colorScheme.outlineVariant.withValues(alpha: 0.5),
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: colorScheme.primary,
-                width: 1.4,
-              ),
-            ),
-          ),
-        );
-      },
+            );
+          },
       optionsViewBuilder: (context, onSelected, options) {
         return Align(
           alignment: Alignment.topRight,

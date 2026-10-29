@@ -161,15 +161,15 @@ class ProductModel with _$ProductModel {
       _$ProductModelFromJson(_mapProductJson(json));
 
   factory ProductModel.empty() => ProductModel(
-        id: '',
-        name: const TranslatableString(ar: 'منتج غير معروف', en: 'Unknown Product'),
-        price: 0.0,
-        description: const TranslatableString(ar: '', en: ''),
-        imageUrls: const [],
-        categoryId: '',
-        stockQuantity: 0,
-        variants: const [],
-      );
+    id: '',
+    name: const TranslatableString(ar: 'منتج غير معروف', en: 'Unknown Product'),
+    price: 0.0,
+    description: const TranslatableString(ar: '', en: ''),
+    imageUrls: const [],
+    categoryId: '',
+    stockQuantity: 0,
+    variants: const [],
+  );
 
   double get finalPrice => discountPrice ?? price;
   bool get isInStock => stockQuantity > 0;
@@ -223,8 +223,10 @@ List<ProductModel> _parseProductListIsolate(dynamic data) {
 Map<String, dynamic> _safeTranslatableJson(dynamic json) {
   if (json is Map) {
     return {
-      'ar': (json['ar'] ?? json['name_ar'] ?? json['title_ar'] ?? '').toString(),
-      'en': (json['en'] ?? json['name_en'] ?? json['title_en'] ?? '').toString(),
+      'ar': (json['ar'] ?? json['name_ar'] ?? json['title_ar'] ?? '')
+          .toString(),
+      'en': (json['en'] ?? json['name_en'] ?? json['title_en'] ?? '')
+          .toString(),
     };
   }
   final str = json?.toString() ?? '';
@@ -233,7 +235,8 @@ Map<String, dynamic> _safeTranslatableJson(dynamic json) {
 
 Map<String, dynamic> _safeImageJson(dynamic json) {
   if (json is Map) {
-    final orig = (json['original'] ?? json['url'] ?? json['image_url'] ?? '').toString();
+    final orig = (json['original'] ?? json['url'] ?? json['image_url'] ?? '')
+        .toString();
     return {
       'thumbnail': (json['thumbnail'] ?? orig).toString(),
       'medium': (json['medium'] ?? orig).toString(),
@@ -251,7 +254,10 @@ Map<String, dynamic> _safeCategoryJson(dynamic json) {
       'name': _safeTranslatableJson(json['name']),
     };
   }
-  return {'id': '', 'name': const {'ar': '', 'en': ''}};
+  return {
+    'id': '',
+    'name': const {'ar': '', 'en': ''},
+  };
 }
 
 Map<String, dynamic> _safeVariantJson(dynamic json) {
@@ -268,8 +274,12 @@ Map<String, dynamic> _safeVariantJson(dynamic json) {
   }
   final map = Map<String, dynamic>.from(json);
   final price = _parseDouble(map['price']);
-  final discountPrice = _parseDoubleNullable(map['discount_price'] ?? map['discountPrice']);
-  final effective = _parseDouble(map['effective_price'] ?? map['effectivePrice'] ?? (discountPrice ?? price));
+  final discountPrice = _parseDoubleNullable(
+    map['discount_price'] ?? map['discountPrice'],
+  );
+  final effective = _parseDouble(
+    map['effective_price'] ?? map['effectivePrice'] ?? (discountPrice ?? price),
+  );
 
   return {
     ...map,
@@ -279,10 +289,19 @@ Map<String, dynamic> _safeVariantJson(dynamic json) {
     'discount_price': discountPrice,
     'effective_price': effective,
     'stock_quantity': _parseInt(map['stock_quantity'] ?? map['stockQuantity']),
-    'attributes': map['attributes'] is Map ? Map<String, dynamic>.from(map['attributes']) : const <String, dynamic>{},
-    'is_active': _parseBool(map['is_active'] ?? map['isActive'], defaultValue: true),
-    'discount_start_date': _parseDateTime(map['discount_start_date'] ?? map['discountStartDate']),
-    'discount_end_date': _parseDateTime(map['discount_end_date'] ?? map['discountEndDate']),
+    'attributes': map['attributes'] is Map
+        ? Map<String, dynamic>.from(map['attributes'])
+        : const <String, dynamic>{},
+    'is_active': _parseBool(
+      map['is_active'] ?? map['isActive'],
+      defaultValue: true,
+    ),
+    'discount_start_date': _parseDateTime(
+      map['discount_start_date'] ?? map['discountStartDate'],
+    ),
+    'discount_end_date': _parseDateTime(
+      map['discount_end_date'] ?? map['discountEndDate'],
+    ),
   };
 }
 
@@ -295,7 +314,9 @@ Map<String, dynamic> _safeSizeJson(dynamic json) {
     ...map,
     'size': (map['size'] ?? '').toString(),
     'price': _parseDouble(map['price']),
-    'discount_price': _parseDoubleNullable(map['discount_price'] ?? map['discountPrice']),
+    'discount_price': _parseDoubleNullable(
+      map['discount_price'] ?? map['discountPrice'],
+    ),
   };
 }
 
@@ -305,7 +326,9 @@ Map<String, dynamic> _mapProductJson(Map<String, dynamic> rawJson) {
   // Unwrap if wrapped in Laravel response (e.g. {"status": "success", "data": {...}})
   while (json.containsKey('data') && json['data'] is Map) {
     final inner = json['data'] as Map;
-    if (inner.containsKey('id') || inner.containsKey('name') || inner.containsKey('price')) {
+    if (inner.containsKey('id') ||
+        inner.containsKey('name') ||
+        inner.containsKey('price')) {
       json = Map<String, dynamic>.from(inner);
     } else {
       break;
@@ -322,7 +345,8 @@ Map<String, dynamic> _mapProductJson(Map<String, dynamic> rawJson) {
   }
 
   // Sanitize images
-  final rawImages = json['imageUrls'] ?? json['image_urls'] ?? json['images'] ?? [];
+  final rawImages =
+      json['imageUrls'] ?? json['image_urls'] ?? json['images'] ?? [];
   final List<Map<String, dynamic>> sanitizedImages = [];
   if (rawImages is List) {
     for (var img in rawImages) {
@@ -351,7 +375,9 @@ Map<String, dynamic> _mapProductJson(Map<String, dynamic> rawJson) {
   }
 
   final price = _parseDouble(json['price']);
-  final discountPrice = _parseDoubleNullable(json['discount_price'] ?? json['discountPrice']);
+  final discountPrice = _parseDoubleNullable(
+    json['discount_price'] ?? json['discountPrice'],
+  );
 
   return {
     ...json,
@@ -363,14 +389,26 @@ Map<String, dynamic> _mapProductJson(Map<String, dynamic> rawJson) {
     'imageUrls': sanitizedImages,
     'categoryId': categoryId,
     'category': categoryObj,
-    'stock_quantity': _parseInt(json['stock_quantity'] ?? json['stockQuantity'] ?? json['stock']),
-    'average_rating': _parseDouble(json['average_rating'] ?? json['averageRating']),
+    'stock_quantity': _parseInt(
+      json['stock_quantity'] ?? json['stockQuantity'] ?? json['stock'],
+    ),
+    'average_rating': _parseDouble(
+      json['average_rating'] ?? json['averageRating'],
+    ),
     'review_count': _parseInt(json['review_count'] ?? json['reviewCount']),
     'brand': json['brand']?.toString(),
-    'serving_size': json['serving_size']?.toString() ?? json['servingSize']?.toString(),
-    'servings_per_container': _parseIntNullable(json['servings_per_container'] ?? json['servingsPerContainer']),
-    'is_active': _parseBool(json['is_active'] ?? json['isActive'], defaultValue: true),
-    'is_background_white': _parseBool(json['is_background_white'] ?? json['isBackgroundWhite']),
+    'serving_size':
+        json['serving_size']?.toString() ?? json['servingSize']?.toString(),
+    'servings_per_container': _parseIntNullable(
+      json['servings_per_container'] ?? json['servingsPerContainer'],
+    ),
+    'is_active': _parseBool(
+      json['is_active'] ?? json['isActive'],
+      defaultValue: true,
+    ),
+    'is_background_white': _parseBool(
+      json['is_background_white'] ?? json['isBackgroundWhite'],
+    ),
     'sku': json['sku']?.toString(),
     'tags': _parseStringList(json['tags']),
     'weight': _parseDoubleNullable(json['weight']),
@@ -382,7 +420,10 @@ Map<String, dynamic> _mapProductJson(Map<String, dynamic> rawJson) {
     'best_seller': _parseBool(json['best_seller'] ?? json['bestSeller']),
     'total_sales': _parseInt(json['total_sales'] ?? json['totalSales']),
     'product_variants': sanitizedVariants,
-    'has_variants': _parseBool(json['has_variants'] ?? json['hasVariants'], defaultValue: sanitizedVariants.isNotEmpty),
+    'has_variants': _parseBool(
+      json['has_variants'] ?? json['hasVariants'],
+      defaultValue: sanitizedVariants.isNotEmpty,
+    ),
   };
 }
 
@@ -439,7 +480,10 @@ DateTime? _parseDateTime(dynamic value) {
 List<String> _parseStringList(dynamic value) {
   if (value == null) return const [];
   if (value is List) {
-    return value.map((e) => e?.toString() ?? '').where((s) => s.isNotEmpty).toList();
+    return value
+        .map((e) => e?.toString() ?? '')
+        .where((s) => s.isNotEmpty)
+        .toList();
   }
   if (value is String && value.isNotEmpty) {
     return [value];

@@ -82,11 +82,7 @@ class ProductFlavorSelector extends StatelessWidget {
 
                 // زر إضافة نكهة جديدة
                 ActionChip(
-                  avatar: Icon(
-                    Icons.add,
-                    size: 16,
-                    color: colorScheme.primary,
-                  ),
+                  avatar: Icon(Icons.add, size: 16, color: colorScheme.primary),
                   label: const Text("نكهة مخصصة"),
                   onPressed: () => _showAddFlavorDialog(context),
                 ),

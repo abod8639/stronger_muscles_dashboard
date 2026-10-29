@@ -24,10 +24,10 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
   OrderRemoteDataSourceImpl(Dio dio) : _dio = dio;
 
   Options get _options => Options(
-        sendTimeout: _defaultTimeout,
-        receiveTimeout: _defaultTimeout,
-        headers: {'Accept': 'application/json'},
-      );
+    sendTimeout: _defaultTimeout,
+    receiveTimeout: _defaultTimeout,
+    headers: {'Accept': 'application/json'},
+  );
 
   @override
   Future<List<OrderModel>> getOrders({CancelToken? cancelToken}) async {
@@ -61,7 +61,8 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
       }
 
       throw ServerException(
-        message: 'فشل في استلام قائمة الطلبات من الخادم (كود: ${response.statusCode})',
+        message:
+            'فشل في استلام قائمة الطلبات من الخادم (كود: ${response.statusCode})',
         statusCode: response.statusCode,
       );
     } on DioException {
@@ -131,7 +132,9 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
             : response.data;
 
         if (data is! Map) {
-          throw const ParsingException(message: 'استجابة تعديل حالة الطلب غير صالحة');
+          throw const ParsingException(
+            message: 'استجابة تعديل حالة الطلب غير صالحة',
+          );
         }
 
         return await OrderModel.fromJsonAsync(Map<String, dynamic>.from(data));

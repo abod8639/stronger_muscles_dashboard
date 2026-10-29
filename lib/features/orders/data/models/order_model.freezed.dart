@@ -12,7 +12,8 @@ part of 'order_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 OrderModel _$OrderModelFromJson(Map<String, dynamic> json) {
   return _OrderModel.fromJson(json);
@@ -66,28 +67,30 @@ mixin _$OrderModel {
 /// @nodoc
 abstract class $OrderModelCopyWith<$Res> {
   factory $OrderModelCopyWith(
-          OrderModel value, $Res Function(OrderModel) then) =
-      _$OrderModelCopyWithImpl<$Res, OrderModel>;
+    OrderModel value,
+    $Res Function(OrderModel) then,
+  ) = _$OrderModelCopyWithImpl<$Res, OrderModel>;
   @useResult
-  $Res call(
-      {@HiveField(0) String id,
-      @HiveField(1) String userId,
-      @HiveField(2) DateTime orderDate,
-      @HiveField(3) OrderStatus status,
-      @HiveField(4) PaymentStatus paymentStatus,
-      @HiveField(5) String paymentMethod,
-      @HiveField(6) String addressId,
-      @HiveField(7) double subtotal,
-      @HiveField(8) double shippingCost,
-      @HiveField(9) double discount,
-      @HiveField(10) double totalAmount,
-      @HiveField(11) String? trackingNumber,
-      @HiveField(12) String? notes,
-      @HiveField(13) String? phoneNumber,
-      @HiveField(14) AddressModel? shippingAddress,
-      @HiveField(15) List<OrderItemModel>? items,
-      @HiveField(16) UserModel? user,
-      @HiveField(17) double taxAmount});
+  $Res call({
+    @HiveField(0) String id,
+    @HiveField(1) String userId,
+    @HiveField(2) DateTime orderDate,
+    @HiveField(3) OrderStatus status,
+    @HiveField(4) PaymentStatus paymentStatus,
+    @HiveField(5) String paymentMethod,
+    @HiveField(6) String addressId,
+    @HiveField(7) double subtotal,
+    @HiveField(8) double shippingCost,
+    @HiveField(9) double discount,
+    @HiveField(10) double totalAmount,
+    @HiveField(11) String? trackingNumber,
+    @HiveField(12) String? notes,
+    @HiveField(13) String? phoneNumber,
+    @HiveField(14) AddressModel? shippingAddress,
+    @HiveField(15) List<OrderItemModel>? items,
+    @HiveField(16) UserModel? user,
+    @HiveField(17) double taxAmount,
+  });
 
   $AddressModelCopyWith<$Res>? get shippingAddress;
   $UserModelCopyWith<$Res>? get user;
@@ -125,80 +128,83 @@ class _$OrderModelCopyWithImpl<$Res, $Val extends OrderModel>
     Object? user = freezed,
     Object? taxAmount = null,
   }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      userId: null == userId
-          ? _value.userId
-          : userId // ignore: cast_nullable_to_non_nullable
-              as String,
-      orderDate: null == orderDate
-          ? _value.orderDate
-          : orderDate // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      status: null == status
-          ? _value.status
-          : status // ignore: cast_nullable_to_non_nullable
-              as OrderStatus,
-      paymentStatus: null == paymentStatus
-          ? _value.paymentStatus
-          : paymentStatus // ignore: cast_nullable_to_non_nullable
-              as PaymentStatus,
-      paymentMethod: null == paymentMethod
-          ? _value.paymentMethod
-          : paymentMethod // ignore: cast_nullable_to_non_nullable
-              as String,
-      addressId: null == addressId
-          ? _value.addressId
-          : addressId // ignore: cast_nullable_to_non_nullable
-              as String,
-      subtotal: null == subtotal
-          ? _value.subtotal
-          : subtotal // ignore: cast_nullable_to_non_nullable
-              as double,
-      shippingCost: null == shippingCost
-          ? _value.shippingCost
-          : shippingCost // ignore: cast_nullable_to_non_nullable
-              as double,
-      discount: null == discount
-          ? _value.discount
-          : discount // ignore: cast_nullable_to_non_nullable
-              as double,
-      totalAmount: null == totalAmount
-          ? _value.totalAmount
-          : totalAmount // ignore: cast_nullable_to_non_nullable
-              as double,
-      trackingNumber: freezed == trackingNumber
-          ? _value.trackingNumber
-          : trackingNumber // ignore: cast_nullable_to_non_nullable
-              as String?,
-      notes: freezed == notes
-          ? _value.notes
-          : notes // ignore: cast_nullable_to_non_nullable
-              as String?,
-      phoneNumber: freezed == phoneNumber
-          ? _value.phoneNumber
-          : phoneNumber // ignore: cast_nullable_to_non_nullable
-              as String?,
-      shippingAddress: freezed == shippingAddress
-          ? _value.shippingAddress
-          : shippingAddress // ignore: cast_nullable_to_non_nullable
-              as AddressModel?,
-      items: freezed == items
-          ? _value.items
-          : items // ignore: cast_nullable_to_non_nullable
-              as List<OrderItemModel>?,
-      user: freezed == user
-          ? _value.user
-          : user // ignore: cast_nullable_to_non_nullable
-              as UserModel?,
-      taxAmount: null == taxAmount
-          ? _value.taxAmount
-          : taxAmount // ignore: cast_nullable_to_non_nullable
-              as double,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            userId: null == userId
+                ? _value.userId
+                : userId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            orderDate: null == orderDate
+                ? _value.orderDate
+                : orderDate // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
+            status: null == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
+                      as OrderStatus,
+            paymentStatus: null == paymentStatus
+                ? _value.paymentStatus
+                : paymentStatus // ignore: cast_nullable_to_non_nullable
+                      as PaymentStatus,
+            paymentMethod: null == paymentMethod
+                ? _value.paymentMethod
+                : paymentMethod // ignore: cast_nullable_to_non_nullable
+                      as String,
+            addressId: null == addressId
+                ? _value.addressId
+                : addressId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            subtotal: null == subtotal
+                ? _value.subtotal
+                : subtotal // ignore: cast_nullable_to_non_nullable
+                      as double,
+            shippingCost: null == shippingCost
+                ? _value.shippingCost
+                : shippingCost // ignore: cast_nullable_to_non_nullable
+                      as double,
+            discount: null == discount
+                ? _value.discount
+                : discount // ignore: cast_nullable_to_non_nullable
+                      as double,
+            totalAmount: null == totalAmount
+                ? _value.totalAmount
+                : totalAmount // ignore: cast_nullable_to_non_nullable
+                      as double,
+            trackingNumber: freezed == trackingNumber
+                ? _value.trackingNumber
+                : trackingNumber // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            notes: freezed == notes
+                ? _value.notes
+                : notes // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            phoneNumber: freezed == phoneNumber
+                ? _value.phoneNumber
+                : phoneNumber // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            shippingAddress: freezed == shippingAddress
+                ? _value.shippingAddress
+                : shippingAddress // ignore: cast_nullable_to_non_nullable
+                      as AddressModel?,
+            items: freezed == items
+                ? _value.items
+                : items // ignore: cast_nullable_to_non_nullable
+                      as List<OrderItemModel>?,
+            user: freezed == user
+                ? _value.user
+                : user // ignore: cast_nullable_to_non_nullable
+                      as UserModel?,
+            taxAmount: null == taxAmount
+                ? _value.taxAmount
+                : taxAmount // ignore: cast_nullable_to_non_nullable
+                      as double,
+          )
+          as $Val,
+    );
   }
 
   @override
@@ -230,29 +236,31 @@ class _$OrderModelCopyWithImpl<$Res, $Val extends OrderModel>
 abstract class _$$OrderModelImplCopyWith<$Res>
     implements $OrderModelCopyWith<$Res> {
   factory _$$OrderModelImplCopyWith(
-          _$OrderModelImpl value, $Res Function(_$OrderModelImpl) then) =
-      __$$OrderModelImplCopyWithImpl<$Res>;
+    _$OrderModelImpl value,
+    $Res Function(_$OrderModelImpl) then,
+  ) = __$$OrderModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {@HiveField(0) String id,
-      @HiveField(1) String userId,
-      @HiveField(2) DateTime orderDate,
-      @HiveField(3) OrderStatus status,
-      @HiveField(4) PaymentStatus paymentStatus,
-      @HiveField(5) String paymentMethod,
-      @HiveField(6) String addressId,
-      @HiveField(7) double subtotal,
-      @HiveField(8) double shippingCost,
-      @HiveField(9) double discount,
-      @HiveField(10) double totalAmount,
-      @HiveField(11) String? trackingNumber,
-      @HiveField(12) String? notes,
-      @HiveField(13) String? phoneNumber,
-      @HiveField(14) AddressModel? shippingAddress,
-      @HiveField(15) List<OrderItemModel>? items,
-      @HiveField(16) UserModel? user,
-      @HiveField(17) double taxAmount});
+  $Res call({
+    @HiveField(0) String id,
+    @HiveField(1) String userId,
+    @HiveField(2) DateTime orderDate,
+    @HiveField(3) OrderStatus status,
+    @HiveField(4) PaymentStatus paymentStatus,
+    @HiveField(5) String paymentMethod,
+    @HiveField(6) String addressId,
+    @HiveField(7) double subtotal,
+    @HiveField(8) double shippingCost,
+    @HiveField(9) double discount,
+    @HiveField(10) double totalAmount,
+    @HiveField(11) String? trackingNumber,
+    @HiveField(12) String? notes,
+    @HiveField(13) String? phoneNumber,
+    @HiveField(14) AddressModel? shippingAddress,
+    @HiveField(15) List<OrderItemModel>? items,
+    @HiveField(16) UserModel? user,
+    @HiveField(17) double taxAmount,
+  });
 
   @override
   $AddressModelCopyWith<$Res>? get shippingAddress;
@@ -265,8 +273,9 @@ class __$$OrderModelImplCopyWithImpl<$Res>
     extends _$OrderModelCopyWithImpl<$Res, _$OrderModelImpl>
     implements _$$OrderModelImplCopyWith<$Res> {
   __$$OrderModelImplCopyWithImpl(
-      _$OrderModelImpl _value, $Res Function(_$OrderModelImpl) _then)
-      : super(_value, _then);
+    _$OrderModelImpl _value,
+    $Res Function(_$OrderModelImpl) _then,
+  ) : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -290,107 +299,109 @@ class __$$OrderModelImplCopyWithImpl<$Res>
     Object? user = freezed,
     Object? taxAmount = null,
   }) {
-    return _then(_$OrderModelImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      userId: null == userId
-          ? _value.userId
-          : userId // ignore: cast_nullable_to_non_nullable
-              as String,
-      orderDate: null == orderDate
-          ? _value.orderDate
-          : orderDate // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      status: null == status
-          ? _value.status
-          : status // ignore: cast_nullable_to_non_nullable
-              as OrderStatus,
-      paymentStatus: null == paymentStatus
-          ? _value.paymentStatus
-          : paymentStatus // ignore: cast_nullable_to_non_nullable
-              as PaymentStatus,
-      paymentMethod: null == paymentMethod
-          ? _value.paymentMethod
-          : paymentMethod // ignore: cast_nullable_to_non_nullable
-              as String,
-      addressId: null == addressId
-          ? _value.addressId
-          : addressId // ignore: cast_nullable_to_non_nullable
-              as String,
-      subtotal: null == subtotal
-          ? _value.subtotal
-          : subtotal // ignore: cast_nullable_to_non_nullable
-              as double,
-      shippingCost: null == shippingCost
-          ? _value.shippingCost
-          : shippingCost // ignore: cast_nullable_to_non_nullable
-              as double,
-      discount: null == discount
-          ? _value.discount
-          : discount // ignore: cast_nullable_to_non_nullable
-              as double,
-      totalAmount: null == totalAmount
-          ? _value.totalAmount
-          : totalAmount // ignore: cast_nullable_to_non_nullable
-              as double,
-      trackingNumber: freezed == trackingNumber
-          ? _value.trackingNumber
-          : trackingNumber // ignore: cast_nullable_to_non_nullable
-              as String?,
-      notes: freezed == notes
-          ? _value.notes
-          : notes // ignore: cast_nullable_to_non_nullable
-              as String?,
-      phoneNumber: freezed == phoneNumber
-          ? _value.phoneNumber
-          : phoneNumber // ignore: cast_nullable_to_non_nullable
-              as String?,
-      shippingAddress: freezed == shippingAddress
-          ? _value.shippingAddress
-          : shippingAddress // ignore: cast_nullable_to_non_nullable
-              as AddressModel?,
-      items: freezed == items
-          ? _value._items
-          : items // ignore: cast_nullable_to_non_nullable
-              as List<OrderItemModel>?,
-      user: freezed == user
-          ? _value.user
-          : user // ignore: cast_nullable_to_non_nullable
-              as UserModel?,
-      taxAmount: null == taxAmount
-          ? _value.taxAmount
-          : taxAmount // ignore: cast_nullable_to_non_nullable
-              as double,
-    ));
+    return _then(
+      _$OrderModelImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        userId: null == userId
+            ? _value.userId
+            : userId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        orderDate: null == orderDate
+            ? _value.orderDate
+            : orderDate // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
+        status: null == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
+                  as OrderStatus,
+        paymentStatus: null == paymentStatus
+            ? _value.paymentStatus
+            : paymentStatus // ignore: cast_nullable_to_non_nullable
+                  as PaymentStatus,
+        paymentMethod: null == paymentMethod
+            ? _value.paymentMethod
+            : paymentMethod // ignore: cast_nullable_to_non_nullable
+                  as String,
+        addressId: null == addressId
+            ? _value.addressId
+            : addressId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        subtotal: null == subtotal
+            ? _value.subtotal
+            : subtotal // ignore: cast_nullable_to_non_nullable
+                  as double,
+        shippingCost: null == shippingCost
+            ? _value.shippingCost
+            : shippingCost // ignore: cast_nullable_to_non_nullable
+                  as double,
+        discount: null == discount
+            ? _value.discount
+            : discount // ignore: cast_nullable_to_non_nullable
+                  as double,
+        totalAmount: null == totalAmount
+            ? _value.totalAmount
+            : totalAmount // ignore: cast_nullable_to_non_nullable
+                  as double,
+        trackingNumber: freezed == trackingNumber
+            ? _value.trackingNumber
+            : trackingNumber // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        notes: freezed == notes
+            ? _value.notes
+            : notes // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        phoneNumber: freezed == phoneNumber
+            ? _value.phoneNumber
+            : phoneNumber // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        shippingAddress: freezed == shippingAddress
+            ? _value.shippingAddress
+            : shippingAddress // ignore: cast_nullable_to_non_nullable
+                  as AddressModel?,
+        items: freezed == items
+            ? _value._items
+            : items // ignore: cast_nullable_to_non_nullable
+                  as List<OrderItemModel>?,
+        user: freezed == user
+            ? _value.user
+            : user // ignore: cast_nullable_to_non_nullable
+                  as UserModel?,
+        taxAmount: null == taxAmount
+            ? _value.taxAmount
+            : taxAmount // ignore: cast_nullable_to_non_nullable
+                  as double,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$OrderModelImpl extends _OrderModel with DiagnosticableTreeMixin {
-  const _$OrderModelImpl(
-      {@HiveField(0) required this.id,
-      @HiveField(1) required this.userId,
-      @HiveField(2) required this.orderDate,
-      @HiveField(3) this.status = OrderStatus.pending,
-      @HiveField(4) this.paymentStatus = PaymentStatus.pending,
-      @HiveField(5) this.paymentMethod = 'card',
-      @HiveField(6) required this.addressId,
-      @HiveField(7) required this.subtotal,
-      @HiveField(8) this.shippingCost = 0.0,
-      @HiveField(9) this.discount = 0.0,
-      @HiveField(10) required this.totalAmount,
-      @HiveField(11) this.trackingNumber,
-      @HiveField(12) this.notes,
-      @HiveField(13) this.phoneNumber,
-      @HiveField(14) this.shippingAddress,
-      @HiveField(15) final List<OrderItemModel>? items,
-      @HiveField(16) this.user,
-      @HiveField(17) this.taxAmount = 0.0})
-      : _items = items,
-        super._();
+  const _$OrderModelImpl({
+    @HiveField(0) required this.id,
+    @HiveField(1) required this.userId,
+    @HiveField(2) required this.orderDate,
+    @HiveField(3) this.status = OrderStatus.pending,
+    @HiveField(4) this.paymentStatus = PaymentStatus.pending,
+    @HiveField(5) this.paymentMethod = 'card',
+    @HiveField(6) required this.addressId,
+    @HiveField(7) required this.subtotal,
+    @HiveField(8) this.shippingCost = 0.0,
+    @HiveField(9) this.discount = 0.0,
+    @HiveField(10) required this.totalAmount,
+    @HiveField(11) this.trackingNumber,
+    @HiveField(12) this.notes,
+    @HiveField(13) this.phoneNumber,
+    @HiveField(14) this.shippingAddress,
+    @HiveField(15) final List<OrderItemModel>? items,
+    @HiveField(16) this.user,
+    @HiveField(17) this.taxAmount = 0.0,
+  }) : _items = items,
+       super._();
 
   factory _$OrderModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$OrderModelImplFromJson(json);
@@ -534,25 +545,26 @@ class _$OrderModelImpl extends _OrderModel with DiagnosticableTreeMixin {
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      userId,
-      orderDate,
-      status,
-      paymentStatus,
-      paymentMethod,
-      addressId,
-      subtotal,
-      shippingCost,
-      discount,
-      totalAmount,
-      trackingNumber,
-      notes,
-      phoneNumber,
-      shippingAddress,
-      const DeepCollectionEquality().hash(_items),
-      user,
-      taxAmount);
+    runtimeType,
+    id,
+    userId,
+    orderDate,
+    status,
+    paymentStatus,
+    paymentMethod,
+    addressId,
+    subtotal,
+    shippingCost,
+    discount,
+    totalAmount,
+    trackingNumber,
+    notes,
+    phoneNumber,
+    shippingAddress,
+    const DeepCollectionEquality().hash(_items),
+    user,
+    taxAmount,
+  );
 
   @JsonKey(ignore: true)
   @override
@@ -562,32 +574,31 @@ class _$OrderModelImpl extends _OrderModel with DiagnosticableTreeMixin {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$OrderModelImplToJson(
-      this,
-    );
+    return _$$OrderModelImplToJson(this);
   }
 }
 
 abstract class _OrderModel extends OrderModel {
-  const factory _OrderModel(
-      {@HiveField(0) required final String id,
-      @HiveField(1) required final String userId,
-      @HiveField(2) required final DateTime orderDate,
-      @HiveField(3) final OrderStatus status,
-      @HiveField(4) final PaymentStatus paymentStatus,
-      @HiveField(5) final String paymentMethod,
-      @HiveField(6) required final String addressId,
-      @HiveField(7) required final double subtotal,
-      @HiveField(8) final double shippingCost,
-      @HiveField(9) final double discount,
-      @HiveField(10) required final double totalAmount,
-      @HiveField(11) final String? trackingNumber,
-      @HiveField(12) final String? notes,
-      @HiveField(13) final String? phoneNumber,
-      @HiveField(14) final AddressModel? shippingAddress,
-      @HiveField(15) final List<OrderItemModel>? items,
-      @HiveField(16) final UserModel? user,
-      @HiveField(17) final double taxAmount}) = _$OrderModelImpl;
+  const factory _OrderModel({
+    @HiveField(0) required final String id,
+    @HiveField(1) required final String userId,
+    @HiveField(2) required final DateTime orderDate,
+    @HiveField(3) final OrderStatus status,
+    @HiveField(4) final PaymentStatus paymentStatus,
+    @HiveField(5) final String paymentMethod,
+    @HiveField(6) required final String addressId,
+    @HiveField(7) required final double subtotal,
+    @HiveField(8) final double shippingCost,
+    @HiveField(9) final double discount,
+    @HiveField(10) required final double totalAmount,
+    @HiveField(11) final String? trackingNumber,
+    @HiveField(12) final String? notes,
+    @HiveField(13) final String? phoneNumber,
+    @HiveField(14) final AddressModel? shippingAddress,
+    @HiveField(15) final List<OrderItemModel>? items,
+    @HiveField(16) final UserModel? user,
+    @HiveField(17) final double taxAmount,
+  }) = _$OrderModelImpl;
   const _OrderModel._() : super._();
 
   factory _OrderModel.fromJson(Map<String, dynamic> json) =
@@ -691,21 +702,23 @@ mixin _$OrderItemModel {
 /// @nodoc
 abstract class $OrderItemModelCopyWith<$Res> {
   factory $OrderItemModelCopyWith(
-          OrderItemModel value, $Res Function(OrderItemModel) then) =
-      _$OrderItemModelCopyWithImpl<$Res, OrderItemModel>;
+    OrderItemModel value,
+    $Res Function(OrderItemModel) then,
+  ) = _$OrderItemModelCopyWithImpl<$Res, OrderItemModel>;
   @useResult
-  $Res call(
-      {@HiveField(0) String id,
-      @HiveField(1) String orderId,
-      @HiveField(2) String productId,
-      @HiveField(3) String productName,
-      @HiveField(4) double unitPrice,
-      @HiveField(5) int quantity,
-      @HiveField(6) double subtotal,
-      @HiveField(7) String? imageUrl,
-      @HiveField(8) String? selectedFlavor,
-      @HiveField(9) String? selectedSize,
-      @HiveField(10) String? fullName});
+  $Res call({
+    @HiveField(0) String id,
+    @HiveField(1) String orderId,
+    @HiveField(2) String productId,
+    @HiveField(3) String productName,
+    @HiveField(4) double unitPrice,
+    @HiveField(5) int quantity,
+    @HiveField(6) double subtotal,
+    @HiveField(7) String? imageUrl,
+    @HiveField(8) String? selectedFlavor,
+    @HiveField(9) String? selectedSize,
+    @HiveField(10) String? fullName,
+  });
 }
 
 /// @nodoc
@@ -733,75 +746,80 @@ class _$OrderItemModelCopyWithImpl<$Res, $Val extends OrderItemModel>
     Object? selectedSize = freezed,
     Object? fullName = freezed,
   }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      orderId: null == orderId
-          ? _value.orderId
-          : orderId // ignore: cast_nullable_to_non_nullable
-              as String,
-      productId: null == productId
-          ? _value.productId
-          : productId // ignore: cast_nullable_to_non_nullable
-              as String,
-      productName: null == productName
-          ? _value.productName
-          : productName // ignore: cast_nullable_to_non_nullable
-              as String,
-      unitPrice: null == unitPrice
-          ? _value.unitPrice
-          : unitPrice // ignore: cast_nullable_to_non_nullable
-              as double,
-      quantity: null == quantity
-          ? _value.quantity
-          : quantity // ignore: cast_nullable_to_non_nullable
-              as int,
-      subtotal: null == subtotal
-          ? _value.subtotal
-          : subtotal // ignore: cast_nullable_to_non_nullable
-              as double,
-      imageUrl: freezed == imageUrl
-          ? _value.imageUrl
-          : imageUrl // ignore: cast_nullable_to_non_nullable
-              as String?,
-      selectedFlavor: freezed == selectedFlavor
-          ? _value.selectedFlavor
-          : selectedFlavor // ignore: cast_nullable_to_non_nullable
-              as String?,
-      selectedSize: freezed == selectedSize
-          ? _value.selectedSize
-          : selectedSize // ignore: cast_nullable_to_non_nullable
-              as String?,
-      fullName: freezed == fullName
-          ? _value.fullName
-          : fullName // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            orderId: null == orderId
+                ? _value.orderId
+                : orderId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            productId: null == productId
+                ? _value.productId
+                : productId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            productName: null == productName
+                ? _value.productName
+                : productName // ignore: cast_nullable_to_non_nullable
+                      as String,
+            unitPrice: null == unitPrice
+                ? _value.unitPrice
+                : unitPrice // ignore: cast_nullable_to_non_nullable
+                      as double,
+            quantity: null == quantity
+                ? _value.quantity
+                : quantity // ignore: cast_nullable_to_non_nullable
+                      as int,
+            subtotal: null == subtotal
+                ? _value.subtotal
+                : subtotal // ignore: cast_nullable_to_non_nullable
+                      as double,
+            imageUrl: freezed == imageUrl
+                ? _value.imageUrl
+                : imageUrl // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            selectedFlavor: freezed == selectedFlavor
+                ? _value.selectedFlavor
+                : selectedFlavor // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            selectedSize: freezed == selectedSize
+                ? _value.selectedSize
+                : selectedSize // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            fullName: freezed == fullName
+                ? _value.fullName
+                : fullName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+          )
+          as $Val,
+    );
   }
 }
 
 /// @nodoc
 abstract class _$$OrderItemModelImplCopyWith<$Res>
     implements $OrderItemModelCopyWith<$Res> {
-  factory _$$OrderItemModelImplCopyWith(_$OrderItemModelImpl value,
-          $Res Function(_$OrderItemModelImpl) then) =
-      __$$OrderItemModelImplCopyWithImpl<$Res>;
+  factory _$$OrderItemModelImplCopyWith(
+    _$OrderItemModelImpl value,
+    $Res Function(_$OrderItemModelImpl) then,
+  ) = __$$OrderItemModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {@HiveField(0) String id,
-      @HiveField(1) String orderId,
-      @HiveField(2) String productId,
-      @HiveField(3) String productName,
-      @HiveField(4) double unitPrice,
-      @HiveField(5) int quantity,
-      @HiveField(6) double subtotal,
-      @HiveField(7) String? imageUrl,
-      @HiveField(8) String? selectedFlavor,
-      @HiveField(9) String? selectedSize,
-      @HiveField(10) String? fullName});
+  $Res call({
+    @HiveField(0) String id,
+    @HiveField(1) String orderId,
+    @HiveField(2) String productId,
+    @HiveField(3) String productName,
+    @HiveField(4) double unitPrice,
+    @HiveField(5) int quantity,
+    @HiveField(6) double subtotal,
+    @HiveField(7) String? imageUrl,
+    @HiveField(8) String? selectedFlavor,
+    @HiveField(9) String? selectedSize,
+    @HiveField(10) String? fullName,
+  });
 }
 
 /// @nodoc
@@ -809,8 +827,9 @@ class __$$OrderItemModelImplCopyWithImpl<$Res>
     extends _$OrderItemModelCopyWithImpl<$Res, _$OrderItemModelImpl>
     implements _$$OrderItemModelImplCopyWith<$Res> {
   __$$OrderItemModelImplCopyWithImpl(
-      _$OrderItemModelImpl _value, $Res Function(_$OrderItemModelImpl) _then)
-      : super(_value, _then);
+    _$OrderItemModelImpl _value,
+    $Res Function(_$OrderItemModelImpl) _then,
+  ) : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -827,52 +846,54 @@ class __$$OrderItemModelImplCopyWithImpl<$Res>
     Object? selectedSize = freezed,
     Object? fullName = freezed,
   }) {
-    return _then(_$OrderItemModelImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      orderId: null == orderId
-          ? _value.orderId
-          : orderId // ignore: cast_nullable_to_non_nullable
-              as String,
-      productId: null == productId
-          ? _value.productId
-          : productId // ignore: cast_nullable_to_non_nullable
-              as String,
-      productName: null == productName
-          ? _value.productName
-          : productName // ignore: cast_nullable_to_non_nullable
-              as String,
-      unitPrice: null == unitPrice
-          ? _value.unitPrice
-          : unitPrice // ignore: cast_nullable_to_non_nullable
-              as double,
-      quantity: null == quantity
-          ? _value.quantity
-          : quantity // ignore: cast_nullable_to_non_nullable
-              as int,
-      subtotal: null == subtotal
-          ? _value.subtotal
-          : subtotal // ignore: cast_nullable_to_non_nullable
-              as double,
-      imageUrl: freezed == imageUrl
-          ? _value.imageUrl
-          : imageUrl // ignore: cast_nullable_to_non_nullable
-              as String?,
-      selectedFlavor: freezed == selectedFlavor
-          ? _value.selectedFlavor
-          : selectedFlavor // ignore: cast_nullable_to_non_nullable
-              as String?,
-      selectedSize: freezed == selectedSize
-          ? _value.selectedSize
-          : selectedSize // ignore: cast_nullable_to_non_nullable
-              as String?,
-      fullName: freezed == fullName
-          ? _value.fullName
-          : fullName // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
+    return _then(
+      _$OrderItemModelImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        orderId: null == orderId
+            ? _value.orderId
+            : orderId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        productId: null == productId
+            ? _value.productId
+            : productId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        productName: null == productName
+            ? _value.productName
+            : productName // ignore: cast_nullable_to_non_nullable
+                  as String,
+        unitPrice: null == unitPrice
+            ? _value.unitPrice
+            : unitPrice // ignore: cast_nullable_to_non_nullable
+                  as double,
+        quantity: null == quantity
+            ? _value.quantity
+            : quantity // ignore: cast_nullable_to_non_nullable
+                  as int,
+        subtotal: null == subtotal
+            ? _value.subtotal
+            : subtotal // ignore: cast_nullable_to_non_nullable
+                  as double,
+        imageUrl: freezed == imageUrl
+            ? _value.imageUrl
+            : imageUrl // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        selectedFlavor: freezed == selectedFlavor
+            ? _value.selectedFlavor
+            : selectedFlavor // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        selectedSize: freezed == selectedSize
+            ? _value.selectedSize
+            : selectedSize // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        fullName: freezed == fullName
+            ? _value.fullName
+            : fullName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+      ),
+    );
   }
 }
 
@@ -880,19 +901,19 @@ class __$$OrderItemModelImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$OrderItemModelImpl extends _OrderItemModel
     with DiagnosticableTreeMixin {
-  const _$OrderItemModelImpl(
-      {@HiveField(0) required this.id,
-      @HiveField(1) required this.orderId,
-      @HiveField(2) required this.productId,
-      @HiveField(3) required this.productName,
-      @HiveField(4) required this.unitPrice,
-      @HiveField(5) required this.quantity,
-      @HiveField(6) required this.subtotal,
-      @HiveField(7) this.imageUrl,
-      @HiveField(8) this.selectedFlavor,
-      @HiveField(9) this.selectedSize,
-      @HiveField(10) this.fullName})
-      : super._();
+  const _$OrderItemModelImpl({
+    @HiveField(0) required this.id,
+    @HiveField(1) required this.orderId,
+    @HiveField(2) required this.productId,
+    @HiveField(3) required this.productName,
+    @HiveField(4) required this.unitPrice,
+    @HiveField(5) required this.quantity,
+    @HiveField(6) required this.subtotal,
+    @HiveField(7) this.imageUrl,
+    @HiveField(8) this.selectedFlavor,
+    @HiveField(9) this.selectedSize,
+    @HiveField(10) this.fullName,
+  }) : super._();
 
   factory _$OrderItemModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$OrderItemModelImplFromJson(json);
@@ -984,47 +1005,49 @@ class _$OrderItemModelImpl extends _OrderItemModel
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      orderId,
-      productId,
-      productName,
-      unitPrice,
-      quantity,
-      subtotal,
-      imageUrl,
-      selectedFlavor,
-      selectedSize,
-      fullName);
+    runtimeType,
+    id,
+    orderId,
+    productId,
+    productName,
+    unitPrice,
+    quantity,
+    subtotal,
+    imageUrl,
+    selectedFlavor,
+    selectedSize,
+    fullName,
+  );
 
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$OrderItemModelImplCopyWith<_$OrderItemModelImpl> get copyWith =>
       __$$OrderItemModelImplCopyWithImpl<_$OrderItemModelImpl>(
-          this, _$identity);
+        this,
+        _$identity,
+      );
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$OrderItemModelImplToJson(
-      this,
-    );
+    return _$$OrderItemModelImplToJson(this);
   }
 }
 
 abstract class _OrderItemModel extends OrderItemModel {
-  const factory _OrderItemModel(
-      {@HiveField(0) required final String id,
-      @HiveField(1) required final String orderId,
-      @HiveField(2) required final String productId,
-      @HiveField(3) required final String productName,
-      @HiveField(4) required final double unitPrice,
-      @HiveField(5) required final int quantity,
-      @HiveField(6) required final double subtotal,
-      @HiveField(7) final String? imageUrl,
-      @HiveField(8) final String? selectedFlavor,
-      @HiveField(9) final String? selectedSize,
-      @HiveField(10) final String? fullName}) = _$OrderItemModelImpl;
+  const factory _OrderItemModel({
+    @HiveField(0) required final String id,
+    @HiveField(1) required final String orderId,
+    @HiveField(2) required final String productId,
+    @HiveField(3) required final String productName,
+    @HiveField(4) required final double unitPrice,
+    @HiveField(5) required final int quantity,
+    @HiveField(6) required final double subtotal,
+    @HiveField(7) final String? imageUrl,
+    @HiveField(8) final String? selectedFlavor,
+    @HiveField(9) final String? selectedSize,
+    @HiveField(10) final String? fullName,
+  }) = _$OrderItemModelImpl;
   const _OrderItemModel._() : super._();
 
   factory _OrderItemModel.fromJson(Map<String, dynamic> json) =

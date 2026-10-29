@@ -5,7 +5,7 @@ import 'category_picker/category_search_field.dart';
 import 'category_picker/category_selection_banner.dart';
 import 'category_picker/category_tree_utils.dart';
 import 'category_picker/category_tree_view.dart';
-import 'package:stronger_muscles_dashboard/core/components/form_section_card.dart';
+import 'package:stronger_muscles_dashboard/core/components/section_card.dart';
 
 /// قسم تصنيف المنتج بتصميم Neumorphism / Soft UI وفق معايير Clean Architecture
 /// منسق رئيسي يفصل المسؤوليات بين مكونات البحث، والراية التوجيهية، والشجرة الهرمية
@@ -85,7 +85,7 @@ class _ProductCategorySectionState extends State<ProductCategorySection> {
             : <String>[];
         final hasSelection = breadcrumbs.isNotEmpty;
 
-        return FormSectionCard(
+        return SectionCard(
           title: 'تصنيف المنتج',
           subtitle: 'اختر القسم المناسب للمنتج لتسهيل وصول وتصفح العملاء',
           icon: Icons.category_rounded,
@@ -141,14 +141,18 @@ class _ProductCategorySectionState extends State<ProductCategorySection> {
                         Icon(
                           Icons.folder_off_outlined,
                           size: 28,
-                          color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                          color: colorScheme.onSurfaceVariant.withValues(
+                            alpha: 0.5,
+                          ),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           'لا توجد أقسام مسجلة حالياً',
                           style: TextStyle(
                             fontSize: 12.5,
-                            color: colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
+                            color: colorScheme.onSurfaceVariant.withValues(
+                              alpha: 0.8,
+                            ),
                           ),
                         ),
                       ],

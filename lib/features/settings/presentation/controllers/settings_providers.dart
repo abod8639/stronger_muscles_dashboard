@@ -69,3 +69,10 @@ final clearAppCacheUseCaseProvider = Provider<ClearAppCacheUseCase>((ref) {
 /// Scoped Notifier provider for Settings state management
 final settingsControllerProvider =
     NotifierProvider<SettingsController, SettingsState>(SettingsController.new);
+
+/// عملة المتجر الحالية من الإعدادات، تُستخدم لعرض الأسعار في كل الشاشات
+final storeCurrencyProvider = Provider<String>((ref) {
+  return ref.watch(
+    settingsControllerProvider.select((state) => state.settings.currency),
+  );
+});

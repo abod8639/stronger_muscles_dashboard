@@ -58,12 +58,16 @@ class CategoryTile extends StatelessWidget {
                   isSelected
                       ? Icons.check_circle_rounded
                       : (isSearchMode
-                          ? Icons.label_outline_rounded
-                          : (depth == 0
-                              ? (isExpanded ? Icons.folder_open_rounded : Icons.folder_rounded)
-                              : Icons.subdirectory_arrow_left_rounded)),
+                            ? Icons.label_outline_rounded
+                            : (depth == 0
+                                  ? (isExpanded
+                                        ? Icons.folder_open_rounded
+                                        : Icons.folder_rounded)
+                                  : Icons.subdirectory_arrow_left_rounded)),
                   size: 18,
-                  color: isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant,
+                  color: isSelected
+                      ? colorScheme.primary
+                      : colorScheme.onSurfaceVariant,
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -75,8 +79,12 @@ class CategoryTile extends StatelessWidget {
                         category.displayName,
                         style: TextStyle(
                           fontSize: 13,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                          color: isSelected ? colorScheme.primary : colorScheme.onSurface,
+                          fontWeight: isSelected
+                              ? FontWeight.bold
+                              : FontWeight.w600,
+                          color: isSelected
+                              ? colorScheme.primary
+                              : colorScheme.onSurface,
                         ),
                       ),
                       if (showBreadcrumbSubtitle) ...[
@@ -85,7 +93,9 @@ class CategoryTile extends StatelessWidget {
                           breadcrumbs!.join(' > '),
                           style: TextStyle(
                             fontSize: 11,
-                            color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                            color: colorScheme.onSurfaceVariant.withValues(
+                              alpha: 0.7,
+                            ),
                           ),
                         ),
                       ],
@@ -94,7 +104,10 @@ class CategoryTile extends StatelessWidget {
                 ),
                 if (isSelected && isSearchMode)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: colorScheme.primary.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(6),
@@ -121,7 +134,9 @@ class CategoryTile extends StatelessWidget {
                               ? Icons.keyboard_arrow_up_rounded
                               : Icons.keyboard_arrow_down_rounded,
                           size: 18,
-                          color: isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant,
+                          color: isSelected
+                              ? colorScheme.primary
+                              : colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ),

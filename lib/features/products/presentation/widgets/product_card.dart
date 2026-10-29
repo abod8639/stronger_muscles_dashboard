@@ -1,5 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:stronger_muscles_dashboard/core/components/price_text.dart';
+import 'package:stronger_muscles_dashboard/features/settings/settings_feature.dart';
 import 'package:stronger_muscles_dashboard/core/components/info_pill.dart';
 import 'package:stronger_muscles_dashboard/core/components/soft_surface.dart';
 import 'package:stronger_muscles_dashboard/core/components/stock_status_badge.dart';
@@ -9,7 +12,7 @@ import 'package:stronger_muscles_dashboard/features/products/domain/entities/pro
 import 'package:stronger_muscles_dashboard/functions/cache_manager.dart';
 
 /// بطاقة المنتج في قائمة المنتجات (تدعم وضع التحديد المتعدد)
-class ProductCard extends StatelessWidget {
+class ProductCard extends ConsumerWidget {
   final ProductEntity product;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
@@ -30,7 +33,7 @@ class ProductCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isMobile = context.isMobile;
@@ -104,23 +107,11 @@ class ProductCard extends StatelessWidget {
                   runSpacing: AppDesignTokens.space8,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    Text.rich(
-                      TextSpan(
-                        text: product.price.toStringAsFixed(2),
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          color: colorScheme.onSurface,
-                          fontWeight: FontWeight.w900,
-                          fontSize: isMobile ? 18 : 22,
-                        ),
-                        children: [
-                          TextSpan(
-                            text: ' SAR',
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: colorScheme.primary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
+                    PriceText(
+                      amount: product.price,
+                      currency: ref.watch(storeCurrencyProvider),
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontSize: isMobile ? 18 : 22,
                       ),
                     ),
                     StockStatusBadge(quantity: product.stockQuantity),

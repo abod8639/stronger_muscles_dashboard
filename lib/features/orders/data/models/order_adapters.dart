@@ -103,4 +103,3 @@ class PaymentStatusAdapter extends TypeAdapter<PaymentStatus> {
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
-

@@ -9,9 +9,7 @@ class GetOrderDetailUseCase {
 
   const GetOrderDetailUseCase(this.repository);
 
-  Future<Either<Failure, OrderEntity>> call(
-    String id,
-  ) {
+  Future<Either<Failure, OrderEntity>> call(String id) {
     return repository.getOrderDetails(id);
   }
 }

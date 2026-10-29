@@ -21,22 +21,21 @@ class ProductsNotifier extends AsyncNotifier<List<ProductEntity>> {
     required AddProductUseCase addProductUseCase,
     required UpdateProductUseCase updateProductUseCase,
     required DeleteProductUseCase deleteProductUseCase,
-  })  : _getProductsUseCase = getProductsUseCase,
-        _addProductUseCase = addProductUseCase,
-        _updateProductUseCase = updateProductUseCase,
-        _deleteProductUseCase = deleteProductUseCase;
+  }) : _getProductsUseCase = getProductsUseCase,
+       _addProductUseCase = addProductUseCase,
+       _updateProductUseCase = updateProductUseCase,
+       _deleteProductUseCase = deleteProductUseCase;
 
   @override
   FutureOr<List<ProductEntity>> build() {
     return _fetchProducts(forceRefresh: false);
   }
 
-  Future<List<ProductEntity>> _fetchProducts({bool forceRefresh = false}) async {
+  Future<List<ProductEntity>> _fetchProducts({
+    bool forceRefresh = false,
+  }) async {
     final result = await _getProductsUseCase(forceRefresh: forceRefresh);
-    return result.fold(
-      (failure) => throw failure,
-      (products) => products,
-    );
+    return result.fold((failure) => throw failure, (products) => products);
   }
 
   /// Reloads products forcing Hive cache invalidation
@@ -48,17 +47,16 @@ class ProductsNotifier extends AsyncNotifier<List<ProductEntity>> {
   }
 
   /// Adds a new product and prepends to the state immutably
-  Future<Either<Failure, ProductEntity>> addProduct(Map<String, dynamic> data) async {
+  Future<Either<Failure, ProductEntity>> addProduct(
+    Map<String, dynamic> data,
+  ) async {
     final previous = state;
     final result = await _addProductUseCase(data);
 
-    result.fold(
-      (failure) {},
-      (newProduct) {
-        final current = List<ProductEntity>.from(previous.value ?? const []);
-        state = AsyncValue.data([newProduct, ...current]);
-      },
-    );
+    result.fold((failure) {}, (newProduct) {
+      final current = List<ProductEntity>.from(previous.value ?? const []);
+      state = AsyncValue.data([newProduct, ...current]);
+    });
 
     return result;
   }
@@ -71,17 +69,14 @@ class ProductsNotifier extends AsyncNotifier<List<ProductEntity>> {
     final previous = state;
     final result = await _updateProductUseCase(id, data);
 
-    result.fold(
-      (failure) {},
-      (updatedProduct) {
-        final current = List<ProductEntity>.from(previous.value ?? const []);
-        final index = current.indexWhere((p) => p.id == id);
-        if (index != -1) {
-          current[index] = updatedProduct;
-          state = AsyncValue.data(current);
-        }
-      },
-    );
+    result.fold((failure) {}, (updatedProduct) {
+      final current = List<ProductEntity>.from(previous.value ?? const []);
+      final index = current.indexWhere((p) => p.id == id);
+      if (index != -1) {
+        current[index] = updatedProduct;
+        state = AsyncValue.data(current);
+      }
+    });
 
     return result;
   }
@@ -91,16 +86,13 @@ class ProductsNotifier extends AsyncNotifier<List<ProductEntity>> {
     final previous = state;
     final result = await _deleteProductUseCase(id);
 
-    result.fold(
-      (failure) {},
-      (success) {
-        if (success) {
-          final current = List<ProductEntity>.from(previous.value ?? const []);
-          current.removeWhere((p) => p.id == id);
-          state = AsyncValue.data(current);
-        }
-      },
-    );
+    result.fold((failure) {}, (success) {
+      if (success) {
+        final current = List<ProductEntity>.from(previous.value ?? const []);
+        current.removeWhere((p) => p.id == id);
+        state = AsyncValue.data(current);
+      }
+    });
 
     return result;
   }

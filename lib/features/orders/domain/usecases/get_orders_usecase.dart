@@ -9,11 +9,7 @@ class GetOrdersUseCase {
 
   const GetOrdersUseCase(this.repository);
 
-  Future<Either<Failure, List<OrderEntity>>> call({
-    bool forceRefresh = false,
-  }) {
-    return repository.getOrders(
-      forceRefresh: forceRefresh,
-    );
+  Future<Either<Failure, List<OrderEntity>>> call({bool forceRefresh = false}) {
+    return repository.getOrders(forceRefresh: forceRefresh);
   }
 }
