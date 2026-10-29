@@ -34,13 +34,14 @@ class OrderModelAdapter extends TypeAdapter<OrderModel> {
       shippingAddress: fields[14] as AddressModel?,
       items: (fields[15] as List?)?.cast<OrderItemModel>(),
       user: fields[16] as UserModel?,
+      taxAmount: fields[17] == null ? 0.0 : fields[17] as double,
     );
   }
 
   @override
   void write(BinaryWriter writer, OrderModel obj) {
     writer
-      ..writeByte(17)
+      ..writeByte(18)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -74,7 +75,9 @@ class OrderModelAdapter extends TypeAdapter<OrderModel> {
       ..writeByte(15)
       ..write(obj.items)
       ..writeByte(16)
-      ..write(obj.user);
+      ..write(obj.user)
+      ..writeByte(17)
+      ..write(obj.taxAmount);
   }
 
   @override
@@ -185,6 +188,7 @@ _$OrderModelImpl _$$OrderModelImplFromJson(Map<String, dynamic> json) =>
       user: json['user'] == null
           ? null
           : UserModel.fromJson(json['user'] as Map<String, dynamic>),
+      taxAmount: (json['taxAmount'] as num?)?.toDouble() ?? 0.0,
     );
 
 Map<String, dynamic> _$$OrderModelImplToJson(_$OrderModelImpl instance) =>
@@ -206,6 +210,7 @@ Map<String, dynamic> _$$OrderModelImplToJson(_$OrderModelImpl instance) =>
       'shippingAddress': instance.shippingAddress,
       'items': instance.items,
       'user': instance.user,
+      'taxAmount': instance.taxAmount,
     };
 
 const _$OrderStatusEnumMap = {
