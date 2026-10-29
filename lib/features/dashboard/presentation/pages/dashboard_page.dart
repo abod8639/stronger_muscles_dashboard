@@ -44,7 +44,12 @@ class DashboardPage extends ConsumerWidget {
           );
         },
         data: (stats) {
-          final isEmpty = stats.orders.isEmpty && stats.products.isEmpty;
+          final hasAnyData = stats.totalOrders > 0 ||
+              stats.totalProducts > 0 ||
+              stats.totalUsers > 0 ||
+              stats.orders.isNotEmpty ||
+              stats.products.isNotEmpty ||
+              stats.categories.isNotEmpty;
 
           return MyRefreshIndicator(
             onRefresh: () => ref
@@ -64,7 +69,9 @@ class DashboardPage extends ConsumerWidget {
                     SizedBox(height: res.itemSpacing),
                     const DashboardPeriodSelector(),
                     SizedBox(height: res.itemSpacing),
-                    if (isEmpty)
+                    const DashboardIndicatorsSection(),
+                    SizedBox(height: res.itemSpacing * 3),
+                    if (!hasAnyData)
                       const Center(
                         child: Padding(
                           padding: EdgeInsets.all(40.0),
@@ -75,8 +82,6 @@ class DashboardPage extends ConsumerWidget {
                         ),
                       )
                     else ...[
-                      const DashboardIndicatorsSection(),
-                      SizedBox(height: res.itemSpacing * 3),
                       const DashboardChartsSection(),
                       SizedBox(height: res.itemSpacing * 3),
                       const RecentOrdersSection(),
