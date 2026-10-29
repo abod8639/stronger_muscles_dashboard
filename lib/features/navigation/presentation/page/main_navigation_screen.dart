@@ -20,6 +20,7 @@ import 'package:stronger_muscles_dashboard/features/users/users_feature.dart';
 /// Dumb presentation root container for app-wide shell navigation.
 /// Adheres to:
 /// - Zero business or data calculation logic inside UI
+/// - Lazy IndexedStack loading: only initializes tabs when navigated to, avoiding 10 simultaneous API calls on startup
 /// - Safe tab clamping to prevent index-out-of-bounds crashes
 /// - Selective state listening via Riverpod
 class MainNavigationScreen extends ConsumerStatefulWidget {
@@ -32,24 +33,42 @@ class MainNavigationScreen extends ConsumerStatefulWidget {
 
 class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final Set<int> _activatedIndices = {0};
 
-  static const List<Widget> _pages = [
-    DashboardPage(),
-    CategoriesScreen(),
-    ProductsScreen(),
-    PromosScreen(),
-    OrdersPage(),
-    UsersPage(),
-    NotificationsScreen(),
-    SettingsScreen(),
-    SupportScreen(),
+  static const List<Widget Function()> _pageBuilders = [
+    _buildDashboard,
+    _buildCategories,
+    _buildProducts,
+    _buildPromos,
+    _buildOrders,
+    _buildUsers,
+    _buildNotifications,
+    _buildSettings,
+    _buildSupport,
   ];
 
+  static Widget _buildDashboard() => const DashboardPage();
+  static Widget _buildCategories() => const CategoriesScreen();
+  static Widget _buildProducts() => const ProductsScreen();
+  static Widget _buildPromos() => const PromosScreen();
+  static Widget _buildOrders() => const OrdersPage();
+  static Widget _buildUsers() => const UsersPage();
+  static Widget _buildNotifications() => const NotificationsScreen();
+  static Widget _buildSettings() => const SettingsScreen();
+  static Widget _buildSupport() => const SupportScreen();
+
   Widget _buildContent(int activeIndex) {
-    final safeIndex = activeIndex.clamp(0, _pages.length - 1);
+    final safeIndex = activeIndex.clamp(0, _pageBuilders.length - 1);
+    _activatedIndices.add(safeIndex);
+
     return IndexedStack(
       index: safeIndex,
-      children: _pages,
+      children: List.generate(_pageBuilders.length, (index) {
+        if (_activatedIndices.contains(index)) {
+          return _pageBuilders[index]();
+        }
+        return const SizedBox.shrink();
+      }),
     );
   }
 
