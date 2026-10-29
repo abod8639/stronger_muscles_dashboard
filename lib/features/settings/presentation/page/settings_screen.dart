@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stronger_muscles_dashboard/core/components/confirm_dialog.dart';
+import 'package:stronger_muscles_dashboard/core/components/enhanced_error_widget.dart';
 import 'package:stronger_muscles_dashboard/core/components/enhanced_loading_widget.dart';
+import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import 'package:stronger_muscles_dashboard/core/theme/app_design_tokens.dart';
+import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
 import 'package:stronger_muscles_dashboard/features/auth/auth_feature.dart';
 import 'package:stronger_muscles_dashboard/features/users/users_feature.dart';
 import '../../domain/entities/settings_entity.dart';
 import '../controllers/settings_providers.dart';
+import '../controllers/settings_state.dart';
 
 /// Production-ready, strictly isolated Settings presentation screen.
 /// Adheres to Clean Architecture:
@@ -88,11 +92,33 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       _syncControllers(next);
     });
 
+    ref.listen(settingsControllerProvider.select((s) => s.errorMessage), (_, next) {
+      if (next != null && context.mounted) {
+        AppFeedback.showError(next);
+      }
+    });
+
+    ref.listen(settingsControllerProvider.select((s) => s.successMessage), (_, next) {
+      if (next != null && context.mounted) {
+        AppFeedback.showSuccess(next);
+      }
+    });
+
     return Scaffold(
       backgroundColor: colorScheme.surface,
       appBar: AppBar(
         title: const Text('الإعدادات العامة ولوحة التحكم'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            tooltip: 'تحديث البيانات',
+            icon: const Icon(Icons.refresh_rounded),
+            onPressed: () {
+              ref.read(settingsControllerProvider.notifier).fetchSettings();
+              ref.read(usersNotifierProvider.notifier).refresh();
+            },
+          ),
+        ],
       ),
       body: state.isLoading
           ? const Center(
@@ -100,43 +126,57 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 message: 'جاري تحميل إعدادات المتجر...',
               ),
             )
-          : SingleChildScrollView(
-              padding: AppDesignTokens.paddingScreen,
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 1100),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // 1. حالة المتجر والعمليات الأساسية
-                      _buildStoreOperationsCard(context, state),
-                      const SizedBox(height: 16),
+          : (state.errorMessage != null && state.settings.storeName.isEmpty)
+              ? Center(
+                  child: EnhancedErrorWidget(
+                    title: 'تعذر الاتصال بالخادم',
+                    message: state.errorMessage!,
+                    icon: Icons.cloud_off_rounded,
+                    onRetry: () {
+                      ref
+                          .read(settingsControllerProvider.notifier)
+                          .fetchSettings();
+                      ref.read(usersNotifierProvider.notifier).refresh();
+                    },
+                  ),
+                )
+              : SingleChildScrollView(
+                  padding: AppDesignTokens.paddingScreen,
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 1100),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // 1. حالة المتجر والعمليات الأساسية
+                          _buildStoreOperationsCard(context, state),
+                          const SizedBox(height: 16),
 
-                      // 2. بيانات المتجر والاتصال
-                      _buildStoreDetailsCard(context, state),
-                      const SizedBox(height: 16),
+                          // 2. بيانات المتجر والاتصال
+                          _buildStoreDetailsCard(context, state),
+                          const SizedBox(height: 16),
 
-                      // 3. أداء النظام والتخزين المؤقت
-                      _buildSystemMaintenanceCard(context, state),
-                      const SizedBox(height: 16),
+                          // 3. أداء النظام والتخزين المؤقت
+                          _buildSystemMaintenanceCard(context, state),
+                          const SizedBox(height: 16),
 
-                      // 4. إدارة المشرفين والصلاحيات
-                      _buildAdminsCard(context, usersAsync),
-                      const SizedBox(height: 16),
+                          // 4. إدارة المشرفين والصلاحيات
+                          _buildAdminsCard(context, usersAsync),
+                          const SizedBox(height: 16),
 
-                      // 5. جلسة العمل وتسجيل الخروج
-                      _buildAccountSessionCard(context),
-                      const SizedBox(height: 32),
-                    ],
+                          // 5. جلسة العمل وتسجيل الخروج
+                          _buildAccountSessionCard(context),
+                          const SizedBox(height: 32),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
     );
   }
 
-  Widget _buildStoreOperationsCard(BuildContext context, dynamic state) {
-    final settings = state.settings as SettingsEntity;
+  Widget _buildStoreOperationsCard(BuildContext context, SettingsState state) {
+    final settings = state.settings;
     final controller = ref.read(settingsControllerProvider.notifier);
 
     return _buildSectionCard(
@@ -193,9 +233,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  Widget _buildStoreDetailsCard(BuildContext context, dynamic state) {
+  Widget _buildStoreDetailsCard(BuildContext context, SettingsState state) {
     final controller = ref.read(settingsControllerProvider.notifier);
-    final isSaving = state.isSaving as bool;
+    final isSaving = state.isSaving;
 
     return _buildSectionCard(
       context: context,
@@ -291,7 +331,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               onPressed: isSaving
                   ? null
                   : () {
-                      final updated = (state.settings as SettingsEntity).copyWith(
+                      final updated = state.settings.copyWith(
                         storeName: _storeNameController.text.trim(),
                         supportEmail: _supportEmailController.text.trim(),
                         supportPhone: _supportPhoneController.text.trim(),
@@ -320,9 +360,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  Widget _buildSystemMaintenanceCard(BuildContext context, dynamic state) {
+  Widget _buildSystemMaintenanceCard(BuildContext context, SettingsState state) {
     final controller = ref.read(settingsControllerProvider.notifier);
-    final isClearing = state.isClearingCache as bool;
+    final isClearing = state.isClearingCache;
 
     return _buildSectionCard(
       context: context,
@@ -365,7 +405,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  Widget _buildAdminsCard(BuildContext context, dynamic usersAsync) {
+  Widget _buildAdminsCard(
+    BuildContext context,
+    AsyncValue<UsersStatsEntity> usersAsync,
+  ) {
     final theme = Theme.of(context);
 
     return _buildSectionCard(
@@ -380,13 +423,63 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             message: 'جاري تحميل قائمة المشرفين...',
           ),
         ),
-        error: (error, _) => Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            'خطأ في تحميل قائمة المستخدمين: $error',
-            style: TextStyle(color: theme.colorScheme.error),
-          ),
-        ),
+        error: (error, _) {
+          final errorMessage =
+              error is Failure ? error.toMessage() : error.toString();
+
+          return Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.errorContainer.withValues(alpha: 0.15),
+              borderRadius: AppDesignTokens.borderRadiusMedium,
+              border: Border.all(
+                color: theme.colorScheme.error.withValues(alpha: 0.3),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.cloud_off_rounded,
+                  color: theme.colorScheme.error,
+                  size: 28,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'تعذر تحميل قائمة المشرفين',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.error,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        errorMessage,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                TextButton.icon(
+                  onPressed: () =>
+                      ref.read(usersNotifierProvider.notifier).refresh(),
+                  icon: const Icon(Icons.refresh_rounded, size: 18),
+                  label: const Text('إعادة المحاولة'),
+                ),
+              ],
+            ),
+          );
+        },
         data: (stats) {
           final admins = stats.users
               .where((user) => user.role.toLowerCase() == 'admin')
