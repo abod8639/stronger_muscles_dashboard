@@ -10,13 +10,13 @@ abstract class UserRemoteDataSource {
 }
 
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
-  final Dio dio;
+  final Dio _dio;
 
-  UserRemoteDataSourceImpl(this.dio);
+  UserRemoteDataSourceImpl(this._dio);
 
   @override
   Future<UsersStatsModel> getUsersStats({CancelToken? cancelToken}) async {
-    final response = await dio.get(
+    final response = await _dio.get(
       ApiConfig.adminUsers,
       cancelToken: cancelToken,
       options: Options(
@@ -39,8 +39,8 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
 
   @override
   Future<List<UserModel>> getUsers({CancelToken? cancelToken}) async {
-    final response = await dio.get(
-      '/users',
+    final response = await _dio.get(
+      ApiConfig.adminUsers,
       cancelToken: cancelToken,
       options: Options(
         sendTimeout: const Duration(seconds: 35),
@@ -50,7 +50,16 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
     final data = response.data;
     dynamic rawList;
     if (data is Map && data.containsKey('data')) {
-      rawList = data['data'];
+      final inner = data['data'];
+      if (inner is Map && inner.containsKey('users')) {
+        rawList = inner['users'];
+      } else if (inner is List) {
+        rawList = inner;
+      } else {
+        rawList = [];
+      }
+    } else if (data is Map && data.containsKey('users')) {
+      rawList = data['users'];
     } else if (data is List) {
       rawList = data;
     } else {
