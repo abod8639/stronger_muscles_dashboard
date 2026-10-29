@@ -19,10 +19,6 @@ class DashboardIndicatorsSection extends ConsumerWidget {
         ? 1
         : (res.screenWidth < 1200 ? 2 : 3);
 
-    final double childAspectRatio = isSmallScreen
-        ? 1.5
-        : (res.screenWidth < 1400 ? 1.1 : 2.1);
-
     final s = ref.watch(dashboardStatsNotifierProvider).value ??
         DashboardStatsEntity.initial();
     final pendingTrend = ref.watch(statusTrendDataProvider(OrderStatus.pending));
@@ -34,12 +30,12 @@ class DashboardIndicatorsSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.only(bottom: 16),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
           child: Text(
             'المؤشرات الرئيسية',
             style: TextStyle(
-              fontSize: 20,
+              fontSize: isSmallScreen ? 17 : 20,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
@@ -50,9 +46,9 @@ class DashboardIndicatorsSection extends ConsumerWidget {
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: crossAxisCount,
-            childAspectRatio: childAspectRatio,
-            crossAxisSpacing: res.itemSpacing * 1.5,
-            mainAxisSpacing: res.itemSpacing * 1.5,
+            mainAxisExtent: isSmallScreen ? 152 : 175,
+            crossAxisSpacing: res.itemSpacing * 1.2,
+            mainAxisSpacing: res.itemSpacing * 1.2,
           ),
           children: [
             PremiumIndicatorCard(
