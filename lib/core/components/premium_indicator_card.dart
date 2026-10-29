@@ -68,21 +68,21 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
         final isCompact = isMobile || isNarrow;
         final isVeryCompact = cardWidth < 165;
 
-        final double hPadding = isVeryCompact ? 10.0 : (isCompact ? 13.0 : 16.0);
-        final double vPadding = isVeryCompact ? 8.0 : (isCompact ? 10.0 : 14.0);
+        final double hPadding = isVeryCompact ? 10.0 : (isCompact ? 12.0 : 16.0);
+        final double vPadding = isVeryCompact ? 6.0 : (isCompact ? 8.0 : 12.0);
         final double borderRadiusValue = isCompact ? 18.0 : 22.0;
 
-        final double iconBadgeSize = isVeryCompact ? 32.0 : (isCompact ? 36.0 : 42.0);
-        final double iconSize = isVeryCompact ? 16.0 : (isCompact ? 18.0 : 20.0);
+        final double iconBadgeSize = isVeryCompact ? 30.0 : (isCompact ? 34.0 : 40.0);
+        final double iconSize = isVeryCompact ? 15.0 : (isCompact ? 17.0 : 20.0);
 
         final double trendHPad = isVeryCompact ? 6.0 : (isCompact ? 8.0 : 10.0);
-        final double trendVPad = isVeryCompact ? 2.5 : (isCompact ? 3.5 : 4.5);
-        final double trendFontSize = isVeryCompact ? 9.5 : (isCompact ? 10.5 : 11.0);
-        final double trendIconSize = isVeryCompact ? 10.5 : (isCompact ? 11.5 : 12.5);
+        final double trendVPad = isVeryCompact ? 2.5 : (isCompact ? 3.0 : 4.5);
+        final double trendFontSize = isVeryCompact ? 9.5 : (isCompact ? 10.0 : 11.0);
+        final double trendIconSize = isVeryCompact ? 10.5 : (isCompact ? 11.0 : 12.5);
 
-        final double titleFontSize = isVeryCompact ? 11.0 : (isCompact ? 12.0 : 13.0);
-        final double valueFontSize = isVeryCompact ? 18.0 : (isCompact ? 21.0 : 25.0);
-        final double chartHeight = isVeryCompact ? 22.0 : (isCompact ? 28.0 : 34.0);
+        final double titleFontSize = isVeryCompact ? 10.5 : (isCompact ? 11.5 : 13.0);
+        final double valueFontSize = isVeryCompact ? 17.0 : (isCompact ? 19.0 : 24.0);
+        final double chartHeight = isVeryCompact ? 20.0 : (isCompact ? 24.0 : 32.0);
 
         Widget content = Padding(
           padding: EdgeInsets.symmetric(horizontal: hPadding, vertical: vPadding),
@@ -114,7 +114,7 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
                 ],
               ),
 
-              SizedBox(height: isCompact ? 8 : 12),
+              SizedBox(height: isCompact ? 5 : 8),
 
               // 2. العنوان والوصف الفرعي
               Text(
@@ -142,7 +142,7 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
                 ),
               ],
 
-              SizedBox(height: isCompact ? 3 : 5),
+              SizedBox(height: isCompact ? 2 : 4),
 
               // 3. القيمة الرئيسية (محاذاة البداية Directional لتدعم العربية والإنجليزية)
               FittedBox(
@@ -166,7 +166,7 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
 
               // 4. الرسم البياني المصغر (Sparkline)
               if (hasChart) ...[
-                SizedBox(height: isCompact ? 6 : 10),
+                SizedBox(height: isCompact ? 4 : 8),
                 SizedBox(
                   height: chartHeight,
                   child: LineChart(_buildChartData(effectiveAccent)),
@@ -176,14 +176,18 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
           ),
         );
 
-        // حماية البطاقة من الـ Overflow إذا كان الارتفاع مقيداً
-        if (cardHeight.isFinite && cardHeight < 140) {
-          content = FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: Alignment.topCenter,
-            child: SizedBox(
-              width: cardWidth,
-              child: content,
+        // حماية البطاقة بشكل مطلق من أي Overflow في حال وجود أي قيود ارتفاع
+        if (cardHeight.isFinite) {
+          content = SizedBox(
+            height: cardHeight,
+            width: cardWidth,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.center,
+              child: SizedBox(
+                width: cardWidth,
+                child: content,
+              ),
             ),
           );
         }
