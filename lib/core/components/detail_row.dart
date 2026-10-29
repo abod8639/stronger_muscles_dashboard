@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/core/components/icon_card_with_shadow.dart';
 import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 
-/// صف تفاصيل (أيقونة + عنوان + قيمة أو عنصر مخصص)
-class OrderDetailRow extends StatelessWidget {
-  final IconData icon;
+/// صف تفاصيل موحد: أيقونة اختيارية + عنوان + قيمة (أو عنصر مخصص في نهاية الصف)
+class DetailRow extends StatelessWidget {
+  final IconData? icon;
   final String label;
   final String value;
   final Widget? trailing;
 
-  const OrderDetailRow({
+  const DetailRow({
     super.key,
-    required this.icon,
+    this.icon,
     required this.label,
     required this.value,
     this.trailing,
@@ -26,8 +26,10 @@ class OrderDetailRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: AppDesignTokens.space8),
       child: Row(
         children: [
-          IconCardWithShadow(icon: icon, size: 16),
-          const SizedBox(width: AppDesignTokens.space12),
+          if (icon != null) ...[
+            IconCardWithShadow(icon: icon, size: 16),
+            const SizedBox(width: AppDesignTokens.space12),
+          ],
           Expanded(
             flex: 4,
             child: Text(
