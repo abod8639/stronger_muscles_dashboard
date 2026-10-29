@@ -29,6 +29,11 @@ class OrderSummarySection extends StatelessWidget {
             label: 'تكلفة الشحن',
             value: '${order.shippingCost.toStringAsFixed(2)} ر.س',
           ),
+          if (order.taxAmount > 0)
+            OrderSummaryRow(
+              label: 'الضريبة',
+              value: '${order.taxAmount.toStringAsFixed(2)} ر.س',
+            ),
           if (order.discount > 0)
             OrderSummaryRow(
               label: 'الخصم',
