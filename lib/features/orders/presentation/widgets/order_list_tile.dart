@@ -8,7 +8,7 @@ import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/or
 import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/orders_screen/widgets/build_price_section.dart';
 
 /// بطاقة عرض عنصر الطلب بتصميم Neumorphism / Soft UI
-/// متناسقة ديناميكياً مع ألوان وثيم التطبيق وتدعم الوضع الفاتح والداكن بانتقالات بصرية وتفاعلية ملموسة.
+/// متناسقة ديناميكياً مع ألوان وثيم التطبيق وتدعم الوضع الفاتح والداكن ومتجاوبة بالكامل لمنع أي Overflow
 class OrderListTile extends StatefulWidget {
   final OrderEntity order;
   final VoidCallback? onTap;
@@ -36,7 +36,7 @@ class _OrderListTileState extends State<OrderListTile> {
     final isDark = theme.brightness == Brightness.dark;
     final isMobile = context.isMobile;
 
-    final borderRadius = BorderRadius.circular(isMobile ? 20 : 24);
+    final borderRadius = BorderRadius.circular(isMobile ? 18 : 22);
 
     final double currentScale = _isPressed
         ? 0.985
@@ -130,44 +130,79 @@ class _OrderListTileState extends State<OrderListTile> {
             child: Material(
               color: Colors.transparent,
               borderRadius: borderRadius,
-              child: Padding(
-                padding: EdgeInsets.all(isMobile ? 12 : 14),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // 1. ترويسة الطلب: المعرف والتاريخ + شارة الحالة
-                    Row(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final isNarrow = constraints.maxWidth < 320;
+                  final isCompact = isMobile ||
+                      isNarrow ||
+                      (constraints.maxHeight.isFinite && constraints.maxHeight < 210);
+
+                  final padding = isCompact ? 10.0 : 12.0;
+                  final verticalSpacing = isCompact ? 8.0 : 10.0;
+
+                  Widget content = Padding(
+                    padding: EdgeInsets.all(padding),
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Expanded(
-                          child: OrderHeader(order: widget.order),
+                        // 1. ترويسة الطلب: المعرف والتاريخ + شارة الحالة
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: OrderHeader(order: widget.order),
+                            ),
+                            const SizedBox(width: 8),
+                            OrderStatusBadge(status: widget.order.status),
+                          ],
                         ),
-                        const SizedBox(width: 8),
-                        OrderStatusBadge(status: widget.order.status),
+
+                        SizedBox(height: verticalSpacing),
+
+                        // 2. معلومات العميل وعدد المنتجات بنمط M3
+                        buildInfoSection(widget.order, isCompact: isCompact),
+
+                        SizedBox(height: verticalSpacing),
+
+                        // 3. الجزء السفلي: الإجمالي + معرض صور المنتجات المضمنة
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Expanded(
+                              child: buildPriceSection(
+                                widget.order,
+                                isCompact: isCompact,
+                              ),
+                            ),
+                            if (widget.order.items.isNotEmpty) ...[
+                              SizedBox(width: isCompact ? 6 : 10),
+                              buildEnhancedOrderImages(
+                                widget.order,
+                                _isHovered,
+                                size: isCompact ? 36.0 : 42.0,
+                              ),
+                            ],
+                          ],
+                        ),
                       ],
                     ),
+                  );
 
-                    SizedBox(height: isMobile ? 10 : 12),
+                  // في حال كان الارتفاع مقيداً جداً، يتم تصغير المحتوى بنعومة لمنع أي RenderFlex Overflow
+                  if (constraints.maxHeight.isFinite && constraints.maxHeight < 175) {
+                    return FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.topCenter,
+                      child: SizedBox(
+                        width: constraints.maxWidth,
+                        child: content,
+                      ),
+                    );
+                  }
 
-                    // 2. معلومات العميل وعدد المنتجات بنمط M3
-                    buildInfoSection(widget.order),
-
-                    SizedBox(height: isMobile ? 10 : 12),
-
-                    // 3. الجزء السفلي: الإجمالي + معرض صور المنتجات المضمنة
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Expanded(
-                          child: buildPriceSection(widget.order),
-                        ),
-                        const SizedBox(width: 10),
-                        buildEnhancedOrderImages(widget.order, _isHovered),
-                      ],
-                    ),
-                  ],
-                ),
+                  return content;
+                },
               ),
             ),
           ),
