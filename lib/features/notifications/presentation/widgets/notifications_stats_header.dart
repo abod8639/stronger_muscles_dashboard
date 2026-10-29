@@ -15,6 +15,7 @@ class NotificationsStatsHeader extends ConsumerWidget {
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
     final isNarrow = responsive.screenWidth < 1000;
+    final isMobile = responsive.isMobile;
 
     final stats = ref.watch(notificationsStatsProvider);
 
@@ -23,68 +24,79 @@ class NotificationsStatsHeader extends ConsumerWidget {
     final broadcast = stats.broadcast.toString();
     final targeted = stats.targeted.toString();
 
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: responsive.defaultPadding.left,
-        vertical: 4,
-      ),
-      child: isNarrow
-          ? Column(
+    final cardSpacing = isMobile ? 8.0 : 12.0;
+    final cardWidth = isMobile ? 180.0 : 210.0;
+
+    return isNarrow
+        ? SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            padding: EdgeInsets.symmetric(
+              horizontal: responsive.defaultPadding.left,
+              vertical: 4,
+            ),
+            child: Row(
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildStatCard(
-                        context,
-                        title: 'إجمالي الإشعارات',
-                        value: total,
-                        icon: Icons.notifications_active_rounded,
-                        iconColor: colorScheme.primary,
-                        isDark: isDark,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildStatCard(
-                        context,
-                        title: 'أُرسلت اليوم',
-                        value: today,
-                        icon: Icons.today_rounded,
-                        iconColor: Colors.amber,
-                        isDark: isDark,
-                      ),
-                    ),
-                  ],
+                SizedBox(
+                  width: cardWidth,
+                  child: _buildStatCard(
+                    context,
+                    title: 'إجمالي الإشعارات',
+                    value: total,
+                    icon: Icons.notifications_active_rounded,
+                    iconColor: colorScheme.primary,
+                    isDark: isDark,
+                    isMobile: isMobile,
+                  ),
                 ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildStatCard(
-                        context,
-                        title: 'إشعارات عامة',
-                        value: broadcast,
-                        icon: Icons.campaign_rounded,
-                        iconColor: Colors.teal,
-                        isDark: isDark,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildStatCard(
-                        context,
-                        title: 'إشعارات مخصصة',
-                        value: targeted,
-                        icon: Icons.person_pin_rounded,
-                        iconColor: Colors.purple,
-                        isDark: isDark,
-                      ),
-                    ),
-                  ],
+                SizedBox(width: cardSpacing),
+                SizedBox(
+                  width: cardWidth,
+                  child: _buildStatCard(
+                    context,
+                    title: 'أُرسلت اليوم',
+                    value: today,
+                    icon: Icons.today_rounded,
+                    iconColor: Colors.amber,
+                    isDark: isDark,
+                    isMobile: isMobile,
+                  ),
+                ),
+                SizedBox(width: cardSpacing),
+                SizedBox(
+                  width: cardWidth,
+                  child: _buildStatCard(
+                    context,
+                    title: 'إشعارات عامة',
+                    value: broadcast,
+                    icon: Icons.campaign_rounded,
+                    iconColor: Colors.teal,
+                    isDark: isDark,
+                    isMobile: isMobile,
+                  ),
+                ),
+                SizedBox(width: cardSpacing),
+                SizedBox(
+                  width: cardWidth,
+                  child: _buildStatCard(
+                    context,
+                    title: 'إشعارات مخصصة',
+                    value: targeted,
+                    icon: Icons.person_pin_rounded,
+                    iconColor: Colors.purple,
+                    isDark: isDark,
+                    isMobile: isMobile,
+                  ),
                 ),
               ],
-            )
-          : Row(
+            ),
+          )
+        : Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: responsive.defaultPadding.left,
+              vertical: 4,
+            ),
+            child: Row(
               children: [
                 Expanded(
                   child: _buildStatCard(
@@ -94,9 +106,10 @@ class NotificationsStatsHeader extends ConsumerWidget {
                     icon: Icons.notifications_active_rounded,
                     iconColor: colorScheme.primary,
                     isDark: isDark,
+                    isMobile: isMobile,
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: cardSpacing),
                 Expanded(
                   child: _buildStatCard(
                     context,
@@ -105,9 +118,10 @@ class NotificationsStatsHeader extends ConsumerWidget {
                     icon: Icons.today_rounded,
                     iconColor: Colors.amber,
                     isDark: isDark,
+                    isMobile: isMobile,
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: cardSpacing),
                 Expanded(
                   child: _buildStatCard(
                     context,
@@ -116,9 +130,10 @@ class NotificationsStatsHeader extends ConsumerWidget {
                     icon: Icons.campaign_rounded,
                     iconColor: Colors.teal,
                     isDark: isDark,
+                    isMobile: isMobile,
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: cardSpacing),
                 Expanded(
                   child: _buildStatCard(
                     context,
@@ -127,11 +142,12 @@ class NotificationsStatsHeader extends ConsumerWidget {
                     icon: Icons.person_pin_rounded,
                     iconColor: Colors.purple,
                     isDark: isDark,
+                    isMobile: isMobile,
                   ),
                 ),
               ],
             ),
-    );
+          );
   }
 
   Widget _buildStatCard(
@@ -141,12 +157,16 @@ class NotificationsStatsHeader extends ConsumerWidget {
     required IconData icon,
     required Color iconColor,
     required bool isDark,
+    bool isMobile = false,
   }) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 10 : 14,
+        vertical: isMobile ? 10 : 14,
+      ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         gradient: LinearGradient(
@@ -188,15 +208,15 @@ class NotificationsStatsHeader extends ConsumerWidget {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: EdgeInsets.all(isMobile ? 7 : 10),
             decoration: BoxDecoration(
               color: iconColor.withValues(alpha: 0.14),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: iconColor.withValues(alpha: 0.28)),
             ),
-            child: Icon(icon, color: iconColor, size: 22),
+            child: Icon(icon, color: iconColor, size: isMobile ? 18 : 22),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: isMobile ? 8 : 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -207,16 +227,18 @@ class NotificationsStatsHeader extends ConsumerWidget {
                   style: theme.textTheme.labelMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.w600,
+                    fontSize: isMobile ? 11 : null,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 3),
                 Text(
                   value,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: colorScheme.onSurface,
+                    fontSize: isMobile ? 15 : null,
                   ),
                 ),
               ],
