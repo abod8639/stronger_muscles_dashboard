@@ -7,6 +7,9 @@ class SettingsEntity {
   final String currency;
   final double deliveryFee;
   final double freeDeliveryThreshold;
+
+  /// Tax percentage (0-100) applied to the products subtotal at checkout.
+  final double taxRate;
   final bool isStoreOpen;
   final bool orderNotificationsEnabled;
   final bool maintenanceMode;
@@ -20,6 +23,7 @@ class SettingsEntity {
     this.currency = 'IQD',
     this.deliveryFee = 5000.0,
     this.freeDeliveryThreshold = 100000.0,
+    this.taxRate = 0.0,
     this.isStoreOpen = true,
     this.orderNotificationsEnabled = true,
     this.maintenanceMode = false,
@@ -34,6 +38,7 @@ class SettingsEntity {
     String? currency,
     double? deliveryFee,
     double? freeDeliveryThreshold,
+    double? taxRate,
     bool? isStoreOpen,
     bool? orderNotificationsEnabled,
     bool? maintenanceMode,
@@ -48,6 +53,7 @@ class SettingsEntity {
       deliveryFee: deliveryFee ?? this.deliveryFee,
       freeDeliveryThreshold:
           freeDeliveryThreshold ?? this.freeDeliveryThreshold,
+      taxRate: taxRate ?? this.taxRate,
       isStoreOpen: isStoreOpen ?? this.isStoreOpen,
       orderNotificationsEnabled:
           orderNotificationsEnabled ?? this.orderNotificationsEnabled,
@@ -67,6 +73,7 @@ class SettingsEntity {
         other.currency == currency &&
         other.deliveryFee == deliveryFee &&
         other.freeDeliveryThreshold == freeDeliveryThreshold &&
+        other.taxRate == taxRate &&
         other.isStoreOpen == isStoreOpen &&
         other.orderNotificationsEnabled == orderNotificationsEnabled &&
         other.maintenanceMode == maintenanceMode &&
@@ -92,6 +99,7 @@ class SettingsEntity {
       currency,
       deliveryFee,
       freeDeliveryThreshold,
+      taxRate,
       isStoreOpen,
       orderNotificationsEnabled,
       maintenanceMode,
