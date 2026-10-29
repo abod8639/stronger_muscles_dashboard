@@ -3,173 +3,104 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../config/responsive.dart';
 import '../controllers/support_providers.dart';
 
+/// Dumb presentation component displaying high-level support ticket statistics.
+/// Uses selective Riverpod watching to prevent unnecessary widget rebuilds.
 class SupportStatsHeader extends ConsumerWidget {
   const SupportStatsHeader({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final controller = ref.watch(supportControllerProvider);
+    final stats = ref.watch(supportControllerProvider.select((s) => s.stats));
+    final responsive = context.responsive;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+    final isNarrow = responsive.screenWidth < 1100;
 
-    return ListenableBuilder(
-      listenable: controller,
-      builder: (context, _) {
-        final responsive = context.responsive;
-        final theme = Theme.of(context);
-        final colorScheme = theme.colorScheme;
-        final isDark = theme.brightness == Brightness.dark;
-        final isNarrow = responsive.screenWidth < 1100;
+    final total = stats.total.toString();
+    final open = stats.open.toString();
+    final inProgress = stats.inProgress.toString();
+    final urgent = stats.urgent.toString();
+    final resolved = stats.resolved.toString();
 
-        final stats = controller.stats;
-        final total = stats.total.toString();
-        final open = stats.open.toString();
-        final inProgress = stats.inProgress.toString();
-        final urgent = stats.urgent.toString();
-        final resolved = stats.resolved.toString();
-
-        Widget content;
-        if (responsive.isMobile) {
-          content = SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                SizedBox(
-                  width: 140,
-                  child: _buildStatCard(
-                    context,
-                    title: 'إجمالي البلاغات',
-                    value: total,
-                    icon: Icons.confirmation_number_rounded,
-                    iconColor: colorScheme.primary,
-                    isDark: isDark,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                SizedBox(
-                  width: 140,
-                  child: _buildStatCard(
-                    context,
-                    title: 'بانتظار المعالجة',
-                    value: open,
-                    icon: Icons.mark_chat_unread_rounded,
-                    iconColor: colorScheme.secondary,
-                    isDark: isDark,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                SizedBox(
-                  width: 140,
-                  child: _buildStatCard(
-                    context,
-                    title: 'قيد المتابعة',
-                    value: inProgress,
-                    icon: Icons.sync_rounded,
-                    iconColor: colorScheme.tertiary,
-                    isDark: isDark,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                SizedBox(
-                  width: 140,
-                  child: _buildStatCard(
-                    context,
-                    title: 'شكاوى عاجلة',
-                    value: urgent,
-                    icon: Icons.warning_amber_rounded,
-                    iconColor: colorScheme.error,
-                    isDark: isDark,
-                    isAlert: stats.urgent > 0,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                SizedBox(
-                  width: 140,
-                  child: _buildStatCard(
-                    context,
-                    title: 'تم الحل',
-                    value: resolved,
-                    icon: Icons.check_circle_outline_rounded,
-                    iconColor: colorScheme.primary,
-                    isDark: isDark,
-                  ),
-                ),
-              ],
+    Widget content;
+    if (responsive.isMobile) {
+      content = SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            SizedBox(
+              width: 140,
+              child: _buildStatCard(
+                context,
+                title: 'إجمالي البلاغات',
+                value: total,
+                icon: Icons.confirmation_number_rounded,
+                iconColor: colorScheme.primary,
+                isDark: isDark,
+              ),
             ),
-          );
-        } else if (isNarrow) {
-          content = Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildStatCard(
-                      context,
-                      title: 'إجمالي البلاغات',
-                      value: total,
-                      icon: Icons.confirmation_number_rounded,
-                      iconColor: colorScheme.primary,
-                      isDark: isDark,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _buildStatCard(
-                      context,
-                      title: 'بانتظار المعالجة',
-                      value: open,
-                      icon: Icons.mark_chat_unread_rounded,
-                      iconColor: colorScheme.secondary,
-                      isDark: isDark,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _buildStatCard(
-                      context,
-                      title: 'قيد المتابعة',
-                      value: inProgress,
-                      icon: Icons.sync_rounded,
-                      iconColor: colorScheme.tertiary,
-                      isDark: isDark,
-                    ),
-                  ),
-                ],
+            const SizedBox(width: 8),
+            SizedBox(
+              width: 140,
+              child: _buildStatCard(
+                context,
+                title: 'بانتظار المعالجة',
+                value: open,
+                icon: Icons.mark_chat_unread_rounded,
+                iconColor: colorScheme.secondary,
+                isDark: isDark,
               ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildStatCard(
-                      context,
-                      title: 'شكاوى عاجلة',
-                      value: urgent,
-                      icon: Icons.warning_amber_rounded,
-                      iconColor: colorScheme.error,
-                      isDark: isDark,
-                      isAlert: stats.urgent > 0,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _buildStatCard(
-                      context,
-                      title: 'تم الحل والإغلاق',
-                      value: resolved,
-                      icon: Icons.check_circle_outline_rounded,
-                      iconColor: colorScheme.primary,
-                      isDark: isDark,
-                    ),
-                  ),
-                ],
+            ),
+            const SizedBox(width: 8),
+            SizedBox(
+              width: 140,
+              child: _buildStatCard(
+                context,
+                title: 'قيد المتابعة',
+                value: inProgress,
+                icon: Icons.sync_rounded,
+                iconColor: colorScheme.tertiary,
+                isDark: isDark,
               ),
-            ],
-          );
-        } else {
-          content = Row(
+            ),
+            const SizedBox(width: 8),
+            SizedBox(
+              width: 140,
+              child: _buildStatCard(
+                context,
+                title: 'شكاوى عاجلة',
+                value: urgent,
+                icon: Icons.warning_amber_rounded,
+                iconColor: colorScheme.error,
+                isDark: isDark,
+                isAlert: stats.urgent > 0,
+              ),
+            ),
+            const SizedBox(width: 8),
+            SizedBox(
+              width: 140,
+              child: _buildStatCard(
+                context,
+                title: 'تم الحل',
+                value: resolved,
+                icon: Icons.check_circle_outline_rounded,
+                iconColor: colorScheme.primary,
+                isDark: isDark,
+              ),
+            ),
+          ],
+        ),
+      );
+    } else if (isNarrow) {
+      content = Column(
+        children: [
+          Row(
             children: [
               Expanded(
                 child: _buildStatCard(
                   context,
-                  title: 'إجمالي التذاكر',
+                  title: 'إجمالي البلاغات',
                   value: total,
                   icon: Icons.confirmation_number_rounded,
                   iconColor: colorScheme.primary,
@@ -198,11 +129,15 @@ class SupportStatsHeader extends ConsumerWidget {
                   isDark: isDark,
                 ),
               ),
-              const SizedBox(width: 10),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
               Expanded(
                 child: _buildStatCard(
                   context,
-                  title: 'شكاوى عاجلة',
+                  title: 'شكاوى عاجلة جداً',
                   value: urgent,
                   icon: Icons.warning_amber_rounded,
                   iconColor: colorScheme.error,
@@ -214,7 +149,7 @@ class SupportStatsHeader extends ConsumerWidget {
               Expanded(
                 child: _buildStatCard(
                   context,
-                  title: 'تم حلها',
+                  title: 'تم حلها بنجاح',
                   value: resolved,
                   icon: Icons.check_circle_outline_rounded,
                   iconColor: colorScheme.primary,
@@ -222,17 +157,74 @@ class SupportStatsHeader extends ConsumerWidget {
                 ),
               ),
             ],
-          );
-        }
-
-        return Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: responsive.defaultPadding.left,
-            vertical: 4,
           ),
-          child: content,
-        );
-      },
+        ],
+      );
+    } else {
+      content = Row(
+        children: [
+          Expanded(
+            child: _buildStatCard(
+              context,
+              title: 'إجمالي البلاغات',
+              value: total,
+              icon: Icons.confirmation_number_rounded,
+              iconColor: colorScheme.primary,
+              isDark: isDark,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: _buildStatCard(
+              context,
+              title: 'بانتظار المعالجة',
+              value: open,
+              icon: Icons.mark_chat_unread_rounded,
+              iconColor: colorScheme.secondary,
+              isDark: isDark,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: _buildStatCard(
+              context,
+              title: 'قيد المتابعة',
+              value: inProgress,
+              icon: Icons.sync_rounded,
+              iconColor: colorScheme.tertiary,
+              isDark: isDark,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: _buildStatCard(
+              context,
+              title: 'شكاوى عاجلة جداً',
+              value: urgent,
+              icon: Icons.warning_amber_rounded,
+              iconColor: colorScheme.error,
+              isDark: isDark,
+              isAlert: stats.urgent > 0,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: _buildStatCard(
+              context,
+              title: 'تم حلها بنجاح',
+              value: resolved,
+              icon: Icons.check_circle_outline_rounded,
+              iconColor: colorScheme.primary,
+              isDark: isDark,
+            ),
+          ),
+        ],
+      );
+    }
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: responsive.defaultPadding.left),
+      child: content,
     );
   }
 
@@ -251,17 +243,19 @@ class SupportStatsHeader extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainer,
+        color: isAlert
+            ? colorScheme.errorContainer.withValues(alpha: isDark ? 0.3 : 0.5)
+            : colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isAlert
-              ? colorScheme.error.withValues(alpha: 0.5)
+              ? colorScheme.error.withValues(alpha: 0.6)
               : colorScheme.outlineVariant,
           width: isAlert ? 1.5 : 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: colorScheme.shadow.withValues(alpha: isDark ? 0.25 : 0.04),
+            color: colorScheme.shadow.withValues(alpha: isDark ? 0.2 : 0.04),
             offset: const Offset(0, 2),
             blurRadius: 6,
           ),
@@ -270,12 +264,12 @@ class SupportStatsHeader extends ConsumerWidget {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(9),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              shape: BoxShape.circle,
               color: iconColor.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon, color: iconColor, size: 19),
+            child: Icon(icon, color: iconColor, size: 20),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -285,8 +279,9 @@ class SupportStatsHeader extends ConsumerWidget {
               children: [
                 Text(
                   title,
-                  style: theme.textTheme.labelSmall?.copyWith(
+                  style: theme.textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurfaceVariant,
+                    fontSize: 11,
                     fontWeight: FontWeight.w500,
                   ),
                   maxLines: 1,
@@ -296,8 +291,9 @@ class SupportStatsHeader extends ConsumerWidget {
                 Text(
                   value,
                   style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w800,
                     color: isAlert ? colorScheme.error : colorScheme.onSurface,
+                    fontSize: 16,
                   ),
                 ),
               ],
