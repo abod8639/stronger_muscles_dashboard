@@ -31,6 +31,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   late final TextEditingController _currencyController;
   late final TextEditingController _deliveryFeeController;
   late final TextEditingController _freeDeliveryController;
+  late final TextEditingController _taxRateController;
 
   @override
   void initState() {
@@ -41,10 +42,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     _supportPhoneController = TextEditingController(text: settings.supportPhone);
     _currencyController = TextEditingController(text: settings.currency);
     _deliveryFeeController =
-        TextEditingController(text: settings.deliveryFee.toStringAsFixed(0));
+        TextEditingController(text: _formatAmount(settings.deliveryFee));
     _freeDeliveryController = TextEditingController(
-      text: settings.freeDeliveryThreshold.toStringAsFixed(0),
+      text: _formatAmount(settings.freeDeliveryThreshold),
     );
+    _taxRateController =
+        TextEditingController(text: _formatAmount(settings.taxRate));
   }
 
   @override
@@ -55,6 +58,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     _currencyController.dispose();
     _deliveryFeeController.dispose();
     _freeDeliveryController.dispose();
+    _taxRateController.dispose();
     super.dispose();
   }
 
@@ -71,14 +75,36 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (_currencyController.text != settings.currency) {
       _currencyController.text = settings.currency;
     }
-    final feeText = settings.deliveryFee.toStringAsFixed(0);
+    final feeText = _formatAmount(settings.deliveryFee);
     if (_deliveryFeeController.text != feeText) {
       _deliveryFeeController.text = feeText;
     }
-    final freeText = settings.freeDeliveryThreshold.toStringAsFixed(0);
+    final freeText = _formatAmount(settings.freeDeliveryThreshold);
     if (_freeDeliveryController.text != freeText) {
       _freeDeliveryController.text = freeText;
     }
+    final taxText = _formatAmount(settings.taxRate);
+    if (_taxRateController.text != taxText) {
+      _taxRateController.text = taxText;
+    }
+  }
+
+  /// Shows whole amounts without decimals but keeps fractions (e.g. 12.5)
+  /// so saving the form never rounds a value the admin did not change.
+  static String _formatAmount(double value) {
+    return value == value.truncateToDouble()
+        ? value.toStringAsFixed(0)
+        : value.toString();
+  }
+
+  /// Parses a non-negative number from [text], keeping [fallback] when the
+  /// field is empty or invalid instead of silently saving a default.
+  static double _parseAmount(String text, double fallback, {double? max}) {
+    final value = double.tryParse(text.trim().replaceAll(',', '.'));
+    if (value == null || value < 0 || (max != null && value > max)) {
+      return fallback;
+    }
+    return value;
   }
 
   @override
@@ -240,7 +266,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return _buildSectionCard(
       context: context,
       title: 'بيانات المتجر والسياسة المالية',
-      subtitle: 'اسم المتجر، قنوات الدعم، العملة، ورسوم الشحن والتوصيل',
+      subtitle: 'اسم المتجر، قنوات الدعم، العملة، رسوم التوصيل ونسبة الضريبة',
       icon: Icons.business_center_rounded,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -302,7 +328,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               Expanded(
                 child: TextField(
                   controller: _deliveryFeeController,
-                  keyboardType: TextInputType.number,
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
                   decoration: const InputDecoration(
                     labelText: 'رسوم التوصيل القياسية',
                     prefixIcon: Icon(Icons.local_shipping_rounded),
@@ -314,10 +341,27 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               Expanded(
                 child: TextField(
                   controller: _freeDeliveryController,
-                  keyboardType: TextInputType.number,
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
                   decoration: const InputDecoration(
                     labelText: 'حد الشحن المجاني للطلب',
+                    helperText: '0 = بدون توصيل مجاني',
                     prefixIcon: Icon(Icons.card_giftcard_rounded),
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: TextField(
+                  controller: _taxRateController,
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(
+                    labelText: 'نسبة الضريبة',
+                    helperText: 'تُحسب على سعر المنتجات، 0 = بدون ضريبة',
+                    suffixText: '%',
+                    prefixIcon: Icon(Icons.percent_rounded),
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -336,12 +380,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         supportEmail: _supportEmailController.text.trim(),
                         supportPhone: _supportPhoneController.text.trim(),
                         currency: _currencyController.text.trim(),
-                        deliveryFee:
-                            double.tryParse(_deliveryFeeController.text.trim()) ??
-                                5000.0,
-                        freeDeliveryThreshold: double.tryParse(
-                                _freeDeliveryController.text.trim()) ??
-                            100000.0,
+                        deliveryFee: _parseAmount(
+                          _deliveryFeeController.text,
+                          state.settings.deliveryFee,
+                        ),
+                        freeDeliveryThreshold: _parseAmount(
+                          _freeDeliveryController.text,
+                          state.settings.freeDeliveryThreshold,
+                        ),
+                        taxRate: _parseAmount(
+                          _taxRateController.text,
+                          state.settings.taxRate,
+                          max: 100,
+                        ),
                       );
                       controller.saveSettings(updated);
                     },
