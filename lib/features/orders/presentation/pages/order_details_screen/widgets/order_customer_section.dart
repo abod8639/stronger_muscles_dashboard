@@ -4,7 +4,7 @@ import 'package:stronger_muscles_dashboard/features/orders/presentation/widgets/
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/controllers/order_details_controller.dart';
 import 'package:stronger_muscles_dashboard/core/components/section_card.dart';
-import 'order_detail_row.dart';
+import 'package:stronger_muscles_dashboard/core/components/detail_row.dart';
 
 /// بطاقة معلومات العميل والتواصل
 class OrderCustomerSection extends StatelessWidget {
@@ -37,13 +37,13 @@ class OrderCustomerSection extends StatelessWidget {
       icon: Icons.person_outline_rounded,
       child: DividedColumn(
         children: [
-          OrderDetailRow(
+          DetailRow(
             icon: Icons.person_outline,
             label: 'اسم العميل',
             value: customerName,
           ),
           if (hasEmail)
-            OrderDetailRow(
+            DetailRow(
               icon: Icons.alternate_email_rounded,
               label: 'البريد الإلكتروني',
               value: order.userEmail,
@@ -54,7 +54,7 @@ class OrderCustomerSection extends StatelessWidget {
                 onPressed: () => controller.emailCustomer(order.userEmail),
               ),
             ),
-          OrderDetailRow(
+          DetailRow(
             icon: Icons.phone_outlined,
             label: 'رقم الهاتف',
             value: phone,
@@ -67,14 +67,14 @@ class OrderCustomerSection extends StatelessWidget {
                   )
                 : null,
           ),
-          OrderDetailRow(
+          DetailRow(
             icon: Icons.credit_card_outlined,
             label: 'طريقة الدفع',
             value: order.paymentMethod.isNotEmpty
                 ? order.paymentMethod
                 : 'غير محدد',
           ),
-          OrderDetailRow(
+          DetailRow(
             icon: Icons.verified_outlined,
             label: 'حالة الدفع',
             value: '',

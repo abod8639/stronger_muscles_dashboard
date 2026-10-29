@@ -4,7 +4,7 @@ import 'package:stronger_muscles_dashboard/core/components/divided_column.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/controllers/order_details_controller.dart';
 import 'package:stronger_muscles_dashboard/core/components/section_card.dart';
-import 'order_detail_row.dart';
+import 'package:stronger_muscles_dashboard/core/components/detail_row.dart';
 
 /// بطاقة عنوان الشحن وبيانات الموقع الجغرافي
 class OrderShippingSection extends StatelessWidget {
@@ -34,7 +34,7 @@ class OrderShippingSection extends StatelessWidget {
           DividedColumn(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              OrderDetailRow(
+              DetailRow(
                 icon: Icons.location_on_outlined,
                 label: 'العنوان الكامل',
                 value: address?.fullAddress ?? 'غير متوفر',
@@ -76,25 +76,25 @@ class OrderShippingSection extends StatelessWidget {
                     : null,
               ),
               if (address?.city.isNotEmpty == true)
-                OrderDetailRow(
+                DetailRow(
                   icon: Icons.location_city_outlined,
                   label: 'المدينة',
                   value: address!.city,
                 ),
               if (address?.state?.isNotEmpty == true)
-                OrderDetailRow(
+                DetailRow(
                   icon: Icons.map_outlined,
                   label: 'المنطقة / الولاية',
                   value: address!.state!,
                 ),
               if (address?.postalCode?.isNotEmpty == true)
-                OrderDetailRow(
+                DetailRow(
                   icon: Icons.markunread_mailbox_outlined,
                   label: 'الرمز البريدي',
                   value: address!.postalCode!,
                 ),
               if (address?.country?.isNotEmpty == true)
-                OrderDetailRow(
+                DetailRow(
                   icon: Icons.public_outlined,
                   label: 'الدولة',
                   value: address!.country!,
