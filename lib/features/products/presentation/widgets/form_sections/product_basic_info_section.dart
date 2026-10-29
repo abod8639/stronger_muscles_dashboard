@@ -25,6 +25,13 @@ class ProductBasicInfoSection extends StatefulWidget {
 
 class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
   String _selectedLang = 'ar';
+  final FocusNode _brandFocusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _brandFocusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -160,6 +167,8 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
   Widget _buildBrandAutocomplete(
       ProductsController ctrl, ColorScheme colorScheme, bool isDark) {
     return Autocomplete<String>(
+      focusNode: _brandFocusNode,
+      textEditingController: ctrl.textcontrollers['brand'],
       optionsBuilder: (TextEditingValue textEditingValue) {
         if (textEditingValue.text.isEmpty) {
           return const Iterable<String>.empty();
@@ -171,22 +180,14 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
             .map((b) => b.displayName);
       },
       onSelected: (String selection) {
-        ctrl.textcontrollers['brand']!.text = selection;
+        ctrl.textcontrollers['brand']?.text = selection;
       },
       fieldViewBuilder:
           (context, textEditingController, focusNode, onFieldSubmitted) {
-        if (textEditingController.text.isEmpty &&
-            ctrl.textcontrollers['brand']!.text.isNotEmpty) {
-          textEditingController.text = ctrl.textcontrollers['brand']!.text;
-        }
-
         return TextFormField(
           controller: textEditingController,
           focusNode: focusNode,
           onFieldSubmitted: (_) => onFieldSubmitted(),
-          onChanged: (val) {
-            ctrl.textcontrollers['brand']!.text = val;
-          },
           decoration: InputDecoration(
             labelText: 'العلامة التجارية (البراند)',
             hintText: 'اختر أو اكتب براند جديد...',
