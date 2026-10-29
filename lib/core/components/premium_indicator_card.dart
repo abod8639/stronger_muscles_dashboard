@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/config/responsive.dart';
+import 'package:stronger_muscles_dashboard/core/theme/responsive.dart';
 
 /// بطاقة مؤشر وإحصائيات بتصميم Neumorphism / Soft UI
 /// متوافقة بالكامل مع شاشات الهواتف والحواسب وتدعم الاتجاهات (RTL/LTR) والسمات الفاتحة والداكنة
@@ -9,7 +9,9 @@ class PremiumIndicatorCard extends StatefulWidget {
   final String title;
   final String value;
   final String? subtitle;
-  final String trend;
+
+  /// نسبة الاتجاه (مثل +12%)، تُخفى الشارة عند تركها فارغة
+  final String? trend;
   final bool trendUp;
   final List<FlSpot>? chartSpots;
   final Color accentColor;
@@ -22,8 +24,8 @@ class PremiumIndicatorCard extends StatefulWidget {
     required this.title,
     required this.value,
     this.subtitle,
-    required this.trend,
-    required this.trendUp,
+    this.trend,
+    this.trendUp = true,
     this.chartSpots,
     required this.accentColor,
     this.icon,
@@ -54,9 +56,7 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
         ? (isDark ? const Color(0xFF4ADE80) : const Color(0xFF16A34A))
         : (isDark ? const Color(0xFFF87171) : const Color(0xFFDC2626));
 
-    final double currentScale = _isPressed
-        ? 0.985
-        : (_isHovered ? 1.015 : 1.0);
+    final double currentScale = _isPressed ? 0.985 : (_isHovered ? 1.015 : 1.0);
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -68,24 +68,43 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
         final isCompact = isMobile || isNarrow;
         final isVeryCompact = cardWidth < 165;
 
-        final double hPadding = isVeryCompact ? 10.0 : (isCompact ? 12.0 : 16.0);
+        final double hPadding = isVeryCompact
+            ? 10.0
+            : (isCompact ? 12.0 : 16.0);
         final double vPadding = isVeryCompact ? 6.0 : (isCompact ? 8.0 : 12.0);
         final double borderRadiusValue = isCompact ? 16.0 : 20.0;
 
-        final double iconBadgeSize = isVeryCompact ? 30.0 : (isCompact ? 32.0 : 38.0);
-        final double iconSize = isVeryCompact ? 15.0 : (isCompact ? 16.0 : 19.0);
+        final double iconBadgeSize = isVeryCompact
+            ? 30.0
+            : (isCompact ? 32.0 : 38.0);
+        final double iconSize = isVeryCompact
+            ? 15.0
+            : (isCompact ? 16.0 : 19.0);
 
         final double trendHPad = isVeryCompact ? 5.5 : (isCompact ? 7.0 : 9.0);
         final double trendVPad = isVeryCompact ? 2.0 : (isCompact ? 2.5 : 3.5);
-        final double trendFontSize = isVeryCompact ? 9.0 : (isCompact ? 10.0 : 11.0);
-        final double trendIconSize = isVeryCompact ? 10.0 : (isCompact ? 11.0 : 12.0);
+        final double trendFontSize = isVeryCompact
+            ? 9.0
+            : (isCompact ? 10.0 : 11.0);
+        final double trendIconSize = isVeryCompact
+            ? 10.0
+            : (isCompact ? 11.0 : 12.0);
 
-        final double titleFontSize = isVeryCompact ? 10.5 : (isCompact ? 11.5 : 13.0);
-        final double valueFontSize = isVeryCompact ? 17.0 : (isCompact ? 19.0 : 23.0);
-        final double chartHeight = isVeryCompact ? 20.0 : (isCompact ? 24.0 : 32.0);
+        final double titleFontSize = isVeryCompact
+            ? 10.5
+            : (isCompact ? 11.5 : 13.0);
+        final double valueFontSize = isVeryCompact
+            ? 17.0
+            : (isCompact ? 19.0 : 23.0);
+        final double chartHeight = isVeryCompact
+            ? 20.0
+            : (isCompact ? 24.0 : 32.0);
 
         Widget content = Padding(
-          padding: EdgeInsets.symmetric(horizontal: hPadding, vertical: vPadding),
+          padding: EdgeInsets.symmetric(
+            horizontal: hPadding,
+            vertical: vPadding,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
@@ -102,17 +121,18 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
                     size: iconBadgeSize,
                     iconSize: iconSize,
                   ),
-                  Flexible(
-                    child: _buildNeumorphicTrendBadge(
-                      trendColor,
-                      colorScheme,
-                      isDark,
-                      hPad: trendHPad,
-                      vPad: trendVPad,
-                      fontSize: trendFontSize,
-                      iconSize: trendIconSize,
+                  if (widget.trend != null)
+                    Flexible(
+                      child: _buildNeumorphicTrendBadge(
+                        trendColor,
+                        colorScheme,
+                        isDark,
+                        hPad: trendHPad,
+                        vPad: trendVPad,
+                        fontSize: trendFontSize,
+                        iconSize: trendIconSize,
+                      ),
                     ),
-                  ),
                 ],
               ),
 
@@ -131,7 +151,9 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
                 overflow: TextOverflow.ellipsis,
               ),
 
-              if (widget.subtitle != null && widget.subtitle!.isNotEmpty && !isVeryCompact) ...[
+              if (widget.subtitle != null &&
+                  widget.subtitle!.isNotEmpty &&
+                  !isVeryCompact) ...[
                 const SizedBox(height: 1),
                 Text(
                   widget.subtitle!,
@@ -152,7 +174,8 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
                 alignment: AlignmentDirectional.centerStart,
                 child: Text(
                   widget.value,
-                  style: theme.textTheme.headlineMedium?.copyWith(
+                  style:
+                      theme.textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.w900,
                         color: colorScheme.onSurface,
                         fontSize: valueFontSize,
@@ -186,10 +209,7 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
             child: FittedBox(
               fit: BoxFit.scaleDown,
               alignment: Alignment.center,
-              child: SizedBox(
-                width: cardWidth,
-                child: content,
-              ),
+              child: SizedBox(width: cardWidth, child: content),
             ),
           );
         }
@@ -197,16 +217,22 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
         return MouseRegion(
           onEnter: (_) => setState(() => _isHovered = true),
           onExit: (_) => setState(() => _isHovered = false),
-          cursor: widget.onTap != null ? SystemMouseCursors.click : SystemMouseCursors.basic,
+          cursor: widget.onTap != null
+              ? SystemMouseCursors.click
+              : SystemMouseCursors.basic,
           child: GestureDetector(
-            onTapDown: widget.onTap != null ? (_) => setState(() => _isPressed = true) : null,
+            onTapDown: widget.onTap != null
+                ? (_) => setState(() => _isPressed = true)
+                : null,
             onTapUp: widget.onTap != null
                 ? (_) {
                     setState(() => _isPressed = false);
                     widget.onTap?.call();
                   }
                 : null,
-            onTapCancel: widget.onTap != null ? () => setState(() => _isPressed = false) : null,
+            onTapCancel: widget.onTap != null
+                ? () => setState(() => _isPressed = false)
+                : null,
             child: AnimatedScale(
               scale: currentScale,
               duration: const Duration(milliseconds: 180),
@@ -221,12 +247,28 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
                     end: Alignment.bottomRight,
                     colors: isDark
                         ? [
-                            Color.lerp(colorScheme.surfaceContainer, Colors.white, _isHovered ? 0.05 : 0.03)!,
-                            Color.lerp(colorScheme.surfaceContainer, Colors.black, _isHovered ? 0.05 : 0.09)!,
+                            Color.lerp(
+                              colorScheme.surfaceContainer,
+                              Colors.white,
+                              _isHovered ? 0.05 : 0.03,
+                            )!,
+                            Color.lerp(
+                              colorScheme.surfaceContainer,
+                              Colors.black,
+                              _isHovered ? 0.05 : 0.09,
+                            )!,
                           ]
                         : [
-                            Color.lerp(colorScheme.surfaceContainer, Colors.white, _isHovered ? 0.75 : 0.65)!,
-                            Color.lerp(colorScheme.surfaceContainer, Colors.black, _isHovered ? 0.01 : 0.035)!,
+                            Color.lerp(
+                              colorScheme.surfaceContainer,
+                              Colors.white,
+                              _isHovered ? 0.75 : 0.65,
+                            )!,
+                            Color.lerp(
+                              colorScheme.surfaceContainer,
+                              Colors.black,
+                              _isHovered ? 0.01 : 0.035,
+                            )!,
                           ],
                   ),
                   boxShadow: _isPressed
@@ -234,7 +276,9 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
                           BoxShadow(
                             color: isDark
                                 ? Colors.black.withValues(alpha: 0.3)
-                                : const Color(0xFFA3B1C6).withValues(alpha: 0.25),
+                                : const Color(
+                                    0xFFA3B1C6,
+                                  ).withValues(alpha: 0.25),
                             offset: const Offset(2, 2.5),
                             blurRadius: 5,
                           ),
@@ -242,23 +286,37 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
                       : [
                           BoxShadow(
                             color: isDark
-                                ? Colors.black.withValues(alpha: _isHovered ? 0.65 : 0.55)
-                                : const Color(0xFFA3B1C6).withValues(alpha: _isHovered ? 0.55 : 0.42),
-                            offset: _isHovered ? const Offset(6, 8) : const Offset(4, 6),
+                                ? Colors.black.withValues(
+                                    alpha: _isHovered ? 0.65 : 0.55,
+                                  )
+                                : const Color(
+                                    0xFFA3B1C6,
+                                  ).withValues(alpha: _isHovered ? 0.55 : 0.42),
+                            offset: _isHovered
+                                ? const Offset(6, 8)
+                                : const Offset(4, 6),
                             blurRadius: _isHovered ? 18 : 14,
                             spreadRadius: 0,
                           ),
                           BoxShadow(
                             color: isDark
-                                ? Colors.white.withValues(alpha: _isHovered ? 0.06 : 0.04)
-                                : Colors.white.withValues(alpha: _isHovered ? 1.0 : 0.95),
-                            offset: _isHovered ? const Offset(-4, -4) : const Offset(-3, -3),
+                                ? Colors.white.withValues(
+                                    alpha: _isHovered ? 0.06 : 0.04,
+                                  )
+                                : Colors.white.withValues(
+                                    alpha: _isHovered ? 1.0 : 0.95,
+                                  ),
+                            offset: _isHovered
+                                ? const Offset(-4, -4)
+                                : const Offset(-3, -3),
                             blurRadius: _isHovered ? 14 : 10,
                             spreadRadius: 0,
                           ),
                           if (_isHovered)
                             BoxShadow(
-                              color: effectiveAccent.withValues(alpha: isDark ? 0.12 : 0.15),
+                              color: effectiveAccent.withValues(
+                                alpha: isDark ? 0.12 : 0.15,
+                              ),
                               offset: const Offset(0, 4),
                               blurRadius: 16,
                               spreadRadius: -2,
@@ -267,11 +325,11 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
                   border: Border.all(
                     color: isDark
                         ? (_isHovered
-                            ? effectiveAccent.withValues(alpha: 0.35)
-                            : Colors.white.withValues(alpha: 0.06))
+                              ? effectiveAccent.withValues(alpha: 0.35)
+                              : Colors.white.withValues(alpha: 0.06))
                         : (_isHovered
-                            ? effectiveAccent.withValues(alpha: 0.4)
-                            : Colors.white.withValues(alpha: 0.85)),
+                              ? effectiveAccent.withValues(alpha: 0.4)
+                              : Colors.white.withValues(alpha: 0.85)),
                     width: _isHovered ? 1.3 : 1.0,
                   ),
                 ),
@@ -306,7 +364,11 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
           end: Alignment.bottomRight,
           colors: isDark
               ? [
-                  Color.lerp(colorScheme.surfaceContainerHigh, Colors.white, 0.04)!,
+                  Color.lerp(
+                    colorScheme.surfaceContainerHigh,
+                    Colors.white,
+                    0.04,
+                  )!,
                   Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.12)!,
                 ]
               : [
@@ -366,7 +428,11 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
           end: Alignment.bottomRight,
           colors: isDark
               ? [
-                  Color.lerp(colorScheme.surfaceContainerHigh, trendColor, 0.12)!,
+                  Color.lerp(
+                    colorScheme.surfaceContainerHigh,
+                    trendColor,
+                    0.12,
+                  )!,
                   Color.lerp(colorScheme.surfaceContainer, trendColor, 0.06)!,
                 ]
               : [
@@ -399,13 +465,15 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            widget.trendUp ? Icons.arrow_outward_rounded : Icons.south_east_rounded,
+            widget.trendUp
+                ? Icons.arrow_outward_rounded
+                : Icons.south_east_rounded,
             color: trendColor,
             size: iconSize,
           ),
           const SizedBox(width: 3),
           Text(
-            widget.trend,
+            widget.trend!,
             style: TextStyle(
               color: trendColor,
               fontSize: fontSize,

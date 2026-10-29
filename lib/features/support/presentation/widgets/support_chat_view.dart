@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import '../../../../config/responsive.dart';
+import 'package:stronger_muscles_dashboard/core/theme/responsive.dart';
 import '../../../../core/utils/ui_feedback.dart';
 import '../../domain/entities/support_message_entity.dart';
 import '../../domain/entities/support_ticket_entity.dart';

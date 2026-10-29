@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/config/responsive.dart';
+import 'package:stronger_muscles_dashboard/core/theme/responsive.dart';
 
 /// مكون عرض البيانات العام بأسلوب Neumorphism / Soft UI
 class BaseDataView<T> extends StatelessWidget {

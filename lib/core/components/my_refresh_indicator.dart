@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/config/theme.dart';
+import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 
 class MyRefreshIndicator extends StatelessWidget {
   final Future<void> Function() onRefresh;

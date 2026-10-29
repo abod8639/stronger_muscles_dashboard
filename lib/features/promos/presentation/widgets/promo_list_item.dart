@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:stronger_muscles_dashboard/config/theme.dart';
+import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 import 'package:stronger_muscles_dashboard/features/promos/domain/entities/promo_entity.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/controllers/promos_providers.dart';
 

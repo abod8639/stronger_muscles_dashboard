@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../config/responsive.dart';
+import 'package:stronger_muscles_dashboard/core/theme/responsive.dart';
 import '../controllers/support_providers.dart';
 import '../widgets/support_chat_view.dart';
 import '../widgets/support_stats_header.dart';

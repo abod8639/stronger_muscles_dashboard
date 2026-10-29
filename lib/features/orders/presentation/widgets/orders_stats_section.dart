@@ -1,8 +1,7 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:stronger_muscles_dashboard/config/responsive.dart';
 import 'package:stronger_muscles_dashboard/core/components/premium_indicator_card.dart';
+import 'package:stronger_muscles_dashboard/core/components/responsive_stats_grid.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/controllers/orders_providers.dart';
 
 class OrdersStatsSection extends ConsumerWidget {
@@ -16,7 +15,6 @@ class OrdersStatsSection extends ConsumerWidget {
     if (ordersAsync.isLoading && stats.totalOrders == 0) {
       return const SizedBox.shrink();
     }
-    final res = context.responsive;
 
     final cards = [
       PremiumIndicatorCard(
@@ -57,38 +55,6 @@ class OrdersStatsSection extends ConsumerWidget {
       ),
     ];
 
-    // على الهواتف: عرض شريط أفقي انسيابي ومريح يوفر المساحة ويمنع التكدس
-    if (res.isMobile) {
-      final cardWidth = math.max(160.0, (res.screenWidth - 32 - 12) / 2.2);
-      return SizedBox(
-        height: 108,
-        child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          physics: const BouncingScrollPhysics(),
-          clipBehavior: Clip.none,
-          itemCount: cards.length,
-          separatorBuilder: (_, _) => const SizedBox(width: 10),
-          itemBuilder: (context, index) {
-            return SizedBox(
-              width: cardWidth,
-              child: cards[index],
-            );
-          },
-        ),
-      );
-    }
-
-    // على الأجهزة اللوحية والحواسب: شبكة أعمدة متناسقة
-    return GridView(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: res.isDesktop ? 4 : 2,
-        crossAxisSpacing: 14,
-        mainAxisSpacing: 14,
-        mainAxisExtent: 125,
-      ),
-      children: cards,
-    );
+    return ResponsiveStatsGrid(cards: cards);
   }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/config/theme.dart';
+import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 
 /// Reusable, dumb [StatelessWidget] for authentication form text fields.
 /// Maximizes `const` efficiency and avoids rebuilds of parent widgets.

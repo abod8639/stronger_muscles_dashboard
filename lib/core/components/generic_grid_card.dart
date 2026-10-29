@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/config/responsive.dart';
+import 'package:stronger_muscles_dashboard/core/theme/responsive.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:stronger_muscles_dashboard/functions/cache_manager.dart';
-import 'package:stronger_muscles_dashboard/config/theme.dart';
+import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 
 class GenericGridCard<T> extends StatefulWidget {
   final String title;

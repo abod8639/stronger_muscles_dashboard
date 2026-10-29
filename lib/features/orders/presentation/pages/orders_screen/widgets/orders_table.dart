@@ -8,8 +8,8 @@ import 'package:stronger_muscles_dashboard/core/components/glass_container.dart'
 import 'package:stronger_muscles_dashboard/core/components/status_badge.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/controllers/orders_providers.dart';
-import 'package:stronger_muscles_dashboard/config/theme.dart';
-import 'package:stronger_muscles_dashboard/config/responsive.dart';
+import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
+import 'package:stronger_muscles_dashboard/core/theme/responsive.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/widgets/build_recent_orders.dart';
 
 class OrdersTable extends ConsumerWidget {

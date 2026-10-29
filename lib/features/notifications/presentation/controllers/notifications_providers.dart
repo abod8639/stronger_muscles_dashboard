@@ -22,16 +22,16 @@ final notificationHiveBoxProvider = Provider<Box>((ref) {
 /// Scoped provider for [NotificationLocalDataSource]
 final notificationLocalDataSourceProvider =
     Provider<NotificationLocalDataSource>((ref) {
-  final box = ref.watch(notificationHiveBoxProvider);
-  return NotificationLocalDataSourceImpl(box: box);
-});
+      final box = ref.watch(notificationHiveBoxProvider);
+      return NotificationLocalDataSourceImpl(box: box);
+    });
 
 /// Scoped provider for [NotificationRemoteDataSource]
 final notificationRemoteDataSourceProvider =
     Provider<NotificationRemoteDataSource>((ref) {
-  final dio = ref.watch(dioProvider);
-  return NotificationRemoteDataSourceImpl(dio: dio);
-});
+      final dio = ref.watch(dioProvider);
+      return NotificationRemoteDataSourceImpl(dio: dio);
+    });
 
 // ==================== Domain Layer Scoped Providers ====================
 
@@ -44,17 +44,23 @@ final notificationRepositoryProvider = Provider<NotificationRepository>((ref) {
 });
 
 /// Scoped provider for [GetNotificationsUseCase]
-final getNotificationsUseCaseProvider = Provider<GetNotificationsUseCase>((ref) {
+final getNotificationsUseCaseProvider = Provider<GetNotificationsUseCase>((
+  ref,
+) {
   return GetNotificationsUseCase(ref.watch(notificationRepositoryProvider));
 });
 
 /// Scoped provider for [SendNotificationUseCase]
-final sendNotificationUseCaseProvider = Provider<SendNotificationUseCase>((ref) {
+final sendNotificationUseCaseProvider = Provider<SendNotificationUseCase>((
+  ref,
+) {
   return SendNotificationUseCase(ref.watch(notificationRepositoryProvider));
 });
 
 /// Scoped provider for [DeleteNotificationUseCase]
-final deleteNotificationUseCaseProvider = Provider<DeleteNotificationUseCase>((ref) {
+final deleteNotificationUseCaseProvider = Provider<DeleteNotificationUseCase>((
+  ref,
+) {
   return DeleteNotificationUseCase(ref.watch(notificationRepositoryProvider));
 });
 
@@ -70,8 +76,8 @@ class NotificationsSearchQueryNotifier extends Notifier<String> {
 
 final notificationsSearchQueryProvider =
     NotifierProvider<NotificationsSearchQueryNotifier, String>(
-  NotificationsSearchQueryNotifier.new,
-);
+      NotificationsSearchQueryNotifier.new,
+    );
 
 /// Notifier managing active filter category ('all', 'general', 'promo', 'order', 'system')
 class NotificationsFilterTypeNotifier extends Notifier<String> {
@@ -83,14 +89,14 @@ class NotificationsFilterTypeNotifier extends Notifier<String> {
 
 final notificationsFilterTypeProvider =
     NotifierProvider<NotificationsFilterTypeNotifier, String>(
-  NotificationsFilterTypeNotifier.new,
-);
+      NotificationsFilterTypeNotifier.new,
+    );
 
 /// Main state controller provider managing notifications lifecycle
 final notificationsControllerProvider =
     AsyncNotifierProvider<NotificationsNotifier, NotificationsResultEntity>(
-  NotificationsNotifier.new,
-);
+      NotificationsNotifier.new,
+    );
 
 /// Type definition for notification statistics counts
 typedef NotificationStatsRecord = ({
@@ -118,30 +124,33 @@ final notificationsStatsProvider = Provider<NotificationStatsRecord>((ref) {
 /// Provider filtering notification list in-memory based on query and selected category
 final filteredNotificationsListProvider =
     Provider<List<AdminNotificationEntity>>((ref) {
-  final asyncState = ref.watch(notificationsControllerProvider);
-  final query =
-      ref.watch(notificationsSearchQueryProvider).toLowerCase().trim();
-  final filterType = ref.watch(notificationsFilterTypeProvider);
+      final asyncState = ref.watch(notificationsControllerProvider);
+      final query = ref
+          .watch(notificationsSearchQueryProvider)
+          .toLowerCase()
+          .trim();
+      final filterType = ref.watch(notificationsFilterTypeProvider);
 
-  return asyncState.maybeWhen(
-    data: (data) {
-      var list = data.notifications;
+      return asyncState.maybeWhen(
+        data: (data) {
+          var list = data.notifications;
 
-      if (filterType != 'all') {
-        list = list.where((n) => n.type == filterType).toList();
-      }
+          if (filterType != 'all') {
+            list = list.where((n) => n.type == filterType).toList();
+          }
 
-      if (query.isNotEmpty) {
-        list = list.where((n) {
-          final titleMatch = n.title.toLowerCase().contains(query);
-          final bodyMatch = n.body.toLowerCase().contains(query);
-          final userMatch = n.userName?.toLowerCase().contains(query) ?? false;
-          return titleMatch || bodyMatch || userMatch;
-        }).toList();
-      }
+          if (query.isNotEmpty) {
+            list = list.where((n) {
+              final titleMatch = n.title.toLowerCase().contains(query);
+              final bodyMatch = n.body.toLowerCase().contains(query);
+              final userMatch =
+                  n.userName?.toLowerCase().contains(query) ?? false;
+              return titleMatch || bodyMatch || userMatch;
+            }).toList();
+          }
 
-      return list;
-    },
-    orElse: () => const [],
-  );
-});
+          return list;
+        },
+        orElse: () => const [],
+      );
+    });

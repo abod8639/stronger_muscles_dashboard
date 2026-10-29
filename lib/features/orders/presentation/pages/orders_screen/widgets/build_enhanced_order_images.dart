@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/config/responsive.dart';
+import 'package:stronger_muscles_dashboard/core/theme/responsive.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/pages/orders_screen/widgets/build_image_shimmer.dart';
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/config/responsive.dart';
+import 'package:stronger_muscles_dashboard/core/theme/responsive.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 
 /// قسم عرض السعر الإجمالي المتوافق بالكامل مع ألوان وثيم Material Design 3 ومتجاوب بالكامل لمنع أي overflow

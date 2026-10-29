@@ -23,6 +23,7 @@ class ChipItem extends StatelessWidget {
     return Padding(
       padding: EdgeInsetsDirectional.only(start: index < 1 ? 0 : 8),
       child: Center(
+        widthFactor: 1,
         child: FilterChip(
           selected: isSelected,
           onSelected: (_) => onTap(),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/config/theme.dart';
+import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
 
 class CategoryCard extends StatefulWidget {

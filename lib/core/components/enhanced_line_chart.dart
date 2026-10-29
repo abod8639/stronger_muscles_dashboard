@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:stronger_muscles_dashboard/config/app_colors.dart';
+import 'package:stronger_muscles_dashboard/core/theme/app_colors.dart';
 
 /// مكون رسم بياني خطي محسّن
 class EnhancedLineChartWidget extends StatelessWidget {

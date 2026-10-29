@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/config/theme.dart';
+import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 
 class ConfirmDialog extends StatelessWidget {
   final String title;
@@ -21,9 +21,10 @@ class ConfirmDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     // تحديد لون الثيم الأساسي للحوار بناءً على confirmColor
-    final primaryActionColor = confirmColor ?? AppColors.primary;
+    final primaryActionColor = confirmColor ?? colorScheme.primary;
 
     return Dialog(
       backgroundColor:
@@ -116,7 +117,9 @@ class ConfirmDialog extends StatelessWidget {
                     onPressed: onConfirm,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: primaryActionColor,
-                      foregroundColor: Colors.white,
+                      foregroundColor: confirmColor == null
+                          ? colorScheme.onPrimary
+                          : Colors.white,
                       elevation: 0,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(

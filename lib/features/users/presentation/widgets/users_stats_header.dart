@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../config/responsive.dart';
+import 'package:stronger_muscles_dashboard/core/theme/responsive.dart';
 import '../controllers/users_providers.dart';
 
 /// رأس إحصائيات المستخدمين بتصميم Neumorphism / Soft UI

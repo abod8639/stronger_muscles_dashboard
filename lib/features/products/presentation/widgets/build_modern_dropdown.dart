@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/core/components/glass_container.dart';
-import 'package:stronger_muscles_dashboard/config/app_colors.dart';
-import 'package:stronger_muscles_dashboard/config/theme.dart';
+import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 
 // جعلنا الكلاس Generic <T> لكي يتقبل أي نوع من القيم (String, Int, أو حتى Model)
 class CustomModernDropdown<T> extends StatelessWidget {

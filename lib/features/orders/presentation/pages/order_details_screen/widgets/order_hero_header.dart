@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
-import 'package:stronger_muscles_dashboard/config/responsive.dart';
+import 'package:stronger_muscles_dashboard/core/theme/responsive.dart';
 import 'package:stronger_muscles_dashboard/core/components/status_badge.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/order_entity.dart';
 import 'package:stronger_muscles_dashboard/features/orders/presentation/controllers/order_details_controller.dart';

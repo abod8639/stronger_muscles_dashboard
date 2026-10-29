@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/config/responsive.dart';
-import 'package:stronger_muscles_dashboard/config/theme.dart';
+import 'package:stronger_muscles_dashboard/core/theme/responsive.dart';
+import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 import 'package:stronger_muscles_dashboard/core/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/core/components/trend_card.dart';
 

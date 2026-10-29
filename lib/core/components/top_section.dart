@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/core/components/glass_container.dart';
-import 'package:stronger_muscles_dashboard/config/app_colors.dart';
 
 class TopSection extends StatelessWidget {
   final List<Widget> children;
@@ -10,7 +9,7 @@ class TopSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColorsExtended.darkBg.withAlpha(200),
+        color: Theme.of(context).colorScheme.surfaceContainerLow.withAlpha(200),
         borderRadius: BorderRadius.circular(20),
       ),
       child: GlassContainer(

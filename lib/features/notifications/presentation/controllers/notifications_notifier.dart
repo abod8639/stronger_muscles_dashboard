@@ -19,9 +19,9 @@ class NotificationsNotifier extends AsyncNotifier<NotificationsResultEntity> {
     GetNotificationsUseCase? getNotificationsUseCase,
     SendNotificationUseCase? sendNotificationUseCase,
     DeleteNotificationUseCase? deleteNotificationUseCase,
-  })  : _injectedGetUseCase = getNotificationsUseCase,
-        _injectedSendUseCase = sendNotificationUseCase,
-        _injectedDeleteUseCase = deleteNotificationUseCase;
+  }) : _injectedGetUseCase = getNotificationsUseCase,
+       _injectedSendUseCase = sendNotificationUseCase,
+       _injectedDeleteUseCase = deleteNotificationUseCase;
 
   @override
   Future<NotificationsResultEntity> build() async {
@@ -29,10 +29,7 @@ class NotificationsNotifier extends AsyncNotifier<NotificationsResultEntity> {
         _injectedGetUseCase ?? ref.watch(getNotificationsUseCaseProvider);
     final result = await useCase();
 
-    return result.fold(
-      (failure) => throw failure,
-      (data) => data,
-    );
+    return result.fold((failure) => throw failure, (data) => data);
   }
 
   /// Refreshes the notifications list by bypassing local cache.
@@ -56,28 +53,25 @@ class NotificationsNotifier extends AsyncNotifier<NotificationsResultEntity> {
         _injectedSendUseCase ?? ref.read(sendNotificationUseCaseProvider);
     final result = await useCase(payload);
 
-    result.fold(
-      (failure) {},
-      (newNotification) {
-        final current = state.value ?? const NotificationsResultEntity.initial();
-        final updatedList = [newNotification, ...current.notifications];
-        final isBroadcast = newNotification.targetType == 'all';
+    result.fold((failure) {}, (newNotification) {
+      final current = state.value ?? const NotificationsResultEntity.initial();
+      final updatedList = [newNotification, ...current.notifications];
+      final isBroadcast = newNotification.targetType == 'all';
 
-        final updated = current.copyWith(
-          notifications: updatedList,
-          totalCount: current.totalCount + 1,
-          todayCount: current.todayCount + 1,
-          broadcastCount: isBroadcast
-              ? current.broadcastCount + 1
-              : current.broadcastCount,
-          targetedCount: isBroadcast
-              ? current.targetedCount
-              : current.targetedCount + 1,
-        );
+      final updated = current.copyWith(
+        notifications: updatedList,
+        totalCount: current.totalCount + 1,
+        todayCount: current.todayCount + 1,
+        broadcastCount: isBroadcast
+            ? current.broadcastCount + 1
+            : current.broadcastCount,
+        targetedCount: isBroadcast
+            ? current.targetedCount
+            : current.targetedCount + 1,
+      );
 
-        state = AsyncValue.data(updated);
-      },
-    );
+      state = AsyncValue.data(updated);
+    });
 
     return result;
   }
@@ -88,21 +82,19 @@ class NotificationsNotifier extends AsyncNotifier<NotificationsResultEntity> {
         _injectedDeleteUseCase ?? ref.read(deleteNotificationUseCaseProvider);
     final result = await useCase(id);
 
-    result.fold(
-      (failure) {},
-      (_) {
-        final current = state.value ?? const NotificationsResultEntity.initial();
-        final updatedList =
-            current.notifications.where((n) => n.id != id).toList();
+    result.fold((failure) {}, (_) {
+      final current = state.value ?? const NotificationsResultEntity.initial();
+      final updatedList = current.notifications
+          .where((n) => n.id != id)
+          .toList();
 
-        final updated = current.copyWith(
-          notifications: updatedList,
-          totalCount: (current.totalCount - 1).clamp(0, 999999),
-        );
+      final updated = current.copyWith(
+        notifications: updatedList,
+        totalCount: (current.totalCount - 1).clamp(0, 999999),
+      );
 
-        state = AsyncValue.data(updated);
-      },
-    );
+      state = AsyncValue.data(updated);
+    });
 
     return result;
   }

@@ -15,6 +15,8 @@ class ModernTextField extends StatelessWidget {
   final FocusNode? focusNode;
   final VoidCallback? onSubmitted;
   final String? hint;
+  final String? Function(String?)? validator;
+  final TextInputType? keyboardType;
 
   const ModernTextField({
     super.key,
@@ -29,6 +31,8 @@ class ModernTextField extends StatelessWidget {
     this.focusNode,
     this.onSubmitted,
     this.hint,
+    this.validator,
+    this.keyboardType,
   });
 
   @override
@@ -36,15 +40,17 @@ class ModernTextField extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return TextField(
+    return TextFormField(
       controller: controller,
       enabled: enabled,
       focusNode: focusNode,
-      onSubmitted: onSubmitted != null ? (_) => onSubmitted!() : null,
+      onFieldSubmitted: onSubmitted != null ? (_) => onSubmitted!() : null,
       onChanged: onChanged,
-      keyboardType: isNumber
-          ? const TextInputType.numberWithOptions(decimal: true)
-          : (maxLines > 1 ? TextInputType.multiline : TextInputType.text),
+      validator: validator,
+      keyboardType: keyboardType ??
+          (isNumber
+              ? const TextInputType.numberWithOptions(decimal: true)
+              : (maxLines > 1 ? TextInputType.multiline : TextInputType.text)),
       maxLines: maxLines,
       style: theme.textTheme.bodyMedium?.copyWith(
         color: colorScheme.onSurface,
@@ -53,6 +59,7 @@ class ModernTextField extends StatelessWidget {
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
+        alignLabelWithHint: maxLines > 1,
         prefixIcon: Icon(
           icon,
           size: 20,

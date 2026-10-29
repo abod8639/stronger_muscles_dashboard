@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../config/responsive.dart';
+import 'package:stronger_muscles_dashboard/core/theme/responsive.dart';
 import '../controllers/support_providers.dart';
 
 /// Dumb presentation component displaying high-level support ticket statistics.

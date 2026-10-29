@@ -10,7 +10,7 @@ import '../../../../core/components/top_section.dart';
 import '../controllers/users_providers.dart';
 import '../widgets/user_card.dart';
 import '../widgets/users_stats_header.dart';
-import '../../../../config/responsive.dart';
+import 'package:stronger_muscles_dashboard/core/theme/responsive.dart';
 
 class UsersPage extends ConsumerWidget {
   const UsersPage({super.key});

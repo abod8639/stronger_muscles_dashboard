@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/config/theme.dart';
+import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 
 /// Reusable, dumb [StatelessWidget] for primary authentication action buttons.
 /// Maximizes `const` efficiency.

@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:stronger_muscles_dashboard/core/components/build_modern_text_field.dart';
+import 'package:stronger_muscles_dashboard/core/components/chip_item.dart';
+import 'package:stronger_muscles_dashboard/core/components/icon_card_with_shadow.dart';
+import 'package:stronger_muscles_dashboard/core/theme/responsive.dart';
+import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
 import '../controllers/notifications_providers.dart';
+import 'notification_type_ui.dart';
 
 /// Helper function to display the notification creation modal dialog.
 void showSendNotificationDialog(BuildContext context) {
@@ -21,14 +27,15 @@ class SendNotificationDialog extends ConsumerStatefulWidget {
       _SendNotificationDialogState();
 }
 
-class _SendNotificationDialogState extends ConsumerState<SendNotificationDialog> {
+class _SendNotificationDialogState
+    extends ConsumerState<SendNotificationDialog> {
   final _titleController = TextEditingController();
   final _bodyController = TextEditingController();
   final _userIdController = TextEditingController();
   final _imageUrlController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  String _selectedType = 'general';
+  NotificationTypeUi _selectedType = NotificationTypeUi.general;
   String _targetType = 'all';
   bool _isSending = false;
 
@@ -41,6 +48,9 @@ class _SendNotificationDialogState extends ConsumerState<SendNotificationDialog>
     super.dispose();
   }
 
+  String? _required(String? value, String message) =>
+      (value == null || value.trim().isEmpty) ? message : null;
+
   Future<void> _handleSubmit() async {
     if (_isSending) return;
     if (!(_formKey.currentState?.validate() ?? false)) return;
@@ -50,7 +60,7 @@ class _SendNotificationDialogState extends ConsumerState<SendNotificationDialog>
     final payload = <String, dynamic>{
       'title': _titleController.text.trim(),
       'body': _bodyController.text.trim(),
-      'type': _selectedType,
+      'type': _selectedType.id,
       'target_type': _targetType,
       if (_targetType == 'user') 'user_id': _userIdController.text.trim(),
       if (_imageUrlController.text.trim().isNotEmpty)
@@ -63,13 +73,10 @@ class _SendNotificationDialogState extends ConsumerState<SendNotificationDialog>
 
     if (mounted) {
       setState(() => _isSending = false);
-      result.fold(
-        (failure) => AppFeedback.showError(failure.message),
-        (_) {
-          AppFeedback.showSuccess('تم إرسال الإشعار بنجاح');
-          Navigator.of(context).pop();
-        },
-      );
+      result.fold((failure) => AppFeedback.showError(failure.message), (_) {
+        AppFeedback.showSuccess('تم إرسال الإشعار بنجاح');
+        Navigator.of(context).pop();
+      });
     }
   }
 
@@ -77,280 +84,198 @@ class _SendNotificationDialogState extends ConsumerState<SendNotificationDialog>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final isDark = theme.brightness == Brightness.dark;
+    final isMobile = context.isMobile;
+    final gap = SizedBox(
+      height: isMobile ? AppDesignTokens.space12 : AppDesignTokens.space16,
+    );
 
     return Dialog(
-      backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 550),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: isDark
-                ? [
-                    Color.lerp(colorScheme.surfaceContainer, Colors.white, 0.05)!,
-                    Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.12)!,
-                  ]
-                : [
-                    Color.lerp(colorScheme.surfaceContainer, Colors.white, 0.90)!,
-                    Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.04)!,
-                  ],
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: isDark
-                  ? Colors.black.withValues(alpha: 0.7)
-                  : const Color(0xFFA3B1C6).withValues(alpha: 0.5),
-              offset: const Offset(6, 8),
-              blurRadius: 20,
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: isMobile
+            ? AppDesignTokens.space12
+            : AppDesignTokens.space32,
+        vertical: AppDesignTokens.space24,
+      ),
+      shape: RoundedRectangleBorder(borderRadius: AppDesignTokens.radiusPill),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 560),
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(
+              isMobile ? AppDesignTokens.space16 : AppDesignTokens.space24,
             ),
-          ],
-          border: Border.all(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.08)
-                : Colors.white.withValues(alpha: 0.9),
-            width: 1.2,
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Form(
-            key: _formKey,
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Header
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: colorScheme.primary.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Icon(Icons.send_rounded, color: colorScheme.primary, size: 22),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'إرسال إشعار جديد',
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: colorScheme.onSurface,
-                          ),
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: _isSending ? null : () => Navigator.of(context).pop(),
-                        icon: const Icon(Icons.close_rounded),
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ],
-                  ),
-                  const Divider(height: 28),
-
-                  // Target Audience
-                  Text(
-                    'الجمهور المستهدف',
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.onSurface,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Header
+                Row(
+                  children: [
+                    const IconCardWithShadow(
+                      icon: Icons.send_rounded,
+                      size: 22,
+                      padding: EdgeInsets.all(AppDesignTokens.space10),
+                      borderRadius: AppDesignTokens.radiusMediumValue,
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ChoiceChip(
-                          label: const Center(child: Text('جميع المستخدمين (عام)')),
-                          selected: _targetType == 'all',
-                          avatar: const Icon(Icons.public_rounded, size: 18),
-                          onSelected: (val) {
-                            if (val && !_isSending) setState(() => _targetType = 'all');
-                          },
+                    const SizedBox(width: AppDesignTokens.space12),
+                    Expanded(
+                      child: Text(
+                        'إرسال إشعار جديد',
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onSurface,
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: ChoiceChip(
-                          label: const Center(child: Text('مستخدم محدد')),
-                          selected: _targetType == 'user',
-                          avatar: const Icon(Icons.person_rounded, size: 18),
-                          onSelected: (val) {
-                            if (val && !_isSending) setState(() => _targetType = 'user');
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 14),
-
-                  // User ID (if _targetType == 'user')
-                  if (_targetType == 'user')
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 14),
-                      child: TextFormField(
-                        controller: _userIdController,
-                        enabled: !_isSending,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: 'معرف المستخدم (User ID) *',
-                          hintText: 'أدخل معرّف العميل المستهدف...',
-                          prefixIcon: const Icon(Icons.badge_outlined),
-                          filled: true,
-                          fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
-                        ),
-                        validator: (value) {
-                          if (_targetType == 'user' && (value == null || value.trim().isEmpty)) {
-                            return 'يرجى إدخال معرف المستخدم';
-                          }
-                          return null;
-                        },
                       ),
                     ),
-
-                  // Notification Type
-                  Text(
-                    'نوع الإشعار',
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.onSurface,
+                    IconButton(
+                      onPressed: _isSending
+                          ? null
+                          : () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.close_rounded),
+                      tooltip: 'إغلاق',
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      ChoiceChip(
-                        label: const Text('عام'),
-                        selected: _selectedType == 'general',
-                        onSelected: (v) {
-                          if (v && !_isSending) setState(() => _selectedType = 'general');
-                        },
-                      ),
-                      ChoiceChip(
-                        label: const Text('إعلان / عرض'),
-                        selected: _selectedType == 'promo',
-                        onSelected: (v) {
-                          if (v && !_isSending) setState(() => _selectedType = 'promo');
-                        },
-                      ),
-                      ChoiceChip(
-                        label: const Text('طلب'),
-                        selected: _selectedType == 'order',
-                        onSelected: (v) {
-                          if (v && !_isSending) setState(() => _selectedType = 'order');
-                        },
-                      ),
-                      ChoiceChip(
-                        label: const Text('نظام / تنبيه'),
-                        selected: _selectedType == 'system',
-                        onSelected: (v) {
-                          if (v && !_isSending) setState(() => _selectedType = 'system');
-                        },
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
+                  ],
+                ),
+                const Divider(height: 28),
 
-                  // Title Field
-                  TextFormField(
-                    controller: _titleController,
+                // Target Audience
+                const _SectionLabel('الجمهور المستهدف'),
+                SegmentedButton<String>(
+                  showSelectedIcon: false,
+                  segments: const [
+                    ButtonSegment(
+                      value: 'all',
+                      label: Text('جميع المستخدمين'),
+                      icon: Icon(Icons.public_rounded),
+                    ),
+                    ButtonSegment(
+                      value: 'user',
+                      label: Text('مستخدم محدد'),
+                      icon: Icon(Icons.person_rounded),
+                    ),
+                  ],
+                  selected: {_targetType},
+                  onSelectionChanged: _isSending
+                      ? null
+                      : (value) => setState(() => _targetType = value.first),
+                ),
+                if (_targetType == 'user') ...[
+                  gap,
+                  ModernTextField(
+                    controller: _userIdController,
                     enabled: !_isSending,
-                    decoration: InputDecoration(
-                      labelText: 'عنوان الإشعار *',
-                      hintText: 'مثال: عرض نهاية الأسبوع!',
-                      prefixIcon: const Icon(Icons.title_rounded),
-                      filled: true,
-                      fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'يرجى إدخال عنوان الإشعار';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 14),
-
-                  // Body Field
-                  TextFormField(
-                    controller: _bodyController,
-                    enabled: !_isSending,
-                    maxLines: 4,
-                    decoration: InputDecoration(
-                      labelText: 'نص الرسالة *',
-                      hintText: 'أدخل تفاصيل الإشعار هنا...',
-                      alignLabelWithHint: true,
-                      prefixIcon: const Padding(
-                        padding: EdgeInsets.only(bottom: 50),
-                        child: Icon(Icons.notes_rounded),
-                      ),
-                      filled: true,
-                      fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'يرجى إدخال نص الإشعار';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 14),
-
-                  // Image URL (Optional)
-                  TextFormField(
-                    controller: _imageUrlController,
-                    enabled: !_isSending,
-                    decoration: InputDecoration(
-                      labelText: 'رابط الصورة (اختياري)',
-                      hintText: 'https://example.com/image.jpg',
-                      prefixIcon: const Icon(Icons.image_outlined),
-                      filled: true,
-                      fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Action Buttons
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: _isSending ? null : () => Navigator.of(context).pop(),
-                        child: const Text('إلغاء'),
-                      ),
-                      const SizedBox(width: 12),
-                      FilledButton.icon(
-                        onPressed: _isSending ? null : _handleSubmit,
-                        icon: _isSending
-                            ? const SizedBox(
-                                width: 18,
-                                height: 18,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : const Icon(Icons.send_rounded, size: 18),
-                        label: Text(_isSending ? 'جاري الإرسال...' : 'إرسال الإشعار'),
-                      ),
-                    ],
+                    label: 'معرف المستخدم (User ID) *',
+                    hint: 'أدخل معرّف العميل المستهدف...',
+                    icon: Icons.badge_outlined,
+                    keyboardType: TextInputType.number,
+                    validator: (v) => _required(v, 'يرجى إدخال معرف المستخدم'),
                   ),
                 ],
-              ),
+                gap,
+
+                // Notification Type
+                const _SectionLabel('نوع الإشعار'),
+                Wrap(
+                  spacing: AppDesignTokens.space8,
+                  runSpacing: AppDesignTokens.space8,
+                  children: [
+                    for (final type in NotificationTypeUi.values)
+                      ChipItem(
+                        label: type.label,
+                        isSelected: _selectedType == type,
+                        index: 0,
+                        onTap: () {
+                          if (!_isSending) setState(() => _selectedType = type);
+                        },
+                      ),
+                  ],
+                ),
+                gap,
+
+                ModernTextField(
+                  controller: _titleController,
+                  enabled: !_isSending,
+                  label: 'عنوان الإشعار *',
+                  hint: 'مثال: عرض نهاية الأسبوع!',
+                  icon: Icons.title_rounded,
+                  validator: (v) => _required(v, 'يرجى إدخال عنوان الإشعار'),
+                ),
+                gap,
+                ModernTextField(
+                  controller: _bodyController,
+                  enabled: !_isSending,
+                  label: 'نص الرسالة *',
+                  hint: 'أدخل تفاصيل الإشعار هنا...',
+                  icon: Icons.notes_rounded,
+                  maxLines: 4,
+                  validator: (v) => _required(v, 'يرجى إدخال نص الإشعار'),
+                ),
+                gap,
+                ModernTextField(
+                  controller: _imageUrlController,
+                  enabled: !_isSending,
+                  label: 'رابط الصورة (اختياري)',
+                  hint: 'https://example.com/image.jpg',
+                  icon: Icons.image_outlined,
+                  keyboardType: TextInputType.url,
+                ),
+                const SizedBox(height: AppDesignTokens.space24),
+
+                // Action Buttons
+                Wrap(
+                  alignment: WrapAlignment.end,
+                  spacing: AppDesignTokens.space12,
+                  runSpacing: AppDesignTokens.space8,
+                  children: [
+                    TextButton(
+                      onPressed: _isSending
+                          ? null
+                          : () => Navigator.of(context).pop(),
+                      child: const Text('إلغاء'),
+                    ),
+                    FilledButton.icon(
+                      onPressed: _isSending ? null : _handleSubmit,
+                      icon: _isSending
+                          ? SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: colorScheme.onPrimary,
+                              ),
+                            )
+                          : const Icon(Icons.send_rounded, size: 18),
+                      label: Text(
+                        _isSending ? 'جاري الإرسال...' : 'إرسال الإشعار',
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SectionLabel extends StatelessWidget {
+  final String text;
+
+  const _SectionLabel(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppDesignTokens.space8),
+      child: Text(
+        text,
+        style: theme.textTheme.labelLarge?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: theme.colorScheme.onSurface,
         ),
       ),
     );

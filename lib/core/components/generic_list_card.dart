@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:stronger_muscles_dashboard/config/theme.dart';
-import 'package:stronger_muscles_dashboard/config/responsive.dart';
+import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
+import 'package:stronger_muscles_dashboard/core/theme/responsive.dart';
 import 'package:stronger_muscles_dashboard/core/components/glass_container.dart';
 import 'package:stronger_muscles_dashboard/functions/cache_manager.dart';
 
@@ -29,6 +29,8 @@ class GenericListCard<T> extends StatefulWidget {
   final VoidCallback? onTap;
   final T? data;
   final int index;
+  final int? subtitleMaxLines;
+  final EdgeInsetsGeometry margin;
 
   const GenericListCard({
     super.key,
@@ -43,6 +45,8 @@ class GenericListCard<T> extends StatefulWidget {
     this.onTap,
     this.data,
     this.index = 0,
+    this.subtitleMaxLines,
+    this.margin = const EdgeInsets.only(bottom: 12),
   });
 
   @override
@@ -55,7 +59,8 @@ class _GenericListCardState<T> extends State<GenericListCard<T>>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final responsive = context.responsive;
 
     return MouseRegion(
@@ -63,13 +68,13 @@ class _GenericListCardState<T> extends State<GenericListCard<T>>
       onExit: (_) => setState(() => _isHovered = false),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
-        margin: const EdgeInsets.only(bottom: 12),
+        margin: widget.margin,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
               color: _isHovered
-                  ? AppColors.primary.withValues(alpha: 0.2)
+                  ? colorScheme.primary.withValues(alpha: 0.2)
                   : Colors.transparent,
               blurRadius: 15,
               offset: const Offset(0, 5),
@@ -85,8 +90,11 @@ class _GenericListCardState<T> extends State<GenericListCard<T>>
               child: Row(
                 children: [
                   // Image/Icon
-                  _buildLeadingWidget(isDark),
-                  const SizedBox(width: 16),
+                  _buildLeadingWidget(
+                    colorScheme,
+                    size: responsive.isMobile ? 48 : 60,
+                  ),
+                  SizedBox(width: responsive.isMobile ? 12 : 16),
 
                   // Information
                   Expanded(
@@ -98,19 +106,22 @@ class _GenericListCardState<T> extends State<GenericListCard<T>>
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: responsive.getBodyFontSize() + 1,
-                            color: isDark ? Colors.white : AppColors.textMuted,
+                            color: colorScheme.onSurface,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                         if (widget.metadata != null) ...[
                           const SizedBox(height: 4),
                           Text(
                             widget.metadata!,
                             style: TextStyle(
-                              color: isDark
-                                  ? Colors.white54
-                                  : Colors.grey.shade600,
+                              color: colorScheme.onSurfaceVariant
+                                  .withValues(alpha: 0.75),
                               fontSize: 11,
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                         if (widget.subtitle != null) ...[
@@ -118,11 +129,14 @@ class _GenericListCardState<T> extends State<GenericListCard<T>>
                           Text(
                             widget.subtitle!,
                             style: TextStyle(
-                              color: isDark
-                                  ? Colors.white70
-                                  : Colors.grey.shade700,
+                              color: colorScheme.onSurfaceVariant,
                               fontSize: 12,
+                              height: 1.4,
                             ),
+                            maxLines: widget.subtitleMaxLines,
+                            overflow: widget.subtitleMaxLines != null
+                                ? TextOverflow.ellipsis
+                                : null,
                           ),
                         ],
                         if (widget.statusWidget != null) ...[
@@ -139,12 +153,11 @@ class _GenericListCardState<T> extends State<GenericListCard<T>>
                       mainAxisSize: MainAxisSize.min,
                       children: widget.actions.map((action) {
                         return Padding(
-                          padding: const EdgeInsets.only(left: 8),
+                          padding: const EdgeInsetsDirectional.only(start: 8),
                           child: buildActionButton(
                             icon: action.icon,
                             color: action.color,
                             onPressed: action.onPressed,
-                            isDark: isDark,
                           ),
                         );
                       }).toList(),
@@ -158,14 +171,14 @@ class _GenericListCardState<T> extends State<GenericListCard<T>>
     );
   }
 
-  Widget _buildLeadingWidget(bool isDark) {
+  Widget _buildLeadingWidget(ColorScheme colorScheme, {required double size}) {
     return Container(
-      width: 60,
-      height: 60,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey.shade900 : Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
+        color: colorScheme.surfaceContainerHigh,
+        borderRadius: AppDesignTokens.radiusMedium,
+        border: Border.all(color: colorScheme.primary.withValues(alpha: 0.1)),
       ),
       child: widget.imageUrl != null && widget.imageUrl!.isNotEmpty
           ? ClipRRect(
@@ -176,14 +189,14 @@ class _GenericListCardState<T> extends State<GenericListCard<T>>
                 fit: BoxFit.cover,
                 errorWidget: (_, _, _) => Icon(
                   widget.fallbackIcon ?? Icons.image_outlined,
-                  color: AppColors.primary,
+                  color: colorScheme.primary,
                 ),
               ),
             )
           : widget.imageWidget ??
                 Icon(
                   widget.fallbackIcon ?? Icons.image_outlined,
-                  color: AppColors.primary,
+                  color: colorScheme.primary,
                 ),
     );
   }
@@ -192,7 +205,6 @@ class _GenericListCardState<T> extends State<GenericListCard<T>>
     required IconData icon,
     required Color color,
     required VoidCallback onPressed,
-    required bool isDark,
   }) {
     return Container(
       decoration: BoxDecoration(
