@@ -1,122 +1,84 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:stronger_muscles_dashboard/core/components/base_app_bar.dart';
+import 'package:stronger_muscles_dashboard/core/components/custom_search_bar.dart';
+import 'package:stronger_muscles_dashboard/core/components/enhanced_error_widget.dart';
+import 'package:stronger_muscles_dashboard/core/components/enhanced_loading_widget.dart';
+import 'package:stronger_muscles_dashboard/core/components/generic_empty_state.dart';
+import 'package:stronger_muscles_dashboard/core/components/generic_grid_card.dart';
+import 'package:stronger_muscles_dashboard/core/components/info_pill.dart';
+import 'package:stronger_muscles_dashboard/core/components/my_refresh_indicator.dart';
+import 'package:stronger_muscles_dashboard/core/theme/responsive.dart';
+import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
+import '../../domain/entities/brand_entity.dart';
 import '../controllers/brands_providers.dart';
 import '../controllers/brands_state.dart';
-import '../widgets/brand_card.dart';
-import '../widgets/brand_error_view.dart';
-import '../widgets/brand_search_bar.dart';
 
-/// Dumb Presentation Page for Browsing and Searching Brands.
-/// Employs selective listening via `.select()` to prevent whole-screen rebuilds.
-class BrandsPage extends ConsumerStatefulWidget {
+/// صفحة تصفح العلامات التجارية والبحث فيها
+/// تستمع انتقائياً عبر `.select()` لتجنب إعادة بناء الشاشة كاملة
+class BrandsPage extends ConsumerWidget {
   const BrandsPage({super.key});
 
-  @override
-  ConsumerState<BrandsPage> createState() => _BrandsPageState();
-}
-
-class _BrandsPageState extends ConsumerState<BrandsPage> {
-  late final TextEditingController _searchController;
-  Timer? _debounceTimer;
+  /// أقصى عرض للمحتوى على الشاشات العريضة
+  static const double _maxContentWidth = 1400;
 
   @override
-  void initState() {
-    super.initState();
-    _searchController = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    _debounceTimer?.cancel();
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  void _onSearchChanged(String query) {
-    _debounceTimer?.cancel();
-    _debounceTimer = Timer(const Duration(milliseconds: 300), () {
-      ref.read(brandsNotifierProvider.notifier).searchBrands(query);
-    });
-  }
-
-  void _onClearSearch() {
-    _searchController.clear();
-    ref.read(brandsNotifierProvider.notifier).clearSearch();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // final theme = Theme.of(context);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final notifier = ref.read(brandsNotifierProvider.notifier);
+    Future<void> refresh() => notifier.loadBrands(forceRefresh: true);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('العلامات التجارية'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh_rounded),
-            tooltip: 'تحديث',
-            onPressed: () {
-              ref.read(brandsNotifierProvider.notifier).loadBrands(forceRefresh: true);
-            },
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          // Search Bar section
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: BrandSearchBar(
-              controller: _searchController,
-              onChanged: _onSearchChanged,
-              onClear: _onClearSearch,
-            ),
-          ),
-
-          // Main Content with selective status listening
-          Expanded(
-            child: Consumer(
-              builder: (context, ref, child) {
-                final status = ref.watch(
-                  brandsNotifierProvider.select((s) => s.status),
-                );
-
-                if (status == BrandsStatus.loading) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-
-                if (status == BrandsStatus.failure) {
-                  final failure = ref.watch(
-                    brandsNotifierProvider.select((s) => s.failure),
-                  );
-                  if (failure != null) {
-                    return BrandErrorView(
-                      failure: failure,
-                      onRetry: () {
-                        ref
-                            .read(brandsNotifierProvider.notifier)
-                            .loadBrands(forceRefresh: true);
-                      },
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      appBar: BaseAppBar(title: 'العلامات التجارية', onPressed: refresh),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: _maxContentWidth),
+          child: Column(
+            children: [
+              CustomSearchBar(
+                hintText: 'البحث عن علامة تجارية...',
+                padding: context.responsive.defaultPadding,
+                onSearch: notifier.searchBrands,
+              ),
+              Expanded(
+                child: Consumer(
+                  builder: (context, ref, _) {
+                    final status = ref.watch(
+                      brandsNotifierProvider.select((s) => s.status),
                     );
-                  }
-                }
 
-                return const _BrandsGridSection();
-              },
-            ),
+                    return switch (status) {
+                      BrandsStatus.initial ||
+                      BrandsStatus.loading => const EnhancedLoadingWidget(
+                        message: 'جاري تحميل العلامات التجارية...',
+                      ),
+                      BrandsStatus.failure => EnhancedErrorWidget.fromError(
+                        ref.watch(
+                              brandsNotifierProvider.select((s) => s.failure),
+                            ) ??
+                            'خطأ غير معروف',
+                        fallbackTitle: 'تعذر تحميل العلامات التجارية',
+                        onRetry: refresh,
+                      ),
+                      BrandsStatus.success || BrandsStatus.refreshing =>
+                        _BrandsGrid(onRefresh: refresh),
+                    };
+                  },
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 }
 
-/// Selective grid rendering only rebuilding when the filtered list or selection changes
-class _BrandsGridSection extends ConsumerWidget {
-  const _BrandsGridSection();
+/// الشبكة تُعاد بناؤها فقط عند تغيّر القائمة المصفاة أو التحديد
+class _BrandsGrid extends ConsumerWidget {
+  final Future<void> Function() onRefresh;
+
+  const _BrandsGrid({required this.onRefresh});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -129,70 +91,87 @@ class _BrandsGridSection extends ConsumerWidget {
     final isRefreshing = ref.watch(
       brandsNotifierProvider.select((s) => s.isRefreshing),
     );
+    final responsive = context.responsive;
 
     if (brands.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.search_off_rounded,
-              size: 54,
-              color: Colors.grey.withValues(alpha: 0.6),
-            ),
-            const SizedBox(height: 12),
-            const Text(
-              'لا توجد علامات تجارية مطابقة',
-              style: TextStyle(fontSize: 15, color: Colors.grey),
-            ),
-          ],
-        ),
+      return const GenericEmptyState(
+        title: 'لا توجد نتائج',
+        message: 'لا توجد علامات تجارية مطابقة',
+        icon: Icons.search_off_rounded,
       );
     }
 
-    return RefreshIndicator(
-      onRefresh: () async {
-        await ref
-            .read(brandsNotifierProvider.notifier)
-            .loadBrands(forceRefresh: true);
-      },
+    return MyRefreshIndicator(
+      onRefresh: onRefresh,
       child: Stack(
         children: [
           GridView.builder(
-            padding: const EdgeInsets.all(16),
-            physics: const AlwaysScrollableScrollPhysics(
-              parent: BouncingScrollPhysics(),
-            ),
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 220,
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              childAspectRatio: 0.9,
+            padding: responsive.defaultPadding,
+            physics: const AlwaysScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: responsive.isMobile ? 200 : 220,
+              mainAxisSpacing: responsive.itemSpacing,
+              crossAxisSpacing: responsive.itemSpacing,
+              childAspectRatio: 0.85,
             ),
             itemCount: brands.length,
             itemBuilder: (context, index) {
               final brand = brands[index];
               final isSelected = brand.id == selectedId;
-
-              return BrandCard(
+              return _BrandCard(
+                key: ValueKey(brand.id),
                 brand: brand,
                 isSelected: isSelected,
-                onTap: () {
-                  ref
-                      .read(brandsNotifierProvider.notifier)
-                      .selectBrand(isSelected ? null : brand.id);
-                },
+                onTap: () => ref
+                    .read(brandsNotifierProvider.notifier)
+                    .selectBrand(isSelected ? null : brand.id),
               );
             },
           ),
           if (isRefreshing)
-            const Positioned(
+            const PositionedDirectional(
               top: 0,
-              left: 0,
-              right: 0,
+              start: 0,
+              end: 0,
               child: LinearProgressIndicator(minHeight: 2),
             ),
         ],
+      ),
+    );
+  }
+}
+
+class _BrandCard extends StatelessWidget {
+  final BrandEntity brand;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _BrandCard({
+    super.key,
+    required this.brand,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GenericGridCard<BrandEntity>(
+      data: brand,
+      title: brand.displayName,
+      subtitle: brand.nameAr.isNotEmpty ? brand.nameEn : null,
+      imageUrl: brand.imageUrl,
+      imageFit: BoxFit.contain,
+      icon: Icons.business_rounded,
+      selected: isSelected,
+      onTap: onTap,
+      statusWidget: InfoPill(
+        label: brand.isActive ? 'نشط' : 'غير نشط',
+        icon: brand.isActive
+            ? Icons.check_circle_rounded
+            : Icons.pause_circle_rounded,
+        color: brand.isActive
+            ? AppColors.success
+            : Theme.of(context).colorScheme.error,
       ),
     );
   }

@@ -21,11 +21,13 @@ class BrandModel {
 
     return BrandModel(
       id: json['id']?.toString() ?? '',
-      nameAr: json['name_ar']?.toString() ??
+      nameAr:
+          json['name_ar']?.toString() ??
           nameMap?['ar']?.toString() ??
           json['name']?.toString() ??
           '',
-      nameEn: json['name_en']?.toString() ??
+      nameEn:
+          json['name_en']?.toString() ??
           nameMap?['en']?.toString() ??
           json['name']?.toString() ??
           '',

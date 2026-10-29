@@ -17,8 +17,8 @@ class BrandRepositoryImpl implements BrandRepository {
   const BrandRepositoryImpl({
     required BrandRemoteDataSource remoteDataSource,
     required BrandLocalDataSource localDataSource,
-  })  : _remoteDataSource = remoteDataSource,
-        _localDataSource = localDataSource;
+  }) : _remoteDataSource = remoteDataSource,
+       _localDataSource = localDataSource;
 
   @override
   Future<Either<Failure, List<BrandEntity>>> getBrands({

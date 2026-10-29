@@ -7,7 +7,9 @@ import '../entities/brand_entity.dart';
 abstract class BrandRepository {
   /// Fetches the list of all brands.
   /// Supports [forceRefresh] to bypass local caching when needed.
-  Future<Either<Failure, List<BrandEntity>>> getBrands({bool forceRefresh = false});
+  Future<Either<Failure, List<BrandEntity>>> getBrands({
+    bool forceRefresh = false,
+  });
 
   /// Fetches a single brand by its unique identifier.
   Future<Either<Failure, BrandEntity>> getBrandById(String id);

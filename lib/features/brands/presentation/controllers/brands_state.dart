@@ -2,13 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import '../../domain/entities/brand_entity.dart';
 
-enum BrandsStatus {
-  initial,
-  loading,
-  refreshing,
-  success,
-  failure,
-}
+enum BrandsStatus { initial, loading, refreshing, success, failure }
 
 /// Immutable state for the Brands feature.
 @immutable

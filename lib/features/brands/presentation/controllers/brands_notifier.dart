@@ -14,11 +14,10 @@ class BrandsNotifier extends Notifier<BrandsState> {
   BrandsNotifier({
     GetBrandsUseCase? getBrandsUseCase,
     GetBrandByIdUseCase? getBrandByIdUseCase,
-  })  : _injectedGetBrandsUseCase = getBrandsUseCase;
+  }) : _injectedGetBrandsUseCase = getBrandsUseCase;
 
   GetBrandsUseCase get _getBrandsUseCase =>
       _injectedGetBrandsUseCase ?? ref.read(getBrandsUseCaseProvider);
-
 
   @override
   BrandsState build() {
@@ -37,10 +36,7 @@ class BrandsNotifier extends Notifier<BrandsState> {
 
     result.fold(
       (failure) {
-        state = state.copyWith(
-          status: BrandsStatus.failure,
-          failure: failure,
-        );
+        state = state.copyWith(status: BrandsStatus.failure, failure: failure);
       },
       (brandsList) {
         final filtered = _filterBrandsList(brandsList, state.searchQuery);
@@ -59,10 +55,7 @@ class BrandsNotifier extends Notifier<BrandsState> {
     final trimmed = query.trim();
     final filtered = _filterBrandsList(state.brands, trimmed);
 
-    state = state.copyWith(
-      searchQuery: trimmed,
-      filteredBrands: filtered,
-    );
+    state = state.copyWith(searchQuery: trimmed, filteredBrands: filtered);
   }
 
   /// Clears active search filter

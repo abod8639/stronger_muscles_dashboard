@@ -9,7 +9,9 @@ class GetBrandsUseCase {
 
   const GetBrandsUseCase(this._repository);
 
-  Future<Either<Failure, List<BrandEntity>>> call({bool forceRefresh = false}) async {
+  Future<Either<Failure, List<BrandEntity>>> call({
+    bool forceRefresh = false,
+  }) async {
     return await _repository.getBrands(forceRefresh: forceRefresh);
   }
 }

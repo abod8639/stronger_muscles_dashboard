@@ -60,12 +60,14 @@ final getBrandByIdUseCaseProvider = Provider<GetBrandByIdUseCase>((ref) {
 /// ============================================================================
 
 /// State management controller for Brands
-final brandsNotifierProvider =
-    NotifierProvider<BrandsNotifier, BrandsState>(BrandsNotifier.new);
+final brandsNotifierProvider = NotifierProvider<BrandsNotifier, BrandsState>(
+  BrandsNotifier.new,
+);
 
 /// Backward-compatible provider for consumers relying on FutureProvider
-final brandsListProvider =
-    FutureProvider.autoDispose<List<BrandEntity>>((ref) async {
+final brandsListProvider = FutureProvider.autoDispose<List<BrandEntity>>((
+  ref,
+) async {
   final useCase = ref.watch(getBrandsUseCaseProvider);
   final result = await useCase();
   return result.fold(

@@ -42,8 +42,10 @@ class BrandRemoteDataSourceImpl implements BrandRemoteDataSource {
 
       if (rawList is List) {
         return rawList
-            .map((item) =>
-                BrandModel.fromJson(Map<String, dynamic>.from(item as Map)))
+            .map(
+              (item) =>
+                  BrandModel.fromJson(Map<String, dynamic>.from(item as Map)),
+            )
             .toList();
       }
 
@@ -82,7 +84,8 @@ class BrandRemoteDataSourceImpl implements BrandRemoteDataSource {
 
       throw ServerException(
         message: data is Map
-            ? (data['message']?.toString() ?? 'تعذر العثور على العلامة التجارية')
+            ? (data['message']?.toString() ??
+                  'تعذر العثور على العلامة التجارية')
             : 'تعذر العثور على العلامة التجارية',
         statusCode: response.statusCode,
       );
