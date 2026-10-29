@@ -1,9 +1,10 @@
 import 'dart:math' as math;
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/config/responsive.dart';
 
 /// بطاقة مؤشر وإحصائيات بتصميم Neumorphism / Soft UI
-/// تدعم السمات الفاتحة والداكنة ديناميكياً مع ظلال ناعمة مزدوجة وتفاعل حركي ملموس.
+/// متوافقة بالكامل مع شاشات الهواتف والحواسب وتدعم الاتجاهات (RTL/LTR) والسمات الفاتحة والداكنة
 class PremiumIndicatorCard extends StatefulWidget {
   final String title;
   final String value;
@@ -43,6 +44,7 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
+    final isMobile = context.isMobile;
 
     final Color effectiveAccent = widget.chartColor ?? widget.accentColor;
     final hasChart = widget.chartSpots != null && widget.chartSpots!.isNotEmpty;
@@ -56,180 +58,243 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
         ? 0.985
         : (_isHovered ? 1.015 : 1.0);
 
-    return MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
-      cursor: widget.onTap != null ? SystemMouseCursors.click : SystemMouseCursors.basic,
-      child: GestureDetector(
-        onTapDown: widget.onTap != null ? (_) => setState(() => _isPressed = true) : null,
-        onTapUp: widget.onTap != null
-            ? (_) {
-                setState(() => _isPressed = false);
-                widget.onTap?.call();
-              }
-            : null,
-        onTapCancel: widget.onTap != null ? () => setState(() => _isPressed = false) : null,
-        child: AnimatedScale(
-          scale: currentScale,
-          duration: const Duration(milliseconds: 180),
-          curve: Curves.easeOutCubic,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 220),
-            curve: Curves.easeOutCubic,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: isDark
-                    ? [
-                        Color.lerp(colorScheme.surfaceContainer, Colors.white, _isHovered ? 0.05 : 0.03)!,
-                        Color.lerp(colorScheme.surfaceContainer, Colors.black, _isHovered ? 0.05 : 0.09)!,
-                      ]
-                    : [
-                        Color.lerp(colorScheme.surfaceContainer, Colors.white, _isHovered ? 0.75 : 0.65)!,
-                        Color.lerp(colorScheme.surfaceContainer, Colors.black, _isHovered ? 0.01 : 0.035)!,
-                      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final cardWidth = constraints.maxWidth;
+        final cardHeight = constraints.maxHeight;
+
+        // تحديد ما إذا كانت البطاقة في حاوية مدمجة أو هاتف
+        final isNarrow = cardWidth < 220;
+        final isCompact = isMobile || isNarrow;
+        final isVeryCompact = cardWidth < 165;
+
+        final double hPadding = isVeryCompact ? 10.0 : (isCompact ? 13.0 : 16.0);
+        final double vPadding = isVeryCompact ? 8.0 : (isCompact ? 10.0 : 14.0);
+        final double borderRadiusValue = isCompact ? 18.0 : 22.0;
+
+        final double iconBadgeSize = isVeryCompact ? 32.0 : (isCompact ? 36.0 : 42.0);
+        final double iconSize = isVeryCompact ? 16.0 : (isCompact ? 18.0 : 20.0);
+
+        final double trendHPad = isVeryCompact ? 6.0 : (isCompact ? 8.0 : 10.0);
+        final double trendVPad = isVeryCompact ? 2.5 : (isCompact ? 3.5 : 4.5);
+        final double trendFontSize = isVeryCompact ? 9.5 : (isCompact ? 10.5 : 11.0);
+        final double trendIconSize = isVeryCompact ? 10.5 : (isCompact ? 11.5 : 12.5);
+
+        final double titleFontSize = isVeryCompact ? 11.0 : (isCompact ? 12.0 : 13.0);
+        final double valueFontSize = isVeryCompact ? 18.0 : (isCompact ? 21.0 : 25.0);
+        final double chartHeight = isVeryCompact ? 22.0 : (isCompact ? 28.0 : 34.0);
+
+        Widget content = Padding(
+          padding: EdgeInsets.symmetric(horizontal: hPadding, vertical: vPadding),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // 1. الرأس: الأيقونة المجسمة + شارة الاتجاه
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  _buildNeumorphicIconBadge(
+                    effectiveAccent,
+                    colorScheme,
+                    isDark,
+                    size: iconBadgeSize,
+                    iconSize: iconSize,
+                  ),
+                  _buildNeumorphicTrendBadge(
+                    trendColor,
+                    colorScheme,
+                    isDark,
+                    hPad: trendHPad,
+                    vPad: trendVPad,
+                    fontSize: trendFontSize,
+                    iconSize: trendIconSize,
+                  ),
+                ],
               ),
-              boxShadow: _isPressed
-                  ? [
-                      // في حالة الضغط، تتراجع الظلال لمحاكاة الانضغاط للداخل
-                      BoxShadow(
-                        color: isDark
-                            ? Colors.black.withValues(alpha: 0.3)
-                            : const Color(0xFFA3B1C6).withValues(alpha: 0.25),
-                        offset: const Offset(2, 3),
-                        blurRadius: 6,
-                      ),
-                    ]
-                  : [
-                      // الظل السفلي الغامق (Drop Shadow)
-                      BoxShadow(
-                        color: isDark
-                            ? Colors.black.withValues(alpha: _isHovered ? 0.65 : 0.55)
-                            : const Color(0xFFA3B1C6).withValues(alpha: _isHovered ? 0.55 : 0.42),
-                        offset: _isHovered ? const Offset(7, 9) : const Offset(5, 7),
-                        blurRadius: _isHovered ? 20 : 16,
-                        spreadRadius: 0,
-                      ),
-                      // الظل العلوي الفاتح العاكس للضوء (Highlight Glow)
-                      BoxShadow(
-                        color: isDark
-                            ? Colors.white.withValues(alpha: _isHovered ? 0.06 : 0.04)
-                            : Colors.white.withValues(alpha: _isHovered ? 1.0 : 0.95),
-                        offset: _isHovered ? const Offset(-5, -5) : const Offset(-4, -4),
-                        blurRadius: _isHovered ? 16 : 12,
-                        spreadRadius: 0,
-                      ),
-                      // وهج ناعم بلون العنصر عند التحويم
-                      if (_isHovered)
-                        BoxShadow(
-                          color: effectiveAccent.withValues(alpha: isDark ? 0.12 : 0.15),
-                          offset: const Offset(0, 4),
-                          blurRadius: 18,
-                          spreadRadius: -2,
-                        ),
-                    ],
-              border: Border.all(
-                color: isDark
-                    ? (_isHovered
-                        ? effectiveAccent.withValues(alpha: 0.35)
-                        : Colors.white.withValues(alpha: 0.06))
-                    : (_isHovered
-                        ? effectiveAccent.withValues(alpha: 0.4)
-                        : Colors.white.withValues(alpha: 0.85)),
-                width: _isHovered ? 1.4 : 1.1,
+
+              SizedBox(height: isCompact ? 8 : 12),
+
+              // 2. العنوان والوصف الفرعي
+              Text(
+                widget.title,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w600,
+                  fontSize: titleFontSize,
+                  letterSpacing: 0.3,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
+
+              if (widget.subtitle != null && widget.subtitle!.isNotEmpty && !isVeryCompact) ...[
+                const SizedBox(height: 1),
+                Text(
+                  widget.subtitle!,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant.withValues(alpha: .7),
+                    fontSize: isCompact ? 10 : 11,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+
+              SizedBox(height: isCompact ? 3 : 5),
+
+              // 3. القيمة الرئيسية (محاذاة البداية Directional لتدعم العربية والإنجليزية)
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: AlignmentDirectional.centerStart,
+                child: Text(
+                  widget.value,
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.w900,
+                        color: colorScheme.onSurface,
+                        fontSize: valueFontSize,
+                        letterSpacing: -0.5,
+                      ) ??
+                      TextStyle(
+                        fontWeight: FontWeight.w900,
+                        color: colorScheme.onSurface,
+                        fontSize: valueFontSize,
+                      ),
+                ),
+              ),
+
+              // 4. الرسم البياني المصغر (Sparkline)
+              if (hasChart) ...[
+                SizedBox(height: isCompact ? 6 : 10),
+                SizedBox(
+                  height: chartHeight,
+                  child: LineChart(_buildChartData(effectiveAccent)),
+                ),
+              ],
+            ],
+          ),
+        );
+
+        // حماية البطاقة من الـ Overflow إذا كان الارتفاع مقيداً
+        if (cardHeight.isFinite && cardHeight < 140) {
+          content = FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.topCenter,
+            child: SizedBox(
+              width: cardWidth,
+              child: content,
             ),
-            child: Material(
-              color: Colors.transparent,
-              borderRadius: BorderRadius.circular(24),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // الرأس: الأيقونة المجسمة + شارة الاتجاه الناعمة
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        _buildNeumorphicIconBadge(effectiveAccent, colorScheme, isDark),
-                        _buildNeumorphicTrendBadge(trendColor, colorScheme, isDark),
-                      ],
-                    ),
-                    const SizedBox(height: 14),
+          );
+        }
 
-                    // العنوان والوصف الفرعي
-                    Text(
-                      widget.title,
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.4,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (widget.subtitle != null && widget.subtitle!.isNotEmpty) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        widget.subtitle!,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant.withValues(alpha: .7),
-                          fontSize: 11,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-
-                    const SizedBox(height: 6),
-
-                    // القيمة الرئيسية
-                    FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        widget.value,
-                        style: theme.textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.w900,
-                          color: colorScheme.onSurface,
-                          letterSpacing: -0.5,
-                        ),
-                      ),
-                    ),
-
-                    // الرسم البياني المصغر (Sparkline)
-                    if (hasChart) ...[
-                      const SizedBox(height: 12),
-                      SizedBox(
-                        height: 38,
-                        child: LineChart(_buildChartData(effectiveAccent)),
-                      ),
-                    ],
-                  ],
+        return MouseRegion(
+          onEnter: (_) => setState(() => _isHovered = true),
+          onExit: (_) => setState(() => _isHovered = false),
+          cursor: widget.onTap != null ? SystemMouseCursors.click : SystemMouseCursors.basic,
+          child: GestureDetector(
+            onTapDown: widget.onTap != null ? (_) => setState(() => _isPressed = true) : null,
+            onTapUp: widget.onTap != null
+                ? (_) {
+                    setState(() => _isPressed = false);
+                    widget.onTap?.call();
+                  }
+                : null,
+            onTapCancel: widget.onTap != null ? () => setState(() => _isPressed = false) : null,
+            child: AnimatedScale(
+              scale: currentScale,
+              duration: const Duration(milliseconds: 180),
+              curve: Curves.easeOutCubic,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeOutCubic,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(borderRadiusValue),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: isDark
+                        ? [
+                            Color.lerp(colorScheme.surfaceContainer, Colors.white, _isHovered ? 0.05 : 0.03)!,
+                            Color.lerp(colorScheme.surfaceContainer, Colors.black, _isHovered ? 0.05 : 0.09)!,
+                          ]
+                        : [
+                            Color.lerp(colorScheme.surfaceContainer, Colors.white, _isHovered ? 0.75 : 0.65)!,
+                            Color.lerp(colorScheme.surfaceContainer, Colors.black, _isHovered ? 0.01 : 0.035)!,
+                          ],
+                  ),
+                  boxShadow: _isPressed
+                      ? [
+                          BoxShadow(
+                            color: isDark
+                                ? Colors.black.withValues(alpha: 0.3)
+                                : const Color(0xFFA3B1C6).withValues(alpha: 0.25),
+                            offset: const Offset(2, 2.5),
+                            blurRadius: 5,
+                          ),
+                        ]
+                      : [
+                          BoxShadow(
+                            color: isDark
+                                ? Colors.black.withValues(alpha: _isHovered ? 0.65 : 0.55)
+                                : const Color(0xFFA3B1C6).withValues(alpha: _isHovered ? 0.55 : 0.42),
+                            offset: _isHovered ? const Offset(6, 8) : const Offset(4, 6),
+                            blurRadius: _isHovered ? 18 : 14,
+                            spreadRadius: 0,
+                          ),
+                          BoxShadow(
+                            color: isDark
+                                ? Colors.white.withValues(alpha: _isHovered ? 0.06 : 0.04)
+                                : Colors.white.withValues(alpha: _isHovered ? 1.0 : 0.95),
+                            offset: _isHovered ? const Offset(-4, -4) : const Offset(-3, -3),
+                            blurRadius: _isHovered ? 14 : 10,
+                            spreadRadius: 0,
+                          ),
+                          if (_isHovered)
+                            BoxShadow(
+                              color: effectiveAccent.withValues(alpha: isDark ? 0.12 : 0.15),
+                              offset: const Offset(0, 4),
+                              blurRadius: 16,
+                              spreadRadius: -2,
+                            ),
+                        ],
+                  border: Border.all(
+                    color: isDark
+                        ? (_isHovered
+                            ? effectiveAccent.withValues(alpha: 0.35)
+                            : Colors.white.withValues(alpha: 0.06))
+                        : (_isHovered
+                            ? effectiveAccent.withValues(alpha: 0.4)
+                            : Colors.white.withValues(alpha: 0.85)),
+                    width: _isHovered ? 1.3 : 1.0,
+                  ),
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(borderRadiusValue),
+                  child: content,
                 ),
               ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
-  /// حاوية أيقونة مجسمة بأسلوب Soft UI
+  /// حاوية أيقونة مجسمة بأسلوب Soft UI متجاوبة
   Widget _buildNeumorphicIconBadge(
     Color accent,
     ColorScheme colorScheme,
-    bool isDark,
-  ) {
+    bool isDark, {
+    required double size,
+    required double iconSize,
+  }) {
     return Container(
-      width: 42,
-      height: 42,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(size * 0.33),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -248,15 +313,15 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
             color: isDark
                 ? Colors.black.withValues(alpha: 0.5)
                 : const Color(0xFFA3B1C6).withValues(alpha: 0.4),
-            offset: const Offset(2.5, 3),
-            blurRadius: 6,
+            offset: const Offset(2, 2.5),
+            blurRadius: 5,
           ),
           BoxShadow(
             color: isDark
                 ? Colors.white.withValues(alpha: 0.05)
                 : Colors.white.withValues(alpha: 0.9),
-            offset: const Offset(-2, -2),
-            blurRadius: 5,
+            offset: const Offset(-1.5, -1.5),
+            blurRadius: 4,
           ),
         ],
         border: Border.all(
@@ -270,20 +335,24 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
         child: Icon(
           widget.icon ?? Icons.analytics_rounded,
           color: accent,
-          size: 20,
+          size: iconSize,
         ),
       ),
     );
   }
 
-  /// شارة الاتجاه والنمو بنمط Neumorphic Pill
+  /// شارة الاتجاه والنمو بنمط Neumorphic Pill متجاوبة
   Widget _buildNeumorphicTrendBadge(
     Color trendColor,
     ColorScheme colorScheme,
-    bool isDark,
-  ) {
+    bool isDark, {
+    required double hPad,
+    required double vPad,
+    required double fontSize,
+    required double iconSize,
+  }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: EdgeInsets.symmetric(horizontal: hPad, vertical: vPad),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(100),
         gradient: LinearGradient(
@@ -305,14 +374,14 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
                 ? Colors.black.withValues(alpha: 0.35)
                 : const Color(0xFFA3B1C6).withValues(alpha: 0.3),
             offset: const Offset(1.5, 2),
-            blurRadius: 4,
+            blurRadius: 3.5,
           ),
           BoxShadow(
             color: isDark
                 ? Colors.white.withValues(alpha: 0.04)
                 : Colors.white.withValues(alpha: 0.8),
             offset: const Offset(-1.5, -1.5),
-            blurRadius: 3,
+            blurRadius: 2.5,
           ),
         ],
         border: Border.all(
@@ -326,14 +395,14 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
           Icon(
             widget.trendUp ? Icons.arrow_outward_rounded : Icons.south_east_rounded,
             color: trendColor,
-            size: 13,
+            size: iconSize,
           ),
-          const SizedBox(width: 4),
+          const SizedBox(width: 3),
           Text(
             widget.trend,
             style: TextStyle(
               color: trendColor,
-              fontSize: 11,
+              fontSize: fontSize,
               fontWeight: FontWeight.w700,
               letterSpacing: 0.2,
             ),
@@ -377,12 +446,12 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
           preventCurveOverShooting: true,
           curveSmoothness: 0.35,
           color: chartColor,
-          barWidth: 2.5,
+          barWidth: 2.2,
           isStrokeCapRound: true,
           shadow: Shadow(
             color: chartColor.withValues(alpha: 0.35),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
+            blurRadius: 5,
+            offset: const Offset(0, 1.5),
           ),
           dotData: const FlDotData(show: false),
           belowBarData: BarAreaData(
@@ -391,7 +460,7 @@ class _PremiumIndicatorCardState extends State<PremiumIndicatorCard> {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                chartColor.withValues(alpha: 0.28),
+                chartColor.withValues(alpha: 0.25),
                 chartColor.withValues(alpha: 0.0),
               ],
             ),
