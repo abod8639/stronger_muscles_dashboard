@@ -27,6 +27,7 @@ class OrderEntity {
   final double totalAmount;
   final double subtotal;
   final double shippingCost;
+  final double taxAmount;
   final double discount;
   final OrderStatus status;
   final PaymentStatus paymentStatus;
@@ -48,6 +49,7 @@ class OrderEntity {
     required this.totalAmount,
     required this.subtotal,
     this.shippingCost = 0.0,
+    this.taxAmount = 0.0,
     this.discount = 0.0,
     required this.status,
     required this.paymentStatus,
@@ -70,6 +72,7 @@ class OrderEntity {
     double? totalAmount,
     double? subtotal,
     double? shippingCost,
+    double? taxAmount,
     double? discount,
     OrderStatus? status,
     PaymentStatus? paymentStatus,
@@ -91,6 +94,7 @@ class OrderEntity {
       totalAmount: totalAmount ?? this.totalAmount,
       subtotal: subtotal ?? this.subtotal,
       shippingCost: shippingCost ?? this.shippingCost,
+      taxAmount: taxAmount ?? this.taxAmount,
       discount: discount ?? this.discount,
       status: status ?? this.status,
       paymentStatus: paymentStatus ?? this.paymentStatus,
