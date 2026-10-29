@@ -7,6 +7,7 @@ class SettingsModel {
   final String currency;
   final double deliveryFee;
   final double freeDeliveryThreshold;
+  final double taxRate;
   final bool isStoreOpen;
   final bool orderNotificationsEnabled;
   final bool maintenanceMode;
@@ -20,6 +21,7 @@ class SettingsModel {
     required this.currency,
     required this.deliveryFee,
     required this.freeDeliveryThreshold,
+    this.taxRate = 0.0,
     required this.isStoreOpen,
     required this.orderNotificationsEnabled,
     required this.maintenanceMode,
@@ -38,6 +40,7 @@ class SettingsModel {
       deliveryFee: (json['delivery_fee'] as num?)?.toDouble() ?? 5000.0,
       freeDeliveryThreshold:
           (json['free_delivery_threshold'] as num?)?.toDouble() ?? 100000.0,
+      taxRate: (json['tax_rate'] as num?)?.toDouble() ?? 0.0,
       isStoreOpen: json['is_store_open'] == true ||
           json['is_store_open'] == 1 ||
           json['is_store_open'] == null,
@@ -65,6 +68,7 @@ class SettingsModel {
       'currency': currency,
       'delivery_fee': deliveryFee,
       'free_delivery_threshold': freeDeliveryThreshold,
+      'tax_rate': taxRate,
       'is_store_open': isStoreOpen,
       'order_notifications_enabled': orderNotificationsEnabled,
       'maintenance_mode': maintenanceMode,
