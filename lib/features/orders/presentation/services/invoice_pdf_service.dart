@@ -271,6 +271,10 @@ class InvoicePdfService {
                             _buildSummaryLine('المجموع الفرعي:', '${order.subtotal.toStringAsFixed(2)} ر.س', font: arabicFont),
                             pw.SizedBox(height: 4),
                             _buildSummaryLine('تكلفة الشحن:', '${order.shippingCost.toStringAsFixed(2)} ر.س', font: arabicFont),
+                            if (order.taxAmount > 0) ...[
+                              pw.SizedBox(height: 4),
+                              _buildSummaryLine('الضريبة:', '${order.taxAmount.toStringAsFixed(2)} ر.س', font: arabicFont),
+                            ],
                             if (order.discount > 0) ...[
                               pw.SizedBox(height: 4),
                               _buildSummaryLine('الخصم:', '-${order.discount.toStringAsFixed(2)} ر.س', font: arabicFont, color: PdfColors.red700),
