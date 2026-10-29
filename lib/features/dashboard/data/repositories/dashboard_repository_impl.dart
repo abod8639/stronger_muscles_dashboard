@@ -7,6 +7,7 @@ import 'package:stronger_muscles_dashboard/features/categories/categories_featur
 import 'package:stronger_muscles_dashboard/features/dashboard/data/datasources/dashboard_local_datasource.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/data/datasources/dashboard_remote_datasource.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/data/mappers/dashboard_mapper.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/data/models/dashboard_stats_model.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/entities/dashboard_stats_entity.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/repositories/dashboard_repository.dart';
 import 'package:stronger_muscles_dashboard/features/orders/orders_feature.dart';
@@ -15,7 +16,7 @@ import 'package:stronger_muscles_dashboard/features/users/users_feature.dart';
 
 /// Single Source of Truth for Dashboard Data.
 /// Orchestrates calls between Remote data aggregation and Hive LocalDataSource caching.
-/// Isolated computational heavy-lifting in background Isolate via [compute].
+/// Combines database KPIs with domain entities (orders, products, categories).
 class DashboardRepositoryImpl implements DashboardRepository {
   final OrderRepository _orderRepository;
   final ProductRepository _productRepository;
@@ -43,42 +44,45 @@ class DashboardRepositoryImpl implements DashboardRepository {
     bool forceRefresh = false,
   }) async {
     // 1. Check local Hive cache if refresh is not forced
+    DashboardStatsModel? cachedStatsModel;
     if (!forceRefresh) {
       final isCacheValid = await _localDataSource.isCacheValid();
       if (isCacheValid) {
         try {
-          final cachedModel = await _localDataSource.getCachedStats();
-          if (cachedModel != null) {
-            return Right(cachedModel.toEntity());
-          }
+          cachedStatsModel = await _localDataSource.getCachedStats();
         } catch (_) {
           // If cache read fails, proceed to live aggregation
         }
       }
     }
 
-    // 2. Fetch fresh domain data (try direct remote stats if available, fallback to constituent aggregation)
+    // 2. Fetch fresh domain data in parallel
     try {
-      if (_remoteDataSource != null) {
-        try {
-          final remoteModel = await _remoteDataSource.getRemoteStats();
-          final entity = remoteModel.toEntity();
-          await _localDataSource.cacheStats(remoteModel);
-          return Right(entity);
-        } catch (_) {
-          // If direct endpoint is unavailable or fails, fallback to constituent services
-        }
-      }
+      final results = await Future.wait([
+        _orderRepository.getOrders(forceRefresh: forceRefresh),
+        _productRepository.getProducts(forceRefresh: forceRefresh),
+        _categoryRepository.getCategories(forceRefresh: forceRefresh),
+        if (_remoteDataSource != null)
+          _remoteDataSource
+              .getRemoteStats()
+              .then<DashboardStatsModel?>((m) => m)
+              .catchError((_) => null)
+        else
+          Future.value(null),
+        _userRepository.getUsersStats(forceRefresh: forceRefresh),
+      ]);
 
-      final ordersResult = await _orderRepository.getOrders();
-      final productsResult = await _productRepository.getProducts();
-      final categoriesResult = await _categoryRepository.getCategories();
-      final usersResult = await _userRepository.getUsersStats();
+      final ordersResult = results[0] as Either<Failure, List<OrderEntity>>;
+      final productsResult = results[1] as Either<Failure, List<ProductEntity>>;
+      final categoriesResult = results[2] as Either<Failure, List<CategoryEntity>>;
+      final remoteModel = (results[3] as DashboardStatsModel?) ?? cachedStatsModel;
+      final usersResult = results[4] as Either<Failure, UsersStatsEntity>;
 
       if (ordersResult.isLeft() &&
           productsResult.isLeft() &&
           categoriesResult.isLeft() &&
-          usersResult.isLeft()) {
+          usersResult.isLeft() &&
+          remoteModel == null) {
         throw const ServerException(message: 'Constituent dashboard services failed');
       }
 
@@ -107,11 +111,36 @@ class DashboardRepositoryImpl implements DashboardRepository {
       );
 
       final totalUsers = usersResult.fold(
-        (failure) => 0,
+        (failure) => remoteModel?.totalUsers ?? 0,
         (stats) => stats.totalUsers,
       );
 
-      // 3. Compute heavy metrics in background Isolate
+      // 3. If direct endpoint returned KPI metrics, merge with constituent entity lists
+      if (remoteModel != null) {
+        await _localDataSource.cacheStats(remoteModel);
+
+        final entity = DashboardStatsEntity(
+          totalRevenue: remoteModel.totalRevenue,
+          totalOrders: remoteModel.totalOrders > 0 ? remoteModel.totalOrders : orders.length,
+          totalUsers: remoteModel.totalUsers > 0 ? remoteModel.totalUsers : totalUsers,
+          totalProducts: remoteModel.totalProducts > 0 ? remoteModel.totalProducts : products.length,
+          orders: orders,
+          products: products,
+          categories: categories,
+          pendingOrders: remoteModel.pendingOrders,
+          processingOrders: remoteModel.processingOrders,
+          shippedOrders: remoteModel.shippedOrders,
+          deliveredOrders: remoteModel.deliveredOrders,
+          cancelledOrders: remoteModel.cancelledOrders,
+          inStock: remoteModel.inStock,
+          lowStock: remoteModel.lowStock,
+          outOfStock: remoteModel.outOfStock,
+        );
+
+        return Right(entity);
+      }
+
+      // 4. Compute heavy metrics in background Isolate when remote direct aggregates not available
       final stats = await compute(
         _computeDashboardStats,
         _DashboardComputationParams(
@@ -122,7 +151,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
         ),
       );
 
-      // 4. Update Hive cache
+      // Update Hive cache
       await _localDataSource.cacheStats(stats.toModel());
 
       return Right(stats);
