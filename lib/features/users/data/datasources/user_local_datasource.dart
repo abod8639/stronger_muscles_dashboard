@@ -37,16 +37,30 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
           ? jsonDecode(raw) as Map<String, dynamic>
           : Map<String, dynamic>.from(raw as Map);
 
+      if (map['users'] is List) {
+        map['users'] = (map['users'] as List).map((u) {
+          if (u is UserModel) return u.toJson();
+          if (u is Map) return Map<String, dynamic>.from(u);
+          return u;
+        }).toList();
+      }
+
       return UsersStatsModel.fromJson(map);
     } catch (e) {
-      throw CacheException(message: 'Failed to read cached users stats: $e');
+      return null;
     }
   }
 
   @override
   Future<void> cacheUsersStats(UsersStatsModel stats) async {
     try {
-      await _statsBox.put(_statsKey, stats.toJson());
+      final Map<String, dynamic> jsonMap = {
+        'total_users': stats.totalUsers,
+        'active_users': stats.activeUsers,
+        'inactive_users': stats.inactiveUsers,
+        'users': stats.users.map((u) => u.toJson()).toList(),
+      };
+      await _statsBox.put(_statsKey, jsonEncode(jsonMap));
       await _statsBox.put(_timestampKey, DateTime.now().millisecondsSinceEpoch);
     } catch (e) {
       throw CacheException(message: 'Failed to cache users stats: $e');
