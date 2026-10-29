@@ -18,8 +18,8 @@ class PromoRepositoryImpl implements PromoRepository {
   const PromoRepositoryImpl({
     required PromoRemoteDataSource remoteDataSource,
     required PromoLocalDataSource localDataSource,
-  })  : _remoteDataSource = remoteDataSource,
-        _localDataSource = localDataSource;
+  }) : _remoteDataSource = remoteDataSource,
+       _localDataSource = localDataSource;
 
   @override
   Future<Either<Failure, List<PromoEntity>>> getPromos() async {
@@ -29,15 +29,21 @@ class PromoRepositoryImpl implements PromoRepository {
       final entities = remoteModels.map((m) => m.toEntity()).toList();
       return Right(entities);
     } catch (e, stackTrace) {
-      debugPrint('⚠️ [PromoRepositoryImpl] Remote fetch failed, checking local cache: $e');
+      debugPrint(
+        '⚠️ [PromoRepositoryImpl] Remote fetch failed, checking local cache: $e',
+      );
       try {
         final cachedModels = await _localDataSource.getCachedPromos();
         if (cachedModels.isNotEmpty) {
-          debugPrint('✅ [PromoRepositoryImpl] Serving ${cachedModels.length} promos from Hive cache');
+          debugPrint(
+            '✅ [PromoRepositoryImpl] Serving ${cachedModels.length} promos from Hive cache',
+          );
           return Right(cachedModels.map((m) => m.toEntity()).toList());
         }
       } catch (cacheError) {
-        debugPrint('⚠️ [PromoRepositoryImpl] Hive cache read error: $cacheError');
+        debugPrint(
+          '⚠️ [PromoRepositoryImpl] Hive cache read error: $cacheError',
+        );
       }
       final failure = NetworkErrorHandler.handleException(e, stackTrace);
       return Left(failure);
@@ -62,7 +68,10 @@ class PromoRepositoryImpl implements PromoRepository {
   Future<Either<Failure, PromoEntity>> updatePromo(PromoEntity promo) async {
     try {
       final model = promo.toModel();
-      final updatedModel = await _remoteDataSource.updatePromo(promo.id, model.toJson());
+      final updatedModel = await _remoteDataSource.updatePromo(
+        promo.id,
+        model.toJson(),
+      );
       await _localDataSource.cachePromo(updatedModel);
       return Right(updatedModel.toEntity());
     } catch (e, stackTrace) {

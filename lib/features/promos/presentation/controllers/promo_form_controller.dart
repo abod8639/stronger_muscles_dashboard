@@ -144,13 +144,10 @@ class PromoFormController extends ChangeNotifier {
 
     if (_products.isEmpty && getProductsUseCase != null) {
       final result = await getProductsUseCase!.call();
-      result.fold(
-        (failure) {},
-        (fetched) {
-          _products = fetched;
-          notifyListeners();
-        },
-      );
+      result.fold((failure) {}, (fetched) {
+        _products = fetched;
+        notifyListeners();
+      });
     }
 
     if (_brands.isEmpty && brandRepository != null) {
@@ -158,12 +155,9 @@ class PromoFormController extends ChangeNotifier {
       notifyListeners();
 
       final result = await brandRepository!.getBrands();
-      result.fold(
-        (failure) {},
-        (fetched) {
-          _brands = fetched;
-        },
-      );
+      result.fold((failure) {}, (fetched) {
+        _brands = fetched;
+      });
 
       _isBrandsLoading = false;
       notifyListeners();
@@ -213,7 +207,9 @@ class PromoFormController extends ChangeNotifier {
 
     String finalImageUrl = _existingImageUrl;
     if (_selectedImage != null) {
-      final uploadResult = await uploadPromoImageUseCase.call(_selectedImage!.path);
+      final uploadResult = await uploadPromoImageUseCase.call(
+        _selectedImage!.path,
+      );
       final bool uploadSucceeded = uploadResult.fold(
         (failure) {
           AppFeedback.showError(failure.toMessage());

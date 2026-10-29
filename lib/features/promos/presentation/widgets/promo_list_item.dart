@@ -1,12 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:stronger_muscles_dashboard/core/components/info_pill.dart';
+import 'package:stronger_muscles_dashboard/core/components/soft_surface.dart';
+import 'package:stronger_muscles_dashboard/core/theme/responsive.dart';
 import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
+import 'package:stronger_muscles_dashboard/core/utils/color_utils.dart';
 import 'package:stronger_muscles_dashboard/features/promos/domain/entities/promo_entity.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/controllers/promos_providers.dart';
+import 'package:stronger_muscles_dashboard/features/promos/presentation/widgets/promo_status_pill.dart';
+import 'package:stronger_muscles_dashboard/functions/cache_manager.dart';
 
-/// عنصر قائمة الإعلانات بتصميم Neumorphism / Soft UI
-/// يتميز بأسطح لمسية ناعمة، شارة حالة نقطية مجسمة، وأزرار تحكم بارزة بدون أنيميشن
+/// عنصر قائمة الإعلانات: معاينة مصغرة + العنوان والحالة والتوجيه + أزرار التعديل والحذف
 class PromoListItem extends ConsumerWidget {
   final PromoEntity promo;
   final int index;
@@ -25,430 +30,156 @@ class PromoListItem extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final isDark = theme.brightness == Brightness.dark;
+    final isMobile = context.isMobile;
 
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isDark
-              ? [
-                  Color.lerp(colorScheme.surfaceContainer, Colors.white, 0.02)!,
-                  Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.06)!,
-                ]
-              : [
-                  Color.lerp(colorScheme.surface, Colors.white, 0.85)!,
-                  Color.lerp(colorScheme.surface, const Color(0xFFA3B1C6), 0.08)!,
-                ],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: isDark
-                ? Colors.black.withValues(alpha: 0.35)
-                : const Color(0xFFA3B1C6).withValues(alpha: 0.28),
-            offset: const Offset(2, 2.5),
-            blurRadius: 4,
-          ),
-          BoxShadow(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.02)
-                : Colors.white.withValues(alpha: 0.90),
-            offset: const Offset(-2, -2),
-            blurRadius: 3.5,
-          ),
-        ],
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.03)
-              : Colors.white.withValues(alpha: 0.85),
-          width: 1.0,
-        ),
+    final actions = [
+      SoftIconButton(icon: Icons.edit_rounded, tooltip: 'تعديل', onPressed: onEdit),
+      SoftIconButton(
+        icon: Icons.delete_outline_rounded,
+        tooltip: 'حذف',
+        color: colorScheme.error,
+        onPressed: onDelete,
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Row(
-          children: [
-            // معاينة صورة / لون الإعلان
-            _buildImagePreview(colorScheme, isDark),
-            const SizedBox(width: 16),
-            // بيانات الإعلان
-            Expanded(child: _buildInfo(context, ref, colorScheme, isDark)),
-            const SizedBox(width: 12),
-            // أزرار العمليات (تعديل وحذف)
-            _buildActions(colorScheme, isDark),
-          ],
-        ),
+    ];
+
+    return SoftSurface(
+      onTap: onEdit,
+      borderRadius: AppDesignTokens.radiusCard,
+      padding: EdgeInsets.all(
+        isMobile ? AppDesignTokens.space10 : AppDesignTokens.space14,
+      ),
+      child: Row(
+        children: [
+          _Thumbnail(
+            promo: promo,
+            width: isMobile ? 104 : 150,
+            height: isMobile ? 64 : 76,
+          ),
+          SizedBox(
+            width: isMobile ? AppDesignTokens.space10 : AppDesignTokens.space16,
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  promo.displayTitle.isNotEmpty
+                      ? promo.displayTitle
+                      : 'بدون عنوان',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+                if (promo.displaySubtitle.isNotEmpty) ...[
+                  const SizedBox(height: AppDesignTokens.space4),
+                  Text(
+                    promo.displaySubtitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+                const SizedBox(height: AppDesignTokens.space8),
+                Wrap(
+                  spacing: AppDesignTokens.space6,
+                  runSpacing: AppDesignTokens.space4,
+                  children: [
+                    PromoStatusPill(isActive: promo.isActive),
+                    _targetPill(ref),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: AppDesignTokens.space10),
+          // على الهاتف تُرصّ الأزرار عمودياً لتوفير عرض للنص
+          isMobile
+              ? Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    actions[0],
+                    const SizedBox(height: AppDesignTokens.space8),
+                    actions[1],
+                  ],
+                )
+              : Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    actions[0],
+                    const SizedBox(width: AppDesignTokens.space8),
+                    actions[1],
+                  ],
+                ),
+        ],
       ),
     );
   }
 
-  Widget _buildImagePreview(ColorScheme colorScheme, bool isDark) {
-    Color bgColor = isDark
-        ? colorScheme.surfaceContainerHighest
-        : colorScheme.surfaceContainerHigh;
-    try {
-      final hex = promo.backgroundColor.replaceFirst('#', '0xff');
-      bgColor = Color(int.parse(hex));
-    } catch (_) {}
+  Widget _targetPill(WidgetRef ref) {
+    final hasTarget = promo.targetId?.isNotEmpty ?? false;
+    final (IconData icon, String label) = switch (promo.targetType) {
+      'product' => (
+        Icons.inventory_2_rounded,
+        hasTarget ? 'منتج: ${promo.targetId}' : 'منتج: غير محدد',
+      ),
+      'brand' => (
+        Icons.category_rounded,
+        hasTarget
+            ? 'ماركة: ${ref.watch(promosControllerProvider).getBrandName(promo.targetId)}'
+            : 'ماركة: غير محددة',
+      ),
+      _ => (Icons.block, 'بدون توجيه'),
+    };
+    return InfoPill(icon: icon, label: label);
+  }
+}
+
+class _Thumbnail extends StatelessWidget {
+  final PromoEntity promo;
+  final double width;
+  final double height;
+
+  const _Thumbnail({
+    required this.promo,
+    required this.width,
+    required this.height,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final placeholderColor = colorScheme.onSurfaceVariant.withValues(alpha: 0.5);
 
     return Container(
-      width: 150,
-      height: 76,
+      width: width,
+      height: height,
       decoration: BoxDecoration(
-        color: bgColor,
-        // borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: isDark
-                ? Colors.black.withValues(alpha: 0.35)
-                : const Color(0xFFA3B1C6).withValues(alpha: 0.25),
-            offset: const Offset(1.5, 2),
-            blurRadius: 3,
-          ),
-          BoxShadow(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.02)
-                : Colors.white.withValues(alpha: 0.90),
-            offset: const Offset(-1.5, -1.5),
-            blurRadius: 2.5,
-          ),
-        ],
+        color: parseHexColor(
+          promo.backgroundColor,
+          fallback: colorScheme.surfaceContainerHighest,
+        ),
+        borderRadius: AppDesignTokens.radiusSmall,
+        boxShadow: AppDesignTokens.subtleShadow(
+          Theme.of(context).brightness == Brightness.dark,
+        ),
       ),
       clipBehavior: Clip.antiAlias,
       child: promo.imageUrl.isNotEmpty
           ? CachedNetworkImage(
+              cacheManager: CustomCacheManager.instance,
               imageUrl: promo.imageUrl,
               fit: BoxFit.cover,
-              placeholder: (context, url) => Center(
-                child: Icon(
-                  Icons.image,
-                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
-                  size: 24,
-                ),
-              ),
-              errorWidget: (context, url, error) => Center(
-                child: Icon(
-                  Icons.broken_image,
-                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
-                  size: 24,
-                ),
-              ),
+              placeholder: (_, _) => Icon(Icons.image, color: placeholderColor),
+              errorWidget: (_, _, _) =>
+                  Icon(Icons.broken_image, color: placeholderColor),
             )
-          : Center(
-              child: Icon(
-                Icons.campaign_rounded,
-                color: colorScheme.onSurfaceVariant,
-                size: 28,
-              ),
-            ),
-    );
-  }
-
-  Widget _buildInfo(BuildContext context, WidgetRef ref, ColorScheme colorScheme, bool isDark) {
-    final theme = Theme.of(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // الصف الأول: العنوان وشارة الحالة
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Text(
-                promo.displayTitle.isNotEmpty ? promo.displayTitle : 'بدون عنوان',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.onSurface,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            const SizedBox(width: 8),
-            _buildStatusBadge(context, colorScheme, isDark),
-          ],
-        ),
-        // الوصف الفرعي
-        if (promo.displaySubtitle.isNotEmpty) ...[
-          const SizedBox(height: 4),
-          Text(
-            promo.displaySubtitle,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-        const SizedBox(height: 8),
-        // نوع التوجيه (Target chip)
-        _buildTargetChip(context, ref, colorScheme, isDark),
-      ],
-    );
-  }
-
-  Widget _buildStatusBadge(
-    BuildContext context,
-    ColorScheme colorScheme,
-    bool isDark,
-  ) {
-    final theme = Theme.of(context);
-    final isActive = promo.isActive;
-    final badgeColor = isActive ? AppColors.success : colorScheme.error;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isDark
-              ? [
-                  Color.lerp(colorScheme.surfaceContainer, Colors.white, 0.02)!,
-                  Color.lerp(colorScheme.surfaceContainer, badgeColor, 0.12)!,
-                ]
-              : [
-                  Color.lerp(colorScheme.surface, Colors.white, 0.85)!,
-                  Color.lerp(badgeColor, Colors.white, 0.85)!,
-                ],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: isDark
-                ? Colors.black.withValues(alpha: 0.30)
-                : const Color(0xFFA3B1C6).withValues(alpha: 0.20),
-            offset: const Offset(1, 1.5),
-            blurRadius: 2.5,
-          ),
-          BoxShadow(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.02)
-                : Colors.white.withValues(alpha: 0.90),
-            offset: const Offset(-1, -1),
-            blurRadius: 2,
-          ),
-        ],
-        border: Border.all(
-          color: badgeColor.withValues(alpha: isDark ? 0.35 : 0.45),
-          width: 0.8,
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 6,
-            height: 6,
-            decoration: BoxDecoration(
-              color: badgeColor,
-              shape: BoxShape.circle,
-            ),
-          ),
-          const SizedBox(width: 5),
-          Text(
-            isActive ? 'نشط' : 'غير نشط',
-            style: theme.textTheme.labelSmall?.copyWith(
-              fontSize: 11,
-              fontWeight: FontWeight.bold,
-              color: badgeColor,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTargetChip(
-    BuildContext context,
-    WidgetRef ref,
-    ColorScheme colorScheme,
-    bool isDark,
-  ) {
-    final theme = Theme.of(context);
-    IconData icon;
-    String label;
-
-    switch (promo.targetType) {
-      case 'product':
-        icon = Icons.inventory_2_rounded;
-        label = promo.targetId != null && promo.targetId!.isNotEmpty
-            ? 'منتج: ${promo.targetId}'
-            : 'منتج: غير محدد';
-        break;
-      case 'brand':
-        icon = Icons.category_rounded;
-        final brandName =
-            ref.watch(promosControllerProvider).getBrandName(promo.targetId);
-        label = promo.targetId != null && promo.targetId!.isNotEmpty
-            ? 'ماركة: $brandName'
-            : 'ماركة: غير محددة';
-        break;
-      default:
-        icon = Icons.block;
-        label = 'بدون توجيه';
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isDark
-              ? [
-                  Color.lerp(colorScheme.surfaceContainerLowest, Colors.white, 0.02)!,
-                  Color.lerp(colorScheme.surfaceContainerLowest, Colors.black, 0.06)!,
-                ]
-              : [
-                  Color.lerp(colorScheme.surfaceContainerLow, Colors.white, 0.70)!,
-                  Color.lerp(colorScheme.surfaceContainerLow, const Color(0xFFA3B1C6), 0.06)!,
-                ],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: isDark
-                ? Colors.black.withValues(alpha: 0.25)
-                : const Color(0xFFA3B1C6).withValues(alpha: 0.18),
-            offset: const Offset(1, 1),
-            blurRadius: 2,
-          ),
-          BoxShadow(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.015)
-                : Colors.white.withValues(alpha: 0.85),
-            offset: const Offset(-1, -1),
-            blurRadius: 2,
-          ),
-        ],
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.03)
-              : Colors.white.withValues(alpha: 0.85),
-          width: 0.8,
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            size: 13,
-            color: colorScheme.onSurfaceVariant,
-          ),
-          const SizedBox(width: 4),
-          Flexible(
-            child: Text(
-              label,
-              style: theme.textTheme.labelSmall?.copyWith(
-                fontSize: 11,
-                color: colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w600,
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActions(ColorScheme colorScheme, bool isDark) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _buildActionButton(
-          icon: Icons.edit_rounded,
-          color: colorScheme.onSurfaceVariant,
-          onTap: onEdit,
-          tooltip: 'تعديل',
-          isDark: isDark,
-          colorScheme: colorScheme,
-        ),
-        const SizedBox(width: 8),
-        _buildActionButton(
-          icon: Icons.delete_outline_rounded,
-          color: colorScheme.error,
-          onTap: onDelete,
-          tooltip: 'حذف',
-          isDark: isDark,
-          colorScheme: colorScheme,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildActionButton({
-    required IconData icon,
-    required Color color,
-    required VoidCallback onTap,
-    required String tooltip,
-    required bool isDark,
-    required ColorScheme colorScheme,
-  }) {
-    return Tooltip(
-      message: tooltip,
-      child: Container(
-        width: 36,
-        height: 36,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: isDark
-                ? [
-                    Color.lerp(colorScheme.surfaceContainer, Colors.white, 0.02)!,
-                    Color.lerp(colorScheme.surfaceContainer, Colors.black, 0.06)!,
-                  ]
-                : [
-                    Color.lerp(colorScheme.surface, Colors.white, 0.85)!,
-                    Color.lerp(colorScheme.surface, const Color(0xFFA3B1C6), 0.08)!,
-                  ],
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: isDark
-                  ? Colors.black.withValues(alpha: 0.35)
-                  : const Color(0xFFA3B1C6).withValues(alpha: 0.25),
-              offset: const Offset(1.5, 2),
-              blurRadius: 3,
-            ),
-            BoxShadow(
-              color: isDark
-                ? Colors.white.withValues(alpha: 0.02)
-                : Colors.white.withValues(alpha: 0.90),
-              offset: const Offset(-1.5, -1.5),
-              blurRadius: 2.5,
-            ),
-          ],
-          border: Border.all(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.03)
-                : Colors.white.withValues(alpha: 0.85),
-            width: 1.0,
-          ),
-        ),
-        child: Material(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(10),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(10),
-            onTap: onTap,
-            child: Center(
-              child: Icon(
-                icon,
-                color: color,
-                size: 18,
-              ),
-            ),
-          ),
-        ),
-      ),
+          : Icon(Icons.campaign_rounded, color: colorScheme.onSurfaceVariant),
     );
   }
 }

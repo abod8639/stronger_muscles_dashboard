@@ -41,7 +41,9 @@ class PromoLocalDataSourceImpl implements PromoLocalDataSource {
       }
       return [];
     } catch (e) {
-      throw CacheException(message: 'فشل في استرجاع الإعلانات من الذاكرة المحلية (Hive): $e');
+      throw CacheException(
+        message: 'فشل في استرجاع الإعلانات من الذاكرة المحلية (Hive): $e',
+      );
     }
   }
 
@@ -52,7 +54,9 @@ class PromoLocalDataSourceImpl implements PromoLocalDataSource {
       await _box.put(_promosKey, jsonList);
       await _box.put(_timestampKey, DateTime.now().millisecondsSinceEpoch);
     } catch (e) {
-      throw CacheException(message: 'فشل في حفظ الإعلانات في الذاكرة المحلية (Hive): $e');
+      throw CacheException(
+        message: 'فشل في حفظ الإعلانات في الذاكرة المحلية (Hive): $e',
+      );
     }
   }
 
@@ -63,7 +67,9 @@ class PromoLocalDataSourceImpl implements PromoLocalDataSource {
       final index = list.indexWhere((p) => p.id == id);
       return index != -1 ? list[index] : null;
     } catch (e) {
-      throw CacheException(message: 'فشل في استرجاع الإعلان من الذاكرة المحلية: $e');
+      throw CacheException(
+        message: 'فشل في استرجاع الإعلان من الذاكرة المحلية: $e',
+      );
     }
   }
 
@@ -90,7 +96,9 @@ class PromoLocalDataSourceImpl implements PromoLocalDataSource {
       list.removeWhere((p) => p.id == id);
       await cachePromos(list);
     } catch (e) {
-      throw CacheException(message: 'فشل في حذف الإعلان من الذاكرة المحلية: $e');
+      throw CacheException(
+        message: 'فشل في حذف الإعلان من الذاكرة المحلية: $e',
+      );
     }
   }
 

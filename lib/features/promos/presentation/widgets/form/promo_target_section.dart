@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/controllers/promo_form_controller.dart';
 
 /// قسم تحديد وجهة الإعلان (عام، منتج محدد، أو ماركة تجارية)
@@ -64,11 +65,7 @@ class PromoTargetSection extends StatelessWidget {
     }
 
     return Container(
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHigh,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colorScheme.outlineVariant),
-      ),
+      decoration: _fieldBoxDecoration(colorScheme),
       padding: const EdgeInsets.symmetric(horizontal: 14),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
@@ -93,8 +90,7 @@ class PromoTargetSection extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: CachedNetworkImage(
-                      imageUrl:
-                          p.imageUrls.isNotEmpty ? p.imageUrls.first : '',
+                      imageUrl: p.imageUrls.isNotEmpty ? p.imageUrls.first : '',
                       width: 36,
                       height: 36,
                       fit: BoxFit.cover,
@@ -146,11 +142,7 @@ class PromoTargetSection extends StatelessWidget {
     }
 
     return Container(
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHigh,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colorScheme.outlineVariant),
-      ),
+      decoration: _fieldBoxDecoration(colorScheme),
       padding: const EdgeInsets.symmetric(horizontal: 14),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
@@ -227,11 +219,7 @@ class PromoTargetSection extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHigh,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colorScheme.outlineVariant),
-      ),
+      decoration: _fieldBoxDecoration(colorScheme),
       child: Row(
         children: [
           SizedBox(
@@ -260,11 +248,7 @@ class PromoTargetSection extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHigh,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colorScheme.outlineVariant),
-      ),
+      decoration: _fieldBoxDecoration(colorScheme),
       child: Row(
         children: [
           Icon(
@@ -283,4 +267,11 @@ class PromoTargetSection extends StatelessWidget {
       ),
     );
   }
+
+  /// إطار موحد لحقول القائمة المنسدلة وحالات التحميل والفراغ
+  BoxDecoration _fieldBoxDecoration(ColorScheme colorScheme) => BoxDecoration(
+    color: colorScheme.surfaceContainerHigh,
+    borderRadius: AppDesignTokens.radiusMedium,
+    border: Border.all(color: colorScheme.outlineVariant),
+  );
 }

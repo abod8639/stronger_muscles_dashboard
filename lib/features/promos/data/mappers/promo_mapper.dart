@@ -8,7 +8,9 @@ extension PromoModelMapper on PromoModel {
       id: id,
       title: title != null ? Map<String, dynamic>.from(title!) : null,
       subtitle: subtitle != null ? Map<String, dynamic>.from(subtitle!) : null,
-      buttonText: buttonText != null ? Map<String, dynamic>.from(buttonText!) : null,
+      buttonText: buttonText != null
+          ? Map<String, dynamic>.from(buttonText!)
+          : null,
       imageUrl: imageUrl,
       backgroundColor: backgroundColor,
       targetType: targetType,
@@ -26,7 +28,9 @@ extension PromoEntityMapper on PromoEntity {
       id: id,
       title: title != null ? Map<String, dynamic>.from(title!) : null,
       subtitle: subtitle != null ? Map<String, dynamic>.from(subtitle!) : null,
-      buttonText: buttonText != null ? Map<String, dynamic>.from(buttonText!) : null,
+      buttonText: buttonText != null
+          ? Map<String, dynamic>.from(buttonText!)
+          : null,
       imageUrl: imageUrl,
       backgroundColor: backgroundColor,
       targetType: targetType,

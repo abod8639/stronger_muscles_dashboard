@@ -89,7 +89,9 @@ class PromosController extends ChangeNotifier {
     final result = await getProductsUseCase.call();
     result.fold(
       (failure) {
-        debugPrint('⚠️ [PromosController] Failed to fetch products: ${failure.toMessage()}');
+        debugPrint(
+          '⚠️ [PromosController] Failed to fetch products: ${failure.toMessage()}',
+        );
       },
       (data) {
         _products = data;
@@ -105,7 +107,9 @@ class PromosController extends ChangeNotifier {
     final result = await brandRepository.getBrands();
     result.fold(
       (failure) {
-        debugPrint('⚠️ [PromosController] Failed to fetch brands: ${failure.toMessage()}');
+        debugPrint(
+          '⚠️ [PromosController] Failed to fetch brands: ${failure.toMessage()}',
+        );
       },
       (data) {
         _brands = data;
@@ -129,7 +133,9 @@ class PromosController extends ChangeNotifier {
       final query = _searchQuery.toLowerCase().trim();
       _filteredPromos = _promos.where((promo) {
         final matchesTitle = promo.displayTitle.toLowerCase().contains(query);
-        final matchesSubtitle = promo.displaySubtitle.toLowerCase().contains(query);
+        final matchesSubtitle = promo.displaySubtitle.toLowerCase().contains(
+          query,
+        );
         return matchesTitle || matchesSubtitle;
       }).toList();
     }

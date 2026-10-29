@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/core/components/build_modern_text_field.dart';
+import 'package:stronger_muscles_dashboard/core/utils/color_utils.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/controllers/promo_form_controller.dart';
 
 /// قسم مظهر ولون خلفية الإعلان مع ألوان جاهزة مقترحة
@@ -21,15 +22,8 @@ class PromoAppearanceSection extends StatelessWidget {
     '#0E7490',
   ];
 
-  Color _parseColor(String hex) {
-    try {
-      final clean = hex.replaceAll('#', '');
-      if (clean.length == 6) {
-        return Color(int.parse('FF$clean', radix: 16));
-      }
-    } catch (_) {}
-    return Colors.transparent;
-  }
+  Color _parseColor(String hex) =>
+      parseHexColor(hex, fallback: Colors.transparent);
 
   @override
   Widget build(BuildContext context) {
@@ -45,28 +39,30 @@ class PromoAppearanceSection extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Builder(builder: (context) {
-                  final parsed = _parseColor(controller.backgroundColorHex);
-                  return Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: parsed,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: colorScheme.outlineVariant,
-                        width: 1.5,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
+                Builder(
+                  builder: (context) {
+                    final parsed = _parseColor(controller.backgroundColorHex);
+                    return Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: parsed,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: colorScheme.outlineVariant,
+                          width: 1.5,
                         ),
-                      ],
-                    ),
-                  );
-                }),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.1),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
                 const SizedBox(width: 14),
                 Expanded(
                   child: ModernTextField(
@@ -91,7 +87,8 @@ class PromoAppearanceSection extends StatelessWidget {
               runSpacing: 8,
               children: presetColors.map((hex) {
                 final color = _parseColor(hex);
-                final isSelected = controller.backgroundColorHex.toUpperCase() ==
+                final isSelected =
+                    controller.backgroundColorHex.toUpperCase() ==
                     hex.toUpperCase();
 
                 return InkWell(
@@ -114,7 +111,8 @@ class PromoAppearanceSection extends StatelessWidget {
                         ? Icon(
                             Icons.check_rounded,
                             size: 16,
-                            color: ThemeData.estimateBrightnessForColor(color) ==
+                            color:
+                                ThemeData.estimateBrightnessForColor(color) ==
                                     Brightness.dark
                                 ? Colors.white
                                 : Colors.black87,

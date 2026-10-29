@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/controllers/promo_form_controller.dart';
+import 'package:stronger_muscles_dashboard/features/promos/presentation/widgets/promo_status_pill.dart';
 
 /// قسم حالة نشر وظهور الإعلان متوافق مع نمط Bento Grid
 class PromoPublishingSection extends StatelessWidget {
@@ -22,23 +23,14 @@ class PromoPublishingSection extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Row(
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 4,
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: controller.isActive
-                            ? Colors.green
-                            : Colors.grey,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
+                    PromoStatusPill(isActive: controller.isActive),
                     Text(
-                      controller.isActive
-                          ? 'الإعلان مفعّل ومنشور'
-                          : 'مسودة متوقفة',
+                      controller.isActive ? 'منشور في التطبيق' : 'مسودة',
                       style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: colorScheme.onSurface,

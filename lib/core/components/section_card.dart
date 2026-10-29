@@ -17,6 +17,9 @@ class SectionCard extends StatelessWidget {
   /// حشوة المحتوى؛ مرّر EdgeInsets.zero للقوائم التي تملأ البطاقة
   final EdgeInsetsGeometry? padding;
 
+  /// إبراز البطاقة بحد ولون primary (مثل بطاقة المعاينة الرئيسية)
+  final bool highlighted;
+
   const SectionCard({
     super.key,
     required this.title,
@@ -25,6 +28,7 @@ class SectionCard extends StatelessWidget {
     required this.child,
     this.trailing,
     this.padding,
+    this.highlighted = false,
   });
 
   @override
@@ -34,6 +38,7 @@ class SectionCard extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return SoftSurface(
+      selected: highlighted,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -1,6 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/core/components/icon_card_with_shadow.dart';
+import 'package:stronger_muscles_dashboard/core/components/info_pill.dart';
+import 'package:stronger_muscles_dashboard/core/components/soft_surface.dart';
+import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 import 'package:stronger_muscles_dashboard/features/promos/domain/entities/promo_entity.dart';
+import 'package:stronger_muscles_dashboard/features/promos/presentation/widgets/promo_locale_toggle.dart';
 import 'package:stronger_muscles_dashboard/features/promos/presentation/widgets/promo_card.dart';
 
 /// ويدجت متقدم يحاكي شكل بانر الإعلانات داخل تطبيق المتجر بنسبة 100%
@@ -29,9 +34,8 @@ class _PromoAppBannerPreviewState extends State<PromoAppBannerPreview> {
   bool _showOnlyActive = false;
   bool _isHovered = false;
 
-  /// ألوان متطابقة مع تطبيق الجوال
-  static const Color appPrimaryColor = Color(0xFFD32F2F);
-  static const Color appGreyDarkColor = Color(0xFF616161);
+  /// لون النقاط غير النشطة في سلايدر تطبيق المتجر
+  static const Color _storeAppGreyColor = Color(0xFF616161);
 
   @override
   void initState() {
@@ -87,221 +91,48 @@ class _PromoAppBannerPreviewState extends State<PromoAppBannerPreview> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final promos = _displayedPromos;
     final screenWidth = MediaQuery.sizeOf(context).width;
     final isMobile = screenWidth < 600;
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: colorScheme.outlineVariant.withValues(alpha: 0.6),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // شريط الترويسة وأدوات التحكم في المعاينة
-          _buildHeader(context, promos.length),
-
-          // محتوى المعاينة التفاعلية القابلة للطي
-          AnimatedCrossFade(
-            duration: const Duration(milliseconds: 250),
-            crossFadeState: _isExpanded
-                ? CrossFadeState.showFirst
-                : CrossFadeState.showSecond,
-            secondChild: const SizedBox.shrink(),
-            firstChild: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
-              child: Center(
-                child: ConstrainedBox(
-                  // محاكاة عرض شاشة الهاتف الذكي للحفاظ على الأبعاد الواقعية
-                  constraints: BoxConstraints(
-                    maxWidth: isMobile ? double.infinity : 440,
-                  ),
-                  child: MouseRegion(
-                    onEnter: (_) {
-                      setState(() => _isHovered = true);
-                    },
-                    onExit: (_) {
-                      setState(() => _isHovered = false);
-                    },
-                    child: promos.isEmpty
-                        ? _buildEmptyDemoBanner()
-                        : _buildLiveCarousel(promos),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context, int totalCount) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return InkWell(
-      onTap: () {
-        setState(() => _isExpanded = !_isExpanded);
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
+    return SoftSurface(
+      margin: const EdgeInsets.only(bottom: AppDesignTokens.space16),
+      child: ClipRRect(
+        borderRadius: AppDesignTokens.radiusLarge,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: appPrimaryColor.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Icon(
-                Icons.smartphone_rounded,
-                size: 20,
-                color: appPrimaryColor,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        'معاينة البانر في التطبيق',
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 0.2,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      // شارة البث المباشر مع وميض أخضر
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.green.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: Colors.green.withValues(alpha: 0.3),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              width: 6,
-                              height: 6,
-                              decoration: const BoxDecoration(
-                                color: Colors.green,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            const SizedBox(width: 4),
-                            const Text(
-                              'Live',
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.green,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'هكذا يظهر سلايدر الإعلانات للمستخدمين داخل تطبيق المتجر',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                      fontSize: 11,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // أزرار التحكم باللغة والفلترة
-            if (_isExpanded) ...[
-              // محول اللغة
-              Container(
-                decoration: BoxDecoration(
-                  color: colorScheme.surface,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: colorScheme.outlineVariant.withValues(alpha: 0.4),
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
+            _buildHeader(context),
+            AnimatedCrossFade(
+              duration: const Duration(milliseconds: 250),
+              crossFadeState: _isExpanded
+                  ? CrossFadeState.showFirst
+                  : CrossFadeState.showSecond,
+              secondChild: const SizedBox.shrink(),
+              firstChild: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+                child: Column(
                   children: [
-                    _buildLanguagePill('ar', 'عربي'),
-                    _buildLanguagePill('en', 'EN'),
+                    _buildControls(),
+                    const SizedBox(height: AppDesignTokens.space12),
+                    Center(
+                      child: ConstrainedBox(
+                        // محاكاة عرض شاشة الهاتف للحفاظ على الأبعاد الواقعية
+                        constraints: BoxConstraints(
+                          maxWidth: isMobile ? double.infinity : 440,
+                        ),
+                        child: MouseRegion(
+                          onEnter: (_) => setState(() => _isHovered = true),
+                          onExit: (_) => setState(() => _isHovered = false),
+                          child: promos.isEmpty
+                              ? _buildEmptyDemoBanner()
+                              : _buildLiveCarousel(promos),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
-
-              // فلتر النشط فقط
-              if (widget.promos.any((p) => !p.isActive)) ...[
-                Tooltip(
-                  message: _showOnlyActive
-                      ? 'عرض جميع الإعلانات'
-                      : 'عرض الإعلانات النشطة فقط',
-                  child: IconButton.outlined(
-                    iconSize: 18,
-                    visualDensity: VisualDensity.compact,
-                    onPressed: () {
-                      setState(() {
-                        _showOnlyActive = !_showOnlyActive;
-                        _currentIndex = 0;
-                        _startAutoPlay();
-                      });
-                    },
-                    icon: Icon(
-                      _showOnlyActive
-                          ? Icons.visibility_rounded
-                          : Icons.visibility_outlined,
-                      color: _showOnlyActive ? appPrimaryColor : null,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 4),
-              ],
-            ],
-
-            // زر فتح وإغلاق المعاينة
-            IconButton(
-              iconSize: 20,
-              visualDensity: VisualDensity.compact,
-              icon: Icon(
-                _isExpanded
-                    ? Icons.keyboard_arrow_up_rounded
-                    : Icons.keyboard_arrow_down_rounded,
-              ),
-              onPressed: () {
-                setState(() => _isExpanded = !_isExpanded);
-              },
             ),
           ],
         ),
@@ -309,28 +140,93 @@ class _PromoAppBannerPreviewState extends State<PromoAppBannerPreview> {
     );
   }
 
-  Widget _buildLanguagePill(String code, String label) {
-    final isSelected = _selectedLocale == code;
-    return GestureDetector(
-      onTap: () {
-        setState(() => _selectedLocale = code);
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        decoration: BoxDecoration(
-          color: isSelected ? appPrimaryColor : Colors.transparent,
-          borderRadius: BorderRadius.circular(6),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 11,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-            color: isSelected ? Colors.white : null,
-          ),
+  Widget _buildHeader(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return InkWell(
+      onTap: () => setState(() => _isExpanded = !_isExpanded),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            const IconCardWithShadow(
+              icon: Icons.smartphone_rounded,
+              size: 20,
+              iconColor: kStoreAppPrimaryColor,
+            ),
+            const SizedBox(width: AppDesignTokens.space12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Wrap(
+                    spacing: AppDesignTokens.space8,
+                    runSpacing: AppDesignTokens.space4,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Text(
+                        'معاينة البانر في التطبيق',
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const InfoPill(
+                        label: 'مباشر',
+                        icon: Icons.fiber_manual_record_rounded,
+                        color: AppColors.success,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppDesignTokens.space2),
+                  Text(
+                    'هكذا يظهر سلايدر الإعلانات للمستخدمين داخل تطبيق المتجر',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            IconButton(
+              visualDensity: VisualDensity.compact,
+              tooltip: _isExpanded ? 'طي المعاينة' : 'عرض المعاينة',
+              icon: Icon(
+                _isExpanded
+                    ? Icons.keyboard_arrow_up_rounded
+                    : Icons.keyboard_arrow_down_rounded,
+              ),
+              onPressed: () => setState(() => _isExpanded = !_isExpanded),
+            ),
+          ],
         ),
       ),
+    );
+  }
+
+  /// لغة المعاينة + فلتر الإعلانات النشطة
+  Widget _buildControls() {
+    return Wrap(
+      alignment: WrapAlignment.end,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: AppDesignTokens.space8,
+      runSpacing: AppDesignTokens.space8,
+      children: [
+        if (widget.promos.any((p) => !p.isActive))
+          FilterChip(
+            label: const Text('النشطة فقط'),
+            selected: _showOnlyActive,
+            onSelected: (value) => setState(() {
+              _showOnlyActive = value;
+              _currentIndex = 0;
+              _startAutoPlay();
+            }),
+          ),
+        PromoLocaleToggle(
+          locale: _selectedLocale,
+          onChanged: (locale) => setState(() => _selectedLocale = locale),
+        ),
+      ],
     );
   }
 
@@ -338,18 +234,12 @@ class _PromoAppBannerPreviewState extends State<PromoAppBannerPreview> {
   Widget _buildEmptyDemoBanner() {
     final demoPromo = PromoEntity(
       id: 'demo',
-      title: const {
-        'ar': 'إعلان ترويجي تجريبي',
-        'en': 'Special Demo Offer',
-      },
+      title: const {'ar': 'إعلان ترويجي تجريبي', 'en': 'Special Demo Offer'},
       subtitle: const {
         'ar': 'هكذا ستظهر إعلاناتك وبانرات العروض الحصرية داخل التطبيق',
         'en': 'Exclusive discounts & special packages for our athletes',
       },
-      buttonText: const {
-        'ar': 'تسوق الآن',
-        'en': 'Shop Now',
-      },
+      buttonText: const {'ar': 'تسوق الآن', 'en': 'Shop Now'},
       imageUrl: '',
       backgroundColor: '#1E1E22',
       targetType: 'product',
@@ -377,7 +267,7 @@ class _PromoAppBannerPreviewState extends State<PromoAppBannerPreview> {
               height: 5,
               width: 15,
               decoration: BoxDecoration(
-                color: appPrimaryColor,
+                color: kStoreAppPrimaryColor,
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
@@ -433,8 +323,8 @@ class _PromoAppBannerPreviewState extends State<PromoAppBannerPreview> {
               width: _currentIndex == index ? 15 : 5,
               decoration: BoxDecoration(
                 color: _currentIndex == index
-                    ? appPrimaryColor
-                    : appGreyDarkColor,
+                    ? kStoreAppPrimaryColor
+                    : _storeAppGreyColor,
                 borderRadius: BorderRadius.circular(4),
               ),
             ),

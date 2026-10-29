@@ -28,15 +28,23 @@ class PromoModel {
   factory PromoModel.fromJson(Map<String, dynamic> json) {
     return PromoModel(
       id: json['id']?.toString() ?? '',
-      title: json['title'] is Map ? Map<String, dynamic>.from(json['title'] as Map) : null,
-      subtitle: json['subtitle'] is Map ? Map<String, dynamic>.from(json['subtitle'] as Map) : null,
-      buttonText: json['button_text'] is Map ? Map<String, dynamic>.from(json['button_text'] as Map) : null,
+      title: json['title'] is Map
+          ? Map<String, dynamic>.from(json['title'] as Map)
+          : null,
+      subtitle: json['subtitle'] is Map
+          ? Map<String, dynamic>.from(json['subtitle'] as Map)
+          : null,
+      buttonText: json['button_text'] is Map
+          ? Map<String, dynamic>.from(json['button_text'] as Map)
+          : null,
       imageUrl: json['image_url']?.toString() ?? '',
       backgroundColor: json['background_color']?.toString() ?? '#FFFFFF',
       targetType: json['target_type']?.toString() ?? 'none',
       targetId: json['target_id']?.toString(),
       isActive: json['is_active'] == 1 || json['is_active'] == true,
-      createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at'].toString()) : null,
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'].toString())
+          : null,
     );
   }
 

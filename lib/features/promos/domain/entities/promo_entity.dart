@@ -11,6 +11,7 @@ class PromoEntity {
   final String backgroundColor; // Hex color string (e.g. #FFFFFF)
   /// 'none' | 'product' | 'brand'
   final String targetType;
+
   /// The ID of the target (product ID or brand ID)
   final String? targetId;
   final bool isActive;
@@ -44,10 +45,14 @@ class PromoEntity {
 
   String _getLocalizedText(Map<String, dynamic>? textMap) {
     if (textMap == null) return '';
-    if (textMap.containsKey('ar') && textMap['ar'] != null && textMap['ar'].toString().isNotEmpty) {
+    if (textMap.containsKey('ar') &&
+        textMap['ar'] != null &&
+        textMap['ar'].toString().isNotEmpty) {
       return textMap['ar'].toString();
     }
-    if (textMap.containsKey('en') && textMap['en'] != null && textMap['en'].toString().isNotEmpty) {
+    if (textMap.containsKey('en') &&
+        textMap['en'] != null &&
+        textMap['en'].toString().isNotEmpty) {
       return textMap['en'].toString();
     }
     return '';

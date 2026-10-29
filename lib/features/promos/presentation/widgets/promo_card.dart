@@ -1,9 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/core/utils/color_utils.dart';
 import 'package:stronger_muscles_dashboard/features/promos/domain/entities/promo_entity.dart';
 import 'package:stronger_muscles_dashboard/functions/cache_manager.dart';
 
-/// بطاقة الإعلان الترويجي التي تحاكي بنسبة 100% شكل الإعلان داخل تطبيق المتجر
+/// لون التطبيق الأساسي في تطبيق المتجر (للمحاكاة فقط، وليس جزءاً من ثيم لوحة التحكم)
+const Color kStoreAppPrimaryColor = Color(0xFFD32F2F);
+
+/// بطاقة الإعلان الترويجي كما تظهر داخل تطبيق المتجر
 class PromoCard extends StatelessWidget {
   final PromoEntity promo;
   final String locale;
@@ -18,70 +22,93 @@ class PromoCard extends StatelessWidget {
     this.margin,
   });
 
-  /// لون التطبيق الأساسي في تطبيق الجوال (AppColors.primary)
-  static const Color appPrimaryColor = Color(0xFFD32F2F);
-
-  Color _parsePromoColor() {
-    try {
-      String hex = promo.backgroundColor.replaceAll('#', '').trim();
-      if (hex.startsWith('0x') || hex.startsWith('0X')) {
-        hex = hex.substring(2);
-      }
-      if (hex.length == 6) {
-        return Color(int.parse('0xFF$hex'));
-      } else if (hex.length == 8) {
-        return Color(int.parse('0x$hex'));
-      }
-    } catch (_) {}
-    return const Color(0xFF1E1E22);
-  }
-
-  String _getLocalizedTitle() {
-    if (promo.title != null) {
-      if (promo.title!.containsKey(locale) &&
-          promo.title![locale]?.toString().trim().isNotEmpty == true) {
-        return promo.title![locale].toString();
-      }
-    }
-    return promo.displayTitle;
-  }
-
-  String _getLocalizedSubtitle() {
-    if (promo.subtitle != null) {
-      if (promo.subtitle!.containsKey(locale) &&
-          promo.subtitle![locale]?.toString().trim().isNotEmpty == true) {
-        return promo.subtitle![locale].toString();
-      }
-    }
-    return promo.displaySubtitle;
-  }
-
-  String _getLocalizedButtonText() {
-    if (promo.buttonText != null) {
-      if (promo.buttonText!.containsKey(locale) &&
-          promo.buttonText![locale]?.toString().trim().isNotEmpty == true) {
-        return promo.buttonText![locale].toString().trim();
-      }
-    }
-    final text = promo.displayButtonText.trim();
-    if (text.isNotEmpty) return text;
-    return '';
+  String _localized(Map<String, dynamic>? values, String fallback) {
+    final value = values?[locale]?.toString().trim() ?? '';
+    return value.isNotEmpty ? value : fallback.trim();
   }
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = _parsePromoColor();
-    final title = _getLocalizedTitle();
-    final subtitle = _getLocalizedSubtitle();
-    final buttonText = _getLocalizedButtonText();
+    final bgColor = parseHexColor(promo.backgroundColor);
+
+    return PromoBannerView(
+      backgroundColor: bgColor,
+      margin: margin ?? const EdgeInsets.symmetric(horizontal: 16),
+      onTap: onTap,
+      title: _localized(promo.title, promo.displayTitle),
+      subtitle: _localized(promo.subtitle, promo.displaySubtitle),
+      buttonText: _localized(promo.buttonText, promo.displayButtonText),
+      image: promo.imageUrl.isEmpty
+          ? null
+          : CachedNetworkImage(
+              cacheManager: CustomCacheManager.instance,
+              imageUrl: promo.imageUrl,
+              fit: BoxFit.cover,
+              errorWidget: (_, _, _) => ColoredBox(color: bgColor),
+              placeholder: (_, _) => ColoredBox(
+                color: bgColor,
+                child: const Center(
+                  child: SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white60,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+    );
+  }
+}
+
+/// العرض المرئي لبانر الإعلان (الخلفية + الصورة + التدرج + النصوص + الزر)
+/// يُستخدم في بطاقة الإعلان وفي المعاينة المباشرة داخل النموذج
+class PromoBannerView extends StatelessWidget {
+  final Color backgroundColor;
+  final Widget? image;
+  final String title;
+  final String subtitle;
+  final String buttonText;
+
+  /// نص بديل باهت يظهر عند فراغ العنوان أو الوصف (للمعاينة أثناء التحرير)
+  final String? titleHint;
+  final String? subtitleHint;
+
+  /// أيقونة تظهر في المنتصف عند غياب الصورة (للمعاينة أثناء التحرير)
+  final IconData? emptyImageIcon;
+  final BorderRadius? borderRadius;
+  final EdgeInsetsGeometry? margin;
+  final VoidCallback? onTap;
+
+  const PromoBannerView({
+    super.key,
+    required this.backgroundColor,
+    required this.title,
+    required this.subtitle,
+    required this.buttonText,
+    this.image,
+    this.titleHint,
+    this.subtitleHint,
+    this.emptyImageIcon,
+    this.borderRadius,
+    this.margin,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final showTitle = title.isNotEmpty || titleHint != null;
+    final showSubtitle = subtitle.isNotEmpty || subtitleHint != null;
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: margin ?? const EdgeInsets.symmetric(horizontal: 16),
+        margin: margin,
         decoration: BoxDecoration(
-          // borderRadius: BorderRadius.circular(16),
-          color: bgColor,
+          color: backgroundColor,
+          borderRadius: borderRadius,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: .1),
@@ -95,34 +122,20 @@ class PromoCard extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // صورة الإعلان المأخوذة من الكاش أو الرابط
-            if (promo.imageUrl.isNotEmpty)
-              CachedNetworkImage(
-                cacheManager: CustomCacheManager.instance,
-                imageUrl: promo.imageUrl,
-                fit: BoxFit.cover,
-                errorWidget: (context, error, stackTrace) =>
-                    Container(color: bgColor),
-                placeholder: (context, url) => Container(
-                  color: bgColor,
-                  child: const Center(
-                    child: SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white60,
-                      ),
-                    ),
-                  ),
+            if (image != null)
+              image!
+            else if (emptyImageIcon != null)
+              Center(
+                child: Icon(
+                  emptyImageIcon,
+                  size: 36,
+                  color: Colors.white.withValues(alpha: 0.3),
                 ),
-              )
-            else
-              Container(color: bgColor),
+              ),
 
-            // التدرج اللوني فوق الصورة في حال وجود عنوان
-            if (title.isNotEmpty)
-              Container(
+            // التدرج يضمن وضوح النص فوق الصورة
+            if (showTitle)
+              DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -135,34 +148,37 @@ class PromoCard extends StatelessWidget {
                 ),
               ),
 
-            // محتوى الإعلان (النصوص وزر التوجيه)
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (title.isNotEmpty)
+                  if (showTitle)
                     Text(
-                      title,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      title.isNotEmpty ? title : titleHint!,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Colors.white.withValues(
+                          alpha: title.isNotEmpty ? 1 : 0.5,
+                        ),
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
-                  if (subtitle.isNotEmpty) ...[
+                  if (showSubtitle) ...[
                     const SizedBox(height: 8),
                     Text(
-                      subtitle,
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: .9),
-                        fontSize: 14,
-                      ),
+                      subtitle.isNotEmpty ? subtitle : subtitleHint!,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Colors.white.withValues(
+                          alpha: subtitle.isNotEmpty ? .9 : 0.4,
+                        ),
+                        fontSize: 14,
+                      ),
                     ),
                   ],
                   if (buttonText.isNotEmpty) ...[
@@ -173,7 +189,7 @@ class PromoCard extends StatelessWidget {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: appPrimaryColor,
+                        color: kStoreAppPrimaryColor,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(

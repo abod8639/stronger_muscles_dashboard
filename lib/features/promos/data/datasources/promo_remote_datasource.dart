@@ -25,10 +25,7 @@ class PromoRemoteDataSourceImpl implements PromoRemoteDataSource {
   Future<List<PromoModel>> getPromos() async {
     final response = await dio.get(
       ApiConfig.adminPromos,
-      options: Options(
-        sendTimeout: _timeout,
-        receiveTimeout: _timeout,
-      ),
+      options: Options(sendTimeout: _timeout, receiveTimeout: _timeout),
     );
     return await compute(parsePromoListCompute, response.data);
   }
@@ -38,23 +35,20 @@ class PromoRemoteDataSourceImpl implements PromoRemoteDataSource {
     final response = await dio.post(
       ApiConfig.adminPromos,
       data: promoData,
-      options: Options(
-        sendTimeout: _timeout,
-        receiveTimeout: _timeout,
-      ),
+      options: Options(sendTimeout: _timeout, receiveTimeout: _timeout),
     );
     return await compute(parsePromoCompute, response.data);
   }
 
   @override
-  Future<PromoModel> updatePromo(String id, Map<String, dynamic> promoData) async {
+  Future<PromoModel> updatePromo(
+    String id,
+    Map<String, dynamic> promoData,
+  ) async {
     final response = await dio.put(
       '${ApiConfig.adminPromos}/$id',
       data: promoData,
-      options: Options(
-        sendTimeout: _timeout,
-        receiveTimeout: _timeout,
-      ),
+      options: Options(sendTimeout: _timeout, receiveTimeout: _timeout),
     );
     return await compute(parsePromoCompute, response.data);
   }
@@ -63,10 +57,7 @@ class PromoRemoteDataSourceImpl implements PromoRemoteDataSource {
   Future<void> deletePromo(String id) async {
     await dio.delete(
       '${ApiConfig.adminPromos}/$id',
-      options: Options(
-        sendTimeout: _timeout,
-        receiveTimeout: _timeout,
-      ),
+      options: Options(sendTimeout: _timeout, receiveTimeout: _timeout),
     );
   }
 
@@ -90,7 +81,11 @@ class PromoRemoteDataSourceImpl implements PromoRemoteDataSource {
 
     final data = response.data;
     if (data is Map) {
-      final imageUrl = data['url'] ?? data['data']?['url'] ?? data['imageUrl'] ?? data['path'];
+      final imageUrl =
+          data['url'] ??
+          data['data']?['url'] ??
+          data['imageUrl'] ??
+          data['path'];
       if (imageUrl != null) return imageUrl.toString();
     }
     throw DioException(

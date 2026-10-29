@@ -71,7 +71,9 @@ final deletePromoUseCaseProvider = Provider<DeletePromoUseCase>((ref) {
   return DeletePromoUseCase(ref.watch(promoRepositoryProvider));
 });
 
-final uploadPromoImageUseCaseProvider = Provider<UploadPromoImageUseCase>((ref) {
+final uploadPromoImageUseCaseProvider = Provider<UploadPromoImageUseCase>((
+  ref,
+) {
   return UploadPromoImageUseCase(ref.watch(promoRepositoryProvider));
 });
 
@@ -96,17 +98,18 @@ final promosControllerProvider = Provider<PromosController>((ref) {
 });
 
 /// Promo Form controller provider (autoDispose family)
-final promoFormControllerProvider = Provider.autoDispose.family<PromoFormController, PromoEntity?>((ref, initialPromo) {
-  final controller = PromoFormController(
-    initialPromo: initialPromo,
-    addPromoUseCase: ref.watch(addPromoUseCaseProvider),
-    updatePromoUseCase: ref.watch(updatePromoUseCaseProvider),
-    uploadPromoImageUseCase: ref.watch(uploadPromoImageUseCaseProvider),
-    getProductsUseCase: ref.watch(getProductsUseCaseProvider),
-    brandRepository: ref.watch(brandRepositoryProvider),
-    promosController: ref.read(promosControllerProvider),
-  );
-  controller.init();
-  ref.onDispose(controller.dispose);
-  return controller;
-});
+final promoFormControllerProvider = Provider.autoDispose
+    .family<PromoFormController, PromoEntity?>((ref, initialPromo) {
+      final controller = PromoFormController(
+        initialPromo: initialPromo,
+        addPromoUseCase: ref.watch(addPromoUseCaseProvider),
+        updatePromoUseCase: ref.watch(updatePromoUseCaseProvider),
+        uploadPromoImageUseCase: ref.watch(uploadPromoImageUseCaseProvider),
+        getProductsUseCase: ref.watch(getProductsUseCaseProvider),
+        brandRepository: ref.watch(brandRepositoryProvider),
+        promosController: ref.read(promosControllerProvider),
+      );
+      controller.init();
+      ref.onDispose(controller.dispose);
+      return controller;
+    });
