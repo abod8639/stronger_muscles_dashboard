@@ -15,7 +15,7 @@ class SupportTicketEntity {
   final String priority; // 'low', 'normal', 'high', 'urgent'
   final String
   status; // 'open', 'in_progress', 'waiting_user', 'resolved', 'closed'
-  final int? orderId;
+  final String? orderId;
   final String? orderNumber;
   final double? orderTotal;
   final int? adminId;
@@ -70,7 +70,7 @@ class SupportTicketEntity {
     String? category,
     String? priority,
     String? status,
-    int? orderId,
+    String? orderId,
     String? orderNumber,
     double? orderTotal,
     int? adminId,
