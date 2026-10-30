@@ -1101,12 +1101,15 @@ class _SupportChatViewState extends ConsumerState<SupportChatView> {
                 onPressed: isSendingReply
                     ? null
                     : () async {
-                        final text = _replyController.text;
+                        final text = _replyController.text.trim();
+                        if (text.isEmpty) return;
+                        _replyController.clear();
+                        _scrollToBottom();
                         final success = await ref
                             .read(supportControllerProvider.notifier)
                             .sendReply(text);
-                        if (success) {
-                          _replyController.clear();
+                        if (!success && mounted) {
+                          _replyController.text = text;
                         }
                       },
                 child: isSendingReply
