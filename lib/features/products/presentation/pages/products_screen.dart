@@ -29,10 +29,12 @@ class ProductsScreen extends ConsumerWidget {
   static const double _gridCardExtent = 190;
 
   Future<void> _refresh(WidgetRef ref) async {
-    await ref
-        .read(productsControllerProvider.notifier)
-        .refreshProducts(forceRefresh: true);
-    await ref.read(productsUIControllerProvider).fetchData(forceRefresh: true);
+    await Future.wait([
+      ref
+          .read(productsControllerProvider.notifier)
+          .refreshProducts(forceRefresh: true),
+      ref.read(productsUIControllerProvider).fetchData(forceRefresh: true),
+    ]);
   }
 
   @override
