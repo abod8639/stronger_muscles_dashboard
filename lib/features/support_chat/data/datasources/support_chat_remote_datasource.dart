@@ -61,8 +61,8 @@ class SupportChatRemoteDataSourceImpl implements SupportChatRemoteDataSource {
       data: {
         'message': message,
         'is_internal_note': isInternalNote,
-        if (status != null) 'status': status,
-        if (attachments != null) 'attachments': attachments,
+        'status': ?status,
+        'attachments': ?attachments,
       },
     );
 

@@ -159,13 +159,13 @@ class NotificationDetailsDialog extends ConsumerWidget {
                         ),
                         const SizedBox(height: 16),
 
-                        // Image preview if present
-                        if (notification.imageUrl != null &&
-                            notification.imageUrl!.isNotEmpty) ...[
+                        // Image / Avatar preview if present
+                        if (notification.displayImage != null &&
+                            notification.displayImage!.isNotEmpty) ...[
                           ClipRRect(
                             borderRadius: BorderRadius.circular(16),
                             child: CachedNetworkImage(
-                              imageUrl: notification.imageUrl!,
+                              imageUrl: notification.displayImage!,
                               cacheManager: CustomCacheManager.instance,
                               fit: BoxFit.cover,
                               height: 180,
@@ -182,7 +182,8 @@ class NotificationDetailsDialog extends ConsumerWidget {
                                 color: colorScheme.surfaceContainerHigh,
                                 child: Center(
                                   child: Icon(
-                                    Icons.broken_image_rounded,
+                                    Icons.person_rounded,
+                                    size: 40,
                                     color: colorScheme.outline,
                                   ),
                                 ),
@@ -202,6 +203,17 @@ class NotificationDetailsDialog extends ConsumerWidget {
                               icon: type.icon,
                               color: type.color,
                             ),
+                            if (notification.isTicket && notification.messagesCount > 1)
+                              InfoPill(
+                                label: '${notification.messagesCount} رسائل في التذكرة',
+                                icon: Icons.mark_chat_unread_rounded,
+                                color: const Color(0xFFA855F7),
+                              ),
+                            if (notification.ticketId != null)
+                              InfoPill(
+                                label: '#${notification.data?['ticket_number'] ?? notification.ticketId}',
+                                icon: Icons.confirmation_number_outlined,
+                              ),
                             InfoPill(
                               label: notification.targetLabel,
                               icon: notification.targetType == 'all'
@@ -377,13 +389,22 @@ class NotificationDetailsDialog extends ConsumerWidget {
         onConfirm: () async {
           Navigator.of(ctx).pop();
           Navigator.of(context).pop();
-          final result = await ref
-              .read(notificationsControllerProvider.notifier)
-              .deleteNotification(notification.id);
-          result.fold(
-            (failure) => AppFeedback.showError(failure.message),
-            (_) => AppFeedback.showSuccess('تم حذف الإشعار بنجاح'),
-          );
+          if (notification.groupedNotificationIds.isNotEmpty) {
+            for (final nid in notification.groupedNotificationIds) {
+              await ref
+                  .read(notificationsControllerProvider.notifier)
+                  .deleteNotification(nid);
+            }
+            AppFeedback.showSuccess('تم حذف إشعارات التذكرة بنجاح');
+          } else {
+            final result = await ref
+                .read(notificationsControllerProvider.notifier)
+                .deleteNotification(notification.id);
+            result.fold(
+              (failure) => AppFeedback.showError(failure.message),
+              (_) => AppFeedback.showSuccess('تم حذف الإشعار بنجاح'),
+            );
+          }
         },
       ),
     );

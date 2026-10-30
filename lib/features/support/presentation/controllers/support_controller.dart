@@ -453,12 +453,12 @@ class SupportNotifier extends Notifier<SupportState> {
       },
       (detailed) {
         final index = state.tickets.indexWhere((t) => t.id == ticketId);
-        List<SupportTicketEntity> updatedTickets = List.from(state.tickets);
-        if (index != -1) {
-          updatedTickets[index] = detailed;
-        } else {
-          updatedTickets.insert(0, detailed);
-        }
+        final List<SupportTicketEntity> updatedTickets = index != -1
+            ? [
+                for (int i = 0; i < state.tickets.length; i++)
+                  if (i == index) detailed else state.tickets[i]
+              ]
+            : [detailed, ...state.tickets];
 
         final filtered = _applyLocalFilters(
           updatedTickets,
