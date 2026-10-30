@@ -39,6 +39,9 @@ class NotificationItemCard extends ConsumerWidget {
         ? '$dateStr  •  بواسطة ${notification.adminName}'
         : dateStr;
 
+    final displayImage = notification.displayImage;
+    final hasDisplayImage = displayImage != null && displayImage.isNotEmpty;
+
     return GenericListCard<AdminNotificationEntity>(
       data: notification,
       margin: EdgeInsets.zero,
@@ -46,15 +49,39 @@ class NotificationItemCard extends ConsumerWidget {
       subtitle: notification.body,
       subtitleMaxLines: 2,
       metadata: metadata,
-      imageUrl: notification.imageUrl,
+      imageUrl: hasDisplayImage ? displayImage : null,
       fallbackIcon: type.icon,
-      imageWidget: Icon(type.icon, color: type.color),
+      imageWidget: !hasDisplayImage &&
+              notification.userName != null &&
+              notification.userName!.isNotEmpty
+          ? Center(
+              child: Text(
+                notification.userName![0].toUpperCase(),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: type.color,
+                ),
+              ),
+            )
+          : Icon(type.icon, color: type.color),
       onTap: onTap ?? () => _handleTap(context, ref),
       statusWidget: Wrap(
         spacing: AppDesignTokens.space6,
         runSpacing: AppDesignTokens.space6,
         children: [
           InfoPill(label: type.label, icon: type.icon, color: type.color),
+          if (notification.isTicket && notification.messagesCount > 1)
+            InfoPill(
+              label: '${notification.messagesCount} رسائل',
+              icon: Icons.mark_chat_unread_rounded,
+              color: const Color(0xFFA855F7),
+            ),
+          if (notification.ticketId != null)
+            InfoPill(
+              label: '#${notification.data?['ticket_number'] ?? notification.ticketId}',
+              icon: Icons.confirmation_number_outlined,
+            ),
           InfoPill(
             label: notification.targetLabel,
             icon: notification.targetType == 'all'
@@ -113,13 +140,22 @@ class NotificationItemCard extends ConsumerWidget {
         icon: Icons.delete_forever_rounded,
         onConfirm: () async {
           Navigator.of(ctx).pop();
-          final result = await ref
-              .read(notificationsControllerProvider.notifier)
-              .deleteNotification(notification.id);
-          result.fold(
-            (failure) => AppFeedback.showError(failure.message),
-            (_) => AppFeedback.showSuccess('تم حذف الإشعار'),
-          );
+          if (notification.groupedNotificationIds.isNotEmpty) {
+            for (final nid in notification.groupedNotificationIds) {
+              await ref
+                  .read(notificationsControllerProvider.notifier)
+                  .deleteNotification(nid);
+            }
+            AppFeedback.showSuccess('تم حذف إشعارات التذكرة بنجاح');
+          } else {
+            final result = await ref
+                .read(notificationsControllerProvider.notifier)
+                .deleteNotification(notification.id);
+            result.fold(
+              (failure) => AppFeedback.showError(failure.message),
+              (_) => AppFeedback.showSuccess('تم حذف الإشعار'),
+            );
+          }
         },
       ),
     );
