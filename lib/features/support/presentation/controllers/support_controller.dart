@@ -273,8 +273,8 @@ class SupportNotifier extends Notifier<SupportState> {
           final exists = page.tickets
               .where((t) => t.id == selected!.id)
               .firstOrNull;
-          if (exists == null && page.tickets.isNotEmpty) {
-            selected = page.tickets.first;
+          if (exists != null) {
+            selected = exists;
           }
         }
 
@@ -390,6 +390,69 @@ class SupportNotifier extends Notifier<SupportState> {
     );
   }
 
+  Future<void> selectTicketById(
+    int ticketId, {
+    String? ticketNumber,
+    String? subject,
+    String? userName,
+    String? userEmail,
+  }) async {
+    // 1. If already present in current tickets list, reuse it
+    final existing = state.tickets.where((t) => t.id == ticketId).firstOrNull;
+    if (existing != null) {
+      await selectTicket(existing);
+      return;
+    }
+
+    // 2. Set temporary placeholder so UI (especially on mobile) immediately transitions
+    final placeholder = SupportTicketEntity(
+      id: ticketId,
+      ticketNumber: ticketNumber ?? '$ticketId',
+      userName: userName ?? 'المستخدم',
+      userEmail: userEmail ?? '',
+      subject: subject ?? 'تذكرة الدعم #$ticketId',
+      category: 'عام',
+      createdAt: DateTime.now(),
+      status: 'open',
+      priority: 'normal',
+    );
+
+    state = state.copyWith(
+      selectedTicket: () => placeholder,
+      isLoadingDetail: true,
+      errorMessage: () => null,
+    );
+
+    final result = await _getTicketDetail(ticketId);
+
+    result.fold(
+      (failure) {
+        state = state.copyWith(
+          isLoadingDetail: false,
+          errorMessage: () => failure.message,
+        );
+      },
+      (detailed) {
+        final updatedTickets = [detailed, ...state.tickets];
+        final filtered = _applyLocalFilters(
+          updatedTickets,
+          state.selectedStatus,
+          state.selectedPriority,
+          state.selectedCategory,
+          state.searchQuery,
+        );
+
+        state = state.copyWith(
+          isLoadingDetail: false,
+          selectedTicket: () => detailed,
+          tickets: updatedTickets,
+          filteredTickets: filtered,
+          errorMessage: () => null,
+        );
+      },
+    );
+  }
+
   void setSelectedTicket(SupportTicketEntity? ticket) {
     state = state.copyWith(selectedTicket: () => ticket);
   }
@@ -435,8 +498,60 @@ class SupportNotifier extends Notifier<SupportState> {
       return false;
     }
 
-    state = state.copyWith(isSendingReply: true, errorMessage: () => null);
+    // 1. Generate unique temporary negative ID for optimistic update
+    final tempId = -DateTime.now().millisecondsSinceEpoch;
+    final now = DateTime.now();
+    final newStatus = state.isInternalNote ? ticket.status : state.replyStatus;
 
+    final optimisticMsg = SupportMessageEntity(
+      id: tempId,
+      ticketId: ticket.id,
+      senderType: 'admin',
+      senderName: ticket.adminName ?? 'أنت (الدعم الفني)',
+      message: messageText,
+      isInternalNote: state.isInternalNote,
+      isRead: true,
+      createdAt: now,
+    );
+
+    // 2. Immediately update local state with optimistic message (zero UI lag)
+    final optimisticMessages = List<SupportMessageEntity>.from(ticket.messages)
+      ..add(optimisticMsg);
+
+    final optimisticTicket = ticket.copyWith(
+      status: newStatus,
+      messages: optimisticMessages,
+      messagesCount: ticket.messagesCount + 1,
+      unreadMessagesCount: 0,
+      lastReplyAt: now,
+      resolvedAt: newStatus == 'resolved' ? now : ticket.resolvedAt,
+      closedAt: newStatus == 'closed' ? now : ticket.closedAt,
+    );
+
+    final ticketIndex = state.tickets.indexWhere((t) => t.id == ticket.id);
+    List<SupportTicketEntity> optimisticTickets = state.tickets;
+    if (ticketIndex != -1) {
+      optimisticTickets = List.from(state.tickets);
+      optimisticTickets[ticketIndex] = optimisticTicket;
+    }
+
+    final optimisticFiltered = _applyLocalFilters(
+      optimisticTickets,
+      state.selectedStatus,
+      state.selectedPriority,
+      state.selectedCategory,
+      state.searchQuery,
+    );
+
+    state = state.copyWith(
+      isSendingReply: true,
+      selectedTicket: () => optimisticTicket,
+      tickets: optimisticTickets,
+      filteredTickets: optimisticFiltered,
+      errorMessage: () => null,
+    );
+
+    // 3. Dispatch actual network request in background
     final result = await _sendMessage(
       ticketId: ticket.id,
       message: messageText,
@@ -446,40 +561,25 @@ class SupportNotifier extends Notifier<SupportState> {
 
     return result.fold(
       (failure) {
-        state = state.copyWith(
-          isSendingReply: false,
-          errorMessage: () => 'فشل في إرسال الرد: ${failure.message}',
-        );
-        return false;
-      },
-      (newMsg) {
-        final currentMessages = List<SupportMessageEntity>.from(ticket.messages)
-          ..add(newMsg);
-        final newStatus = state.isInternalNote
-            ? ticket.status
-            : state.replyStatus;
+        // Rollback optimistic message upon failure
+        final rollbackMessages = List<SupportMessageEntity>.from(
+          state.selectedTicket?.messages ?? ticket.messages,
+        )..removeWhere((m) => m.id == tempId);
 
-        final updatedTicket = ticket.copyWith(
-          status: newStatus,
-          messages: currentMessages,
-          messagesCount: ticket.messagesCount + 1,
-          unreadMessagesCount: 0,
-          lastReplyAt: DateTime.now(),
-          resolvedAt: newStatus == 'resolved'
-              ? DateTime.now()
-              : ticket.resolvedAt,
-          closedAt: newStatus == 'closed' ? DateTime.now() : ticket.closedAt,
+        final rollbackTicket = (state.selectedTicket ?? ticket).copyWith(
+          messages: rollbackMessages,
+          messagesCount: ticket.messagesCount,
         );
 
-        final index = state.tickets.indexWhere((t) => t.id == ticket.id);
-        List<SupportTicketEntity> updatedTickets = state.tickets;
-        if (index != -1) {
-          updatedTickets = List.from(state.tickets);
-          updatedTickets[index] = updatedTicket;
+        final idx = state.tickets.indexWhere((t) => t.id == ticket.id);
+        List<SupportTicketEntity> rollbackTickets = state.tickets;
+        if (idx != -1) {
+          rollbackTickets = List.from(state.tickets);
+          rollbackTickets[idx] = rollbackTicket;
         }
 
-        final filtered = _applyLocalFilters(
-          updatedTickets,
+        final rollbackFiltered = _applyLocalFilters(
+          rollbackTickets,
           state.selectedStatus,
           state.selectedPriority,
           state.selectedCategory,
@@ -488,15 +588,56 @@ class SupportNotifier extends Notifier<SupportState> {
 
         state = state.copyWith(
           isSendingReply: false,
-          selectedTicket: () => updatedTicket,
-          tickets: updatedTickets,
-          filteredTickets: filtered,
-          successMessage: () => state.isInternalNote
-              ? 'تم حفظ الملاحظة الداخلية بنجاح'
-              : 'تم إرسال الرد وإشعار العميل بنجاح',
+          selectedTicket: () => rollbackTicket,
+          tickets: rollbackTickets,
+          filteredTickets: rollbackFiltered,
+          errorMessage: () => 'فشل في إرسال الرد: ${failure.message}',
+        );
+        return false;
+      },
+      (newMsg) {
+        // Replace optimistic message with confirmed entity from server
+        final currentSelected = state.selectedTicket ?? optimisticTicket;
+        final confirmedMessages =
+            List<SupportMessageEntity>.from(currentSelected.messages)
+              ..removeWhere((m) => m.id == tempId);
+
+        // Guard against duplicate if WebSocket already appended it
+        if (!confirmedMessages.any((m) => m.id == newMsg.id)) {
+          confirmedMessages.add(newMsg);
+        }
+
+        final confirmedTicket = currentSelected.copyWith(
+          status: newStatus,
+          messages: confirmedMessages,
+          latestMessage: newMsg,
         );
 
-        fetchTickets(showLoading: false);
+        final idx = state.tickets.indexWhere((t) => t.id == ticket.id);
+        List<SupportTicketEntity> confirmedTickets = state.tickets;
+        if (idx != -1) {
+          confirmedTickets = List.from(state.tickets);
+          confirmedTickets[idx] = confirmedTicket;
+        }
+
+        final confirmedFiltered = _applyLocalFilters(
+          confirmedTickets,
+          state.selectedStatus,
+          state.selectedPriority,
+          state.selectedCategory,
+          state.searchQuery,
+        );
+
+        state = state.copyWith(
+          isSendingReply: false,
+          selectedTicket: () => confirmedTicket,
+          tickets: confirmedTickets,
+          filteredTickets: confirmedFiltered,
+          errorMessage: () => null,
+        );
+
+        // Refresh stats silently without blocking or refetching all tickets
+        fetchStats();
         return true;
       },
     );
