@@ -504,8 +504,9 @@ class SupportNotifier extends Notifier<SupportState> {
 
   Future<void> updateTicketStatus(String newStatus) async {
     final ticket = state.selectedTicket;
-    if (ticket == null || ticket.status == newStatus || state.isUpdating)
+    if (ticket == null || ticket.status == newStatus || state.isUpdating) {
       return;
+    }
 
     state = state.copyWith(isUpdating: true, errorMessage: () => null);
 
@@ -550,8 +551,9 @@ class SupportNotifier extends Notifier<SupportState> {
 
   Future<void> updateTicketPriority(String newPriority) async {
     final ticket = state.selectedTicket;
-    if (ticket == null || ticket.priority == newPriority || state.isUpdating)
+    if (ticket == null || ticket.priority == newPriority || state.isUpdating) {
       return;
+    }
 
     state = state.copyWith(isUpdating: true, errorMessage: () => null);
 
