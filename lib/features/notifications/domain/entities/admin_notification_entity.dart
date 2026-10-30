@@ -9,11 +9,14 @@ class AdminNotificationEntity {
   final String? userId;
   final String? userName;
   final String? userEmail;
+  final String? userAvatar;
   final String? adminName;
   final String? imageUrl;
   final Map<String, dynamic>? data;
   final bool isRead;
   final DateTime? createdAt;
+  final int messagesCount;
+  final List<String> groupedNotificationIds;
 
   const AdminNotificationEntity({
     required this.id,
@@ -24,12 +27,18 @@ class AdminNotificationEntity {
     this.userId,
     this.userName,
     this.userEmail,
+    this.userAvatar,
     this.adminName,
     this.imageUrl,
     this.data,
     this.isRead = false,
     this.createdAt,
+    this.messagesCount = 1,
+    this.groupedNotificationIds = const [],
   });
+
+  /// Returns user avatar if available, falling back to notification image.
+  String? get displayImage => userAvatar ?? imageUrl;
 
   factory AdminNotificationEntity.initial() => const AdminNotificationEntity(
     id: '',
@@ -48,11 +57,14 @@ class AdminNotificationEntity {
     String? userId,
     String? userName,
     String? userEmail,
+    String? userAvatar,
     String? adminName,
     String? imageUrl,
     Map<String, dynamic>? data,
     bool? isRead,
     DateTime? createdAt,
+    int? messagesCount,
+    List<String>? groupedNotificationIds,
   }) {
     return AdminNotificationEntity(
       id: id ?? this.id,
@@ -63,11 +75,15 @@ class AdminNotificationEntity {
       userId: userId ?? this.userId,
       userName: userName ?? this.userName,
       userEmail: userEmail ?? this.userEmail,
+      userAvatar: userAvatar ?? this.userAvatar,
       adminName: adminName ?? this.adminName,
       imageUrl: imageUrl ?? this.imageUrl,
       data: data ?? this.data,
       isRead: isRead ?? this.isRead,
       createdAt: createdAt ?? this.createdAt,
+      messagesCount: messagesCount ?? this.messagesCount,
+      groupedNotificationIds:
+          groupedNotificationIds ?? this.groupedNotificationIds,
     );
   }
 

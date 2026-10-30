@@ -12,6 +12,7 @@ class AdminNotificationModel {
   final String? userId;
   final String? userName;
   final String? userEmail;
+  final String? userAvatar;
   final String? adminName;
   final String? imageUrl;
   final Map<String, dynamic>? data;
@@ -27,6 +28,7 @@ class AdminNotificationModel {
     this.userId,
     this.userName,
     this.userEmail,
+    this.userAvatar,
     this.adminName,
     this.imageUrl,
     this.data,
@@ -37,10 +39,15 @@ class AdminNotificationModel {
   factory AdminNotificationModel.fromJson(Map<String, dynamic> json) {
     String? userName;
     String? userEmail;
+    String? userAvatar;
     if (json['user'] is Map) {
       final userMap = json['user'] as Map;
       userName = userMap['name']?.toString();
       userEmail = userMap['email']?.toString();
+      userAvatar = userMap['photo_url']?.toString() ??
+          userMap['avatar']?.toString() ??
+          userMap['profile_photo_url']?.toString() ??
+          userMap['image']?.toString();
     }
 
     String? adminName;
@@ -70,6 +77,12 @@ class AdminNotificationModel {
       }
     }
 
+    userAvatar ??= dataMap?['user_avatar']?.toString() ??
+        dataMap?['avatar']?.toString() ??
+        dataMap?['photo_url']?.toString() ??
+        json['user_avatar']?.toString() ??
+        json['avatar']?.toString();
+
     DateTime? parsedDate;
     if (json['created_at'] != null) {
       parsedDate = DateTime.tryParse(json['created_at'].toString());
@@ -84,6 +97,7 @@ class AdminNotificationModel {
       userId: json['user_id']?.toString(),
       userName: userName,
       userEmail: userEmail,
+      userAvatar: userAvatar,
       adminName: adminName,
       imageUrl: json['image_url']?.toString(),
       data: dataMap,
