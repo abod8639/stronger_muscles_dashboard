@@ -14,7 +14,7 @@ class SupportTicketModel {
   final String category;
   final String priority;
   final String status;
-  final int? orderId;
+  final String? orderId;
   final String? orderNumber;
   final double? orderTotal;
   final int? adminId;
@@ -122,9 +122,7 @@ class SupportTicketModel {
       category: json['category']?.toString() ?? 'general',
       priority: json['priority']?.toString() ?? 'normal',
       status: json['status']?.toString() ?? 'open',
-      orderId: json['order_id'] is int
-          ? json['order_id'] as int
-          : int.tryParse(json['order_id']?.toString() ?? ''),
+      orderId: json['order_id']?.toString(),
       orderNumber: orderNumber,
       orderTotal: orderTotal,
       adminId: json['admin_id'] is int
@@ -204,7 +202,7 @@ class SupportTicketModel {
     String? category,
     String? priority,
     String? status,
-    int? orderId,
+    String? orderId,
     String? orderNumber,
     double? orderTotal,
     int? adminId,
