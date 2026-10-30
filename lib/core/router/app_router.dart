@@ -15,6 +15,7 @@ import 'package:stronger_muscles_dashboard/features/promos/promos_feature.dart';
 import 'package:stronger_muscles_dashboard/features/settings/settings_feature.dart';
 import 'package:stronger_muscles_dashboard/features/theme/theme_feature.dart';
 import 'package:stronger_muscles_dashboard/features/support/support_feature.dart';
+import 'package:stronger_muscles_dashboard/features/support_chat/support_chat_feature.dart';
 import 'package:stronger_muscles_dashboard/features/users/users_feature.dart';
 
 /// المفتاح العام للتنقل في GoRouter
@@ -45,6 +46,7 @@ final GoRouter appRouter = GoRouter(
     ...SettingsRoutes.routes,
     ...ThemeRoutes.routes,
     ...SupportRoutes.routes,
+    ...SupportChatRoutes.routes,
     ...UsersRoutes.routes,
   ],
   redirect: (BuildContext context, GoRouterState state) {
