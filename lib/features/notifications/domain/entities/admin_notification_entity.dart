@@ -72,16 +72,75 @@ class AdminNotificationEntity {
   }
 
   String get typeLabel {
-    switch (type) {
+    switch (type.toLowerCase()) {
       case 'promo':
         return 'إعلان / عرض';
       case 'order':
         return 'حالة طلب';
       case 'system':
         return 'نظام / أمان';
+      case 'support':
+      case 'support_ticket':
+      case 'ticket':
+        return 'دعم فني';
       default:
         return 'عام';
     }
+  }
+
+  /// Determines whether this notification refers to a support ticket.
+  bool get isTicket {
+    final t = type.toLowerCase();
+    if (t == 'support' || t == 'ticket' || t == 'support_ticket') {
+      return true;
+    }
+    if (data != null) {
+      final dt = data!['type']?.toString().toLowerCase();
+      if (dt == 'support' || dt == 'ticket' || dt == 'support_ticket') {
+        return true;
+      }
+      if (data!['ticket_id'] != null || data!['ticketId'] != null) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /// Extracts the ticket ID if available from notification payload data.
+  int? get ticketId {
+    if (data != null) {
+      final raw = data!['ticket_id'] ?? data!['ticketId'];
+      if (raw is int) return raw;
+      if (raw is String) return int.tryParse(raw);
+      if (isTicket && data!['id'] != null) {
+        final rawId = data!['id'];
+        if (rawId is int) return rawId;
+        if (rawId is String) return int.tryParse(rawId);
+      }
+    }
+    return null;
+  }
+
+  /// Determines whether this notification refers to an order.
+  bool get isOrder {
+    final t = type.toLowerCase();
+    if (t == 'order') return true;
+    if (data != null) {
+      final dt = data!['type']?.toString().toLowerCase();
+      if (dt == 'order') return true;
+      if (data!['order_id'] != null || data!['orderId'] != null) return true;
+    }
+    return false;
+  }
+
+  /// Extracts the order ID if available from notification payload data.
+  int? get orderId {
+    if (data != null) {
+      final raw = data!['order_id'] ?? data!['orderId'];
+      if (raw is int) return raw;
+      if (raw is String) return int.tryParse(raw);
+    }
+    return null;
   }
 
   String get targetLabel {
