@@ -3,6 +3,7 @@ import 'package:stronger_muscles_dashboard/features/notifications/data/mappers/n
 import 'package:stronger_muscles_dashboard/features/notifications/data/models/admin_notification_model.dart';
 import 'package:stronger_muscles_dashboard/features/notifications/domain/entities/admin_notification_entity.dart';
 import 'package:stronger_muscles_dashboard/features/notifications/domain/entities/notifications_result_entity.dart';
+import 'package:stronger_muscles_dashboard/features/notifications/presentation/controllers/notifications_providers.dart';
 
 void main() {
   group('AdminNotificationEntity Tests', () {
@@ -238,5 +239,95 @@ void main() {
         expect(fallbackResult.totalCount, 0);
       },
     );
+  });
+
+  group('Notification Grouping & Avatar Tests', () {
+    test('AdminNotificationModel fromJson parses user avatar correctly', () {
+      final json = {
+        'id': '10',
+        'title': 'رد على التذكرة',
+        'body': 'محتوى الرسالة',
+        'type': 'support',
+        'target_type': 'user',
+        'user': {
+          'id': '5',
+          'name': 'سامي',
+          'email': 'sami@example.com',
+          'photo_url': 'https://example.com/sami.jpg',
+        },
+        'data': {'ticket_id': 12},
+      };
+
+      final model = AdminNotificationModel.fromJson(json);
+      expect(model.userAvatar, 'https://example.com/sami.jpg');
+
+      final entity = model.toEntity();
+      expect(entity.userAvatar, 'https://example.com/sami.jpg');
+      expect(entity.displayImage, 'https://example.com/sami.jpg');
+      expect(entity.isTicket, isTrue);
+      expect(entity.ticketId, 12);
+    });
+
+    test('groupTicketNotifications consolidates multiple messages for same ticket into 1 card with message count', () {
+      final now = DateTime(2026, 10, 30, 4, 0);
+      final notifs = [
+        AdminNotificationEntity(
+          id: '1',
+          title: 'رد على التذكرة #15',
+          body: 'الرسالة الأولى',
+          type: 'support',
+          targetType: 'user',
+          userName: 'سارة',
+          data: const {'ticket_id': 15},
+          createdAt: now.subtract(const Duration(minutes: 10)),
+        ),
+        AdminNotificationEntity(
+          id: '2',
+          title: 'رد على التذكرة #15',
+          body: 'الرسالة الثانية',
+          type: 'support',
+          targetType: 'user',
+          userName: 'سارة',
+          userAvatar: 'https://example.com/sara.jpg',
+          data: const {'ticket_id': 15},
+          createdAt: now.subtract(const Duration(minutes: 5)),
+        ),
+        AdminNotificationEntity(
+          id: '3',
+          title: 'رد على التذكرة #15',
+          body: 'الرسالة الثالثة والأحدث',
+          type: 'support',
+          targetType: 'user',
+          userName: 'سارة',
+          data: const {'ticket_id': 15},
+          createdAt: now,
+        ),
+        AdminNotificationEntity(
+          id: '4',
+          title: 'طلب جديد #99',
+          body: 'طلب جديد مسجل',
+          type: 'order',
+          targetType: 'user',
+          createdAt: now.subtract(const Duration(minutes: 2)),
+        ),
+      ];
+
+      final grouped = groupTicketNotifications(notifs);
+
+      // 3 notifications for ticket #15 should be grouped into 1, plus 1 order = 2 total cards
+      expect(grouped.length, 2);
+
+      final ticketNotif = grouped.firstWhere((n) => n.isTicket);
+      expect(ticketNotif.ticketId, 15);
+      expect(ticketNotif.messagesCount, 3);
+      expect(ticketNotif.groupedNotificationIds, ['3', '2', '1']);
+      expect(ticketNotif.body, 'الرسالة الثالثة والأحدث');
+      expect(ticketNotif.userAvatar, 'https://example.com/sara.jpg');
+      expect(ticketNotif.displayImage, 'https://example.com/sara.jpg');
+
+      final orderNotif = grouped.firstWhere((n) => !n.isTicket);
+      expect(orderNotif.id, '4');
+      expect(orderNotif.messagesCount, 1);
+    });
   });
 }
