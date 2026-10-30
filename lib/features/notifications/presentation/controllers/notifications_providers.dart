@@ -149,8 +149,68 @@ final filteredNotificationsListProvider =
             }).toList();
           }
 
-          return list;
+          return groupTicketNotifications(list);
         },
         orElse: () => const [],
       );
     });
+
+/// Groups multiple notifications for the same support ticket into a single consolidated item.
+List<AdminNotificationEntity> groupTicketNotifications(
+  List<AdminNotificationEntity> list,
+) {
+  final Map<int, List<AdminNotificationEntity>> ticketGroups = {};
+  final List<AdminNotificationEntity> otherNotifications = [];
+
+  for (final n in list) {
+    if (n.isTicket && n.ticketId != null) {
+      ticketGroups.putIfAbsent(n.ticketId!, () => []).add(n);
+    } else {
+      otherNotifications.add(n);
+    }
+  }
+
+  final List<AdminNotificationEntity> result = List.from(otherNotifications);
+
+  for (final entry in ticketGroups.entries) {
+    final group = entry.value;
+    group.sort((a, b) {
+      final da = a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final db = b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      return db.compareTo(da);
+    });
+
+    final latest = group.first;
+    final totalMessages = group.length;
+
+    final avatar = group
+        .map((e) => e.userAvatar)
+        .firstWhere((a) => a != null && a.isNotEmpty, orElse: () => null);
+
+    final userName = group
+        .map((e) => e.userName)
+        .firstWhere((u) => u != null && u.isNotEmpty, orElse: () => null);
+
+    final userEmail = group
+        .map((e) => e.userEmail)
+        .firstWhere((e) => e != null && e.isNotEmpty, orElse: () => null);
+
+    final consolidated = latest.copyWith(
+      userAvatar: avatar ?? latest.userAvatar,
+      userName: userName ?? latest.userName,
+      userEmail: userEmail ?? latest.userEmail,
+      messagesCount: totalMessages,
+      groupedNotificationIds: group.map((g) => g.id).toList(),
+    );
+
+    result.add(consolidated);
+  }
+
+  result.sort((a, b) {
+    final da = a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+    final db = b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+    return db.compareTo(da);
+  });
+
+  return result;
+}
