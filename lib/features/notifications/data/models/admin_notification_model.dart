@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 /// Data Transfer Object (DTO) for administrative notifications.
@@ -54,6 +55,18 @@ class AdminNotificationModel {
         dataMap = Map<String, dynamic>.from(json['data'] as Map);
       } catch (_) {
         dataMap = null;
+      }
+    } else if (json['data'] is String) {
+      final str = (json['data'] as String).trim();
+      if (str.startsWith('{') && str.endsWith('}')) {
+        try {
+          final decoded = jsonDecode(str);
+          if (decoded is Map) {
+            dataMap = Map<String, dynamic>.from(decoded);
+          }
+        } catch (_) {
+          dataMap = null;
+        }
       }
     }
 

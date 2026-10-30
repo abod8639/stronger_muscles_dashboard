@@ -103,10 +103,14 @@ class AdminNotificationEntity {
         return true;
       }
     }
+    if (RegExp(r'(?:تذكرة|ticket)\s*#?\d+', caseSensitive: false)
+        .hasMatch('$title $body')) {
+      return true;
+    }
     return false;
   }
 
-  /// Extracts the ticket ID if available from notification payload data.
+  /// Extracts the ticket ID if available from notification payload data or text.
   int? get ticketId {
     if (data != null) {
       final raw = data!['ticket_id'] ?? data!['ticketId'];
@@ -117,6 +121,14 @@ class AdminNotificationEntity {
         if (rawId is int) return rawId;
         if (rawId is String) return int.tryParse(rawId);
       }
+    }
+    final match = RegExp(
+      r'(?:تذكرة|ticket)?\s*#(\d+)',
+      caseSensitive: false,
+    ).firstMatch('$title $body');
+    if (match != null) {
+      final parsed = int.tryParse(match.group(1)!);
+      if (parsed != null) return parsed;
     }
     return null;
   }

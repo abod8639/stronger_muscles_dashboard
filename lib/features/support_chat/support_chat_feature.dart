@@ -1,5 +1,6 @@
+library;
+
 /// Barrel export file for the Support Chat Clean Architecture feature.
-library support_chat_feature;
 
 // Domain Entities & Repositories
 export 'domain/entities/support_chat_message_entity.dart';
@@ -27,3 +28,4 @@ export 'presentation/widgets/support_chat_composer.dart';
 
 // Routes
 export 'support_chat_routes.dart';
+

@@ -140,3 +140,4 @@ class SupportChatTicketEntity {
       priority.hashCode ^
       messages.length.hashCode;
 }
+

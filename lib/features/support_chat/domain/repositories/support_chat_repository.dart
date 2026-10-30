@@ -40,3 +40,4 @@ abstract class SupportChatRepository {
   /// Deletes the ticket and its entire message history.
   Future<Either<Failure, void>> deleteTicket(int ticketId);
 }
+

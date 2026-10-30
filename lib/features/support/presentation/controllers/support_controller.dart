@@ -274,7 +274,11 @@ class SupportNotifier extends Notifier<SupportState> {
               .where((t) => t.id == selected!.id)
               .firstOrNull;
           if (exists != null) {
-            selected = exists;
+            selected = exists.copyWith(
+              messages: selected.messages.isNotEmpty
+                  ? selected.messages
+                  : exists.messages,
+            );
           }
         }
 
@@ -356,6 +360,9 @@ class SupportNotifier extends Notifier<SupportState> {
 
     final result = await _getTicketDetail(ticket.id);
 
+    // Guard against race condition if user selected another ticket while fetching
+    if (state.selectedTicket?.id != ticket.id) return;
+
     result.fold(
       (failure) {
         state = state.copyWith(
@@ -397,6 +404,15 @@ class SupportNotifier extends Notifier<SupportState> {
     String? userName,
     String? userEmail,
   }) async {
+    // Reset filters so the selected ticket is visible and not filtered out
+    state = state.copyWith(
+      selectedStatus: 'all',
+      selectedPriority: 'all',
+      selectedCategory: 'all',
+      searchQuery: '',
+      filteredTickets: state.tickets,
+    );
+
     // 1. If already present in current tickets list, reuse it
     final existing = state.tickets.where((t) => t.id == ticketId).firstOrNull;
     if (existing != null) {
@@ -404,7 +420,7 @@ class SupportNotifier extends Notifier<SupportState> {
       return;
     }
 
-    // 2. Set temporary placeholder so UI (especially on mobile) immediately transitions
+    // 2. Set temporary placeholder so UI (both desktop and mobile) immediately transitions
     final placeholder = SupportTicketEntity(
       id: ticketId,
       ticketNumber: ticketNumber ?? '$ticketId',
@@ -425,6 +441,9 @@ class SupportNotifier extends Notifier<SupportState> {
 
     final result = await _getTicketDetail(ticketId);
 
+    // Guard against race condition if user selected another ticket while fetching
+    if (state.selectedTicket?.id != ticketId) return;
+
     result.fold(
       (failure) {
         state = state.copyWith(
@@ -433,7 +452,14 @@ class SupportNotifier extends Notifier<SupportState> {
         );
       },
       (detailed) {
-        final updatedTickets = [detailed, ...state.tickets];
+        final index = state.tickets.indexWhere((t) => t.id == ticketId);
+        List<SupportTicketEntity> updatedTickets = List.from(state.tickets);
+        if (index != -1) {
+          updatedTickets[index] = detailed;
+        } else {
+          updatedTickets.insert(0, detailed);
+        }
+
         final filtered = _applyLocalFilters(
           updatedTickets,
           state.selectedStatus,

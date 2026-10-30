@@ -62,3 +62,4 @@ extension SupportChatTicketModelMapper on SupportChatTicketModel {
     );
   }
 }
+

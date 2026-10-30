@@ -148,3 +148,4 @@ class SupportChatTicketModel {
     );
   }
 }
+
