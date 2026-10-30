@@ -24,3 +24,5 @@ export 'notifications_routes.dart';
 export 'presentation/pages/notifications_screen.dart';
 export 'presentation/widgets/send_notification_dialog.dart'
     show showSendNotificationDialog, SendNotificationDialog;
+export 'presentation/widgets/notification_details_dialog.dart'
+    show showNotificationDetailsDialog, NotificationDetailsDialog;
