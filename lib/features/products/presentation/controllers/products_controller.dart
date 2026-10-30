@@ -15,7 +15,6 @@ import '../../domain/usecases/upload_product_image_usecase.dart';
 /// Pure Controller managing product UI actions, form validations, and bulk operations.
 /// 100% free of raw try-catch blocks in adherence to Clean Architecture.
 class ProductsController extends ChangeNotifier {
-  final GetProductsUseCase _getProductsUseCase;
   final AddProductUseCase _addProductUseCase;
   final UpdateProductUseCase _updateProductUseCase;
   final DeleteProductUseCase _deleteProductUseCase;
@@ -24,15 +23,14 @@ class ProductsController extends ChangeNotifier {
   final BrandRepository _brandRepository;
 
   ProductsController({
-    required GetProductsUseCase getProductsUseCase,
+    GetProductsUseCase? getProductsUseCase,
     required AddProductUseCase addProductUseCase,
     required UpdateProductUseCase updateProductUseCase,
     required DeleteProductUseCase deleteProductUseCase,
     required UploadProductImageUseCase uploadProductImageUseCase,
     required CategoryRepository categoryRepository,
     required BrandRepository brandRepository,
-  }) : _getProductsUseCase = getProductsUseCase,
-       _addProductUseCase = addProductUseCase,
+  }) : _addProductUseCase = addProductUseCase,
        _updateProductUseCase = updateProductUseCase,
        _deleteProductUseCase = deleteProductUseCase,
        _uploadProductImageUseCase = uploadProductImageUseCase,
@@ -204,7 +202,10 @@ class ProductsController extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final catResult = await _categoryRepository.getCategories(tree: true);
+    final catResult = await _categoryRepository.getCategories(
+      tree: true,
+      forceRefresh: forceRefresh,
+    );
     catResult.fold(
       (failure) => debugPrint('Error categories: ${failure.toMessage()}'),
       (cats) {
@@ -214,16 +215,9 @@ class ProductsController extends ChangeNotifier {
       },
     );
 
-    final prodResult = await _getProductsUseCase(forceRefresh: forceRefresh);
-    prodResult.fold((failure) => AppFeedback.showError(failure.toMessage()), (
-      prods,
-    ) {
-      products
-        ..clear()
-        ..addAll(prods);
-    });
-
-    final brandsResult = await _brandRepository.getBrands();
+    final brandsResult = await _brandRepository.getBrands(
+      forceRefresh: forceRefresh,
+    );
     brandsResult.fold(
       (failure) => debugPrint('Error brands: ${failure.toMessage()}'),
       (bList) {
@@ -494,6 +488,16 @@ class ProductsController extends ChangeNotifier {
     final String generatedId =
         existingProduct?.id ?? 'PROD-${DateTime.now().millisecondsSinceEpoch}';
 
+    final enteredBrand = textcontrollers['brand']!.text.trim();
+    BrandEntity? matchedBrand;
+    for (final b in brands) {
+      if (b.nameAr.trim().toLowerCase() == enteredBrand.toLowerCase() ||
+          b.nameEn.trim().toLowerCase() == enteredBrand.toLowerCase()) {
+        matchedBrand = b;
+        break;
+      }
+    }
+
     final productData = {
       'id': generatedId,
       'name': {
@@ -509,7 +513,8 @@ class ProductsController extends ChangeNotifier {
       'image_urls': productImages,
       'category_id': categoryId,
       'stock_quantity': int.tryParse(textcontrollers['stock']!.text) ?? 0,
-      'brand': textcontrollers['brand']!.text.trim(),
+      'brand': enteredBrand,
+      if (matchedBrand != null) 'brand_id': matchedBrand.id,
       'is_active': _isActive,
       'featured': _isFeatured,
       'is_background_white': _isBackgroundWhite,
