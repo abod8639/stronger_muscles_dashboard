@@ -53,9 +53,6 @@ class _SupportChatComposerState extends ConsumerState<SupportChatComposer> {
     final colorScheme = theme.colorScheme;
     final isMobile = context.isMobile;
 
-    final isSending = ref.watch(
-      supportChatControllerProvider.select((s) => s.isSendingReply),
-    );
     final isInternalNote = ref.watch(
       supportChatControllerProvider.select((s) => s.isInternalNote),
     );
@@ -307,7 +304,7 @@ class _SupportChatComposerState extends ConsumerState<SupportChatComposer> {
               ),
               const SizedBox(width: 8),
               ElevatedButton(
-                onPressed: isSending ? null : _handleSend,
+                onPressed: _handleSend,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: isInternalNote
                       ? Colors.amber.shade800
@@ -322,35 +319,26 @@ class _SupportChatComposerState extends ConsumerState<SupportChatComposer> {
                   ),
                   elevation: 0,
                 ),
-                child: isSending
-                    ? SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: colorScheme.onPrimary,
-                        ),
-                      )
-                    : Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            isInternalNote
-                                ? Icons.lock_rounded
-                                : Icons.send_rounded,
-                            size: 18,
-                            color: colorScheme.onPrimary,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            isInternalNote ? 'حفظ' : 'إرسال',
-                            style: TextStyle(
-                              color: colorScheme.onPrimary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      isInternalNote
+                          ? Icons.lock_rounded
+                          : Icons.send_rounded,
+                      size: 18,
+                      color: colorScheme.onPrimary,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      isInternalNote ? 'حفظ' : 'إرسال',
+                      style: TextStyle(
+                        color: colorScheme.onPrimary,
+                        fontWeight: FontWeight.bold,
                       ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

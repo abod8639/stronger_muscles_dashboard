@@ -29,6 +29,7 @@ class SupportChatPage extends ConsumerStatefulWidget {
 
 class _SupportChatPageState extends ConsumerState<SupportChatPage> {
   final ScrollController _scrollController = ScrollController();
+  int _lastMessageCount = 0;
 
   @override
   void initState() {
@@ -63,14 +64,18 @@ class _SupportChatPageState extends ConsumerState<SupportChatPage> {
     super.dispose();
   }
 
-  void _scrollToBottom() {
+  void _scrollToBottom({bool immediate = false}) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
+        if (immediate) {
+          _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+        } else {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOutCubic,
+          );
+        }
       }
     });
   }
@@ -249,7 +254,11 @@ class _SupportChatPageState extends ConsumerState<SupportChatPage> {
       );
     }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+    if (ticket.messages.length != _lastMessageCount) {
+      final isFirstLoad = _lastMessageCount == 0;
+      _lastMessageCount = ticket.messages.length;
+      _scrollToBottom(immediate: isFirstLoad);
+    }
 
     return ListView.builder(
       key: ValueKey('chat_messages_${ticket.id}'),

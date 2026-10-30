@@ -51,6 +51,7 @@ class SupportRealtimeDataSourceImpl implements SupportRealtimeDataSource {
       _pusherClient = PusherChannelsClient.websocket(
         options: options,
         connectionErrorHandler: (exception, trace, refresh) async {
+          await Future.delayed(const Duration(seconds: 5));
           refresh();
         },
       );

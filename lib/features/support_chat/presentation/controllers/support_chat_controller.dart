@@ -110,7 +110,7 @@ class SupportChatNotifier extends StateNotifier<SupportChatState> {
   }) async {
     final ticket = state.ticket;
     final trimmed = message.trim();
-    if (ticket == null || trimmed.isEmpty || state.isSendingReply) {
+    if (ticket == null || trimmed.isEmpty) {
       return false;
     }
 
@@ -139,8 +139,9 @@ class SupportChatNotifier extends StateNotifier<SupportChatState> {
       messagesCount: ticket.messagesCount + 1,
     );
 
+    // Keep UI fully responsive without blocking typing or sending
     state = state.copyWith(
-      isSendingReply: true,
+      isSendingReply: false,
       ticket: () => optimisticTicket,
       isInternalNote: false,
       replyStatus: () => null,
@@ -163,9 +164,9 @@ class SupportChatNotifier extends StateNotifier<SupportChatState> {
           state.ticket?.messages ?? [],
         )..removeWhere((m) => m.id == tempId);
 
-        final rollbackTicket = ticket.copyWith(
+        final rollbackTicket = (state.ticket ?? ticket).copyWith(
           messages: rollbackMessages,
-          messagesCount: ticket.messagesCount,
+          messagesCount: (state.ticket?.messagesCount ?? 1) - 1,
         );
 
         state = state.copyWith(
@@ -179,9 +180,12 @@ class SupportChatNotifier extends StateNotifier<SupportChatState> {
         // Replace optimistic placeholder with confirmed server message
         final currentMessages = List<SupportChatMessageEntity>.from(
           state.ticket?.messages ?? [],
-        )..removeWhere((m) => m.id == tempId);
+        );
+        final index = currentMessages.indexWhere((m) => m.id == tempId);
 
-        if (!currentMessages.any((m) => m.id == confirmedMessage.id)) {
+        if (index != -1) {
+          currentMessages[index] = confirmedMessage;
+        } else if (!currentMessages.any((m) => m.id == confirmedMessage.id)) {
           currentMessages.add(confirmedMessage);
         }
 
