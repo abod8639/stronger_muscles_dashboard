@@ -131,25 +131,15 @@ final productsSelectedFlavorProvider =
 // ==========================================
 
 final productsControllerProvider =
-    AsyncNotifierProvider<ProductsNotifier, List<ProductEntity>>(() {
-      return ProductsNotifier(
-        getProductsUseCase: getProductsUseCaseProvider.read,
-        addProductUseCase: addProductUseCaseProvider.read,
-        updateProductUseCase: updateProductUseCaseProvider.read,
-        deleteProductUseCase: deleteProductUseCaseProvider.read,
-      );
-    });
-
-extension ProductProviderRead<T> on Provider<T> {
-  T get read => ProviderContainer().read(this);
-}
+    AsyncNotifierProvider<ProductsNotifier, List<ProductEntity>>(
+      ProductsNotifier.new,
+    );
 
 // ==========================================
 // UI Form & Presentation Controller
 // ==========================================
 
 final productsUIControllerProvider = Provider<ProductsController>((ref) {
-  final getProductsUseCase = ref.watch(getProductsUseCaseProvider);
   final addProductUseCase = ref.watch(addProductUseCaseProvider);
   final updateProductUseCase = ref.watch(updateProductUseCaseProvider);
   final deleteProductUseCase = ref.watch(deleteProductUseCaseProvider);
@@ -160,7 +150,6 @@ final productsUIControllerProvider = Provider<ProductsController>((ref) {
   final brandRepository = ref.watch(brandRepositoryProvider);
 
   final controller = ProductsController(
-    getProductsUseCase: getProductsUseCase,
     addProductUseCase: addProductUseCase,
     updateProductUseCase: updateProductUseCase,
     deleteProductUseCase: deleteProductUseCase,
