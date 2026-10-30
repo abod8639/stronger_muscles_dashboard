@@ -1,20 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:stronger_muscles_dashboard/core/components/confirm_dialog.dart';
 import 'package:stronger_muscles_dashboard/core/components/generic_list_card.dart';
 import 'package:stronger_muscles_dashboard/core/components/info_pill.dart';
+import 'package:stronger_muscles_dashboard/core/router/app_routes.dart';
 import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
+import 'package:stronger_muscles_dashboard/features/navigation/domain/entities/navigation_tab.dart';
+import 'package:stronger_muscles_dashboard/features/navigation/presentation/controllers/navigation_providers.dart';
+import 'package:stronger_muscles_dashboard/features/support/presentation/controllers/support_providers.dart';
 import '../../domain/entities/admin_notification_entity.dart';
 import '../controllers/notifications_providers.dart';
+import 'notification_details_dialog.dart';
 import 'notification_type_ui.dart';
 
 /// Card widget rendering individual notification item with metadata and action buttons.
 class NotificationItemCard extends ConsumerWidget {
   final AdminNotificationEntity notification;
+  final VoidCallback? onTap;
 
-  const NotificationItemCard({super.key, required this.notification});
+  const NotificationItemCard({
+    super.key,
+    required this.notification,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -38,6 +49,7 @@ class NotificationItemCard extends ConsumerWidget {
       imageUrl: notification.imageUrl,
       fallbackIcon: type.icon,
       imageWidget: Icon(type.icon, color: type.color),
+      onTap: onTap ?? () => _handleTap(context, ref),
       statusWidget: Wrap(
         spacing: AppDesignTokens.space6,
         runSpacing: AppDesignTokens.space6,
@@ -59,6 +71,31 @@ class NotificationItemCard extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  void _handleTap(BuildContext context, WidgetRef ref) {
+    if (notification.isTicket) {
+      final ticketId = notification.ticketId;
+      if (ticketId != null) {
+        ref.read(supportControllerProvider.notifier).selectTicketById(
+              ticketId,
+              ticketNumber: notification.data?['ticket_number']?.toString(),
+              subject: notification.title,
+              userName: notification.userName,
+              userEmail: notification.userEmail,
+            );
+      }
+      ref
+          .read(navigationControllerProvider.notifier)
+          .selectTab(NavigationTab.support.tabIndex);
+
+      final currentLoc = GoRouterState.of(context).uri.toString();
+      if (currentLoc != AppRoutes.dashboard) {
+        context.go(AppRoutes.dashboard);
+      }
+    } else {
+      showNotificationDetailsDialog(context, notification);
+    }
   }
 
   void _confirmDelete(
