@@ -7,24 +7,37 @@ import '../../domain/usecases/add_product_usecase.dart';
 import '../../domain/usecases/delete_product_usecase.dart';
 import '../../domain/usecases/get_products_usecase.dart';
 import '../../domain/usecases/update_product_usecase.dart';
+import 'products_providers.dart';
 
 /// AsyncNotifier managing the products list state, mutations, and caching lifecycle.
 /// 100% free of raw try-catch blocks via fpdart Either handling.
 class ProductsNotifier extends AsyncNotifier<List<ProductEntity>> {
-  final GetProductsUseCase _getProductsUseCase;
-  final AddProductUseCase _addProductUseCase;
-  final UpdateProductUseCase _updateProductUseCase;
-  final DeleteProductUseCase _deleteProductUseCase;
+  final GetProductsUseCase? _injectedGetProductsUseCase;
+  final AddProductUseCase? _injectedAddProductUseCase;
+  final UpdateProductUseCase? _injectedUpdateProductUseCase;
+  final DeleteProductUseCase? _injectedDeleteProductUseCase;
 
   ProductsNotifier({
-    required GetProductsUseCase getProductsUseCase,
-    required AddProductUseCase addProductUseCase,
-    required UpdateProductUseCase updateProductUseCase,
-    required DeleteProductUseCase deleteProductUseCase,
-  }) : _getProductsUseCase = getProductsUseCase,
-       _addProductUseCase = addProductUseCase,
-       _updateProductUseCase = updateProductUseCase,
-       _deleteProductUseCase = deleteProductUseCase;
+    GetProductsUseCase? getProductsUseCase,
+    AddProductUseCase? addProductUseCase,
+    UpdateProductUseCase? updateProductUseCase,
+    DeleteProductUseCase? deleteProductUseCase,
+  }) : _injectedGetProductsUseCase = getProductsUseCase,
+       _injectedAddProductUseCase = addProductUseCase,
+       _injectedUpdateProductUseCase = updateProductUseCase,
+       _injectedDeleteProductUseCase = deleteProductUseCase;
+
+  GetProductsUseCase get _getProductsUseCase =>
+      _injectedGetProductsUseCase ?? ref.read(getProductsUseCaseProvider);
+
+  AddProductUseCase get _addProductUseCase =>
+      _injectedAddProductUseCase ?? ref.read(addProductUseCaseProvider);
+
+  UpdateProductUseCase get _updateProductUseCase =>
+      _injectedUpdateProductUseCase ?? ref.read(updateProductUseCaseProvider);
+
+  DeleteProductUseCase get _deleteProductUseCase =>
+      _injectedDeleteProductUseCase ?? ref.read(deleteProductUseCaseProvider);
 
   @override
   FutureOr<List<ProductEntity>> build() {
