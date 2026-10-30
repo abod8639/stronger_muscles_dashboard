@@ -162,11 +162,10 @@ class AdminNotificationEntity {
   }
 
   /// Extracts the order ID if available from notification payload data.
-  int? get orderId {
+  String? get orderId {
     if (data != null) {
       final raw = data!['order_id'] ?? data!['orderId'];
-      if (raw is int) return raw;
-      if (raw is String) return int.tryParse(raw);
+      if (raw != null) return raw.toString();
     }
     return null;
   }
