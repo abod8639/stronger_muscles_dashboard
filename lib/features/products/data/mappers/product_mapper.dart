@@ -24,6 +24,11 @@ extension ProductModelMapper on ProductModel {
       productSizes: productSizes?.map((e) => e.toEntity()).toList(),
       flavors: flavor,
       variants: variants.map((e) => e.toEntity()).toList(),
+      sku: sku,
+      tags: tags,
+      nutritionFacts: nutritionFacts,
+      newArrival: newArrival,
+      bestSeller: bestSeller,
     );
   }
 }
@@ -53,6 +58,11 @@ extension ProductEntityMapper on ProductEntity {
       productSizes: productSizes?.map((s) => s.toModel()).toList(),
       flavor: flavors,
       variants: variants?.map((v) => v.toModel()).toList() ?? const [],
+      sku: sku,
+      tags: tags,
+      nutritionFacts: nutritionFacts,
+      newArrival: newArrival,
+      bestSeller: bestSeller,
     );
   }
 }
