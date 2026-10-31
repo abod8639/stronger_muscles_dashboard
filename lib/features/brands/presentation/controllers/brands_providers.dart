@@ -6,6 +6,7 @@ import '../../data/datasources/brand_remote_datasource.dart';
 import '../../data/repositories/brand_repository_impl.dart';
 import '../../domain/entities/brand_entity.dart';
 import '../../domain/repositories/brand_repository.dart';
+import '../../domain/usecases/create_brand_usecase.dart';
 import '../../domain/usecases/get_brand_by_id_usecase.dart';
 import '../../domain/usecases/get_brands_usecase.dart';
 import 'brands_notifier.dart';
@@ -53,6 +54,10 @@ final getBrandsUseCaseProvider = Provider<GetBrandsUseCase>((ref) {
 
 final getBrandByIdUseCaseProvider = Provider<GetBrandByIdUseCase>((ref) {
   return GetBrandByIdUseCase(ref.watch(brandRepositoryProvider));
+});
+
+final createBrandUseCaseProvider = Provider<CreateBrandUseCase>((ref) {
+  return CreateBrandUseCase(ref.watch(brandRepositoryProvider));
 });
 
 /// ============================================================================
