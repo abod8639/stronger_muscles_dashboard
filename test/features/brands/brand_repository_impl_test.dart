@@ -22,6 +22,18 @@ class MockBrandRemoteDataSource implements BrandRemoteDataSource {
     if (exceptionToThrow != null) throw exceptionToThrow!;
     return mockBrand!;
   }
+
+  @override
+  Future<BrandModel> createBrand(Map<String, dynamic> brandData) async {
+    if (exceptionToThrow != null) throw exceptionToThrow!;
+    return mockBrand ??
+        const BrandModel(
+          id: 'test_brand',
+          nameAr: 'ماركة تجريبية',
+          nameEn: 'Test Brand',
+          isActive: true,
+        );
+  }
 }
 
 class MockBrandLocalDataSource implements BrandLocalDataSource {
