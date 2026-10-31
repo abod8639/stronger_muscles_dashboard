@@ -72,6 +72,19 @@ class BrandsNotifier extends Notifier<BrandsState> {
     }
   }
 
+  /// Adds a new brand and updates state immediately
+  Future<void> addBrand(BrandEntity newBrand) async {
+    final updatedList = [
+      newBrand,
+      ...state.brands.where((b) => b.id != newBrand.id),
+    ];
+    final filtered = _filterBrandsList(updatedList, state.searchQuery);
+    state = state.copyWith(
+      brands: updatedList,
+      filteredBrands: filtered,
+    );
+  }
+
   List<BrandEntity> _filterBrandsList(List<BrandEntity> list, String query) {
     if (query.isEmpty) return list;
     final lowerQuery = query.toLowerCase();
