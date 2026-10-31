@@ -110,6 +110,7 @@ extension ProductVariantModelMapper on ProductVariantModel {
       stockQuantity: stockQuantity,
       attributes: attributes,
       isActive: isActive,
+      barcode: attributes['barcode']?.toString(),
     );
   }
 }
@@ -117,6 +118,10 @@ extension ProductVariantModelMapper on ProductVariantModel {
 /// Extension mapper converting domain [ProductVariantEntity] to [ProductVariantModel] DTO.
 extension ProductVariantEntityMapper on ProductVariantEntity {
   ProductVariantModel toModel() {
+    final mergedAttrs = Map<String, dynamic>.from(attributes);
+    if (barcode != null && barcode!.isNotEmpty) {
+      mergedAttrs['barcode'] = barcode;
+    }
     return ProductVariantModel(
       id: id,
       sku: sku,
@@ -124,7 +129,7 @@ extension ProductVariantEntityMapper on ProductVariantEntity {
       discountPrice: discountPrice,
       effectivePrice: effectivePrice,
       stockQuantity: stockQuantity,
-      attributes: attributes,
+      attributes: mergedAttrs,
       isActive: isActive,
     );
   }
