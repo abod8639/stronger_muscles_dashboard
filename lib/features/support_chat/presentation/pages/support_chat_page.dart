@@ -6,6 +6,7 @@ import '../controllers/support_chat_providers.dart';
 import '../widgets/support_chat_bubble.dart';
 import '../widgets/support_chat_composer.dart';
 import '../widgets/support_chat_header.dart';
+import '../widgets/support_customer_context_sidebar.dart';
 
 /// Clean Architecture Presentation Page for the Support Chat conversation feature.
 /// Can be used as a standalone screen via GoRouter or embedded within split-screen layouts.
@@ -29,11 +30,13 @@ class SupportChatPage extends ConsumerStatefulWidget {
 
 class _SupportChatPageState extends ConsumerState<SupportChatPage> {
   final ScrollController _scrollController = ScrollController();
-  int _lastMessageCount = 0;
+  bool _showScrollToBottom = false;
+  bool _showCustomerContext = true;
 
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_onScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.ticketId != null) {
         ref
@@ -47,19 +50,47 @@ class _SupportChatPageState extends ConsumerState<SupportChatPage> {
     });
   }
 
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    final isScrolledUp = _scrollController.offset > 150;
+    if (isScrolledUp != _showScrollToBottom) {
+      setState(() => _showScrollToBottom = isScrolledUp);
+    }
+  }
+
   @override
   void didUpdateWidget(covariant SupportChatPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.ticketId != null && widget.ticketId != oldWidget.ticketId) {
-      ref
-          .read(supportChatControllerProvider.notifier)
-          .loadTicket(widget.ticketId!, initialTicket: widget.initialTicket);
-      _scrollToBottom();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        ref
+            .read(supportChatControllerProvider.notifier)
+            .loadTicket(widget.ticketId!, initialTicket: widget.initialTicket);
+        _scrollToBottom(immediate: true);
+      });
+    } else if (widget.initialTicket != null &&
+        (oldWidget.initialTicket == null ||
+            widget.initialTicket!.id != oldWidget.initialTicket!.id ||
+            widget.initialTicket!.messages.length !=
+                oldWidget.initialTicket!.messages.length ||
+            widget.initialTicket!.status != oldWidget.initialTicket!.status ||
+            widget.initialTicket!.priority !=
+                oldWidget.initialTicket!.priority ||
+            widget.initialTicket!.assignedAdminId !=
+                oldWidget.initialTicket!.assignedAdminId)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        ref
+            .read(supportChatControllerProvider.notifier)
+            .syncInitialTicket(widget.initialTicket!);
+      });
     }
   }
 
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
   }
@@ -68,10 +99,10 @@ class _SupportChatPageState extends ConsumerState<SupportChatPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
         if (immediate) {
-          _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+          _scrollController.jumpTo(0.0);
         } else {
           _scrollController.animateTo(
-            _scrollController.position.maxScrollExtent,
+            0.0,
             duration: const Duration(milliseconds: 200),
             curve: Curves.easeOutCubic,
           );
@@ -88,7 +119,11 @@ class _SupportChatPageState extends ConsumerState<SupportChatPage> {
     ) {
       if (next != null && next.isNotEmpty) {
         AppFeedback.showError(next);
-        ref.read(supportChatControllerProvider.notifier).clearMessages();
+        Future.microtask(() {
+          if (mounted) {
+            ref.read(supportChatControllerProvider.notifier).clearMessages();
+          }
+        });
       }
     });
 
@@ -98,16 +133,28 @@ class _SupportChatPageState extends ConsumerState<SupportChatPage> {
     ) {
       if (next != null && next.isNotEmpty) {
         AppFeedback.showSuccess(next);
-        ref.read(supportChatControllerProvider.notifier).clearMessages();
+        Future.microtask(() {
+          if (mounted) {
+            ref.read(supportChatControllerProvider.notifier).clearMessages();
+          }
+        });
       }
     });
 
-    final ticket = ref.watch(
+    final activeTicket = ref.watch(
       supportChatControllerProvider.select((s) => s.ticket),
     );
     final isLoading = ref.watch(
       supportChatControllerProvider.select((s) => s.isLoading),
     );
+
+    // Resolve effective ticket: prefer state ticket if loaded, or fallback to initialTicket
+    final ticket = (activeTicket != null && activeTicket.messages.isNotEmpty)
+        ? activeTicket
+        : (widget.initialTicket != null &&
+                widget.initialTicket!.messages.isNotEmpty)
+            ? widget.initialTicket
+            : (activeTicket ?? widget.initialTicket);
 
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -119,7 +166,35 @@ class _SupportChatPageState extends ConsumerState<SupportChatPage> {
     } else if (ticket == null) {
       body = _buildEmptyState(context, isDark);
     } else {
-      body = Container(
+      final screenWidth = MediaQuery.of(context).size.width;
+      final canShowInline = screenWidth >= 1300;
+
+      void toggleCustomerContext() {
+        if (!canShowInline) {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (ctx) => Container(
+              height: MediaQuery.of(context).size.height * 0.85,
+              padding: const EdgeInsets.only(top: 10),
+              decoration: BoxDecoration(
+                color: colorScheme.surface,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              child: SupportCustomerContextSidebar(
+                ticket: ticket,
+                isDark: isDark,
+                onClose: () => Navigator.of(ctx).pop(),
+              ),
+            ),
+          );
+        } else {
+          setState(() => _showCustomerContext = !_showCustomerContext);
+        }
+      }
+
+      final chatBox = Container(
         decoration: BoxDecoration(
           color: colorScheme.surfaceContainerLow,
           borderRadius: widget.isEmbedded
@@ -148,6 +223,8 @@ class _SupportChatPageState extends ConsumerState<SupportChatPage> {
               isDark: isDark,
               showBackButton: !widget.isEmbedded || widget.onBack != null,
               onBack: widget.onBack,
+              onToggleCustomerContext: toggleCustomerContext,
+              isCustomerContextVisible: _showCustomerContext && canShowInline,
             ),
             Divider(height: 1, color: colorScheme.outlineVariant),
 
@@ -168,6 +245,23 @@ class _SupportChatPageState extends ConsumerState<SupportChatPage> {
           ],
         ),
       );
+
+      if (_showCustomerContext && canShowInline) {
+        body = Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(child: chatBox),
+            const SizedBox(width: 12),
+            SupportCustomerContextSidebar(
+              ticket: ticket,
+              isDark: isDark,
+              onClose: () => setState(() => _showCustomerContext = false),
+            ),
+          ],
+        );
+      } else {
+        body = chatBox;
+      }
     }
 
     if (widget.isEmbedded) {
@@ -254,21 +348,44 @@ class _SupportChatPageState extends ConsumerState<SupportChatPage> {
       );
     }
 
-    if (ticket.messages.length != _lastMessageCount) {
-      final isFirstLoad = _lastMessageCount == 0;
-      _lastMessageCount = ticket.messages.length;
-      _scrollToBottom(immediate: isFirstLoad);
-    }
-
-    return ListView.builder(
-      key: ValueKey('chat_messages_${ticket.id}'),
-      controller: _scrollController,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      itemCount: ticket.messages.length,
-      itemBuilder: (context, index) {
-        final message = ticket.messages[index];
-        return SupportChatBubble(message: message, isDark: isDark);
-      },
+    return Stack(
+      children: [
+        ListView.builder(
+          key: ValueKey('chat_messages_${ticket.id}'),
+          controller: _scrollController,
+          reverse: true,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          itemCount: ticket.messages.length,
+          itemBuilder: (context, index) {
+            // In reversed list, index 0 is the newest message
+            final message = ticket.messages[ticket.messages.length - 1 - index];
+            return SupportChatBubble(
+              key: ValueKey(
+                'msg_${message.id}_${message.createdAt.millisecondsSinceEpoch}_$index',
+              ),
+              message: message,
+              isDark: isDark,
+              onRetry: message.isFailed
+                  ? () => ref
+                      .read(supportChatControllerProvider.notifier)
+                      .retryMessage(message)
+                  : null,
+            );
+          },
+        ),
+        if (_showScrollToBottom)
+          Positioned(
+            bottom: 14,
+            left: 14,
+            child: FloatingActionButton.small(
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+              foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
+              onPressed: () => _scrollToBottom(),
+              tooltip: 'الانتقال لآخر رسالة',
+              child: const Icon(Icons.arrow_downward_rounded, size: 20),
+            ),
+          ),
+      ],
     );
   }
 }
