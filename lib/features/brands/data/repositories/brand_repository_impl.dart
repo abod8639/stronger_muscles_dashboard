@@ -77,6 +77,17 @@ class BrandRepositoryImpl implements BrandRepository {
 
       // 2. Fetch directly from remote
       final model = await _remoteDataSource.getBrandById(id);
+
+      // Cache brand locally
+      try {
+        final cached = await _localDataSource.getCachedBrands();
+        final updated = [
+          model,
+          ...cached.where((b) => b.id != model.id),
+        ];
+        await _localDataSource.cacheBrands(updated);
+      } catch (_) {}
+
       return Right(model.toEntity());
     } catch (e, stackTrace) {
       final failure = NetworkErrorHandler.handleException(e, stackTrace);
