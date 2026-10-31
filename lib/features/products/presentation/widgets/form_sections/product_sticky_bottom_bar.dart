@@ -142,7 +142,7 @@ class ProductStickyBottomBar extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () => Navigator.of(context).maybePop(),
                 child: const Text('إلغاء'),
               ),
               const SizedBox(width: 12),
