@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get_storage/get_storage.dart';
+import 'package:stronger_muscles_dashboard/core/storage/app_storage.dart';
 import 'package:stronger_muscles_dashboard/core/network/dio_provider.dart';
 import '../../data/datasources/auth_local_datasource.dart';
 import '../../data/datasources/auth_remote_datasource.dart';
