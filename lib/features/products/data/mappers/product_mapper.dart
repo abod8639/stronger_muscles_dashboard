@@ -67,6 +67,7 @@ extension ProductSizeMapper on ProductSize {
       servings: servings,
       weight: weight,
       stockQuantity: stockQuantity,
+      flavors: flavors,
     );
   }
 }
@@ -82,6 +83,7 @@ extension ProductSizeEntityMapper on ProductSizeEntity {
     model.servings = servings;
     model.weight = weight;
     model.stockQuantity = stockQuantity;
+    model.flavors = flavors;
     return model;
   }
 }
