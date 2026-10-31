@@ -132,6 +132,7 @@ class ProductSizeEntity {
   final int? servings;
   final String? weight;
   final int? stockQuantity;
+  final List<String>? flavors;
 
   const ProductSizeEntity({
     required this.size,
@@ -140,6 +141,7 @@ class ProductSizeEntity {
     this.servings,
     this.weight,
     this.stockQuantity,
+    this.flavors,
   });
 
   ProductSizeEntity copyWith({
@@ -149,6 +151,7 @@ class ProductSizeEntity {
     int? servings,
     String? weight,
     int? stockQuantity,
+    List<String>? flavors,
   }) {
     return ProductSizeEntity(
       size: size ?? this.size,
@@ -157,6 +160,7 @@ class ProductSizeEntity {
       servings: servings ?? this.servings,
       weight: weight ?? this.weight,
       stockQuantity: stockQuantity ?? this.stockQuantity,
+      flavors: flavors ?? this.flavors,
     );
   }
 
