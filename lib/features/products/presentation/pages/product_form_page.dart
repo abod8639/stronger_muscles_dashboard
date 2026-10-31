@@ -58,14 +58,15 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage>
   @override
   void initState() {
     super.initState();
+    _selectedCategoryId = getInitialCategoryId();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       initializeProductFields();
       controller.imageUrls
         ..clear()
         ..addAll(getInitialImageUrls());
-      setState(() {
-        _selectedCategoryId = getInitialCategoryId();
-      });
+      if (mounted) {
+        setState(() {});
+      }
     });
   }
 
@@ -151,6 +152,45 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage>
     }
   }
 
+  Future<bool> _showDiscardConfirmDialog(BuildContext context) async {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(
+              Icons.warning_amber_rounded,
+              color: colorScheme.error,
+              size: 24,
+            ),
+            const SizedBox(width: 8),
+            const Text('تجاهل التغييرات؟'),
+          ],
+        ),
+        content: const Text(
+          'هل أنت متأكد من مغادرة هذه الصفحة؟ قد تفقد كافة البيانات والتعديلات غير المحفوظة.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('البقاء في الصفحة'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: colorScheme.error,
+              foregroundColor: colorScheme.onError,
+            ),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('مغادرة بدون حفظ'),
+          ),
+        ],
+      ),
+    );
+    return result ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final ctrl = ref.watch(productsUIControllerProvider);
@@ -160,55 +200,72 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage>
     final isWide = responsive.screenWidth >= _wideBreakpoint;
     final isEditing = widget.product != null;
 
-    return Scaffold(
-      backgroundColor: colorScheme.surface,
-      appBar: AppBar(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        final shouldLeave = await _showDiscardConfirmDialog(context);
+        if (shouldLeave && context.mounted) {
+          Navigator.of(context).pop();
+        }
+      },
+      child: Scaffold(
         backgroundColor: colorScheme.surface,
-        scrolledUnderElevation: 0,
-        leading: const BackButton(),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              isEditing ? 'تعديل بيانات المنتج' : 'إضافة منتج جديد',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: colorScheme.onSurface,
-              ),
-            ),
-            if (isEditing)
-              Text(
-                widget.product!.displayName,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colorScheme.primary,
-                  fontWeight: FontWeight.w600,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-          ],
-        ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(56),
-          child: _buildSectionNav(colorScheme),
-        ),
-      ),
-      bottomNavigationBar: ProductStickyBottomBar(
-        controller: ctrl,
-        onSave: _onSave,
-        isEditing: isEditing,
-      ),
-      body: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(
-            horizontal: isWide
-                ? AppDesignTokens.space32
-                : AppDesignTokens.space16,
-            vertical: AppDesignTokens.space24,
+        appBar: AppBar(
+          backgroundColor: colorScheme.surface,
+          scrolledUnderElevation: 0,
+          leading: BackButton(
+            onPressed: () async {
+              final shouldLeave = await _showDiscardConfirmDialog(context);
+              if (shouldLeave && context.mounted) {
+                Navigator.of(context).pop();
+              }
+            },
           ),
-          child: isWide ? _buildWideLayout() : _buildColumn(_sections),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                isEditing ? 'تعديل بيانات المنتج' : 'إضافة منتج جديد',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurface,
+                ),
+              ),
+              if (isEditing)
+                Text(
+                  widget.product!.displayName,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+            ],
+          ),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(56),
+            child: _buildSectionNav(colorScheme),
+          ),
+        ),
+        bottomNavigationBar: ProductStickyBottomBar(
+          controller: ctrl,
+          onSave: _onSave,
+          isEditing: isEditing,
+        ),
+        body: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(
+              horizontal: isWide
+                  ? AppDesignTokens.space32
+                  : AppDesignTokens.space16,
+              vertical: AppDesignTokens.space24,
+            ),
+            child: isWide ? _buildWideLayout() : _buildColumn(_sections),
+          ),
         ),
       ),
     );
