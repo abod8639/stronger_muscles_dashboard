@@ -7,6 +7,7 @@ import '../models/brand_model.dart';
 abstract class BrandRemoteDataSource {
   Future<List<BrandModel>> getBrands();
   Future<BrandModel> getBrandById(String id);
+  Future<BrandModel> createBrand(Map<String, dynamic> brandData);
 }
 
 /// Production implementation of [BrandRemoteDataSource] using [Dio].
@@ -96,6 +97,46 @@ class BrandRemoteDataSourceImpl implements BrandRemoteDataSource {
     } catch (e) {
       throw ParsingException(
         message: 'خطأ أثناء تحليل بيانات العلامة التجارية: $e',
+        originalError: e,
+      );
+    }
+  }
+
+  @override
+  Future<BrandModel> createBrand(Map<String, dynamic> brandData) async {
+    try {
+      final response = await _dio.post(
+        ApiConfig.adminBrands,
+        data: brandData,
+        options: Options(
+          sendTimeout: _defaultTimeout,
+          receiveTimeout: _defaultTimeout,
+          headers: {'Accept': 'application/json'},
+        ),
+      );
+
+      final data = response.data;
+      if ((response.statusCode == 200 || response.statusCode == 201) &&
+          data is Map<String, dynamic>) {
+        final payload = data.containsKey('data') && data['data'] is Map
+            ? Map<String, dynamic>.from(data['data'] as Map)
+            : data;
+        return BrandModel.fromJson(payload);
+      }
+
+      throw ServerException(
+        message: data is Map
+            ? (data['message']?.toString() ?? 'تعذر إنشاء العلامة التجارية')
+            : 'تعذر إنشاء العلامة التجارية',
+        statusCode: response.statusCode,
+      );
+    } on DioException {
+      rethrow;
+    } on AppException {
+      rethrow;
+    } catch (e) {
+      throw ParsingException(
+        message: 'خطأ أثناء إنشاء العلامة التجارية: $e',
         originalError: e,
       );
     }
