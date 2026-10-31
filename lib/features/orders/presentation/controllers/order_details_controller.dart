@@ -148,6 +148,53 @@ class OrderDetailsController extends ChangeNotifier {
     }
   }
 
+  /// Resolves the best coordinate pair (lat, lng) from address, street, or notes
+  (double, double)? resolveCoordinates(AddressEntity? address) {
+    final targetAddress = address ?? order.shippingAddress;
+    if (targetAddress != null && targetAddress.hasCoordinates) {
+      return (targetAddress.latitude!, targetAddress.longitude!);
+    }
+
+    // Try extracting coordinates from address street
+    if (targetAddress?.street.isNotEmpty == true) {
+      final coords = _extractCoordsFromText(targetAddress!.street);
+      if (coords != null) return coords;
+    }
+
+    // Try extracting coordinates from order notes
+    if (order.notes?.isNotEmpty == true) {
+      final coords = _extractCoordsFromText(order.notes!);
+      if (coords != null) return coords;
+    }
+
+    return null;
+  }
+
+  (double, double)? _extractCoordsFromText(String text) {
+    final gmapsMatch = RegExp(r'@(-?\d{1,2}\.\d+),(-?\d{1,3}\.\d+)').firstMatch(text);
+    if (gmapsMatch != null) {
+      final lat = double.tryParse(gmapsMatch.group(1)!);
+      final lng = double.tryParse(gmapsMatch.group(2)!);
+      if (lat != null && lng != null) return (lat, lng);
+    }
+
+    final qMatch = RegExp(r'[?&](?:q|query)=(-?\d{1,2}\.\d+),(-?\d{1,3}\.\d+)').firstMatch(text);
+    if (qMatch != null) {
+      final lat = double.tryParse(qMatch.group(1)!);
+      final lng = double.tryParse(qMatch.group(2)!);
+      if (lat != null && lng != null) return (lat, lng);
+    }
+
+    final coordMatch = RegExp(r'(-?\d{1,2}\.\d{3,})[,\s]+(-?\d{1,3}\.\d{3,})').firstMatch(text);
+    if (coordMatch != null) {
+      final lat = double.tryParse(coordMatch.group(1)!);
+      final lng = double.tryParse(coordMatch.group(2)!);
+      if (lat != null && lng != null) return (lat, lng);
+    }
+
+    return null;
+  }
+
   /// Opens Google Maps location for shipping address
   Future<void> openGoogleMaps(AddressEntity? address) async {
     await openMapLocation(address);
@@ -155,22 +202,41 @@ class OrderDetailsController extends ChangeNotifier {
 
   /// Opens map location for shipping address
   Future<void> openMapLocation(AddressEntity? address) async {
-    if (address == null) return;
+    final targetAddress = address ?? order.shippingAddress;
+    final coords = resolveCoordinates(targetAddress);
 
-    final String query;
-    if (address.hasCoordinates) {
-      query = '${address.latitude},${address.longitude}';
+    final Uri uri;
+    if (coords != null) {
+      uri = Uri.parse('https://www.google.com/maps?q=${coords.$1},${coords.$2}');
+    } else if (targetAddress != null && targetAddress.fullAddress.isNotEmpty) {
+      uri = Uri.parse(
+        'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(targetAddress.fullAddress)}',
+      );
     } else {
-      query = Uri.encodeComponent(address.fullAddress);
+      AppFeedback.showError('بيانات الموقع غير متوفرة');
+      return;
     }
 
-    final uri = Uri.parse(
-      'https://www.google.com/maps/search/?api=1&query=$query',
-    );
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
-      AppFeedback.showError('تعذر فتح تطبيق الخرائط');
+    try {
+      final launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+      if (!launched) {
+        final fallback = await launchUrl(
+          uri,
+          mode: LaunchMode.platformDefault,
+        );
+        if (!fallback) {
+          AppFeedback.showError('تعذر فتح تطبيق الخرائط');
+        }
+      }
+    } catch (_) {
+      try {
+        await launchUrl(uri);
+      } catch (_) {
+        AppFeedback.showError('تعذر فتح تطبيق الخرائط');
+      }
     }
   }
 }
