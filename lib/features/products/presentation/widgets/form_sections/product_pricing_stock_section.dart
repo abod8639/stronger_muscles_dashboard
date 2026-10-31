@@ -5,6 +5,7 @@ import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
 import 'package:stronger_muscles_dashboard/core/components/section_card.dart';
 import 'package:stronger_muscles_dashboard/core/components/build_modern_text_field.dart';
+import '../flavor_multi_select.dart';
 
 /// قسم التسعير والمخزون والحصص للمنتج بتصميم Neumorphism / Soft UI
 class ProductPricingStockSection extends ConsumerWidget {
@@ -31,6 +32,39 @@ class ProductPricingStockSection extends ConsumerWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // السعر الأساسي وسعر الخصم (متاح وقابل للتعديل دائماً)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: ModernTextField(
+                      controller: controller.textcontrollers['price']!,
+                      label: hasSizes
+                          ? 'السعر الأساسي (الافتراضي)'
+                          : 'السعر الأساسي',
+                      hint: '0.00',
+                      icon: Icons.price_change_outlined,
+                      isNumber: true,
+                      isRequired: !hasSizes,
+                      suffixText: currency,
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: ModernTextField(
+                      controller: controller.textcontrollers['discount']!,
+                      label: 'سعر الخصم (اختياري)',
+                      hint: '0.00',
+                      icon: Icons.sell_outlined,
+                      isNumber: true,
+                      suffixText: currency,
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 18),
+
               if (hasSizes) ...[
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -53,7 +87,7 @@ class ProductPricingStockSection extends ConsumerWidget {
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          'تم تفعيل تخصيص السعر، الخصم، المخزون، الحصص، والوزن لكل حجم على حدة:',
+                          'تخصيص السعر، الخصم، المخزون، الحصص، والوزن لكل حجم (قابلة للتعديل بحرية في أي وقت):',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: colorScheme.onSurface,
                             fontWeight: FontWeight.w500,
@@ -71,6 +105,14 @@ class ProductPricingStockSection extends ConsumerWidget {
                   separatorBuilder: (_, _) => const SizedBox(height: 12),
                   itemBuilder: (context, i) {
                     final size = controller.productSizes[i];
+                    if (controller.sizePriceControllers[size.size] == null ||
+                        controller.sizeDiscountControllers[size.size] == null ||
+                        controller.sizeServingsControllers[size.size] == null ||
+                        controller.sizeWeightControllers[size.size] == null ||
+                        controller.sizeStockControllers[size.size] == null) {
+                      controller.syncSizeControllers();
+                    }
+
                     final priceCtrl =
                         controller.sizePriceControllers[size.size];
                     final discountCtrl =
@@ -277,6 +319,62 @@ class ProductPricingStockSection extends ConsumerWidget {
                                       ),
                                     ],
                                   ),
+                                  const SizedBox(height: 10),
+                                  Wrap(
+                                    spacing: 6,
+                                    runSpacing: 6,
+                                    crossAxisAlignment:
+                                        WrapCrossAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.icecream_outlined,
+                                        size: 15,
+                                        color: colorScheme.primary,
+                                      ),
+                                      Text(
+                                        'نكهات هذا الحجم: ',
+                                        style: theme.textTheme.labelSmall
+                                            ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: colorScheme.primary,
+                                        ),
+                                      ),
+                                      if (size.flavors != null &&
+                                          size.flavors!.isNotEmpty)
+                                        ...size.flavors!.map((raw) {
+                                          final f = FlavorItem.fromRaw(raw);
+                                          return Chip(
+                                            visualDensity:
+                                                VisualDensity.compact,
+                                            materialTapTargetSize:
+                                                MaterialTapTargetSize
+                                                    .shrinkWrap,
+                                            padding: EdgeInsets.zero,
+                                            labelPadding:
+                                                const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                            ),
+                                            label: Text(
+                                              f.name,
+                                              style: const TextStyle(
+                                                fontSize: 10,
+                                              ),
+                                            ),
+                                          );
+                                        })
+                                      else
+                                        Text(
+                                          'لم تُحدد نكهات (يمكنك تخصيصها في قسم التنويعات أدناه)',
+                                          style: theme.textTheme.bodySmall
+                                              ?.copyWith(
+                                            color:
+                                                colorScheme.onSurfaceVariant,
+                                            fontSize: 11,
+                                            fontStyle: FontStyle.italic,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
                                 ],
                               );
                             },
@@ -286,146 +384,104 @@ class ProductPricingStockSection extends ConsumerWidget {
                     );
                   },
                 ),
-              ] else ...[
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: ModernTextField(
-                        controller: controller.textcontrollers['price']!,
-                        label: 'السعر الأساسي',
-                        hint: '0.00',
-                        icon: Icons.price_change_outlined,
-                        isNumber: true,
-                        isRequired: true,
-                        suffixText: currency,
-                      ),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: ModernTextField(
-                        controller: controller.textcontrollers['discount']!,
-                        label: 'سعر الخصم (اختياري)',
-                        hint: '0.00',
-                        icon: Icons.sell_outlined,
-                        isNumber: true,
-                        suffixText: currency,
-                      ),
-                    ),
-                  ],
-                ),
+                const SizedBox(height: 18),
               ],
 
-              const SizedBox(height: 18),
+              // صف المخزون والحصص (متاح وقابل للتعديل دائماً بحرية تامة)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: ModernTextField(
+                      controller: controller.textcontrollers['stock']!,
+                      label: hasSizes
+                          ? 'إجمالي المخزون في المستودع'
+                          : 'الكمية في المخزن',
+                      hint: '50',
+                      icon: Icons.inventory_2_outlined,
+                      isNumber: true,
+                      isRequired: true,
+                      suffixText: 'قطعة',
+                      helperText: hasSizes
+                          ? 'يمكنك تعديل إجمالي المخزون يدوياً بحرية في أي وقت'
+                          : null,
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: ModernTextField(
+                      controller: controller.textcontrollers['serving']!,
+                      label: 'حجم الحصة / الوزن',
+                      hint: 'مثال: 30g أو 1kg',
+                      icon: Icons.scale_outlined,
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: ModernTextField(
+                      controller: controller.textcontrollers['sessions']!,
+                      label: 'عدد الحصص',
+                      hint: 'مثال: 60',
+                      icon: Icons.format_list_numbered_rtl_rounded,
+                      isNumber: true,
+                    ),
+                  ),
+                ],
+              ),
 
-              // Stock & Servings Row
-              if (!hasSizes)
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: ModernTextField(
-                        controller: controller.textcontrollers['stock']!,
-                        label: 'الكمية في المخزن',
-                        hint: '50',
-                        icon: Icons.inventory_2_outlined,
-                        isNumber: true,
-                        isRequired: true,
-                        suffixText: 'قطعة',
-                      ),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: ModernTextField(
-                        controller: controller.textcontrollers['serving']!,
-                        label: 'حجم الحصة / الوزن',
-                        hint: 'مثال: 30g أو 1kg',
-                        icon: Icons.scale_outlined,
-                      ),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: ModernTextField(
-                        controller: controller.textcontrollers['sessions']!,
-                        label: 'عدد الحصص',
-                        hint: 'مثال: 60',
-                        icon: Icons.format_list_numbered_rtl_rounded,
-                        isNumber: true,
-                      ),
-                    ),
-                  ],
-                )
-              else
+              if (hasSizes) ...[
+                const SizedBox(height: 12),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
+                    horizontal: 14,
+                    vertical: 10,
                   ),
-                  decoration: AppDesignTokens.softSurface(
-                    colorScheme,
-                    isDark: isDark,
-                    borderRadius: BorderRadius.circular(12),
-                    compact: true,
+                  decoration: BoxDecoration(
+                    color: colorScheme.primaryContainer.withValues(
+                      alpha: isDark ? 0.2 : 0.35,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: colorScheme.primary.withValues(alpha: 0.25),
+                    ),
                   ),
                   child: Row(
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: colorScheme.primary.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Icon(
-                          Icons.inventory_2_outlined,
-                          color: colorScheme.primary,
-                          size: 22,
-                        ),
+                      Icon(
+                        Icons.sync_rounded,
+                        color: colorScheme.primary,
+                        size: 20,
                       ),
-                      const SizedBox(width: 14),
+                      const SizedBox(width: 10),
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'إجمالي المخزون المتوفر (لجميع الأحجام)',
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(height: 3),
-                            Text(
-                              '${controller.totalSizesStock} قطعة',
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: colorScheme.primary,
-                              ),
-                            ),
-                          ],
+                        child: Text(
+                          'مجموع كميات الأحجام: ${controller.totalSizesStock} قطعة (يتزامن تلقائياً ويمكنك تخصيص إجمالي المخزون في الحقل أعلاه بحرية).',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurface,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: colorScheme.primaryContainer.withValues(
-                            alpha: isDark ? 0.3 : 0.5,
+                      TextButton.icon(
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
                           ),
-                          borderRadius: BorderRadius.circular(8),
+                          visualDensity: VisualDensity.compact,
                         ),
-                        child: Text(
-                          'محسوب تلقائياً من كميات الأحجام',
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: colorScheme.primary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                        onPressed: () {
+                          controller.textcontrollers['stock']?.text =
+                              controller.totalSizesStock.toString();
+                          controller.notifySizeStockChanged();
+                        },
+                        icon: const Icon(Icons.refresh_rounded, size: 16),
+                        label: const Text('تطبيق مجموع الأحجام'),
                       ),
                     ],
                   ),
                 ),
+              ],
             ],
           );
         },
