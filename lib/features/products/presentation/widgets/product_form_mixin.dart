@@ -12,5 +12,7 @@ mixin ProductFormMixin {
   List<String> getInitialImageUrls() => product?.imageUrls ?? [];
   String? getInitialCategoryId() => product?.categoryId;
 
-  void disposeProductControllers() {}
+  void disposeProductControllers() {
+    controller.clearForm();
+  }
 }
