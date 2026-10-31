@@ -73,6 +73,32 @@ class ProductVariantModel with _$ProductVariantModel {
   const ProductVariantModel._();
 }
 
+final Expando<Map<String, dynamic>> _sizeMetaExpando =
+    Expando<Map<String, dynamic>>();
+
+extension ProductSizeMetaExtension on ProductSize {
+  int? get servings => _sizeMetaExpando[this]?['servings'] as int?;
+  set servings(int? value) {
+    final meta = _sizeMetaExpando[this] ?? <String, dynamic>{};
+    meta['servings'] = value;
+    _sizeMetaExpando[this] = meta;
+  }
+
+  String? get weight => _sizeMetaExpando[this]?['weight'] as String?;
+  set weight(String? value) {
+    final meta = _sizeMetaExpando[this] ?? <String, dynamic>{};
+    meta['weight'] = value;
+    _sizeMetaExpando[this] = meta;
+  }
+
+  int? get stockQuantity => _sizeMetaExpando[this]?['stockQuantity'] as int?;
+  set stockQuantity(int? value) {
+    final meta = _sizeMetaExpando[this] ?? <String, dynamic>{};
+    meta['stockQuantity'] = value;
+    _sizeMetaExpando[this] = meta;
+  }
+}
+
 @freezed
 @HiveType(typeId: 18)
 class ProductSize with _$ProductSize {
@@ -82,8 +108,24 @@ class ProductSize with _$ProductSize {
     @JsonKey(name: 'discount_price') @HiveField(2) double? discountPrice,
   }) = _ProductSize;
 
-  factory ProductSize.fromJson(Map<String, dynamic> json) =>
-      _$ProductSizeFromJson(_safeSizeJson(json));
+  factory ProductSize.fromJson(Map<String, dynamic> json) {
+    final size = _$ProductSizeFromJson(_safeSizeJson(json));
+    final servings =
+        _parseIntNullable(json['servings'] ?? json['servings_per_container']);
+    final weight = (json['weight'] ?? json['serving_size'])?.toString();
+    final stock = _parseIntNullable(
+        json['stock_quantity'] ?? json['stockQuantity'] ?? json['stock']);
+    if (servings != null ||
+        (weight != null && weight.isNotEmpty) ||
+        stock != null) {
+      final meta = <String, dynamic>{};
+      if (servings != null) meta['servings'] = servings;
+      if (weight != null && weight.isNotEmpty) meta['weight'] = weight;
+      if (stock != null) meta['stockQuantity'] = stock;
+      _sizeMetaExpando[size] = meta;
+    }
+    return size;
+  }
 
   const ProductSize._();
 }
