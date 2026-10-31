@@ -298,14 +298,15 @@ void main() {
       expect(notifier.state.ticket?.messages.first.message, 'تم حل مشكلتك');
     });
 
-    test('sendReply rolls back optimistic message when repository fails', () async {
+    test('sendReply marks message as failed with retry capability when repository fails', () async {
       await notifier.loadTicket(10);
       mockRepo.failureToThrow = const ServerFailure(message: 'خطأ في الاتصال بالخادم');
 
       final success = await notifier.sendReply(message: 'رد فاشل');
 
       expect(success, isFalse);
-      expect(notifier.state.ticket?.messages, isEmpty);
+      expect(notifier.state.ticket?.messages, hasLength(1));
+      expect(notifier.state.ticket?.messages.first.isFailed, isTrue);
       expect(notifier.state.errorMessage, contains('فشل إرسال الرد'));
     });
 
