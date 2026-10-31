@@ -26,6 +26,30 @@ class ProductBasicInfoSection extends StatefulWidget {
 class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
   String _selectedLang = 'ar';
   final FocusNode _brandFocusNode = FocusNode();
+  bool _hasArError = false;
+  bool _hasEnError = false;
+
+  void _onValidateAr(bool isInvalid) {
+    if (_hasArError != isInvalid) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() => _hasArError = isInvalid);
+      });
+    }
+    // تبديل تلقائي للسان العربي إذا كان الخطأ واقعاً فيه والمستخدم في لسان آخر
+    if (isInvalid && _selectedLang != 'ar') {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() => _selectedLang = 'ar');
+      });
+    }
+  }
+
+  void _onValidateEn(bool isInvalid) {
+    if (_hasEnError != isInvalid) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() => _hasEnError = isInvalid);
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -61,6 +85,17 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
                     hint: 'مثال: واي بروتين جولد ستاندرد 2 كجم',
                     icon: Icons.title_rounded,
                     isRequired: true,
+                    validator: (val) {
+                      final isInvalid = (val == null || val.trim().isEmpty);
+                      _onValidateAr(isInvalid);
+                      return isInvalid ? 'اسم المنتج باللغة العربية مطلوب' : null;
+                    },
+                    onChanged: (text) {
+                      ctrl.markFormDirty();
+                      if (_hasArError && text.trim().isNotEmpty) {
+                        setState(() => _hasArError = false);
+                      }
+                    },
                   ),
                   const SizedBox(height: 16),
                   ModernTextField(
@@ -69,6 +104,7 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
                     hint: 'اكتب وصفاً مفصلاً للمنتج...',
                     icon: Icons.description_outlined,
                     maxLines: 4,
+                    onChanged: (_) => ctrl.markFormDirty(),
                   ),
                 ],
               ),
@@ -80,6 +116,22 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
                     label: 'Product Name (English)',
                     hint: 'e.g. Gold Standard 100% Whey 2kg',
                     icon: Icons.translate_rounded,
+                    validator: (val) {
+                      final isInvalid = (val != null &&
+                          val.trim().isNotEmpty &&
+                          val.trim().length < 2);
+                      _onValidateEn(isInvalid);
+                      return isInvalid
+                          ? 'Name must be at least 2 characters'
+                          : null;
+                    },
+                    onChanged: (text) {
+                      ctrl.markFormDirty();
+                      if (_hasEnError &&
+                          (text.trim().isEmpty || text.trim().length >= 2)) {
+                        setState(() => _hasEnError = false);
+                      }
+                    },
                   ),
                   const SizedBox(height: 16),
                   ModernTextField(
@@ -88,6 +140,7 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
                     hint: 'Write a detailed description in English...',
                     icon: Icons.description_outlined,
                     maxLines: 4,
+                    onChanged: (_) => ctrl.markFormDirty(),
                   ),
                 ],
               ),
@@ -120,7 +173,7 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
     );
   }
 
-  /// محدد اللغة بنمط Neumorphic Soft UI
+  /// محدد اللغة بنمط Neumorphic Soft UI مع تنبيهات الأخطاء
   Widget _buildLanguageSelector(ColorScheme colorScheme, bool isDark) {
     return Container(
       padding: const EdgeInsets.all(4),
@@ -140,6 +193,7 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
             Icons.language_rounded,
             colorScheme,
             isDark,
+            hasError: _hasArError,
           ),
           const SizedBox(width: 4),
           _buildLangPill(
@@ -148,6 +202,7 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
             Icons.translate_rounded,
             colorScheme,
             isDark,
+            hasError: _hasEnError,
           ),
         ],
       ),
@@ -159,8 +214,9 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
     String label,
     IconData icon,
     ColorScheme colorScheme,
-    bool isDark,
-  ) {
+    bool isDark, {
+    bool hasError = false,
+  }) {
     final isSelected = _selectedLang == lang;
     return InkWell(
       borderRadius: BorderRadius.circular(9),
@@ -178,11 +234,13 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              icon,
+              hasError ? Icons.error_outline_rounded : icon,
               size: 15,
-              color: isSelected
-                  ? colorScheme.primary
-                  : colorScheme.onSurfaceVariant,
+              color: hasError
+                  ? colorScheme.error
+                  : (isSelected
+                      ? colorScheme.primary
+                      : colorScheme.onSurfaceVariant),
             ),
             const SizedBox(width: 6),
             Text(
@@ -190,11 +248,24 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                color: isSelected
-                    ? colorScheme.primary
-                    : colorScheme.onSurfaceVariant,
+                color: hasError
+                    ? colorScheme.error
+                    : (isSelected
+                        ? colorScheme.primary
+                        : colorScheme.onSurfaceVariant),
               ),
             ),
+            if (hasError) ...[
+              const SizedBox(width: 4),
+              Container(
+                width: 6,
+                height: 6,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: colorScheme.error,
+                ),
+              ),
+            ],
           ],
         ),
       ),
