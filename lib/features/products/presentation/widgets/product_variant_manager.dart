@@ -209,10 +209,11 @@ class ProductVariantManager extends StatelessWidget {
               itemBuilder: (context, index) {
                 final variant = controller.variants[index];
                 return _VariantItemEditor(
+                  key: ValueKey(variant.id),
                   index: index,
                   variant: variant,
                   onUpdate: (updated) =>
-                      controller.updateVariant(index, updated),
+                      controller.updateVariant(index, updated, notify: false),
                   onDelete: () => controller.removeVariant(index),
                   availableSizes: controller.productSizes
                       .map((e) => e.size)
@@ -319,6 +320,7 @@ class _VariantItemEditor extends ConsumerStatefulWidget {
   final List<String> availableFlavors;
 
   const _VariantItemEditor({
+    super.key,
     required this.index,
     required this.variant,
     required this.onUpdate,
@@ -351,6 +353,29 @@ class _VariantItemEditorState extends ConsumerState<_VariantItemEditor> {
   }
 
   @override
+  void didUpdateWidget(covariant _VariantItemEditor oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.variant.sku != widget.variant.sku &&
+        skuCtrl.text != widget.variant.sku) {
+      skuCtrl.text = widget.variant.sku;
+    }
+    if (oldWidget.variant.price != widget.variant.price &&
+        priceCtrl.text != widget.variant.price.toString()) {
+      priceCtrl.text = widget.variant.price.toString();
+    }
+    final nextDiscount = widget.variant.discountPrice?.toString() ?? '';
+    if (oldWidget.variant.discountPrice != widget.variant.discountPrice &&
+        discountCtrl.text != nextDiscount) {
+      discountCtrl.text = nextDiscount;
+    }
+    final nextStock = widget.variant.stockQuantity.toString();
+    if (oldWidget.variant.stockQuantity != widget.variant.stockQuantity &&
+        stockCtrl.text != nextStock) {
+      stockCtrl.text = nextStock;
+    }
+  }
+
+  @override
   void dispose() {
     skuCtrl.dispose();
     priceCtrl.dispose();
@@ -360,15 +385,17 @@ class _VariantItemEditorState extends ConsumerState<_VariantItemEditor> {
   }
 
   void _triggerUpdate() {
-    final updated = ProductVariantEntity(
-      id: widget.variant.id,
-      sku: skuCtrl.text,
-      price: double.tryParse(priceCtrl.text) ?? 0.0,
-      discountPrice: double.tryParse(discountCtrl.text),
-      effectivePrice: double.tryParse(priceCtrl.text) ?? 0.0,
+    final price = double.tryParse(priceCtrl.text) ?? 0.0;
+    final discount = double.tryParse(discountCtrl.text);
+    final effectivePrice =
+        (discount != null && discount > 0) ? discount : price;
+
+    final updated = widget.variant.copyWith(
+      sku: skuCtrl.text.trim(),
+      price: price,
+      discountPrice: discount,
+      effectivePrice: effectivePrice,
       stockQuantity: int.tryParse(stockCtrl.text) ?? 0,
-      attributes: widget.variant.attributes,
-      isActive: widget.variant.isActive,
     );
     widget.onUpdate(updated);
   }
@@ -660,16 +687,7 @@ class _VariantItemEditorState extends ConsumerState<_VariantItemEditor> {
         final newAttrs = Map<String, dynamic>.from(widget.variant.attributes);
         newAttrs[key] = val;
         widget.onUpdate(
-          ProductVariantEntity(
-            id: widget.variant.id,
-            sku: widget.variant.sku,
-            price: widget.variant.price,
-            discountPrice: widget.variant.discountPrice,
-            effectivePrice: widget.variant.effectivePrice,
-            stockQuantity: widget.variant.stockQuantity,
-            attributes: newAttrs,
-            isActive: widget.variant.isActive,
-          ),
+          widget.variant.copyWith(attributes: newAttrs),
         );
       },
       itemBuilder: (context) => options
