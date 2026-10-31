@@ -192,7 +192,13 @@ final filteredProductsProvider = Provider<List<ProductEntity>>((ref) {
 
       if (selectedFlavor != 'all') {
         result = result.where(
-          (p) => p.flavors?.contains(selectedFlavor) ?? false,
+          (p) =>
+              p.flavors?.any((f) {
+                final clean =
+                    f.contains('|') ? f.split('|').first.trim() : f.trim();
+                return clean.toLowerCase() == selectedFlavor.toLowerCase();
+              }) ??
+              false,
         );
       }
 
