@@ -7,11 +7,13 @@ import '../../domain/entities/support_chat_message_entity.dart';
 class SupportChatBubble extends StatelessWidget {
   final SupportChatMessageEntity message;
   final bool isDark;
+  final VoidCallback? onRetry;
 
   const SupportChatBubble({
     super.key,
     required this.message,
     required this.isDark,
+    this.onRetry,
   });
 
   @override
@@ -83,16 +85,22 @@ class SupportChatBubble extends StatelessWidget {
         ),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: isUser
-              ? colorScheme.surfaceContainerHigh
-              : colorScheme.primary,
+          color: message.isFailed
+              ? (isDark ? Colors.red.shade900.withValues(alpha: 0.6) : Colors.red.shade700)
+              : isUser
+                  ? colorScheme.surfaceContainerHigh
+                  : colorScheme.primary,
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(18),
             topRight: const Radius.circular(18),
             bottomLeft: Radius.circular(isUser ? 2 : 18),
             bottomRight: Radius.circular(isUser ? 18 : 2),
           ),
-          border: isUser ? Border.all(color: colorScheme.outlineVariant) : null,
+          border: message.isFailed
+              ? Border.all(color: Colors.red.shade300, width: 1.2)
+              : isUser
+                  ? Border.all(color: colorScheme.outlineVariant)
+                  : null,
           boxShadow: [
             BoxShadow(
               color: colorScheme.shadow.withValues(alpha: 0.08),
@@ -187,7 +195,33 @@ class SupportChatBubble extends StatelessWidget {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (message.isOptimistic) ...[
+                if (message.isFailed) ...[
+                  InkWell(
+                    onTap: onRetry,
+                    borderRadius: BorderRadius.circular(4),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.refresh_rounded,
+                          size: 13,
+                          color: Colors.white,
+                        ),
+                        SizedBox(width: 4),
+                        Text(
+                          'فشل الإرسال • إعادة المحاولة',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                ] else if (message.isOptimistic) ...[
                   SizedBox(
                     width: 10,
                     height: 10,
@@ -199,6 +233,16 @@ class SupportChatBubble extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 4),
+                  Text(
+                    'جاري الإرسال...',
+                    style: TextStyle(
+                      fontSize: 9.5,
+                      color: isUser
+                          ? colorScheme.onSurface.withValues(alpha: 0.6)
+                          : colorScheme.onPrimary.withValues(alpha: 0.75),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
                 ],
                 Text(
                   timeStr,
