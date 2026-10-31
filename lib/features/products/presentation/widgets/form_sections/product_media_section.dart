@@ -34,128 +34,192 @@ class ProductMediaSection extends StatelessWidget {
         icon: const Icon(Icons.link_rounded, size: 18),
         label: const Text('رابط URL'),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (imageUrls.isEmpty)
-            _buildEmptyUploadZone(context)
-          else
-            Column(
-              children: [
-                SizedBox(
-                  height: 155,
-                  child: ReorderableListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: imageUrls.length + 1,
-                    onReorderItem: (oldIdx, newIdx) {
-                      if (oldIdx < imageUrls.length &&
-                          newIdx <= imageUrls.length) {
-                        onReorderImage(oldIdx, newIdx);
-                      }
-                    },
-                    itemBuilder: (context, index) {
-                      if (index == imageUrls.length) {
-                        return Container(
-                          key: const ValueKey('add_button'),
-                          margin: const EdgeInsets.symmetric(horizontal: 6),
-                          child: _buildAddCard(context),
-                        );
-                      }
+      child: FormField<List<String>>(
+        initialValue: imageUrls,
+        validator: (_) {
+          if (imageUrls.isEmpty) {
+            return 'يجب إضافة صورة واحدة على الأقل للمنتج';
+          }
+          return null;
+        },
+        builder: (fieldState) {
+          final theme = Theme.of(context);
+          final colorScheme = theme.colorScheme;
+          final isDark = theme.brightness == Brightness.dark;
+          final hasError = fieldState.hasError && imageUrls.isEmpty;
 
-                      final url = imageUrls[index];
-                      final isCover = index == 0;
-                      final theme = Theme.of(context);
-                      final colorScheme = theme.colorScheme;
-                      final isDark = theme.brightness == Brightness.dark;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                decoration: hasError
+                    ? BoxDecoration(
+                        border: Border.all(color: colorScheme.error, width: 1.5),
+                        borderRadius: BorderRadius.circular(16),
+                      )
+                    : null,
+                child: imageUrls.isEmpty
+                    ? _buildEmptyUploadZone(context)
+                    : Column(
+                        children: [
+                          SizedBox(
+                            height: 155,
+                            child: ReorderableListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: imageUrls.length + 1,
+                              onReorderItem: (oldIdx, newIdx) {
+                                if (oldIdx < imageUrls.length &&
+                                    newIdx <= imageUrls.length) {
+                                  onReorderImage(oldIdx, newIdx);
+                                }
+                              },
+                              itemBuilder: (context, index) {
+                                if (index == imageUrls.length) {
+                                  return Container(
+                                    key: const ValueKey('add_button'),
+                                    margin: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                    ),
+                                    child: _buildAddCard(context),
+                                  );
+                                }
 
-                      return Container(
-                        key: ValueKey('img_${url}_$index'),
-                        margin: const EdgeInsets.symmetric(horizontal: 6),
-                        width: 130,
-                        decoration: AppDesignTokens.softSurface(
-                          colorScheme,
-                          isDark: isDark,
-                          borderRadius: BorderRadius.circular(16),
-                          compact: true,
-                          selected: isCover,
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(15),
-                          child: Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              !url.startsWith('http')
-                                  ? Image.file(File(url), fit: BoxFit.cover)
-                                  : CachedNetworkImage(
-                                      imageUrl: url,
-                                      fit: BoxFit.cover,
-                                      placeholder: (_, _) => const Center(
-                                        child: CircularProgressIndicator(),
-                                      ),
-                                      errorWidget: (_, _, _) => const Center(
-                                        child: Icon(Icons.broken_image_rounded),
-                                      ),
-                                    ),
+                                final url = imageUrls[index];
+                                final isCover = index == 0;
 
-                              // Cover Badge
-                              if (isCover)
-                                Positioned(
-                                  top: 8,
-                                  left: 8,
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: colorScheme.primary,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Text(
-                                      'الغلاف',
-                                      style: TextStyle(
-                                        color: colorScheme.onPrimary,
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                return Container(
+                                  key: ValueKey('img_${url}_$index'),
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                  ),
+                                  width: 130,
+                                  decoration: AppDesignTokens.softSurface(
+                                    colorScheme,
+                                    isDark: isDark,
+                                    borderRadius: BorderRadius.circular(16),
+                                    compact: true,
+                                    selected: isCover,
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(15),
+                                    child: Stack(
+                                      fit: StackFit.expand,
+                                      children: [
+                                        !url.startsWith('http')
+                                            ? Image.file(
+                                                File(url),
+                                                fit: BoxFit.cover,
+                                              )
+                                            : CachedNetworkImage(
+                                                imageUrl: url,
+                                                fit: BoxFit.cover,
+                                                placeholder: (_, _) =>
+                                                    const Center(
+                                                      child:
+                                                          CircularProgressIndicator(),
+                                                    ),
+                                                errorWidget: (_, _, _) =>
+                                                    const Center(
+                                                      child: Icon(
+                                                        Icons
+                                                            .broken_image_rounded,
+                                                      ),
+                                                    ),
+                                              ),
+
+                                        // Cover Badge
+                                        if (isCover)
+                                          Positioned(
+                                            top: 8,
+                                            left: 8,
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 8,
+                                                    vertical: 4,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                color: colorScheme.primary,
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              child: Text(
+                                                'الغلاف',
+                                                style: TextStyle(
+                                                  color: colorScheme.onPrimary,
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+
+                                        // Delete Button
+                                        Positioned(
+                                          top: 6,
+                                          right: 6,
+                                          child: IconButton.filledTonal(
+                                            style: IconButton.styleFrom(
+                                              backgroundColor: Colors.black54,
+                                              foregroundColor: Colors.white,
+                                            ),
+                                            iconSize: 16,
+                                            padding: EdgeInsets.zero,
+                                            constraints: const BoxConstraints(
+                                              minWidth: 32,
+                                              minHeight: 32,
+                                            ),
+                                            icon: const Icon(
+                                              Icons.close_rounded,
+                                            ),
+                                            onPressed: () {
+                                              onRemoveImage(index);
+                                              fieldState.didChange(
+                                                controller.imageUrls,
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ),
-
-                              // Delete Button
-                              Positioned(
-                                top: 6,
-                                right: 6,
-                                child: IconButton.filledTonal(
-                                  style: IconButton.styleFrom(
-                                    backgroundColor: Colors.black54,
-                                    foregroundColor: Colors.white,
-                                  ),
-                                  iconSize: 16,
-                                  padding: EdgeInsets.zero,
-                                  constraints: const BoxConstraints(
-                                    minWidth: 32,
-                                    minHeight: 32,
-                                  ),
-                                  icon: const Icon(Icons.close_rounded),
-                                  onPressed: () => onRemoveImage(index),
-                                ),
-                              ),
-                            ],
+                                );
+                              },
+                            ),
                           ),
+                          const SizedBox(height: 10),
+                          Text(
+                            '💡 يمكنك سحب الصور لإعادة ترتيبها وتحديد صورة الغلاف.',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
+              ),
+              if (hasError)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8, right: 6),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.error_outline_rounded,
+                        size: 16,
+                        color: colorScheme.error,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        fieldState.errorText!,
+                        style: TextStyle(
+                          color: colorScheme.error,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
                         ),
-                      );
-                    },
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 10),
-                Text(
-                  '💡 يمكنك سحب الصور لإعادة ترتيبها وتحديد صورة الغلاف.',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-              ],
-            ),
-        ],
+            ],
+          );
+        },
       ),
     );
   }
