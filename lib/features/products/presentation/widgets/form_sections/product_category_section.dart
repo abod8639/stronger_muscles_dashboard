@@ -27,6 +27,7 @@ class ProductCategorySection extends StatefulWidget {
 
 class _ProductCategorySectionState extends State<ProductCategorySection> {
   final TextEditingController _searchController = TextEditingController();
+  final TextEditingController _tagController = TextEditingController();
   String _searchQuery = '';
   final Set<String> _expandedIds = {};
 
@@ -55,6 +56,7 @@ class _ProductCategorySectionState extends State<ProductCategorySection> {
   @override
   void dispose() {
     _searchController.dispose();
+    _tagController.dispose();
     super.dispose();
   }
 
@@ -110,11 +112,55 @@ class _ProductCategorySectionState extends State<ProductCategorySection> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // بطاقة القسم المختار مع مسار الفتات الهرمي
-              CategorySelectionBanner(
-                hasSelection: hasSelection,
-                breadcrumbs: breadcrumbs,
-                onClear: () => widget.onCategorySelected(''),
+              // بطاقة القسم المختار مع مسار الفتات الهرمي ونظام التحقق المتكامل
+              FormField<String>(
+                initialValue: widget.selectedCategoryId,
+                validator: (val) {
+                  final currentId = widget.selectedCategoryId ?? val;
+                  if (currentId == null ||
+                      currentId.trim().isEmpty ||
+                      currentId == 'all') {
+                    return 'يرجى اختيار قسم مناسب للمنتج من الشجرة أدناه';
+                  }
+                  return null;
+                },
+                builder: (fieldState) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CategorySelectionBanner(
+                        hasSelection: hasSelection,
+                        breadcrumbs: breadcrumbs,
+                        onClear: () {
+                          widget.onCategorySelected('');
+                          fieldState.didChange('');
+                        },
+                      ),
+                      if (fieldState.hasError)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8, right: 6),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.error_outline_rounded,
+                                size: 16,
+                                color: colorScheme.error,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                fieldState.errorText!,
+                                style: TextStyle(
+                                  color: colorScheme.error,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  );
+                },
               ),
               const SizedBox(height: 16),
 
@@ -168,10 +214,98 @@ class _ProductCategorySectionState extends State<ProductCategorySection> {
                   onSelectCategory: widget.onCategorySelected,
                   onToggleExpand: _toggleExpand,
                 ),
+
+              // محرر الوسوم والكلمات الدلالية (Tags)
+              _buildTagsEditor(widget.controller, colorScheme, isDark, theme),
             ],
           ),
         );
       },
+    );
+  }
+
+  Widget _buildTagsEditor(
+    ProductsController ctrl,
+    ColorScheme colorScheme,
+    bool isDark,
+    ThemeData theme,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 20),
+        Divider(
+          color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Icon(Icons.tag_rounded, size: 18, color: colorScheme.primary),
+            const SizedBox(width: 8),
+            Text(
+              'الوسوم والكلمات الدلالية (Tags)',
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        Text(
+          'تساعد الوسوم العملاء في الوصول للمنتج بسهولة في البحث والفلترة (اكتب الوسم واضغط Enter)',
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: TextFormField(
+                controller: _tagController,
+                decoration: InputDecoration(
+                  hintText: 'مثال: حارق دهون، واي معزول، كيتو...',
+                  prefixIcon: const Icon(Icons.add_circle_outline_rounded, size: 20),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
+                ),
+                onFieldSubmitted: (val) {
+                  ctrl.addTag(val);
+                  _tagController.clear();
+                },
+              ),
+            ),
+            const SizedBox(width: 8),
+            FilledButton.tonal(
+              onPressed: () {
+                ctrl.addTag(_tagController.text);
+                _tagController.clear();
+              },
+              child: const Text('إضافة'),
+            ),
+          ],
+        ),
+        if (ctrl.tags.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (int i = 0; i < ctrl.tags.length; i++)
+                InputChip(
+                  label: Text('#${ctrl.tags[i]}'),
+                  onDeleted: () => ctrl.removeTag(i),
+                  deleteIconColor: colorScheme.error,
+                  backgroundColor: colorScheme.primaryContainer.withValues(
+                    alpha: 0.35,
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ],
     );
   }
 }
