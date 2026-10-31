@@ -1,4 +1,4 @@
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:stronger_muscles_dashboard/data/models/address_model.dart';
 import 'package:stronger_muscles_dashboard/data/models/dashboard_user_model.dart';
 import 'package:stronger_muscles_dashboard/data/models/user_address.dart';
@@ -40,19 +40,21 @@ Future<void> hiveInit() async {
   _registerAdapterSafely(OrderModelAdapter());
   _registerAdapterSafely(OrderItemModelAdapter());
 
-  await Hive.openBox<DashboardUser>('dashboardUsers');
-  await Hive.openBox<ProductModel>('products');
-  await Hive.openBox<CategoryModel>('categories');
-  await Hive.openBox<OrderModel>('orders');
-  await Hive.openBox<UserAddress>('addresses');
-  await Hive.openBox<UserModel>('users');
-  await Hive.openBox('brands');
-  await Hive.openBox('dashboard_stats');
-  await Hive.openBox('navigation_badges');
-  await Hive.openBox('notifications_cache');
-  await Hive.openBox('promos_cache');
-  await Hive.openBox('settings_cache');
-  await Hive.openBox('theme_cache');
-  await Hive.openBox('support_cache');
-  await Hive.openBox('users_stats_cache');
+  await Future.wait([
+    Hive.openBox<DashboardUser>('dashboardUsers'),
+    Hive.openBox<ProductModel>('products'),
+    Hive.openBox<CategoryModel>('categories'),
+    Hive.openBox<OrderModel>('orders'),
+    Hive.openBox<UserAddress>('addresses'),
+    Hive.openBox<UserModel>('users'),
+    Hive.openBox('brands'),
+    Hive.openBox('dashboard_stats'),
+    Hive.openBox('navigation_badges'),
+    Hive.openBox('notifications_cache'),
+    Hive.openBox('promos_cache'),
+    Hive.openBox('settings_cache'),
+    Hive.openBox('theme_cache'),
+    Hive.openBox('support_cache'),
+    Hive.openBox('users_stats_cache'),
+  ]);
 }
