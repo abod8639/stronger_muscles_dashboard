@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:stronger_muscles_dashboard/core/network/dio_provider.dart';
 import '../../data/datasources/notification_local_datasource.dart';
 import '../../data/datasources/notification_remote_datasource.dart';

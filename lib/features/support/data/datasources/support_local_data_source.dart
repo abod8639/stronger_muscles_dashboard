@@ -1,4 +1,4 @@
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 import '../models/support_stats_model.dart';
 import '../models/support_ticket_model.dart';
 import '../models/support_tickets_page_model.dart';

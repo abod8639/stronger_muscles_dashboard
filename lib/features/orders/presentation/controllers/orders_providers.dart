@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:stronger_muscles_dashboard/core/network/dio_provider.dart';
 import 'package:stronger_muscles_dashboard/features/settings/settings_feature.dart';
 import '../../data/datasources/order_local_datasource.dart';

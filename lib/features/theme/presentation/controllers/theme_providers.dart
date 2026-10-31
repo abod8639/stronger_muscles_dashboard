@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:stronger_muscles_dashboard/core/network/dio_provider.dart';
 import '../../data/datasources/theme_local_datasource.dart';
 import '../../data/datasources/theme_remote_datasource.dart';
