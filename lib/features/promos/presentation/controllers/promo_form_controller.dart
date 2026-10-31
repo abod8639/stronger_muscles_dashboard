@@ -134,6 +134,30 @@ class PromoFormController extends ChangeNotifier {
     }
   }
 
+  Future<void> refreshBrands({bool forceRefresh = true}) async {
+    if (brandRepository == null) return;
+    _isBrandsLoading = true;
+    notifyListeners();
+
+    final result = await brandRepository!.getBrands(forceRefresh: forceRefresh);
+    result.fold(
+      (failure) {
+        debugPrint(
+          '⚠️ [PromoFormController] Failed to fetch brands: ${failure.toMessage()}',
+        );
+      },
+      (fetched) {
+        _brands = fetched;
+        if (promosController != null) {
+          promosController!.syncBrands(fetched);
+        }
+      },
+    );
+
+    _isBrandsLoading = false;
+    notifyListeners();
+  }
+
   Future<void> _loadDependencies() async {
     if (promosController != null) {
       _products = List.from(promosController!.products);
@@ -150,18 +174,8 @@ class PromoFormController extends ChangeNotifier {
       });
     }
 
-    if (_brands.isEmpty && brandRepository != null) {
-      _isBrandsLoading = true;
-      notifyListeners();
-
-      final result = await brandRepository!.getBrands();
-      result.fold((failure) {}, (fetched) {
-        _brands = fetched;
-      });
-
-      _isBrandsLoading = false;
-      notifyListeners();
-    }
+    // Always fetch fresh brands from repository to immediately surface any newly created brands
+    await refreshBrands(forceRefresh: true);
   }
 
   Future<void> pickImage() async {
