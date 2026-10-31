@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:stronger_muscles_dashboard/features/support/data/datasources/support_realtime_data_source.dart';
 import '../../domain/entities/support_chat_message_entity.dart';
 import '../../domain/entities/support_chat_ticket_entity.dart';
 import '../../domain/usecases/assign_support_chat_admin_usecase.dart';
@@ -16,6 +18,8 @@ class SupportChatNotifier extends StateNotifier<SupportChatState> {
   final UpdateSupportChatPriorityUseCase _updatePriorityUseCase;
   final AssignSupportChatAdminUseCase _assignAdminUseCase;
   final DeleteSupportChatTicketUseCase _deleteTicketUseCase;
+  final SupportRealtimeDataSource? _realtimeDataSource;
+  final List<StreamSubscription> _streamSubscriptions = [];
 
   SupportChatNotifier({
     required GetTicketChatDetailUseCase getTicketDetailUseCase,
@@ -24,13 +28,87 @@ class SupportChatNotifier extends StateNotifier<SupportChatState> {
     required UpdateSupportChatPriorityUseCase updatePriorityUseCase,
     required AssignSupportChatAdminUseCase assignAdminUseCase,
     required DeleteSupportChatTicketUseCase deleteTicketUseCase,
+    SupportRealtimeDataSource? realtimeDataSource,
   }) : _getTicketDetailUseCase = getTicketDetailUseCase,
        _sendMessageUseCase = sendMessageUseCase,
        _updateStatusUseCase = updateStatusUseCase,
        _updatePriorityUseCase = updatePriorityUseCase,
        _assignAdminUseCase = assignAdminUseCase,
        _deleteTicketUseCase = deleteTicketUseCase,
-       super(const SupportChatState());
+       _realtimeDataSource = realtimeDataSource,
+       super(const SupportChatState()) {
+    _setupRealtimeListeners();
+  }
+
+  void _setupRealtimeListeners() {
+    if (_realtimeDataSource == null) return;
+
+    _streamSubscriptions.add(
+      _realtimeDataSource.onMessageSent.listen((event) {
+        final ticketId = event.$1;
+        final newMsg = event.$2;
+        final currentTicket = state.ticket;
+        if (currentTicket != null && currentTicket.id == ticketId) {
+          final exists = currentTicket.messages.any((m) => m.id == newMsg.id);
+          if (!exists) {
+            final converted = SupportChatMessageEntity(
+              id: newMsg.id,
+              ticketId: newMsg.ticketId,
+              senderId: newMsg.senderId ?? 0,
+              senderName: newMsg.senderName,
+              senderType: newMsg.senderType,
+              message: newMsg.message,
+              attachments: newMsg.attachments,
+              isInternalNote: newMsg.isInternalNote,
+              createdAt: newMsg.createdAt,
+            );
+            final updatedMessages = List<SupportChatMessageEntity>.from(currentTicket.messages);
+            final optimisticIdx = updatedMessages.indexWhere(
+              (m) => m.id < 0 && m.message == newMsg.message,
+            );
+            if (optimisticIdx != -1) {
+              updatedMessages[optimisticIdx] = converted;
+            } else {
+              updatedMessages.add(converted);
+            }
+            state = state.copyWith(
+              ticket: () => currentTicket.copyWith(
+                messages: updatedMessages,
+                messagesCount: optimisticIdx != -1
+                    ? currentTicket.messagesCount
+                    : currentTicket.messagesCount + 1,
+              ),
+            );
+          }
+        }
+      }),
+    );
+
+    _streamSubscriptions.add(
+      _realtimeDataSource.onTicketUpdated.listen((updatedTicket) {
+        final currentTicket = state.ticket;
+        if (currentTicket != null && currentTicket.id == updatedTicket.id) {
+          state = state.copyWith(
+            ticket: () => currentTicket.copyWith(
+              status: updatedTicket.status,
+              priority: updatedTicket.priority,
+              assignedAdminId: updatedTicket.adminId,
+              assignedAdminName: updatedTicket.adminName,
+            ),
+          );
+        }
+      }),
+    );
+  }
+
+  @override
+  void dispose() {
+    for (final sub in _streamSubscriptions) {
+      sub.cancel();
+    }
+    _streamSubscriptions.clear();
+    super.dispose();
+  }
 
   /// Loads ticket conversation by ID with optimistic placeholder support.
   Future<void> loadTicket(
@@ -38,15 +116,20 @@ class SupportChatNotifier extends StateNotifier<SupportChatState> {
     SupportChatTicketEntity? initialTicket,
   }) async {
     final currentTicket = state.ticket;
-    if (currentTicket?.id == ticketId && currentTicket!.messages.isNotEmpty) {
-      // Already loaded, just refresh silently in background
+    final validCurrent = currentTicket?.id == ticketId ? currentTicket : null;
+
+    if (validCurrent != null && validCurrent.messages.isNotEmpty) {
+      if (initialTicket != null &&
+          initialTicket.messages.length > validCurrent.messages.length) {
+        state = state.copyWith(ticket: () => initialTicket);
+      }
       _silentRefresh(ticketId);
       return;
     }
 
     final placeholder =
         initialTicket ??
-        currentTicket ??
+        validCurrent ??
         SupportChatTicketEntity(
           id: ticketId,
           ticketNumber: 'SM-$ticketId',
@@ -61,7 +144,7 @@ class SupportChatNotifier extends StateNotifier<SupportChatState> {
 
     state = state.copyWith(
       ticket: () => placeholder,
-      isLoading: true,
+      isLoading: placeholder.messages.isEmpty,
       errorMessage: () => null,
     );
 
@@ -78,9 +161,20 @@ class SupportChatNotifier extends StateNotifier<SupportChatState> {
         );
       },
       (detailed) {
+        final pending = state.ticket?.messages
+                .where((m) => m.isOptimistic || m.isFailed)
+                .toList() ??
+            [];
+        final merged = [...detailed.messages];
+        for (final p in pending) {
+          if (!merged.any((m) => m.id == p.id)) {
+            merged.add(p);
+          }
+        }
+
         state = state.copyWith(
           isLoading: false,
-          ticket: () => detailed,
+          ticket: () => detailed.copyWith(messages: merged),
           errorMessage: () => null,
         );
       },
@@ -91,7 +185,19 @@ class SupportChatNotifier extends StateNotifier<SupportChatState> {
     final result = await _getTicketDetailUseCase(ticketId);
     if (state.ticket?.id != ticketId) return;
     result.fold((_) => null, (detailed) {
-      state = state.copyWith(ticket: () => detailed);
+      final pending = state.ticket?.messages
+              .where((m) => m.isOptimistic || m.isFailed)
+              .toList() ??
+          [];
+      final merged = [...detailed.messages];
+      for (final p in pending) {
+        if (!merged.any((m) => m.id == p.id)) {
+          merged.add(p);
+        }
+      }
+      state = state.copyWith(
+        ticket: () => detailed.copyWith(messages: merged),
+      );
     });
   }
 
@@ -99,14 +205,39 @@ class SupportChatNotifier extends StateNotifier<SupportChatState> {
   void setTicket(SupportChatTicketEntity? ticket) {
     state = state.copyWith(
       ticket: () => ticket,
+      isLoading: ticket != null && ticket.messages.isEmpty,
       errorMessage: () => null,
     );
+  }
+
+  /// Synchronizes an externally updated ticket (e.g. from split-view parent)
+  void syncInitialTicket(SupportChatTicketEntity initial) {
+    final current = state.ticket;
+    if (current == null || current.id != initial.id) {
+      state = state.copyWith(
+        ticket: () => initial,
+        isLoading: initial.messages.isEmpty,
+        errorMessage: () => null,
+      );
+    } else {
+      final hasMoreMessages = initial.messages.length > current.messages.length;
+      final statusChanged = initial.status != current.status ||
+          initial.priority != current.priority ||
+          initial.assignedAdminId != current.assignedAdminId;
+      if (hasMoreMessages || statusChanged) {
+        state = state.copyWith(
+          ticket: () => initial,
+          isLoading: false,
+        );
+      }
+    }
   }
 
   /// Sends a reply message or internal supervisor note with Optimistic UI updates.
   Future<bool> sendReply({
     required String message,
     List<String>? attachments,
+    int? retryMessageId,
   }) async {
     final ticket = state.ticket;
     final trimmed = message.trim();
@@ -116,9 +247,12 @@ class SupportChatNotifier extends StateNotifier<SupportChatState> {
 
     final isNote = state.isInternalNote;
     final requestedStatus = state.replyStatus;
-    final tempId = -DateTime.now().millisecondsSinceEpoch;
+    final tempId = retryMessageId ?? -DateTime.now().millisecondsSinceEpoch;
 
-    // 1. Optimistic UI update: message appears on screen instantly
+    // 1. Optimistic UI update: message appears on screen instantly or updates retry state
+    final currentMessages = List<SupportChatMessageEntity>.from(ticket.messages);
+    final existingIdx = currentMessages.indexWhere((m) => m.id == tempId);
+
     final optimisticMessage = SupportChatMessageEntity(
       id: tempId,
       ticketId: ticket.id,
@@ -130,13 +264,20 @@ class SupportChatNotifier extends StateNotifier<SupportChatState> {
       attachments: attachments ?? const [],
       createdAt: DateTime.now(),
       isOptimistic: true,
+      isFailed: false,
     );
+
+    if (existingIdx != -1) {
+      currentMessages[existingIdx] = optimisticMessage;
+    } else {
+      currentMessages.add(optimisticMessage);
+    }
 
     final newStatus = requestedStatus ?? ticket.status;
     final optimisticTicket = ticket.copyWith(
       status: newStatus,
-      messages: [...ticket.messages, optimisticMessage],
-      messagesCount: ticket.messagesCount + 1,
+      messages: currentMessages,
+      messagesCount: existingIdx == -1 ? ticket.messagesCount + 1 : ticket.messagesCount,
     );
 
     // Keep UI fully responsive without blocking typing or sending
@@ -159,39 +300,45 @@ class SupportChatNotifier extends StateNotifier<SupportChatState> {
 
     return result.fold(
       (failure) {
-        // Rollback optimistic message on network error
-        final rollbackMessages = List<SupportChatMessageEntity>.from(
+        // Mark optimistic message as failed rather than deleting it
+        final failedMessages = List<SupportChatMessageEntity>.from(
           state.ticket?.messages ?? [],
-        )..removeWhere((m) => m.id == tempId);
+        );
+        final fIdx = failedMessages.indexWhere((m) => m.id == tempId);
+        if (fIdx != -1) {
+          failedMessages[fIdx] = failedMessages[fIdx].copyWith(
+            isOptimistic: false,
+            isFailed: true,
+          );
+        }
 
-        final rollbackTicket = (state.ticket ?? ticket).copyWith(
-          messages: rollbackMessages,
-          messagesCount: (state.ticket?.messagesCount ?? 1) - 1,
+        final failedTicket = (state.ticket ?? ticket).copyWith(
+          messages: failedMessages,
         );
 
         state = state.copyWith(
           isSendingReply: false,
-          ticket: () => rollbackTicket,
-          errorMessage: () => 'فشل إرسال الرد: ${failure.message}',
+          ticket: () => failedTicket,
+          errorMessage: () => 'فشل إرسال الرد: ${failure.message}. اضغط لإعادة المحاولة.',
         );
         return false;
       },
       (confirmedMessage) {
         // Replace optimistic placeholder with confirmed server message
-        final currentMessages = List<SupportChatMessageEntity>.from(
+        final confirmedMessages = List<SupportChatMessageEntity>.from(
           state.ticket?.messages ?? [],
         );
-        final index = currentMessages.indexWhere((m) => m.id == tempId);
+        final index = confirmedMessages.indexWhere((m) => m.id == tempId);
 
         if (index != -1) {
-          currentMessages[index] = confirmedMessage;
-        } else if (!currentMessages.any((m) => m.id == confirmedMessage.id)) {
-          currentMessages.add(confirmedMessage);
+          confirmedMessages[index] = confirmedMessage;
+        } else if (!confirmedMessages.any((m) => m.id == confirmedMessage.id)) {
+          confirmedMessages.add(confirmedMessage);
         }
 
         final confirmedTicket = (state.ticket ?? ticket).copyWith(
           status: newStatus,
-          messages: currentMessages,
+          messages: confirmedMessages,
         );
 
         state = state.copyWith(
@@ -201,6 +348,15 @@ class SupportChatNotifier extends StateNotifier<SupportChatState> {
         );
         return true;
       },
+    );
+  }
+
+  /// Retries sending a previously failed message
+  Future<bool> retryMessage(SupportChatMessageEntity failedMessage) async {
+    return sendReply(
+      message: failedMessage.message,
+      attachments: failedMessage.attachments,
+      retryMessageId: failedMessage.id,
     );
   }
 
