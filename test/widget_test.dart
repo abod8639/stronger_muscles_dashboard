@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:get_storage/get_storage.dart';
+import 'package:hive_ce/hive.dart';
+import 'package:stronger_muscles_dashboard/core/storage/app_storage.dart';
 import 'package:stronger_muscles_dashboard/core/network/auth_service.dart';
 import 'package:stronger_muscles_dashboard/main.dart';
 
@@ -31,6 +32,11 @@ void main() {
 
   setUp(() async {
     await GetStorage.init();
+    final tempDir = Directory.systemTemp.createTempSync();
+    Hive.init(tempDir.path);
+    if (!Hive.isBoxOpen('theme_cache')) {
+      await Hive.openBox('theme_cache');
+    }
   });
 
   testWidgets('Smoke test', (WidgetTester tester) async {
