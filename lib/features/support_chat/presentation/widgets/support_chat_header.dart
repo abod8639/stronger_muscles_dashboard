@@ -11,6 +11,8 @@ class SupportChatHeader extends ConsumerWidget {
   final bool isDark;
   final bool showBackButton;
   final VoidCallback? onBack;
+  final VoidCallback? onToggleCustomerContext;
+  final bool isCustomerContextVisible;
 
   const SupportChatHeader({
     super.key,
@@ -18,6 +20,8 @@ class SupportChatHeader extends ConsumerWidget {
     required this.isDark,
     this.showBackButton = false,
     this.onBack,
+    this.onToggleCustomerContext,
+    this.isCustomerContextVisible = false,
   });
 
   @override
@@ -37,7 +41,7 @@ class SupportChatHeader extends ConsumerWidget {
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final isCompact = constraints.maxWidth < 620;
+          final isCompact = constraints.maxWidth < 880;
 
           if (isCompact) {
             return Column(
@@ -114,6 +118,8 @@ class SupportChatHeader extends ConsumerWidget {
                                   ),
                                 ),
                               ),
+                              const SizedBox(width: 6),
+                              _buildLiveBadge(),
                             ],
                           ),
                           Text(
@@ -127,6 +133,20 @@ class SupportChatHeader extends ConsumerWidget {
                         ],
                       ),
                     ),
+                    if (onToggleCustomerContext != null)
+                      IconButton(
+                        tooltip: isCustomerContextVisible
+                            ? 'إخفاء سياق العميل'
+                            : 'سياق العميل والطلبات',
+                        icon: Icon(
+                          Icons.person_pin_rounded,
+                          color: isCustomerContextVisible
+                              ? colorScheme.primary
+                              : colorScheme.onSurfaceVariant,
+                          size: 20,
+                        ),
+                        onPressed: onToggleCustomerContext,
+                      ),
                     IconButton(
                       tooltip: 'حذف التذكرة',
                       icon: Icon(
@@ -141,6 +161,10 @@ class SupportChatHeader extends ConsumerWidget {
                 const SizedBox(height: 10),
                 Row(
                   children: [
+                    Expanded(
+                      child: _buildAssigneeDropdown(context, ref, colorScheme),
+                    ),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: _buildStatusDropdown(context, ref, colorScheme),
                     ),
@@ -199,61 +223,99 @@ class SupportChatHeader extends ConsumerWidget {
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: colorScheme.onSurface,
+                              fontSize: 14,
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 6),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 3,
+                            horizontal: 7,
+                            vertical: 2,
                           ),
                           decoration: BoxDecoration(
                             color: colorScheme.surfaceContainerHighest,
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
                             '#${ticket.ticketNumber}',
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: 11,
                               color: colorScheme.primary,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        Text(
-                          ticket.userEmail,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
+                        const SizedBox(width: 6),
+                        _buildLiveBadge(),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Row(
+                      children: [
+                        if (ticket.userEmail.isNotEmpty) ...[
+                          Text(
+                            ticket.userEmail,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                              fontSize: 11,
+                            ),
+                          ),
+                          Text(
+                            ' • ',
+                            style: TextStyle(
+                              color: colorScheme.outlineVariant,
+                              fontSize: 11,
+                            ),
+                          ),
+                        ],
+                        Expanded(
+                          child: Text(
+                            ticket.subject,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                              fontSize: 11,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      ticket.subject,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
                   ],
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 8),
               SizedBox(
-                width: 140,
+                width: 125,
+                child: _buildAssigneeDropdown(context, ref, colorScheme),
+              ),
+              const SizedBox(width: 8),
+              SizedBox(
+                width: 130,
                 child: _buildStatusDropdown(context, ref, colorScheme),
               ),
               const SizedBox(width: 8),
               SizedBox(
-                width: 120,
+                width: 110,
                 child: _buildPriorityDropdown(context, ref, colorScheme),
               ),
               const SizedBox(width: 8),
+              if (onToggleCustomerContext != null)
+                IconButton(
+                  tooltip: isCustomerContextVisible
+                      ? 'إخفاء سياق العميل'
+                      : 'سياق العميل والطلبات (Customer 360°)',
+                  icon: Icon(
+                    Icons.person_pin_rounded,
+                    color: isCustomerContextVisible
+                        ? colorScheme.primary
+                        : colorScheme.onSurfaceVariant,
+                    size: 20,
+                  ),
+                  onPressed: onToggleCustomerContext,
+                ),
               IconButton(
                 tooltip: 'حذف التذكرة',
                 icon: Icon(
@@ -391,6 +453,88 @@ class SupportChatHeader extends ConsumerWidget {
             }
           },
         ),
+      ),
+    );
+  }
+
+  Widget _buildAssigneeDropdown(
+    BuildContext context,
+    WidgetRef ref,
+    ColorScheme colorScheme,
+  ) {
+    return Container(
+      height: 38,
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHigh,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: colorScheme.outlineVariant),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<int?>(
+          value: ticket.assignedAdminId,
+          isExpanded: true,
+          dropdownColor: colorScheme.surfaceContainer,
+          hint: Text(
+            'تعيين مشرف',
+            style: TextStyle(fontSize: 11.5, color: colorScheme.onSurfaceVariant),
+            overflow: TextOverflow.ellipsis,
+          ),
+          items: [
+            DropdownMenuItem<int?>(
+              value: null,
+              child: Text(
+                'غير معين',
+                style: TextStyle(fontSize: 11.5, color: colorScheme.onSurface),
+              ),
+            ),
+            if (ticket.assignedAdminId != null)
+              DropdownMenuItem<int?>(
+                value: ticket.assignedAdminId,
+                child: Text(
+                  ticket.assignedAdminName ?? 'المشرف',
+                  style: TextStyle(fontSize: 11.5, color: colorScheme.onSurface),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+          ],
+          onChanged: (val) {
+            ref.read(supportChatControllerProvider.notifier).assignAdmin(val);
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLiveBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+      decoration: BoxDecoration(
+        color: Colors.green.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 5,
+            height: 5,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.green,
+            ),
+          ),
+          const SizedBox(width: 3),
+          const Text(
+            'حي',
+            style: TextStyle(
+              fontSize: 9,
+              fontWeight: FontWeight.bold,
+              color: Colors.green,
+            ),
+          ),
+        ],
       ),
     );
   }
