@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:stronger_muscles_dashboard/core/error/exceptions.dart';
 import '../models/navigation_badges_model.dart';
 
