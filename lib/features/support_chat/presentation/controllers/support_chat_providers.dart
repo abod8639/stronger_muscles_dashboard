@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:stronger_muscles_dashboard/core/network/dio_provider.dart';
+import 'package:stronger_muscles_dashboard/features/support/presentation/controllers/support_providers.dart';
 import '../../data/datasources/support_chat_remote_datasource.dart';
 import '../../data/repositories/support_chat_repository_impl.dart';
 import '../../domain/repositories/support_chat_repository.dart';
@@ -78,5 +79,6 @@ final supportChatControllerProvider =
         updatePriorityUseCase: ref.watch(updateSupportChatPriorityUseCaseProvider),
         assignAdminUseCase: ref.watch(assignSupportChatAdminUseCaseProvider),
         deleteTicketUseCase: ref.watch(deleteSupportChatTicketUseCaseProvider),
+        realtimeDataSource: ref.watch(supportRealtimeDataSourceProvider),
       );
     });
