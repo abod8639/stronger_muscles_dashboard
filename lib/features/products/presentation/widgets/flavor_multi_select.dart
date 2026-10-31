@@ -37,6 +37,8 @@ class FlavorItem {
 class ProductFlavorSelector extends StatelessWidget {
   final List<String> selectedFlavors;
   final void Function(List<String>) onSelectionChanged;
+  final String? activeSizeName;
+  final VoidCallback? onApplyToAllSizes;
 
   /// النكهات الافتراضية مع صورها المطابقة للمتجر
   static final List<FlavorItem> defaultPresets = [
@@ -112,6 +114,8 @@ class ProductFlavorSelector extends StatelessWidget {
     super.key,
     required this.selectedFlavors,
     required this.onSelectionChanged,
+    this.activeSizeName,
+    this.onApplyToAllSizes,
   });
 
   @override
@@ -156,20 +160,60 @@ class ProductFlavorSelector extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      "النكهات المتوفرة لهذا المنتج",
+                      activeSizeName != null
+                          ? "نكهات الحجم المحدد ($activeSizeName)"
+                          : "النكهات المتوفرة لهذا المنتج",
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+                    if (activeSizeName != null) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: colorScheme.primary.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          'خاص بالحجم',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: colorScheme.primary,
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
-                Text(
-                  'انقر للتحديد، واضغط مطولاً لتعديل الصورة',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                    fontSize: 11,
+                if (onApplyToAllSizes != null)
+                  TextButton.icon(
+                    style: TextButton.styleFrom(
+                      visualDensity: VisualDensity.compact,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                    ),
+                    onPressed: onApplyToAllSizes,
+                    icon: const Icon(Icons.copy_all_rounded, size: 16),
+                    label: const Text(
+                      'تطبيق على كل الأحجام',
+                      style: TextStyle(fontSize: 11),
+                    ),
+                  )
+                else
+                  Text(
+                    'انقر للتحديد، واضغط مطولاً لتعديل الصورة',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                      fontSize: 11,
+                    ),
                   ),
-                ),
               ],
             ),
             const SizedBox(height: 14),
