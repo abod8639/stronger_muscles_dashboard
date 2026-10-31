@@ -48,51 +48,73 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Language-specific Name and Description
-          _selectedLang == 'ar'
-              ? Column(
-                  key: const ValueKey('lang_ar'),
-                  children: [
-                    ModernTextField(
-                      controller: ctrl.textcontrollers['name_ar']!,
-                      label: 'اسم المنتج باللغة العربية',
-                      hint: 'مثال: واي بروتين جولد ستاندرد 2 كجم',
-                      icon: Icons.title_rounded,
-                      isRequired: true,
-                    ),
-                    const SizedBox(height: 16),
-                    ModernTextField(
-                      controller: ctrl.textcontrollers['desc_ar']!,
-                      label: 'وصف المنتج باللغة العربية',
-                      hint: 'اكتب وصفاً مفصلاً للمنتج...',
-                      icon: Icons.description_outlined,
-                      maxLines: 4,
-                    ),
-                  ],
-                )
-              : Column(
-                  key: const ValueKey('lang_en'),
-                  children: [
-                    ModernTextField(
-                      controller: ctrl.textcontrollers['name_en']!,
-                      label: 'Product Name (English)',
-                      hint: 'e.g. Gold Standard 100% Whey 2kg',
-                      icon: Icons.translate_rounded,
-                    ),
-                    const SizedBox(height: 16),
-                    ModernTextField(
-                      controller: ctrl.textcontrollers['desc_en']!,
-                      label: 'Product Description (English)',
-                      hint: 'Write a detailed description in English...',
-                      icon: Icons.description_outlined,
-                      maxLines: 4,
-                    ),
-                  ],
-                ),
+          // Language-specific Name and Description (IndexedStack يحافظ على الحقول داخل شجرة الويدجت لمنع تجاوز فحص التحقق)
+          IndexedStack(
+            index: _selectedLang == 'ar' ? 0 : 1,
+            children: [
+              Column(
+                key: const ValueKey('lang_ar'),
+                children: [
+                  ModernTextField(
+                    controller: ctrl.textcontrollers['name_ar']!,
+                    label: 'اسم المنتج باللغة العربية',
+                    hint: 'مثال: واي بروتين جولد ستاندرد 2 كجم',
+                    icon: Icons.title_rounded,
+                    isRequired: true,
+                  ),
+                  const SizedBox(height: 16),
+                  ModernTextField(
+                    controller: ctrl.textcontrollers['desc_ar']!,
+                    label: 'وصف المنتج باللغة العربية',
+                    hint: 'اكتب وصفاً مفصلاً للمنتج...',
+                    icon: Icons.description_outlined,
+                    maxLines: 4,
+                  ),
+                ],
+              ),
+              Column(
+                key: const ValueKey('lang_en'),
+                children: [
+                  ModernTextField(
+                    controller: ctrl.textcontrollers['name_en']!,
+                    label: 'Product Name (English)',
+                    hint: 'e.g. Gold Standard 100% Whey 2kg',
+                    icon: Icons.translate_rounded,
+                  ),
+                  const SizedBox(height: 16),
+                  ModernTextField(
+                    controller: ctrl.textcontrollers['desc_en']!,
+                    label: 'Product Description (English)',
+                    hint: 'Write a detailed description in English...',
+                    icon: Icons.description_outlined,
+                    maxLines: 4,
+                  ),
+                ],
+              ),
+            ],
+          ),
           const SizedBox(height: 18),
 
-          // Brand Autocomplete
-          _buildBrandAutocomplete(ctrl, colorScheme, isDark),
+          // Brand Autocomplete & Main SKU
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                flex: 3,
+                child: _buildBrandAutocomplete(ctrl, colorScheme, isDark),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                flex: 2,
+                child: ModernTextField(
+                  controller: ctrl.textcontrollers['sku']!,
+                  label: 'رمز SKU الأساسي',
+                  hint: 'مثال: WHEY-GOLD-01',
+                  icon: Icons.qr_code_2_rounded,
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
