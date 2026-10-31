@@ -64,14 +64,32 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage>
       controller.imageUrls
         ..clear()
         ..addAll(getInitialImageUrls());
+      _attachDirtyListeners();
       if (mounted) {
         setState(() {});
       }
     });
   }
 
+  void _onFieldChanged() {
+    controller.markFormDirty();
+  }
+
+  void _attachDirtyListeners() {
+    for (final c in controller.textcontrollers.values) {
+      c.addListener(_onFieldChanged);
+    }
+  }
+
+  void _detachDirtyListeners() {
+    for (final c in controller.textcontrollers.values) {
+      c.removeListener(_onFieldChanged);
+    }
+  }
+
   @override
   void dispose() {
+    _detachDirtyListeners();
     disposeProductControllers();
     super.dispose();
   }
@@ -90,7 +108,10 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage>
         builder: (_) => ProductCategorySection(
           controller: ctrl,
           selectedCategoryId: _selectedCategoryId,
-          onCategorySelected: (id) => setState(() => _selectedCategoryId = id),
+          onCategorySelected: (id) {
+            ctrl.markFormDirty();
+            setState(() => _selectedCategoryId = id);
+          },
         ),
       ),
       _FormSection(
@@ -201,7 +222,7 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage>
     final isEditing = widget.product != null;
 
     return PopScope(
-      canPop: false,
+      canPop: !ctrl.isFormDirty,
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
         final shouldLeave = await _showDiscardConfirmDialog(context);
@@ -216,8 +237,12 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage>
           scrolledUnderElevation: 0,
           leading: BackButton(
             onPressed: () async {
-              final shouldLeave = await _showDiscardConfirmDialog(context);
-              if (shouldLeave && context.mounted) {
+              if (ctrl.isFormDirty) {
+                final shouldLeave = await _showDiscardConfirmDialog(context);
+                if (shouldLeave && context.mounted) {
+                  Navigator.of(context).pop();
+                }
+              } else {
                 Navigator.of(context).pop();
               }
             },
