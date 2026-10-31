@@ -374,6 +374,7 @@ class ProductsController extends ChangeNotifier {
     productFlavors.clear();
     variants.clear();
     selectedProductIds.clear();
+    clearSizeControllers();
 
     if (product != null) {
       textcontrollers['name_ar']?.text = product.nameAr;
@@ -441,6 +442,7 @@ class ProductsController extends ChangeNotifier {
     int? servings,
     String? weight,
     int? stockQuantity,
+    List<String>? flavors,
   }) {
     final newSize = ProductSizeEntity(
       size: size,
@@ -449,6 +451,7 @@ class ProductsController extends ChangeNotifier {
       servings: servings,
       weight: weight,
       stockQuantity: stockQuantity,
+      flavors: flavors ?? (productFlavors.isNotEmpty ? List<String>.from(productFlavors) : null),
     );
     productSizes.add(newSize);
     sizePriceControllers[size] = TextEditingController(text: price.toString());
@@ -487,6 +490,44 @@ class ProductsController extends ChangeNotifier {
 
   void selectSize(int index) {
     selectedSizeIndex = index;
+    notifyListeners();
+  }
+
+  void updateSizeFlavors(String sizeName, List<String> flavors) {
+    final index = productSizes.indexWhere((s) => s.size == sizeName);
+    if (index != -1) {
+      productSizes[index] = productSizes[index].copyWith(flavors: flavors);
+      for (final f in flavors) {
+        if (!productFlavors.contains(f)) {
+          productFlavors.add(f);
+        }
+      }
+      notifyListeners();
+    }
+  }
+
+  void applyFlavorsToAllSizes(List<String> flavors) {
+    for (int i = 0; i < productSizes.length; i++) {
+      productSizes[i] = productSizes[i].copyWith(
+        flavors: List<String>.from(flavors),
+      );
+    }
+    for (final f in flavors) {
+      if (!productFlavors.contains(f)) {
+        productFlavors.add(f);
+      }
+    }
+    notifyListeners();
+  }
+
+  List<String> getFlavorsForSize(String sizeName) {
+    final match = productSizes.where((s) => s.size == sizeName);
+    if (match.isNotEmpty &&
+        match.first.flavors != null &&
+        match.first.flavors!.isNotEmpty) {
+      return match.first.flavors!;
+    }
+    return productFlavors;
   }
 
   void syncSizeControllers() {
@@ -611,20 +652,19 @@ class ProductsController extends ChangeNotifier {
         servings: servings,
         weight: (weight != null && weight.isNotEmpty) ? weight : null,
         stockQuantity: stock,
+        flavors: ps.flavors,
       );
     }).toList();
 
-    int totalStock = int.tryParse(textcontrollers['stock']!.text) ?? 0;
-    if (updatedSizes.isNotEmpty) {
+    int totalStock = int.tryParse(textcontrollers['stock']!.text.trim()) ?? 0;
+    if (totalStock == 0 && updatedSizes.isNotEmpty) {
       int sumSizesStock = 0;
-      bool hasSizeStock = false;
       for (final s in updatedSizes) {
         if (s.stockQuantity != null) {
           sumSizesStock += s.stockQuantity!;
-          hasSizeStock = true;
         }
       }
-      if (hasSizeStock) {
+      if (sumSizesStock > 0) {
         totalStock = sumSizesStock;
       }
     }
@@ -692,14 +732,19 @@ class ProductsController extends ChangeNotifier {
       'is_active': _isActive,
       'featured': _isFeatured,
       'is_background_white': _isBackgroundWhite,
-      'serving_size': updatedSizes.isNotEmpty &&
-              (updatedSizes.first.weight?.isNotEmpty ?? false)
-          ? updatedSizes.first.weight!
-          : textcontrollers['serving']!.text.trim(),
+      'serving_size': textcontrollers['serving']!.text.trim().isNotEmpty
+          ? textcontrollers['serving']!.text.trim()
+          : (updatedSizes.isNotEmpty &&
+                  (updatedSizes.first.weight?.isNotEmpty ?? false)
+              ? updatedSizes.first.weight!
+              : ''),
       'servings_per_container':
-          updatedSizes.isNotEmpty && updatedSizes.first.servings != null
-              ? updatedSizes.first.servings!
-              : (int.tryParse(textcontrollers['sessions']!.text) ?? 0),
+          (int.tryParse(textcontrollers['sessions']!.text.trim()) ?? 0) > 0
+              ? int.tryParse(textcontrollers['sessions']!.text.trim())!
+              : (updatedSizes.isNotEmpty &&
+                      updatedSizes.first.servings != null
+                  ? updatedSizes.first.servings!
+                  : 0),
       'flavors': productFlavors.toList(),
       'product_sizes': updatedSizes
           .map(
@@ -713,6 +758,7 @@ class ProductsController extends ChangeNotifier {
               if (s.weight != null) 'serving_size': s.weight,
               if (s.stockQuantity != null) 'stock_quantity': s.stockQuantity,
               if (s.stockQuantity != null) 'stock': s.stockQuantity,
+              if (s.flavors != null) 'flavors': s.flavors,
             },
           )
           .toList(),
