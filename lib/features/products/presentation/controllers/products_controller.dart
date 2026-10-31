@@ -197,6 +197,22 @@ class ProductsController extends ChangeNotifier {
   // Controllers for each size
   final Map<String, TextEditingController> sizePriceControllers = {};
   final Map<String, TextEditingController> sizeDiscountControllers = {};
+  final Map<String, TextEditingController> sizeServingsControllers = {};
+  final Map<String, TextEditingController> sizeWeightControllers = {};
+  final Map<String, TextEditingController> sizeStockControllers = {};
+
+  int get totalSizesStock {
+    int sum = 0;
+    for (var ps in productSizes) {
+      final text = sizeStockControllers[ps.size]?.text.trim() ?? '';
+      sum += int.tryParse(text) ?? 0;
+    }
+    return sum;
+  }
+
+  void notifySizeStockChanged() {
+    notifyListeners();
+  }
 
   Future<void> fetchData({bool forceRefresh = false}) async {
     _isLoading = true;
@@ -230,6 +246,56 @@ class ProductsController extends ChangeNotifier {
     _applyFiltering();
     _isLoading = false;
     notifyListeners();
+  }
+
+  bool _isCreatingBrand = false;
+  bool get isCreatingBrand => _isCreatingBrand;
+
+  /// Creates and stores a new brand directly in the database
+  Future<BrandEntity?> quickAddBrand(String brandName) async {
+    final trimmed = brandName.trim();
+    if (trimmed.isEmpty) return null;
+
+    // Check if already registered in current list
+    for (final b in brands) {
+      if (b.nameAr.trim().toLowerCase() == trimmed.toLowerCase() ||
+          b.nameEn.trim().toLowerCase() == trimmed.toLowerCase() ||
+          b.displayName.trim().toLowerCase() == trimmed.toLowerCase()) {
+        textcontrollers['brand']?.text = b.displayName;
+        AppFeedback.showInfo('العلامة التجارية مسجلة بالفعل');
+        return b;
+      }
+    }
+
+    _isCreatingBrand = true;
+    notifyListeners();
+
+    final result = await _brandRepository.createBrand({
+      'name': {
+        'ar': trimmed,
+        'en': trimmed,
+      },
+      'is_active': true,
+    });
+
+    BrandEntity? createdBrand;
+    result.fold(
+      (failure) {
+        AppFeedback.showError(
+          'تعذر إضافة العلامة التجارية: ${failure.toMessage()}',
+        );
+      },
+      (newBrand) {
+        brands.insert(0, newBrand);
+        textcontrollers['brand']?.text = newBrand.displayName;
+        AppFeedback.showSuccess('تمت إضافة العلامة التجارية وتخزينها بنجاح');
+        createdBrand = newBrand;
+      },
+    );
+
+    _isCreatingBrand = false;
+    notifyListeners();
+    return createdBrand;
   }
 
   /// Synchronizes products list from Riverpod state
@@ -282,7 +348,12 @@ class ProductsController extends ChangeNotifier {
           final matchesFlavor =
               _selectedFlavorId == 'all' ||
               (product.flavors != null &&
-                  product.flavors!.contains(_selectedFlavorId));
+                  product.flavors!.any((f) {
+                    final clean =
+                        f.contains('|') ? f.split('|').first.trim() : f.trim();
+                    return clean.toLowerCase() ==
+                        _selectedFlavorId.toLowerCase();
+                  }));
 
           final matchesSearch =
               query.isEmpty ||
@@ -333,6 +404,15 @@ class ProductsController extends ChangeNotifier {
           sizeDiscountControllers[ps.size] = TextEditingController(
             text: ps.discountPrice?.toString() ?? '',
           );
+          sizeServingsControllers[ps.size] = TextEditingController(
+            text: ps.servings?.toString() ?? '',
+          );
+          sizeWeightControllers[ps.size] = TextEditingController(
+            text: ps.weight ?? '',
+          );
+          sizeStockControllers[ps.size] = TextEditingController(
+            text: ps.stockQuantity?.toString() ?? '',
+          );
         }
       }
 
@@ -354,16 +434,35 @@ class ProductsController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addProductSize(String size, double price, double? discount) {
+  void addProductSize(
+    String size,
+    double price,
+    double? discount, {
+    int? servings,
+    String? weight,
+    int? stockQuantity,
+  }) {
     final newSize = ProductSizeEntity(
       size: size,
       price: price,
       discountPrice: discount,
+      servings: servings,
+      weight: weight,
+      stockQuantity: stockQuantity,
     );
     productSizes.add(newSize);
     sizePriceControllers[size] = TextEditingController(text: price.toString());
     sizeDiscountControllers[size] = TextEditingController(
       text: discount?.toString() ?? '',
+    );
+    sizeServingsControllers[size] = TextEditingController(
+      text: servings?.toString() ?? '',
+    );
+    sizeWeightControllers[size] = TextEditingController(
+      text: weight ?? '',
+    );
+    sizeStockControllers[size] = TextEditingController(
+      text: stockQuantity?.toString() ?? '',
     );
     notifyListeners();
   }
@@ -375,6 +474,12 @@ class ProductsController extends ChangeNotifier {
       sizePriceControllers.remove(size);
       sizeDiscountControllers[size]?.dispose();
       sizeDiscountControllers.remove(size);
+      sizeServingsControllers[size]?.dispose();
+      sizeServingsControllers.remove(size);
+      sizeWeightControllers[size]?.dispose();
+      sizeWeightControllers.remove(size);
+      sizeStockControllers[size]?.dispose();
+      sizeStockControllers.remove(size);
       productSizes.removeAt(index);
       notifyListeners();
     }
@@ -394,6 +499,18 @@ class ProductsController extends ChangeNotifier {
         ps.size,
         () => TextEditingController(text: ps.discountPrice?.toString() ?? ''),
       );
+      sizeServingsControllers.putIfAbsent(
+        ps.size,
+        () => TextEditingController(text: ps.servings?.toString() ?? ''),
+      );
+      sizeWeightControllers.putIfAbsent(
+        ps.size,
+        () => TextEditingController(text: ps.weight ?? ''),
+      );
+      sizeStockControllers.putIfAbsent(
+        ps.size,
+        () => TextEditingController(text: ps.stockQuantity?.toString() ?? ''),
+      );
     }
     notifyListeners();
   }
@@ -407,6 +524,18 @@ class ProductsController extends ChangeNotifier {
       c.dispose();
     }
     sizeDiscountControllers.clear();
+    for (var c in sizeServingsControllers.values) {
+      c.dispose();
+    }
+    sizeServingsControllers.clear();
+    for (var c in sizeWeightControllers.values) {
+      c.dispose();
+    }
+    sizeWeightControllers.clear();
+    for (var c in sizeStockControllers.values) {
+      c.dispose();
+    }
+    sizeStockControllers.clear();
   }
 
   void addNewVariant() {
@@ -470,12 +599,35 @@ class ProductsController extends ChangeNotifier {
       final discount = double.tryParse(
         sizeDiscountControllers[ps.size]?.text ?? '',
       );
+      final servings =
+          int.tryParse(sizeServingsControllers[ps.size]?.text.trim() ?? '');
+      final weight = sizeWeightControllers[ps.size]?.text.trim();
+      final stock =
+          int.tryParse(sizeStockControllers[ps.size]?.text.trim() ?? '');
       return ProductSizeEntity(
         size: ps.size,
         price: price,
         discountPrice: discount,
+        servings: servings,
+        weight: (weight != null && weight.isNotEmpty) ? weight : null,
+        stockQuantity: stock,
       );
     }).toList();
+
+    int totalStock = int.tryParse(textcontrollers['stock']!.text) ?? 0;
+    if (updatedSizes.isNotEmpty) {
+      int sumSizesStock = 0;
+      bool hasSizeStock = false;
+      for (final s in updatedSizes) {
+        if (s.stockQuantity != null) {
+          sumSizesStock += s.stockQuantity!;
+          hasSizeStock = true;
+        }
+      }
+      if (hasSizeStock) {
+        totalStock = sumSizesStock;
+      }
+    }
 
     double mainPrice = double.tryParse(textcontrollers['price']!.text) ?? 0.0;
     double? discountPrice = double.tryParse(textcontrollers['discount']!.text);
@@ -492,10 +644,32 @@ class ProductsController extends ChangeNotifier {
     BrandEntity? matchedBrand;
     for (final b in brands) {
       if (b.nameAr.trim().toLowerCase() == enteredBrand.toLowerCase() ||
-          b.nameEn.trim().toLowerCase() == enteredBrand.toLowerCase()) {
+          b.nameEn.trim().toLowerCase() == enteredBrand.toLowerCase() ||
+          b.displayName.trim().toLowerCase() == enteredBrand.toLowerCase()) {
         matchedBrand = b;
         break;
       }
+    }
+
+    // Auto-create brand in database if it doesn't already exist
+    if (enteredBrand.isNotEmpty && matchedBrand == null) {
+      final createResult = await _brandRepository.createBrand({
+        'name': {
+          'ar': enteredBrand,
+          'en': enteredBrand,
+        },
+        'is_active': true,
+      });
+      createResult.fold(
+        (failure) {
+          debugPrint('⚠️ Auto-create brand failed: ${failure.toMessage()}');
+        },
+        (newBrand) {
+          matchedBrand = newBrand;
+          brands.insert(0, newBrand);
+          notifyListeners();
+        },
+      );
     }
 
     final productData = {
@@ -512,15 +686,20 @@ class ProductsController extends ChangeNotifier {
       'discount_price': discountPrice,
       'image_urls': productImages,
       'category_id': categoryId,
-      'stock_quantity': int.tryParse(textcontrollers['stock']!.text) ?? 0,
+      'stock_quantity': totalStock,
       'brand': enteredBrand,
-      if (matchedBrand != null) 'brand_id': matchedBrand.id,
+      if (matchedBrand != null) 'brand_id': matchedBrand!.id,
       'is_active': _isActive,
       'featured': _isFeatured,
       'is_background_white': _isBackgroundWhite,
-      'serving_size': textcontrollers['serving']!.text.trim(),
+      'serving_size': updatedSizes.isNotEmpty &&
+              (updatedSizes.first.weight?.isNotEmpty ?? false)
+          ? updatedSizes.first.weight!
+          : textcontrollers['serving']!.text.trim(),
       'servings_per_container':
-          int.tryParse(textcontrollers['sessions']!.text) ?? 0,
+          updatedSizes.isNotEmpty && updatedSizes.first.servings != null
+              ? updatedSizes.first.servings!
+              : (int.tryParse(textcontrollers['sessions']!.text) ?? 0),
       'flavors': productFlavors.toList(),
       'product_sizes': updatedSizes
           .map(
@@ -528,6 +707,12 @@ class ProductsController extends ChangeNotifier {
               'size': s.size,
               'price': s.price,
               'discount_price': s.discountPrice,
+              if (s.servings != null) 'servings': s.servings,
+              if (s.servings != null) 'servings_per_container': s.servings,
+              if (s.weight != null) 'weight': s.weight,
+              if (s.weight != null) 'serving_size': s.weight,
+              if (s.stockQuantity != null) 'stock_quantity': s.stockQuantity,
+              if (s.stockQuantity != null) 'stock': s.stockQuantity,
             },
           )
           .toList(),
@@ -828,6 +1013,15 @@ class ProductsController extends ChangeNotifier {
       c.dispose();
     }
     for (var c in sizeDiscountControllers.values) {
+      c.dispose();
+    }
+    for (var c in sizeServingsControllers.values) {
+      c.dispose();
+    }
+    for (var c in sizeWeightControllers.values) {
+      c.dispose();
+    }
+    for (var c in sizeStockControllers.values) {
       c.dispose();
     }
     super.dispose();
