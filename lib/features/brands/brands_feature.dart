@@ -16,6 +16,7 @@ export 'domain/entities/brand_entity.dart';
 export 'domain/repositories/brand_repository.dart';
 
 // Domain UseCases
+export 'domain/usecases/create_brand_usecase.dart';
 export 'domain/usecases/get_brands_usecase.dart';
 export 'domain/usecases/get_brand_by_id_usecase.dart';
 
@@ -29,7 +30,8 @@ export 'presentation/controllers/brands_providers.dart'
         brandsNotifierProvider,
         brandsListProvider,
         getBrandsUseCaseProvider,
-        getBrandByIdUseCaseProvider;
+        getBrandByIdUseCaseProvider,
+        createBrandUseCaseProvider;
 
 // Modular Routes
 export 'brands_routes.dart';
