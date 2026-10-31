@@ -1,4 +1,4 @@
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 import '../../domain/entities/order_entity.dart';
 
 class OrderStatusAdapter extends TypeAdapter<OrderStatus> {
