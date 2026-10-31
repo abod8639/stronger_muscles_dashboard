@@ -1,4 +1,4 @@
-import 'package:get_storage/get_storage.dart';
+import 'package:stronger_muscles_dashboard/core/storage/app_storage.dart';
 import 'package:stronger_muscles_dashboard/core/error/exceptions.dart';
 
 /// Contract for caching tokens and session data locally.
