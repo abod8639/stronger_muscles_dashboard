@@ -143,7 +143,7 @@ void main() {
 
         expect(result.isLeft(), true);
         result.fold((failure) {
-          expect(failure, isA<AuthFailure>());
+          expect(failure, isA<ServerFailure>());
           expect(failure.message, 'Invalid credentials');
         }, (entity) => fail('Expected Left but got Right'));
       },
