@@ -22,57 +22,140 @@ class ProductVariantManager extends StatelessWidget {
       builder: (context, _) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 10,
+            runSpacing: 10,
             children: [
-              Text(
-                'تنويعات المنتج (SKUs)',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.onSurface,
-                ),
-              ),
-              // Neumorphic Add Variant Button
-              Container(
-                decoration: AppDesignTokens.softSurface(
-                  colorScheme,
-                  isDark: isDark,
-                  borderRadius: BorderRadius.circular(10),
-                  compact: true,
-                ),
-                child: Material(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(10),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(10),
-                    onTap: controller.addNewVariant,
-                    child: Padding(
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'تنويعات المنتج (SKUs)',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
+                  if (controller.variants.isNotEmpty) ...[
+                    const SizedBox(width: 8),
+                    Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 8,
+                        horizontal: 8,
+                        vertical: 3,
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.add_rounded,
-                            size: 18,
-                            color: colorScheme.primary,
+                      decoration: BoxDecoration(
+                        color: colorScheme.primaryContainer.withValues(alpha: 0.5),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        '${controller.variants.length} تنويع',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.primary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Auto-generate Matrix Button
+                  if (controller.productSizes.isNotEmpty ||
+                      controller.productFlavors.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: FilledButton.tonalIcon(
+                        style: FilledButton.styleFrom(
+                          visualDensity: VisualDensity.compact,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
                           ),
-                          const SizedBox(width: 6),
-                          Text(
-                            'إضافة تنويع',
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: colorScheme.primary,
-                            ),
+                        ),
+                        onPressed: controller.generateVariantsMatrix,
+                        icon: const Icon(Icons.auto_awesome_rounded, size: 16),
+                        label: const Text(
+                          'توليد المصفوفة تلقائياً',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
                           ),
-                        ],
+                        ),
+                      ),
+                    ),
+
+                  // Bulk Edit Button
+                  if (controller.variants.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          visualDensity: VisualDensity.compact,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 7,
+                          ),
+                        ),
+                        onPressed: () => _showBulkEditDialog(context, controller),
+                        icon: const Icon(Icons.edit_note_rounded, size: 16),
+                        label: const Text(
+                          'تعديل جماعي',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                  // Neumorphic Add Variant Button
+                  Container(
+                    decoration: AppDesignTokens.softSurface(
+                      colorScheme,
+                      isDark: isDark,
+                      borderRadius: BorderRadius.circular(10),
+                      compact: true,
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(10),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(10),
+                        onTap: controller.addNewVariant,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 7,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.add_rounded,
+                                size: 17,
+                                color: colorScheme.primary,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                'تنويع يدوي',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: colorScheme.primary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
+                ],
               ),
             ],
           ),
@@ -99,8 +182,17 @@ class ProductVariantManager extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'لا توجد تنويعات بعد. أضف واحداً لإدارة مخزون SKU.',
+                      'لا توجد تنويعات بعد.',
                       style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'حدّد الأحجام والنكهات أعلاه ثم اضغط "توليد المصفوفة تلقائياً" لإنشاء تركيبة SKUs بأسعار ومخزون منفصل لكل نكهة ووزن.',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodySmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
                     ),
@@ -129,6 +221,89 @@ class ProductVariantManager extends StatelessWidget {
                 );
               },
             ),
+        ],
+      ),
+    );
+  }
+
+  void _showBulkEditDialog(BuildContext context, ProductsController controller) {
+    final priceCtrl = TextEditingController();
+    final discountCtrl = TextEditingController();
+    final stockCtrl = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.tune_rounded, size: 20),
+            SizedBox(width: 8),
+            Text('تعديل جماعي للتنويعات'),
+          ],
+        ),
+        content: SizedBox(
+          width: 360,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'سيتم تطبيق القيم المدخلة أدناه على جميع التنويعات (${controller.variants.length} تنويع). اترك الحقل فارغاً إذا كنت لا ترغب بتغيير قيمته الحالية.',
+                style: const TextStyle(fontSize: 12),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: priceCtrl,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                decoration: const InputDecoration(
+                  labelText: 'السعر الموحد لجميع التنويعات',
+                  hintText: 'اتركه فارغاً للإبقاء على السعر الحالي',
+                  prefixIcon: Icon(Icons.price_change_outlined),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: discountCtrl,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                decoration: const InputDecoration(
+                  labelText: 'سعر الخصم الموحد',
+                  hintText: 'اختياري',
+                  prefixIcon: Icon(Icons.sell_outlined),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: stockCtrl,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'الكمية في المخزن لكل تنويع',
+                  hintText: 'مثال: 25',
+                  prefixIcon: Icon(Icons.inventory_2_outlined),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('إلغاء'),
+          ),
+          FilledButton(
+            onPressed: () {
+              final price = double.tryParse(priceCtrl.text.trim());
+              final discount = double.tryParse(discountCtrl.text.trim());
+              final stock = int.tryParse(stockCtrl.text.trim());
+
+              controller.bulkUpdateVariants(
+                price: price,
+                discountPrice: discount,
+                stockQuantity: stock,
+              );
+              Navigator.of(ctx).pop();
+            },
+            child: const Text('تطبيق التعديلات'),
+          ),
         ],
       ),
     );
