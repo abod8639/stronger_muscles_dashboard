@@ -25,8 +25,8 @@ class ProductsScreen extends ConsumerWidget {
   /// أقصى عرض للمحتوى على الشاشات العريضة حتى لا تتمدد البطاقات بشكل مبالغ
   static const double _maxContentWidth = 1400;
 
-  /// ارتفاع بطاقة المنتج في شبكة الحاسوب
-  static const double _gridCardExtent = 190;
+  /// ارتفاع بطاقة المنتج في شبكة الحاسوب (مريح لمنع أي تجاوز رأسي عند طول النصوص)
+  static const double _gridCardExtent = 215;
 
   Future<void> _refresh(WidgetRef ref) async {
     await Future.wait([
