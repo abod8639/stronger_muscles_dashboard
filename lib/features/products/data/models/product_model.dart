@@ -97,6 +97,13 @@ extension ProductSizeMetaExtension on ProductSize {
     meta['stockQuantity'] = value;
     _sizeMetaExpando[this] = meta;
   }
+
+  List<String>? get flavors => _sizeMetaExpando[this]?['flavors'] as List<String>?;
+  set flavors(List<String>? value) {
+    final meta = _sizeMetaExpando[this] ?? <String, dynamic>{};
+    meta['flavors'] = value;
+    _sizeMetaExpando[this] = meta;
+  }
 }
 
 @freezed
@@ -115,13 +122,18 @@ class ProductSize with _$ProductSize {
     final weight = (json['weight'] ?? json['serving_size'])?.toString();
     final stock = _parseIntNullable(
         json['stock_quantity'] ?? json['stockQuantity'] ?? json['stock']);
+    final flavors = (json['flavors'] as List<dynamic>?)
+        ?.map((e) => e.toString())
+        .toList();
     if (servings != null ||
         (weight != null && weight.isNotEmpty) ||
-        stock != null) {
+        stock != null ||
+        (flavors != null && flavors.isNotEmpty)) {
       final meta = <String, dynamic>{};
       if (servings != null) meta['servings'] = servings;
       if (weight != null && weight.isNotEmpty) meta['weight'] = weight;
       if (stock != null) meta['stockQuantity'] = stock;
+      if (flavors != null) meta['flavors'] = flavors;
       _sizeMetaExpando[size] = meta;
     }
     return size;
