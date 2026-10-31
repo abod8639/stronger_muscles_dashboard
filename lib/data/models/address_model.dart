@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:stronger_muscles_dashboard/features/orders/domain/entities/address_entity.dart';
 
 part 'address_model.freezed.dart';
