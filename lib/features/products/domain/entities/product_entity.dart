@@ -20,6 +20,11 @@ class ProductEntity {
   final List<ProductSizeEntity>? productSizes;
   final List<String>? flavors;
   final List<ProductVariantEntity>? variants;
+  final String? sku;
+  final List<String>? tags;
+  final Map<String, dynamic>? nutritionFacts;
+  final bool newArrival;
+  final bool bestSeller;
 
   String get displayName => nameAr;
 
@@ -43,6 +48,11 @@ class ProductEntity {
     this.productSizes,
     this.flavors,
     this.variants,
+    this.sku,
+    this.tags,
+    this.nutritionFacts,
+    this.newArrival = false,
+    this.bestSeller = false,
   });
 
   String getName(String lang) => lang == 'ar' ? nameAr : nameEn;
@@ -72,6 +82,11 @@ class ProductEntity {
     List<ProductSizeEntity>? productSizes,
     List<String>? flavors,
     List<ProductVariantEntity>? variants,
+    String? sku,
+    List<String>? tags,
+    Map<String, dynamic>? nutritionFacts,
+    bool? newArrival,
+    bool? bestSeller,
   }) {
     return ProductEntity(
       id: id ?? this.id,
@@ -93,6 +108,11 @@ class ProductEntity {
       productSizes: productSizes ?? this.productSizes,
       flavors: flavors ?? this.flavors,
       variants: variants ?? this.variants,
+      sku: sku ?? this.sku,
+      tags: tags ?? this.tags,
+      nutritionFacts: nutritionFacts ?? this.nutritionFacts,
+      newArrival: newArrival ?? this.newArrival,
+      bestSeller: bestSeller ?? this.bestSeller,
     );
   }
 
