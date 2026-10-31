@@ -49,6 +49,7 @@ class AppFeedback {
     String? title,
     Duration duration = const Duration(seconds: 4),
   }) {
+    debugPrint('❌ Error: $message');
     final messenger = rootScaffoldMessengerKey.currentState;
     if (messenger == null) return;
 
