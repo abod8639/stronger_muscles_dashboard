@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:dart_pusher_channels/dart_pusher_channels.dart';
 import 'package:flutter/foundation.dart';
 import '../models/support_message_model.dart';
@@ -60,34 +61,62 @@ class SupportRealtimeDataSourceImpl implements SupportRealtimeDataSource {
 
       // 1. Listen for new ticket creation
       final subCreate = _channel!.bind('SupportTicketCreated').listen((event) {
-        final map = event.tryGetDataAsMap();
-        if (map != null && map['ticket'] is Map) {
-          final ticketMap = Map<String, dynamic>.from(map['ticket'] as Map);
-          _ticketCreatedController.add(SupportTicketModel.fromJson(ticketMap));
+        try {
+          final map = _extractMap(event.tryGetDataAsMap()) ?? _extractMap(event.data);
+          if (map != null) {
+            final ticketMap = _extractMap(map['ticket']) ?? map;
+            if (ticketMap.containsKey('id')) {
+              _ticketCreatedController.add(SupportTicketModel.fromJson(ticketMap));
+            }
+          }
+        } catch (e, stack) {
+          debugPrint('[SupportRealtimeDataSource] Error processing SupportTicketCreated: $e\n$stack');
         }
       });
 
       // 2. Listen for ticket status/priority/assignment updates
       final subUpdate = _channel!.bind('SupportTicketUpdated').listen((event) {
-        final map = event.tryGetDataAsMap();
-        if (map != null && map['ticket'] is Map) {
-          final ticketMap = Map<String, dynamic>.from(map['ticket'] as Map);
-          _ticketUpdatedController.add(SupportTicketModel.fromJson(ticketMap));
+        try {
+          final map = _extractMap(event.tryGetDataAsMap()) ?? _extractMap(event.data);
+          if (map != null) {
+            final ticketMap = _extractMap(map['ticket']) ?? map;
+            if (ticketMap.containsKey('id')) {
+              _ticketUpdatedController.add(SupportTicketModel.fromJson(ticketMap));
+            }
+          }
+        } catch (e, stack) {
+          debugPrint('[SupportRealtimeDataSource] Error processing SupportTicketUpdated: $e\n$stack');
         }
       });
 
       // 3. Listen for incoming messages
       final subMessage = _channel!.bind('SupportMessageSent').listen((event) {
-        final map = event.tryGetDataAsMap();
-        if (map != null && map['message'] is Map) {
-          final ticketId = map['ticket_id'] is int
-              ? map['ticket_id'] as int
-              : int.tryParse(map['ticket_id']?.toString() ?? '0') ?? 0;
-          final msgMap = Map<String, dynamic>.from(map['message'] as Map);
-          _messageSentController.add((
-            ticketId,
-            SupportMessageModel.fromJson(msgMap),
-          ));
+        try {
+          final map = _extractMap(event.tryGetDataAsMap()) ?? _extractMap(event.data);
+          if (map == null) return;
+
+          int ticketId = 0;
+          if (map['ticket_id'] != null) {
+            ticketId = int.tryParse(map['ticket_id'].toString()) ?? 0;
+          }
+
+          Map<String, dynamic>? messageMap;
+          if (map.containsKey('message') && (map['message'] is Map || map['message'] is String)) {
+            messageMap = _extractMap(map['message']);
+          } else if (map.containsKey('id') && map.containsKey('message')) {
+            // The root object is the message itself
+            messageMap = map;
+          }
+
+          if (messageMap != null) {
+            if (ticketId == 0 && messageMap['ticket_id'] != null) {
+              ticketId = int.tryParse(messageMap['ticket_id'].toString()) ?? 0;
+            }
+            final messageModel = SupportMessageModel.fromJson(messageMap);
+            _messageSentController.add((ticketId, messageModel));
+          }
+        } catch (e, stack) {
+          debugPrint('[SupportRealtimeDataSource] Error processing SupportMessageSent: $e\n$stack');
         }
       });
 
@@ -115,6 +144,29 @@ class SupportRealtimeDataSourceImpl implements SupportRealtimeDataSource {
   @override
   Stream<(int ticketId, SupportMessageModel message)> get onMessageSent =>
       _messageSentController.stream;
+
+  /// Resilient helper to convert raw payload (Map or JSON string) into a pure Dart `Map<String, dynamic>`.
+  Map<String, dynamic>? _extractMap(dynamic rawData) {
+    if (rawData == null) return null;
+    if (rawData is Map) {
+      return Map<String, dynamic>.from(
+        rawData.map((k, v) => MapEntry(k.toString(), v)),
+      );
+    }
+    if (rawData is String && rawData.trim().isNotEmpty) {
+      try {
+        final decoded = jsonDecode(rawData);
+        if (decoded is Map) {
+          return Map<String, dynamic>.from(
+            decoded.map((k, v) => MapEntry(k.toString(), v)),
+          );
+        }
+      } catch (e) {
+        debugPrint('[SupportRealtimeDataSource] JSON decode error: $e');
+      }
+    }
+    return null;
+  }
 
   @override
   void disconnect() {
