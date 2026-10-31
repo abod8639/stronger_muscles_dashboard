@@ -65,6 +65,7 @@ class OrderDetailsController extends ChangeNotifier {
 
     result.fold(
       (failure) {
+        debugPrint('❌ Failed to update order status: ${failure.toMessage()}');
         AppFeedback.showError(failure.toMessage());
       },
       (updatedOrder) {
@@ -118,6 +119,7 @@ class OrderDetailsController extends ChangeNotifier {
   /// Launches phone dialer
   Future<void> callCustomer(String? phone) async {
     if (phone == null || phone.isEmpty) {
+      debugPrint('❌ Phone number is null or empty');
       AppFeedback.showError('رقم الهاتف غير متوفر');
       return;
     }
@@ -125,6 +127,8 @@ class OrderDetailsController extends ChangeNotifier {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
     } else {
+      debugPrint('❌ Failed to launch phone dialer');
+      
       AppFeedback.showError('تعذر فتح تطبيق الهاتف');
     }
   }
@@ -132,6 +136,7 @@ class OrderDetailsController extends ChangeNotifier {
   /// Sends email to customer
   Future<void> emailCustomer(String? email) async {
     if (email == null || email.isEmpty) {
+      debugPrint('❌ Email is null or empty');
       AppFeedback.showError('البريد الإلكتروني غير متوفر');
       return;
     }
