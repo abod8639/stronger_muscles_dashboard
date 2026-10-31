@@ -84,8 +84,23 @@ class ProductSizeSelector extends StatelessWidget {
                       final updatedList = List<ProductSizeEntity>.from(
                         selectedSizes,
                       );
+                      int? defaultServings;
+                      String? defaultWeight;
+                      if (sizeName.toLowerCase().contains('serving')) {
+                        defaultServings = int.tryParse(
+                          sizeName.replaceAll(RegExp(r'[^0-9]'), ''),
+                        );
+                      } else {
+                        defaultWeight = sizeName;
+                      }
+
                       updatedList.add(
-                        ProductSizeEntity(size: sizeName, price: defaultPrice),
+                        ProductSizeEntity(
+                          size: sizeName,
+                          price: defaultPrice,
+                          servings: defaultServings,
+                          weight: defaultWeight,
+                        ),
                       );
                       onSelectionChanged(updatedList);
                       onSelectSize(updatedList.length - 1);
@@ -183,9 +198,24 @@ class ProductSizeSelector extends StatelessWidget {
               final newSize = sizeController.text.trim();
               if (newSize.isNotEmpty &&
                   !selectedSizes.any((s) => s.size == newSize)) {
+                int? defaultServings;
+                String? defaultWeight;
+                if (newSize.toLowerCase().contains('serving')) {
+                  defaultServings = int.tryParse(
+                    newSize.replaceAll(RegExp(r'[^0-9]'), ''),
+                  );
+                } else {
+                  defaultWeight = newSize;
+                }
+
                 final updatedList = [
                   ...selectedSizes,
-                  ProductSizeEntity(size: newSize, price: defaultPrice),
+                  ProductSizeEntity(
+                    size: newSize,
+                    price: defaultPrice,
+                    servings: defaultServings,
+                    weight: defaultWeight,
+                  ),
                 ];
                 onSelectionChanged(updatedList);
                 onSelectSize(updatedList.length - 1);
