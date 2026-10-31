@@ -12,8 +12,7 @@ part of 'user_address.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 UserAddress _$UserAddressFromJson(Map<String, dynamic> json) {
   return _UserAddress.fromJson(json);
@@ -55,24 +54,22 @@ mixin _$UserAddress {
 /// @nodoc
 abstract class $UserAddressCopyWith<$Res> {
   factory $UserAddressCopyWith(
-    UserAddress value,
-    $Res Function(UserAddress) then,
-  ) = _$UserAddressCopyWithImpl<$Res, UserAddress>;
+          UserAddress value, $Res Function(UserAddress) then) =
+      _$UserAddressCopyWithImpl<$Res, UserAddress>;
   @useResult
-  $Res call({
-    @HiveField(0) String id,
-    @HiveField(1) String label,
-    @HiveField(2) String fullName,
-    @HiveField(3) String phone,
-    @HiveField(4) String street,
-    @HiveField(5) String city,
-    @HiveField(6) String state,
-    @HiveField(7) String postalCode,
-    @HiveField(8) String country,
-    @HiveField(9) bool isDefault,
-    @HiveField(10) double? latitude,
-    @HiveField(11) double? longitude,
-  });
+  $Res call(
+      {@HiveField(0) String id,
+      @HiveField(1) String label,
+      @HiveField(2) String fullName,
+      @HiveField(3) String phone,
+      @HiveField(4) String street,
+      @HiveField(5) String city,
+      @HiveField(6) String state,
+      @HiveField(7) String postalCode,
+      @HiveField(8) String country,
+      @HiveField(9) bool isDefault,
+      @HiveField(10) double? latitude,
+      @HiveField(11) double? longitude});
 }
 
 /// @nodoc
@@ -101,59 +98,56 @@ class _$UserAddressCopyWithImpl<$Res, $Val extends UserAddress>
     Object? latitude = freezed,
     Object? longitude = freezed,
   }) {
-    return _then(
-      _value.copyWith(
-            id: null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as String,
-            label: null == label
-                ? _value.label
-                : label // ignore: cast_nullable_to_non_nullable
-                      as String,
-            fullName: null == fullName
-                ? _value.fullName
-                : fullName // ignore: cast_nullable_to_non_nullable
-                      as String,
-            phone: null == phone
-                ? _value.phone
-                : phone // ignore: cast_nullable_to_non_nullable
-                      as String,
-            street: null == street
-                ? _value.street
-                : street // ignore: cast_nullable_to_non_nullable
-                      as String,
-            city: null == city
-                ? _value.city
-                : city // ignore: cast_nullable_to_non_nullable
-                      as String,
-            state: null == state
-                ? _value.state
-                : state // ignore: cast_nullable_to_non_nullable
-                      as String,
-            postalCode: null == postalCode
-                ? _value.postalCode
-                : postalCode // ignore: cast_nullable_to_non_nullable
-                      as String,
-            country: null == country
-                ? _value.country
-                : country // ignore: cast_nullable_to_non_nullable
-                      as String,
-            isDefault: null == isDefault
-                ? _value.isDefault
-                : isDefault // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            latitude: freezed == latitude
-                ? _value.latitude
-                : latitude // ignore: cast_nullable_to_non_nullable
-                      as double?,
-            longitude: freezed == longitude
-                ? _value.longitude
-                : longitude // ignore: cast_nullable_to_non_nullable
-                      as double?,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      label: null == label
+          ? _value.label
+          : label // ignore: cast_nullable_to_non_nullable
+              as String,
+      fullName: null == fullName
+          ? _value.fullName
+          : fullName // ignore: cast_nullable_to_non_nullable
+              as String,
+      phone: null == phone
+          ? _value.phone
+          : phone // ignore: cast_nullable_to_non_nullable
+              as String,
+      street: null == street
+          ? _value.street
+          : street // ignore: cast_nullable_to_non_nullable
+              as String,
+      city: null == city
+          ? _value.city
+          : city // ignore: cast_nullable_to_non_nullable
+              as String,
+      state: null == state
+          ? _value.state
+          : state // ignore: cast_nullable_to_non_nullable
+              as String,
+      postalCode: null == postalCode
+          ? _value.postalCode
+          : postalCode // ignore: cast_nullable_to_non_nullable
+              as String,
+      country: null == country
+          ? _value.country
+          : country // ignore: cast_nullable_to_non_nullable
+              as String,
+      isDefault: null == isDefault
+          ? _value.isDefault
+          : isDefault // ignore: cast_nullable_to_non_nullable
+              as bool,
+      latitude: freezed == latitude
+          ? _value.latitude
+          : latitude // ignore: cast_nullable_to_non_nullable
+              as double?,
+      longitude: freezed == longitude
+          ? _value.longitude
+          : longitude // ignore: cast_nullable_to_non_nullable
+              as double?,
+    ) as $Val);
   }
 }
 
@@ -161,25 +155,23 @@ class _$UserAddressCopyWithImpl<$Res, $Val extends UserAddress>
 abstract class _$$UserAddressImplCopyWith<$Res>
     implements $UserAddressCopyWith<$Res> {
   factory _$$UserAddressImplCopyWith(
-    _$UserAddressImpl value,
-    $Res Function(_$UserAddressImpl) then,
-  ) = __$$UserAddressImplCopyWithImpl<$Res>;
+          _$UserAddressImpl value, $Res Function(_$UserAddressImpl) then) =
+      __$$UserAddressImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    @HiveField(0) String id,
-    @HiveField(1) String label,
-    @HiveField(2) String fullName,
-    @HiveField(3) String phone,
-    @HiveField(4) String street,
-    @HiveField(5) String city,
-    @HiveField(6) String state,
-    @HiveField(7) String postalCode,
-    @HiveField(8) String country,
-    @HiveField(9) bool isDefault,
-    @HiveField(10) double? latitude,
-    @HiveField(11) double? longitude,
-  });
+  $Res call(
+      {@HiveField(0) String id,
+      @HiveField(1) String label,
+      @HiveField(2) String fullName,
+      @HiveField(3) String phone,
+      @HiveField(4) String street,
+      @HiveField(5) String city,
+      @HiveField(6) String state,
+      @HiveField(7) String postalCode,
+      @HiveField(8) String country,
+      @HiveField(9) bool isDefault,
+      @HiveField(10) double? latitude,
+      @HiveField(11) double? longitude});
 }
 
 /// @nodoc
@@ -187,9 +179,8 @@ class __$$UserAddressImplCopyWithImpl<$Res>
     extends _$UserAddressCopyWithImpl<$Res, _$UserAddressImpl>
     implements _$$UserAddressImplCopyWith<$Res> {
   __$$UserAddressImplCopyWithImpl(
-    _$UserAddressImpl _value,
-    $Res Function(_$UserAddressImpl) _then,
-  ) : super(_value, _then);
+      _$UserAddressImpl _value, $Res Function(_$UserAddressImpl) _then)
+      : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -207,78 +198,76 @@ class __$$UserAddressImplCopyWithImpl<$Res>
     Object? latitude = freezed,
     Object? longitude = freezed,
   }) {
-    return _then(
-      _$UserAddressImpl(
-        id: null == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as String,
-        label: null == label
-            ? _value.label
-            : label // ignore: cast_nullable_to_non_nullable
-                  as String,
-        fullName: null == fullName
-            ? _value.fullName
-            : fullName // ignore: cast_nullable_to_non_nullable
-                  as String,
-        phone: null == phone
-            ? _value.phone
-            : phone // ignore: cast_nullable_to_non_nullable
-                  as String,
-        street: null == street
-            ? _value.street
-            : street // ignore: cast_nullable_to_non_nullable
-                  as String,
-        city: null == city
-            ? _value.city
-            : city // ignore: cast_nullable_to_non_nullable
-                  as String,
-        state: null == state
-            ? _value.state
-            : state // ignore: cast_nullable_to_non_nullable
-                  as String,
-        postalCode: null == postalCode
-            ? _value.postalCode
-            : postalCode // ignore: cast_nullable_to_non_nullable
-                  as String,
-        country: null == country
-            ? _value.country
-            : country // ignore: cast_nullable_to_non_nullable
-                  as String,
-        isDefault: null == isDefault
-            ? _value.isDefault
-            : isDefault // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        latitude: freezed == latitude
-            ? _value.latitude
-            : latitude // ignore: cast_nullable_to_non_nullable
-                  as double?,
-        longitude: freezed == longitude
-            ? _value.longitude
-            : longitude // ignore: cast_nullable_to_non_nullable
-                  as double?,
-      ),
-    );
+    return _then(_$UserAddressImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      label: null == label
+          ? _value.label
+          : label // ignore: cast_nullable_to_non_nullable
+              as String,
+      fullName: null == fullName
+          ? _value.fullName
+          : fullName // ignore: cast_nullable_to_non_nullable
+              as String,
+      phone: null == phone
+          ? _value.phone
+          : phone // ignore: cast_nullable_to_non_nullable
+              as String,
+      street: null == street
+          ? _value.street
+          : street // ignore: cast_nullable_to_non_nullable
+              as String,
+      city: null == city
+          ? _value.city
+          : city // ignore: cast_nullable_to_non_nullable
+              as String,
+      state: null == state
+          ? _value.state
+          : state // ignore: cast_nullable_to_non_nullable
+              as String,
+      postalCode: null == postalCode
+          ? _value.postalCode
+          : postalCode // ignore: cast_nullable_to_non_nullable
+              as String,
+      country: null == country
+          ? _value.country
+          : country // ignore: cast_nullable_to_non_nullable
+              as String,
+      isDefault: null == isDefault
+          ? _value.isDefault
+          : isDefault // ignore: cast_nullable_to_non_nullable
+              as bool,
+      latitude: freezed == latitude
+          ? _value.latitude
+          : latitude // ignore: cast_nullable_to_non_nullable
+              as double?,
+      longitude: freezed == longitude
+          ? _value.longitude
+          : longitude // ignore: cast_nullable_to_non_nullable
+              as double?,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$UserAddressImpl extends _UserAddress {
-  const _$UserAddressImpl({
-    @HiveField(0) required this.id,
-    @HiveField(1) this.label = '',
-    @HiveField(2) this.fullName = '',
-    @HiveField(3) this.phone = '',
-    @HiveField(4) this.street = '',
-    @HiveField(5) this.city = '',
-    @HiveField(6) this.state = '',
-    @HiveField(7) this.postalCode = '',
-    @HiveField(8) this.country = '',
-    @HiveField(9) this.isDefault = false,
-    @HiveField(10) this.latitude,
-    @HiveField(11) this.longitude,
-  }) : super._();
+  const _$UserAddressImpl(
+      {@HiveField(0) required this.id,
+      @HiveField(1) this.label = '',
+      @HiveField(2) this.fullName = '',
+      @HiveField(3) this.phone = '',
+      @HiveField(4) this.street = '',
+      @HiveField(5) this.city = '',
+      @HiveField(6) this.state = '',
+      @HiveField(7) this.postalCode = '',
+      @HiveField(8) this.country = '',
+      @HiveField(9) this.isDefault = false,
+      @HiveField(10) this.latitude,
+      @HiveField(11) this.longitude})
+      : super._();
 
   factory _$UserAddressImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserAddressImplFromJson(json);
@@ -360,21 +349,8 @@ class _$UserAddressImpl extends _UserAddress {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    id,
-    label,
-    fullName,
-    phone,
-    street,
-    city,
-    state,
-    postalCode,
-    country,
-    isDefault,
-    latitude,
-    longitude,
-  );
+  int get hashCode => Object.hash(runtimeType, id, label, fullName, phone,
+      street, city, state, postalCode, country, isDefault, latitude, longitude);
 
   @JsonKey(ignore: true)
   @override
@@ -384,25 +360,26 @@ class _$UserAddressImpl extends _UserAddress {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$UserAddressImplToJson(this);
+    return _$$UserAddressImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _UserAddress extends UserAddress {
-  const factory _UserAddress({
-    @HiveField(0) required final String id,
-    @HiveField(1) final String label,
-    @HiveField(2) final String fullName,
-    @HiveField(3) final String phone,
-    @HiveField(4) final String street,
-    @HiveField(5) final String city,
-    @HiveField(6) final String state,
-    @HiveField(7) final String postalCode,
-    @HiveField(8) final String country,
-    @HiveField(9) final bool isDefault,
-    @HiveField(10) final double? latitude,
-    @HiveField(11) final double? longitude,
-  }) = _$UserAddressImpl;
+  const factory _UserAddress(
+      {@HiveField(0) required final String id,
+      @HiveField(1) final String label,
+      @HiveField(2) final String fullName,
+      @HiveField(3) final String phone,
+      @HiveField(4) final String street,
+      @HiveField(5) final String city,
+      @HiveField(6) final String state,
+      @HiveField(7) final String postalCode,
+      @HiveField(8) final String country,
+      @HiveField(9) final bool isDefault,
+      @HiveField(10) final double? latitude,
+      @HiveField(11) final double? longitude}) = _$UserAddressImpl;
   const _UserAddress._() : super._();
 
   factory _UserAddress.fromJson(Map<String, dynamic> json) =
