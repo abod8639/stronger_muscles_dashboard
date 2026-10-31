@@ -429,7 +429,59 @@ class ProductPricingStockSection extends ConsumerWidget {
                 ],
               ),
 
-              if (hasSizes) ...[
+              if (controller.variants.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colorScheme.secondaryContainer.withValues(
+                      alpha: isDark ? 0.2 : 0.35,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: colorScheme.secondary.withValues(alpha: 0.25),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.qr_code_2_rounded,
+                        color: colorScheme.secondary,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          'مجموع مخزون مصفوفة التنويعات (SKUs): ${controller.totalVariantsStock} قطعة.',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurface,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      TextButton.icon(
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                        onPressed: () {
+                          controller.textcontrollers['stock']?.text =
+                              controller.totalVariantsStock.toString();
+                          controller.notifySizeStockChanged();
+                        },
+                        icon: const Icon(Icons.refresh_rounded, size: 16),
+                        label: const Text('تطبيق مجموع الـ SKUs'),
+                      ),
+                    ],
+                  ),
+                ),
+              ] else if (hasSizes) ...[
                 const SizedBox(height: 12),
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -482,6 +534,137 @@ class ProductPricingStockSection extends ConsumerWidget {
                   ),
                 ),
               ],
+
+              // قسم القيم والحقائق الغذائية للمكملات (Nutrition Facts)
+              const SizedBox(height: 24),
+              Divider(
+                color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Icon(
+                    Icons.fact_check_outlined,
+                    size: 20,
+                    color: colorScheme.primary,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'الحقائق والقيم الغذائية للحصة (Nutrition Facts)',
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'القيم الغذائية لكل حصة من المكمل الرياضي (تظهر للعملاء في بطاقة تفاصيل المنتج)',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 14),
+
+              // صف السعرات والبروتين والكارب
+              Row(
+                children: [
+                  Expanded(
+                    child: ModernTextField(
+                      controller: controller.textcontrollers['calories']!,
+                      label: 'السعرات (Calories)',
+                      hint: 'مثال: 120 kcal',
+                      icon: Icons.local_fire_department_outlined,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ModernTextField(
+                      controller: controller.textcontrollers['protein']!,
+                      label: 'البروتين (Protein)',
+                      hint: 'مثال: 24g',
+                      icon: Icons.fitness_center_rounded,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ModernTextField(
+                      controller: controller.textcontrollers['carbs']!,
+                      label: 'الكربوهيدرات (Carbs)',
+                      hint: 'مثال: 3g',
+                      icon: Icons.grain_rounded,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              // صف الدهون والسكريات
+              Row(
+                children: [
+                  Expanded(
+                    child: ModernTextField(
+                      controller: controller.textcontrollers['fat']!,
+                      label: 'الدهون (Total Fat)',
+                      hint: 'مثال: 1.5g',
+                      icon: Icons.opacity_rounded,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ModernTextField(
+                      controller: controller.textcontrollers['sugar']!,
+                      label: 'السكريات (Sugar)',
+                      hint: 'مثال: 1g',
+                      icon: Icons.cookie_outlined,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              // مسببات الحساسية (Allergens)
+              Text(
+                'مسببات الحساسية (Allergen Warnings):',
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final allergen in const [
+                    'حليب (Milk)',
+                    'صويا (Soy)',
+                    'مكسرات (Tree Nuts)',
+                    'بيض (Eggs)',
+                    'جلوتين (Gluten)',
+                    'فول سوداني (Peanuts)',
+                    'سمك (Fish)',
+                  ])
+                    FilterChip(
+                      selected: controller.allergens.contains(allergen),
+                      label: Text(allergen),
+                      onSelected: (_) => controller.toggleAllergen(allergen),
+                      selectedColor: colorScheme.errorContainer.withValues(
+                        alpha: 0.5,
+                      ),
+                      checkmarkColor: colorScheme.error,
+                      labelStyle: TextStyle(
+                        fontSize: 12,
+                        fontWeight: controller.allergens.contains(allergen)
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                        color: controller.allergens.contains(allergen)
+                            ? colorScheme.error
+                            : colorScheme.onSurface,
+                      ),
+                    ),
+                ],
+              ),
             ],
           );
         },
