@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:stronger_muscles_dashboard/features/products/data/models/product_model.dart';
 import '../../domain/entities/category_entity.dart';
 
