@@ -498,7 +498,14 @@ class _VariantItemEditorState extends ConsumerState<_VariantItemEditor> {
         );
       },
       itemBuilder: (context) => options
-          .map((opt) => PopupMenuItem(value: opt, child: Text(opt)))
+          .map((opt) {
+            final displayName =
+                opt.contains('|') ? opt.split('|').first.trim() : opt;
+            return PopupMenuItem(
+              value: displayName,
+              child: Text(displayName),
+            );
+          })
           .toList(),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
