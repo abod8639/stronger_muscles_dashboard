@@ -19,41 +19,62 @@ class ProductVariantsSection extends StatelessWidget {
       icon: Icons.tune_rounded,
       child: ListenableBuilder(
         listenable: controller,
-        builder: (context, _) => Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Sizes Selector
-            ProductSizeSelector(
-              selectedSizes: controller.productSizes.toList(),
-              selectedIndex: controller.selectedSizeIndex,
-              onSelectSize: controller.selectSize,
-              defaultPrice:
-                  double.tryParse(
-                    controller.textcontrollers['price']?.text ?? '0',
-                  ) ??
-                  0.0,
-              onSelectionChanged: (newList) {
-                controller.productSizes
-                  ..clear()
-                  ..addAll(newList);
-                controller.syncSizeControllers();
-              },
-            ),
-            const SizedBox(height: 18),
+        builder: (context, _) {
+          final hasSizes = controller.productSizes.isNotEmpty;
+          final currentSize = (hasSizes &&
+                  controller.selectedSizeIndex >= 0 &&
+                  controller.selectedSizeIndex < controller.productSizes.length)
+              ? controller.productSizes[controller.selectedSizeIndex]
+              : null;
 
-            // Flavors Selector
-            ProductFlavorSelector(
-              selectedFlavors: controller.productFlavors.toList(),
-              onSelectionChanged: (newList) {
-                controller.updateProductFlavors(newList);
-              },
-            ),
-            const SizedBox(height: 20),
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Sizes Selector
+              ProductSizeSelector(
+                selectedSizes: controller.productSizes.toList(),
+                selectedIndex: controller.selectedSizeIndex,
+                onSelectSize: controller.selectSize,
+                defaultPrice: double.tryParse(
+                      controller.textcontrollers['price']?.text ?? '0',
+                    ) ??
+                    0.0,
+                availableFlavors: controller.productFlavors.toList(),
+                onSelectionChanged: (newList) {
+                  controller.productSizes
+                    ..clear()
+                    ..addAll(newList);
+                  controller.syncSizeControllers();
+                },
+              ),
+              const SizedBox(height: 18),
 
-            // SKU Variants Manager
-            ProductVariantManager(controller: controller),
-          ],
-        ),
+              // Flavors Selector (يتزامن مع الحجم المختار لتخصيص نكهات كل حجم)
+              ProductFlavorSelector(
+                activeSizeName: currentSize?.size,
+                selectedFlavors: currentSize != null
+                    ? (currentSize.flavors ?? [])
+                    : controller.productFlavors.toList(),
+                onSelectionChanged: (newList) {
+                  if (currentSize != null) {
+                    controller.updateSizeFlavors(currentSize.size, newList);
+                  } else {
+                    controller.updateProductFlavors(newList);
+                  }
+                },
+                onApplyToAllSizes: currentSize != null
+                    ? () => controller.applyFlavorsToAllSizes(
+                          currentSize.flavors ?? [],
+                        )
+                    : null,
+              ),
+              const SizedBox(height: 20),
+
+              // SKU Variants Manager
+              ProductVariantManager(controller: controller),
+            ],
+          );
+        },
       ),
     );
   }
