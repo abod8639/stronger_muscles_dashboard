@@ -11,6 +11,32 @@ class SupportChatView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen(supportChatControllerProvider.select((s) => s.ticket), (
+      previous,
+      next,
+    ) {
+      if (previous != null && next == null) {
+        // Ticket was deleted
+        Future.microtask(() {
+          ref.read(supportControllerProvider.notifier).setSelectedTicket(null);
+          ref
+              .read(supportControllerProvider.notifier)
+              .fetchTickets(showLoading: false);
+        });
+      } else if (next != null &&
+          previous != null &&
+          (previous.status != next.status ||
+              previous.priority != next.priority ||
+              previous.assignedAdminId != next.assignedAdminId)) {
+        // Ticket metadata changed in chat view -> refresh tickets list silently
+        Future.microtask(() {
+          ref
+              .read(supportControllerProvider.notifier)
+              .fetchTickets(showLoading: false);
+        });
+      }
+    });
+
     final ticket = ref.watch(
       supportControllerProvider.select((s) => s.selectedTicket),
     );
@@ -18,6 +44,7 @@ class SupportChatView extends ConsumerWidget {
     return SupportChatPage(
       key: ValueKey('embedded_support_chat_${ticket?.id}'),
       ticketId: ticket?.id,
+      initialTicket: ticket?.toChatTicket(),
       isEmbedded: true,
       onBack: () =>
           ref.read(supportControllerProvider.notifier).setSelectedTicket(null),
