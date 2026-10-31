@@ -15,6 +15,9 @@ export 'domain/usecases/update_support_chat_priority_usecase.dart';
 export 'domain/usecases/assign_support_chat_admin_usecase.dart';
 export 'domain/usecases/delete_support_chat_ticket_usecase.dart';
 
+// Mappers & Bridges
+export 'data/mappers/support_chat_entity_bridge.dart';
+
 // Presentation Controllers & State
 export 'presentation/controllers/support_chat_state.dart';
 export 'presentation/controllers/support_chat_controller.dart';
