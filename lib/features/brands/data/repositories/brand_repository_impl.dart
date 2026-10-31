@@ -83,4 +83,33 @@ class BrandRepositoryImpl implements BrandRepository {
       return Left(failure);
     }
   }
+
+  @override
+  Future<Either<Failure, BrandEntity>> createBrand(
+    Map<String, dynamic> brandData,
+  ) async {
+    try {
+      final model = await _remoteDataSource.createBrand(brandData);
+
+      // Optimistically update local Hive cache
+      try {
+        final cachedModels = await _localDataSource.getCachedBrands();
+        final updatedList = [
+          model,
+          ...cachedModels.where((b) => b.id != model.id),
+        ];
+        await _localDataSource.cacheBrands(updatedList);
+      } catch (_) {
+        // Fallback: clear cache to ensure subsequent reads fetch from server
+        try {
+          await _localDataSource.clearCache();
+        } catch (_) {}
+      }
+
+      return Right(model.toEntity());
+    } catch (e, stackTrace) {
+      final failure = NetworkErrorHandler.handleException(e, stackTrace);
+      return Left(failure);
+    }
+  }
 }
