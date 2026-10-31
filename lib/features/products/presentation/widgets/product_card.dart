@@ -213,7 +213,12 @@ class _FlavorTags extends StatelessWidget {
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         for (final flavor in flavors.take(limit))
-          InfoPill(label: flavor.toUpperCase()),
+          InfoPill(
+            label: (flavor.contains('|')
+                    ? flavor.split('|').first.trim()
+                    : flavor)
+                .toUpperCase(),
+          ),
         if (flavors.length > limit)
           Text(
             '+${flavors.length - limit}',
