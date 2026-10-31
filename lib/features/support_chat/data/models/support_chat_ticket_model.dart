@@ -14,6 +14,9 @@ class SupportChatTicketModel {
   final String category;
   final String priority;
   final String status;
+  final String? orderId;
+  final String? orderNumber;
+  final double? orderTotal;
   final int? adminId;
   final String? adminName;
   final int messagesCount;
@@ -34,6 +37,9 @@ class SupportChatTicketModel {
     required this.category,
     this.priority = 'normal',
     this.status = 'open',
+    this.orderId,
+    this.orderNumber,
+    this.orderTotal,
     this.adminId,
     this.adminName,
     this.messagesCount = 0,
@@ -63,14 +69,20 @@ class SupportChatTicketModel {
       adminName = adminMap['name']?.toString();
     }
 
+    String? orderNumber;
+    double? orderTotal;
+    if (json['order'] is Map) {
+      final orderMap = json['order'] as Map;
+      orderNumber = orderMap['order_number']?.toString();
+      if (orderMap['total_amount'] != null) {
+        orderTotal = (orderMap['total_amount'] as num).toDouble();
+      }
+    }
+
     List<SupportChatMessageModel> msgs = [];
     if (json['messages'] is List) {
       msgs = (json['messages'] as List)
-          .whereType<Map>()
-          .map(
-            (m) =>
-                SupportChatMessageModel.fromJson(Map<String, dynamic>.from(m)),
-          )
+          .map((m) => SupportChatMessageModel.fromJson(m))
           .toList();
     }
 
@@ -90,6 +102,9 @@ class SupportChatTicketModel {
       category: json['category']?.toString() ?? 'general',
       priority: json['priority']?.toString() ?? 'normal',
       status: json['status']?.toString() ?? 'open',
+      orderId: json['order_id']?.toString(),
+      orderNumber: orderNumber,
+      orderTotal: orderTotal,
       adminId: json['admin_id'] is int
           ? json['admin_id'] as int
           : int.tryParse(json['admin_id']?.toString() ?? ''),
@@ -138,6 +153,9 @@ class SupportChatTicketModel {
       category: category,
       priority: priority,
       status: status,
+      orderId: orderId,
+      orderNumber: orderNumber,
+      orderTotal: orderTotal,
       assignedAdminId: adminId,
       assignedAdminName: adminName,
       messagesCount: messagesCount,
