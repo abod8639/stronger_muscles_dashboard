@@ -220,6 +220,7 @@ class ProductVariantEntity {
   final int stockQuantity;
   final Map<String, dynamic> attributes;
   final bool isActive;
+  final String? barcode;
 
   const ProductVariantEntity({
     required this.id,
@@ -230,6 +231,7 @@ class ProductVariantEntity {
     required this.stockQuantity,
     required this.attributes,
     required this.isActive,
+    this.barcode,
   });
 
   ProductVariantEntity copyWith({
@@ -241,6 +243,7 @@ class ProductVariantEntity {
     int? stockQuantity,
     Map<String, dynamic>? attributes,
     bool? isActive,
+    String? barcode,
   }) {
     return ProductVariantEntity(
       id: id ?? this.id,
@@ -251,6 +254,7 @@ class ProductVariantEntity {
       stockQuantity: stockQuantity ?? this.stockQuantity,
       attributes: attributes ?? this.attributes,
       isActive: isActive ?? this.isActive,
+      barcode: barcode ?? this.barcode,
     );
   }
 
