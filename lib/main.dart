@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get_storage/get_storage.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:stronger_muscles_dashboard/core/storage/app_storage.dart';
 import 'package:stronger_muscles_dashboard/core/router/app_router.dart';
 import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
 import 'package:stronger_muscles_dashboard/functions/hive_init.dart';
@@ -11,9 +10,12 @@ import 'package:stronger_muscles_dashboard/features/theme/theme_feature.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Hive.initFlutter();
-  await GetStorage.init();
-  await hiveInit();
+  try {
+    await GetStorage.init();
+    await hiveInit();
+  } catch (e, stack) {
+    debugPrint('⚠️ Storage/Hive initialization error: $e\n$stack');
+  }
 
   runApp(const ProviderScope(child: StrongerMusclesDashboard()));
 }
