@@ -13,4 +13,9 @@ abstract class BrandRepository {
 
   /// Fetches a single brand by its unique identifier.
   Future<Either<Failure, BrandEntity>> getBrandById(String id);
+
+  /// Creates a new brand in the database and updates local cache.
+  Future<Either<Failure, BrandEntity>> createBrand(
+    Map<String, dynamic> brandData,
+  );
 }
