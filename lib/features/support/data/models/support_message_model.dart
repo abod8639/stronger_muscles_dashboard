@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 /// Isolated Data Transfer Object (DTO) for support messages.
 /// Strictly decoupled from Domain Entities with serialization / deserialization support.
 class SupportMessageModel {
@@ -25,12 +27,46 @@ class SupportMessageModel {
     required this.createdAt,
   });
 
-  factory SupportMessageModel.fromJson(Map<String, dynamic> json) {
+  factory SupportMessageModel.fromJson(dynamic rawJson) {
+    Map<String, dynamic> json;
+    if (rawJson is Map) {
+      json = Map<String, dynamic>.from(
+        rawJson.map((k, v) => MapEntry(k.toString(), v)),
+      );
+    } else if (rawJson is String) {
+      try {
+        final decoded = jsonDecode(rawJson);
+        if (decoded is Map) {
+          json = Map<String, dynamic>.from(
+            decoded.map((k, v) => MapEntry(k.toString(), v)),
+          );
+        } else {
+          json = <String, dynamic>{};
+        }
+      } catch (_) {
+        json = <String, dynamic>{};
+      }
+    } else {
+      json = <String, dynamic>{};
+    }
+
     List<String> parsedAttachments = [];
-    if (json['attachments'] is List) {
-      parsedAttachments = (json['attachments'] as List)
-          .map((e) => e.toString())
+    final rawAttachments = json['attachments'];
+    if (rawAttachments is List) {
+      parsedAttachments = rawAttachments
+          .map((e) => e?.toString() ?? '')
+          .where((e) => e.isNotEmpty)
           .toList();
+    } else if (rawAttachments is String && rawAttachments.isNotEmpty) {
+      try {
+        final decoded = jsonDecode(rawAttachments);
+        if (decoded is List) {
+          parsedAttachments = decoded
+              .map((e) => e?.toString() ?? '')
+              .where((e) => e.isNotEmpty)
+              .toList();
+        }
+      } catch (_) {}
     }
 
     return SupportMessageModel(
@@ -39,13 +75,13 @@ class SupportMessageModel {
           : int.tryParse(json['id']?.toString() ?? '0') ?? 0,
       ticketId: json['ticket_id'] is int
           ? json['ticket_id'] as int
-          : int.tryParse(json['ticket_id']?.toString() ?? '0') ?? 0,
-      senderType: json['sender_type']?.toString() ?? 'user',
+          : int.tryParse(json['ticket_id']?.toString() ?? json['ticketId']?.toString() ?? '0') ?? 0,
+      senderType: (json['sender_type'] ?? json['senderType'] ?? 'user').toString(),
       senderId: json['sender_id'] is int
           ? json['sender_id'] as int
-          : int.tryParse(json['sender_id']?.toString() ?? ''),
-      senderName: json['sender_name']?.toString() ?? 'مستخدم',
-      message: json['message']?.toString() ?? '',
+          : int.tryParse(json['sender_id']?.toString() ?? json['senderId']?.toString() ?? ''),
+      senderName: (json['sender_name'] ?? json['senderName'] ?? 'مستخدم').toString(),
+      message: (json['message'] ?? '').toString(),
       attachments: parsedAttachments,
       isInternalNote:
           json['is_internal_note'] == true ||
@@ -57,7 +93,9 @@ class SupportMessageModel {
           json['is_read']?.toString() == 'true',
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'].toString()) ?? DateTime.now()
-          : DateTime.now(),
+          : (json['createdAt'] != null
+              ? DateTime.tryParse(json['createdAt'].toString()) ?? DateTime.now()
+              : DateTime.now()),
     );
   }
 
