@@ -102,18 +102,34 @@ class ProductsController extends ChangeNotifier {
   int get selectedCount => selectedProductIds.length;
 
   // Form specific state
+  bool _isFormDirty = false;
+  bool get isFormDirty => _isFormDirty;
+
+  void markFormDirty() {
+    if (!_isFormDirty) {
+      _isFormDirty = true;
+      notifyListeners();
+    }
+  }
+
+  void resetFormDirty() {
+    _isFormDirty = false;
+  }
+
   final List<ProductSizeEntity> productSizes = [];
   final List<String> productFlavors = [];
   final List<String> imageUrls = [];
 
   void addImageUrl(String url) {
     imageUrls.add(url);
+    _isFormDirty = true;
     notifyListeners();
   }
 
   void removeImageUrl(int index) {
     if (index >= 0 && index < imageUrls.length) {
       imageUrls.removeAt(index);
+      _isFormDirty = true;
       notifyListeners();
     }
   }
@@ -122,6 +138,7 @@ class ProductsController extends ChangeNotifier {
     if (oldIndex >= 0 && oldIndex < imageUrls.length) {
       final item = imageUrls.removeAt(oldIndex);
       imageUrls.insert(newIndex, item);
+      _isFormDirty = true;
       notifyListeners();
     }
   }
@@ -130,6 +147,7 @@ class ProductsController extends ChangeNotifier {
     productFlavors
       ..clear()
       ..addAll(newFlavors);
+    _isFormDirty = true;
     notifyListeners();
   }
 
@@ -427,6 +445,7 @@ class ProductsController extends ChangeNotifier {
   }
 
   void initForForm({ProductEntity? product}) {
+    _isFormDirty = false;
     imageUrls.clear();
     productSizes.clear();
     productFlavors.clear();
@@ -525,6 +544,7 @@ class ProductsController extends ChangeNotifier {
 
   /// تنظيف وتفريغ كافة متحكمات النموذج والذاكرة بالكامل لمنع تسريب الموارد
   void clearForm() {
+    _isFormDirty = false;
     clearSizeControllers();
     for (var c in textcontrollers.values) {
       c.clear();
@@ -639,7 +659,7 @@ class ProductsController extends ChangeNotifier {
     return productFlavors;
   }
 
-  void syncSizeControllers() {
+  void syncSizeControllers({bool notify = true}) {
     for (var ps in productSizes) {
       sizePriceControllers.putIfAbsent(
         ps.size,
@@ -662,7 +682,9 @@ class ProductsController extends ChangeNotifier {
         () => TextEditingController(text: ps.stockQuantity?.toString() ?? ''),
       );
     }
-    notifyListeners();
+    if (notify) {
+      notifyListeners();
+    }
   }
 
   void clearSizeControllers() {
@@ -701,7 +723,29 @@ class ProductsController extends ChangeNotifier {
       isActive: true,
     );
     variants.add(newVariant);
+    _isFormDirty = true;
     notifyListeners();
+  }
+
+  /// تنظيف وتجهيز رمز SKU ليتوافق مع معايير الليزر والباركود الدولية
+  static String _slugifySku(String input) {
+    final clean = input.trim().replaceAll(RegExp(r'\s+'), '-');
+    final hasNonAscii = clean.codeUnits.any((code) => code > 127);
+    if (!hasNonAscii) {
+      return clean.replaceAll(RegExp(r'[^A-Za-z0-9\-_]'), '').toUpperCase();
+    }
+    final lower = clean.toLowerCase();
+    if (lower.contains('شوكولات') || lower.contains('شكولات')) return 'CHOCO';
+    if (lower.contains('فانيلي') || lower.contains('فانيلا')) return 'VANILLA';
+    if (lower.contains('فراول')) return 'STRAWBERRY';
+    if (lower.contains('موز')) return 'BANANA';
+    if (lower.contains('كراميل')) return 'CARAMEL';
+    if (lower.contains('كوكيز') || lower.contains('بسكويت')) return 'COOKIES';
+    if (lower.contains('قهو') || lower.contains('كافيه')) return 'COFFEE';
+    if (lower.contains('بدون نكه')) return 'UNFLAVORED';
+
+    final hash = (clean.hashCode.abs() % 10000).toString().padLeft(4, '0');
+    return 'OPT-$hash';
   }
 
   /// يولد مصفوفة التنويعات (SKU Matrix) تلقائياً من تقاطع الأحجام والنكهات
@@ -714,9 +758,11 @@ class ProductsController extends ChangeNotifier {
     }
 
     variants.clear();
-    final baseSku = textcontrollers['sku']?.text.trim().isNotEmpty == true
+    _isFormDirty = true;
+    final rawBaseSku = textcontrollers['sku']?.text.trim().isNotEmpty == true
         ? textcontrollers['sku']!.text.trim()
         : 'PROD-${DateTime.now().millisecondsSinceEpoch % 10000}';
+    final baseSku = _slugifySku(rawBaseSku);
     final basePrice =
         double.tryParse(textcontrollers['price']?.text ?? '0') ?? 0.0;
     final baseDiscount = double.tryParse(
@@ -748,21 +794,28 @@ class ProductsController extends ChangeNotifier {
             ? sizeEntity.flavors!
             : productFlavors;
 
-        final perFlavorStock = sizeFlavors.isNotEmpty
-            ? (sizeStock / sizeFlavors.length).floor()
-            : sizeStock;
+        final flavorCount = sizeFlavors.length;
+        final baseStockPerFlavor =
+            flavorCount > 0 ? (sizeStock / flavorCount).floor() : sizeStock;
+        int stockRemainder = flavorCount > 0 ? (sizeStock % flavorCount) : 0;
 
         for (final flavor in sizeFlavors) {
           final cleanFlavor = flavor.contains('|')
               ? flavor.split('|').first.trim()
               : flavor;
           final cleanSize = sizeEntity.size;
-          final sku = '$baseSku-$cleanSize-$cleanFlavor'
-              .replaceAll(' ', '-')
+          final safeFlavor = _slugifySku(cleanFlavor);
+          final safeSize = _slugifySku(cleanSize);
+          final sku = '$baseSku-$safeSize-$safeFlavor'
+              .replaceAll('--', '-')
               .toUpperCase();
           final effectivePrice = (sizeDiscount != null && sizeDiscount > 0)
               ? sizeDiscount
               : (sizePrice > 0 ? sizePrice : basePrice);
+
+          final itemStock =
+              baseStockPerFlavor + (stockRemainder > 0 ? 1 : 0);
+          if (stockRemainder > 0) stockRemainder--;
 
           variants.add(
             ProductVariantEntity(
@@ -771,7 +824,7 @@ class ProductsController extends ChangeNotifier {
               price: sizePrice > 0 ? sizePrice : basePrice,
               discountPrice: sizeDiscount ?? baseDiscount,
               effectivePrice: effectivePrice,
-              stockQuantity: perFlavorStock,
+              stockQuantity: itemStock,
               attributes: {
                 'size': cleanSize,
                 'flavor': cleanFlavor,
@@ -801,7 +854,8 @@ class ProductsController extends ChangeNotifier {
             sizeEntity.stockQuantity ??
             0;
         final cleanSize = sizeEntity.size;
-        final sku = '$baseSku-$cleanSize'.replaceAll(' ', '-').toUpperCase();
+        final safeSize = _slugifySku(cleanSize);
+        final sku = '$baseSku-$safeSize'.replaceAll('--', '-').toUpperCase();
         final effectivePrice = (sizeDiscount != null && sizeDiscount > 0)
             ? sizeDiscount
             : (sizePrice > 0 ? sizePrice : basePrice);
@@ -825,7 +879,8 @@ class ProductsController extends ChangeNotifier {
         final cleanFlavor = flavor.contains('|')
             ? flavor.split('|').first.trim()
             : flavor;
-        final sku = '$baseSku-$cleanFlavor'.replaceAll(' ', '-').toUpperCase();
+        final safeFlavor = _slugifySku(cleanFlavor);
+        final sku = '$baseSku-$safeFlavor'.replaceAll('--', '-').toUpperCase();
         final effectivePrice = (baseDiscount != null && baseDiscount > 0)
             ? baseDiscount
             : basePrice;
@@ -853,20 +908,29 @@ class ProductsController extends ChangeNotifier {
 
   void addVariant(ProductVariantEntity variant) {
     variants.add(variant);
+    _isFormDirty = true;
     notifyListeners();
   }
 
   void removeVariant(int index) {
     if (index >= 0 && index < variants.length) {
       variants.removeAt(index);
+      _isFormDirty = true;
       notifyListeners();
     }
   }
 
-  void updateVariant(int index, ProductVariantEntity updated) {
+  void updateVariant(
+    int index,
+    ProductVariantEntity updated, {
+    bool notify = true,
+  }) {
     if (index >= 0 && index < variants.length) {
       variants[index] = updated;
-      notifyListeners();
+      _isFormDirty = true;
+      if (notify) {
+        notifyListeners();
+      }
     }
   }
 
@@ -893,6 +957,7 @@ class ProductsController extends ChangeNotifier {
         stockQuantity: newStock,
       );
     }
+    _isFormDirty = true;
     notifyListeners();
     AppFeedback.showSuccess('تم تطبيق التعديلات على كافة التنويعات بنجاح');
   }
@@ -917,227 +982,239 @@ class ProductsController extends ChangeNotifier {
     _isSaving = true;
     notifyListeners();
 
-    final updatedSizes = productSizes.map((ps) {
-      final price =
-          double.tryParse(sizePriceControllers[ps.size]?.text ?? '0') ?? 0.0;
-      final discount = double.tryParse(
-        sizeDiscountControllers[ps.size]?.text ?? '',
-      );
-      final servings =
-          int.tryParse(sizeServingsControllers[ps.size]?.text.trim() ?? '');
-      final weight = sizeWeightControllers[ps.size]?.text.trim();
-      final stock =
-          int.tryParse(sizeStockControllers[ps.size]?.text.trim() ?? '');
-      return ProductSizeEntity(
-        size: ps.size,
-        price: price,
-        discountPrice: discount,
-        servings: servings,
-        weight: (weight != null && weight.isNotEmpty) ? weight : null,
-        stockQuantity: stock,
-        flavors: ps.flavors,
-      );
-    }).toList();
+    try {
+      final updatedSizes = productSizes.map((ps) {
+        final price =
+            double.tryParse(sizePriceControllers[ps.size]?.text ?? '0') ?? 0.0;
+        final discount = double.tryParse(
+          sizeDiscountControllers[ps.size]?.text ?? '',
+        );
+        final servings =
+            int.tryParse(sizeServingsControllers[ps.size]?.text.trim() ?? '');
+        final weight = sizeWeightControllers[ps.size]?.text.trim();
+        final stock =
+            int.tryParse(sizeStockControllers[ps.size]?.text.trim() ?? '');
+        return ProductSizeEntity(
+          size: ps.size,
+          price: price,
+          discountPrice: discount,
+          servings: servings,
+          weight: (weight != null && weight.isNotEmpty) ? weight : null,
+          stockQuantity: stock,
+          flavors: ps.flavors,
+        );
+      }).toList();
 
-    int totalStock = int.tryParse(textcontrollers['stock']!.text.trim()) ?? 0;
-    if (variants.isNotEmpty) {
-      final sumVariantsStock = variants.fold<int>(
-        0,
-        (sum, v) => sum + v.stockQuantity,
-      );
-      if (sumVariantsStock > 0 || totalStock == 0) {
-        totalStock = sumVariantsStock;
-      }
-    } else if (totalStock == 0 && updatedSizes.isNotEmpty) {
-      int sumSizesStock = 0;
-      for (final s in updatedSizes) {
-        if (s.stockQuantity != null) {
-          sumSizesStock += s.stockQuantity!;
+      int totalStock = int.tryParse(textcontrollers['stock']!.text.trim()) ?? 0;
+      if (variants.isNotEmpty) {
+        final sumVariantsStock = variants.fold<int>(
+          0,
+          (sum, v) => sum + v.stockQuantity,
+        );
+        if (sumVariantsStock > 0 || totalStock == 0) {
+          totalStock = sumVariantsStock;
+        }
+      } else if (totalStock == 0 && updatedSizes.isNotEmpty) {
+        int sumSizesStock = 0;
+        for (final s in updatedSizes) {
+          if (s.stockQuantity != null) {
+            sumSizesStock += s.stockQuantity!;
+          }
+        }
+        if (sumSizesStock > 0) {
+          totalStock = sumSizesStock;
         }
       }
-      if (sumSizesStock > 0) {
-        totalStock = sumSizesStock;
+
+      double mainPrice = double.tryParse(textcontrollers['price']!.text) ?? 0.0;
+      double? discountPrice = double.tryParse(textcontrollers['discount']!.text);
+
+      if (mainPrice == 0 && updatedSizes.isNotEmpty) {
+        mainPrice = updatedSizes.first.price;
+        discountPrice = updatedSizes.first.discountPrice;
       }
-    }
 
-    double mainPrice = double.tryParse(textcontrollers['price']!.text) ?? 0.0;
-    double? discountPrice = double.tryParse(textcontrollers['discount']!.text);
+      final String generatedId =
+          existingProduct?.id ?? 'PROD-${DateTime.now().millisecondsSinceEpoch}';
 
-    if (mainPrice == 0 && updatedSizes.isNotEmpty) {
-      mainPrice = updatedSizes.first.price;
-      discountPrice = updatedSizes.first.discountPrice;
-    }
-
-    final String generatedId =
-        existingProduct?.id ?? 'PROD-${DateTime.now().millisecondsSinceEpoch}';
-
-    final enteredBrand = textcontrollers['brand']!.text.trim();
-    BrandEntity? matchedBrand;
-    for (final b in brands) {
-      if (b.nameAr.trim().toLowerCase() == enteredBrand.toLowerCase() ||
-          b.nameEn.trim().toLowerCase() == enteredBrand.toLowerCase() ||
-          b.displayName.trim().toLowerCase() == enteredBrand.toLowerCase()) {
-        matchedBrand = b;
-        break;
+      final enteredBrand = textcontrollers['brand']!.text.trim();
+      BrandEntity? matchedBrand;
+      for (final b in brands) {
+        if (b.nameAr.trim().toLowerCase() == enteredBrand.toLowerCase() ||
+            b.nameEn.trim().toLowerCase() == enteredBrand.toLowerCase() ||
+            b.displayName.trim().toLowerCase() == enteredBrand.toLowerCase()) {
+          matchedBrand = b;
+          break;
+        }
       }
-    }
 
-    // Auto-create brand in database if it doesn't already exist
-    if (enteredBrand.isNotEmpty && matchedBrand == null) {
-      final createResult = await _brandRepository.createBrand({
+      // Auto-create brand in database if it doesn't already exist
+      if (enteredBrand.isNotEmpty && matchedBrand == null) {
+        final createResult = await _brandRepository.createBrand({
+          'name': {
+            'ar': enteredBrand,
+            'en': enteredBrand,
+          },
+          'is_active': true,
+        });
+        createResult.fold(
+          (failure) {
+            debugPrint('⚠️ Auto-create brand failed: ${failure.toMessage()}');
+          },
+          (newBrand) {
+            matchedBrand = newBrand;
+            brands.insert(0, newBrand);
+            notifyListeners();
+          },
+        );
+      }
+
+      final nameAr = textcontrollers['name_ar']!.text.trim();
+      final nameEn = textcontrollers['name_en']!.text.trim();
+      final finalNameEn = nameEn.isNotEmpty ? nameEn : nameAr;
+
+      final descAr = textcontrollers['desc_ar']!.text.trim();
+      final descEn = textcontrollers['desc_en']!.text.trim();
+      final finalDescEn = descEn.isNotEmpty ? descEn : descAr;
+
+      final nutritionFacts = <String, dynamic>{
+        if (textcontrollers['calories']!.text.trim().isNotEmpty)
+          'calories': textcontrollers['calories']!.text.trim(),
+        if (textcontrollers['protein']!.text.trim().isNotEmpty)
+          'protein': textcontrollers['protein']!.text.trim(),
+        if (textcontrollers['carbs']!.text.trim().isNotEmpty)
+          'carbs': textcontrollers['carbs']!.text.trim(),
+        if (textcontrollers['fat']!.text.trim().isNotEmpty)
+          'fat': textcontrollers['fat']!.text.trim(),
+        if (textcontrollers['sugar']!.text.trim().isNotEmpty)
+          'sugar': textcontrollers['sugar']!.text.trim(),
+        if (allergens.isNotEmpty) 'allergens': allergens.toList(),
+      };
+
+      final productData = {
+        'id': generatedId,
         'name': {
-          'ar': enteredBrand,
-          'en': enteredBrand,
+          'ar': nameAr,
+          'en': finalNameEn,
         },
-        'is_active': true,
-      });
-      createResult.fold(
-        (failure) {
-          debugPrint('⚠️ Auto-create brand failed: ${failure.toMessage()}');
+        'description': {
+          'ar': descAr,
+          'en': finalDescEn,
         },
-        (newBrand) {
-          matchedBrand = newBrand;
-          brands.insert(0, newBrand);
-          notifyListeners();
-        },
-      );
+        'price': mainPrice,
+        'discount_price': discountPrice,
+        'image_urls': productImages,
+        'category_id': categoryId,
+        'stock_quantity': totalStock,
+        'brand': enteredBrand,
+        if (matchedBrand != null) 'brand_id': matchedBrand!.id,
+        'sku': textcontrollers['sku']!.text.trim().isNotEmpty
+            ? textcontrollers['sku']!.text.trim()
+            : null,
+        'tags': tags.toList(),
+        'nutrition_facts': nutritionFacts.isNotEmpty ? nutritionFacts : null,
+        'is_active': _isActive,
+        'featured': _isFeatured,
+        'new_arrival': _newArrival,
+        'best_seller': _bestSeller,
+        'is_background_white': _isBackgroundWhite,
+        'serving_size': textcontrollers['serving']!.text.trim().isNotEmpty
+            ? textcontrollers['serving']!.text.trim()
+            : (updatedSizes.isNotEmpty &&
+                    (updatedSizes.first.weight?.isNotEmpty ?? false)
+                ? updatedSizes.first.weight!
+                : ''),
+        'servings_per_container':
+            (int.tryParse(textcontrollers['sessions']!.text.trim()) ?? 0) > 0
+                ? int.tryParse(textcontrollers['sessions']!.text.trim())!
+                : (updatedSizes.isNotEmpty &&
+                        updatedSizes.first.servings != null
+                    ? updatedSizes.first.servings!
+                    : 0),
+        'flavors': productFlavors.toList(),
+        'product_sizes': updatedSizes
+            .map(
+              (s) => {
+                'size': s.size,
+                'price': s.price,
+                'discount_price': s.discountPrice,
+                if (s.servings != null) 'servings': s.servings,
+                if (s.servings != null) 'servings_per_container': s.servings,
+                if (s.weight != null) 'weight': s.weight,
+                if (s.weight != null) 'serving_size': s.weight,
+                if (s.stockQuantity != null) 'stock_quantity': s.stockQuantity,
+                if (s.stockQuantity != null) 'stock': s.stockQuantity,
+                if (s.flavors != null) 'flavors': s.flavors,
+              },
+            )
+            .toList(),
+        'product_variants': variants
+            .map(
+              (v) => {
+                'id': v.id,
+                'sku': v.sku,
+                'price': v.price,
+                'discount_price': v.discountPrice,
+                'effective_price': v.effectivePrice,
+                'stock_quantity': v.stockQuantity,
+                'attributes': v.attributes,
+                'is_active': v.isActive,
+                if (v.barcode != null && v.barcode!.isNotEmpty)
+                  'barcode': v.barcode,
+              },
+            )
+            .toList(),
+      };
+
+      bool isSuccess = false;
+      if (existingProduct == null) {
+        final result = await _addProductUseCase(productData);
+        isSuccess = result.fold<bool>(
+          (failure) {
+            AppFeedback.showError(failure.toMessage());
+            return false;
+          },
+          (newProduct) {
+            products.insert(0, newProduct);
+            AppFeedback.showSuccess('تم إضافة المنتج بنجاح');
+            _applyFiltering();
+            notifyListeners();
+            return true;
+          },
+        );
+      } else {
+        final result = await _updateProductUseCase(
+          existingProduct.id,
+          productData,
+        );
+        isSuccess = result.fold<bool>(
+          (failure) {
+            AppFeedback.showError(failure.toMessage());
+            return false;
+          },
+          (updatedProduct) {
+            final index = products.indexWhere((p) => p.id == existingProduct.id);
+            if (index != -1) products[index] = updatedProduct;
+            AppFeedback.showSuccess('تم تحديث المنتج بنجاح');
+            _applyFiltering();
+            notifyListeners();
+            return true;
+          },
+        );
+      }
+
+      if (isSuccess) {
+        _isFormDirty = false;
+      }
+      return isSuccess;
+    } catch (e, stack) {
+      debugPrint('Save product error: $e\n$stack');
+      AppFeedback.showError('حدث خطأ غير متوقع أثناء الحفظ: $e');
+      return false;
+    } finally {
+      _isSaving = false;
+      notifyListeners();
     }
-
-    final nameAr = textcontrollers['name_ar']!.text.trim();
-    final nameEn = textcontrollers['name_en']!.text.trim();
-    final finalNameEn = nameEn.isNotEmpty ? nameEn : nameAr;
-
-    final descAr = textcontrollers['desc_ar']!.text.trim();
-    final descEn = textcontrollers['desc_en']!.text.trim();
-    final finalDescEn = descEn.isNotEmpty ? descEn : descAr;
-
-    final nutritionFacts = <String, dynamic>{
-      if (textcontrollers['calories']!.text.trim().isNotEmpty)
-        'calories': textcontrollers['calories']!.text.trim(),
-      if (textcontrollers['protein']!.text.trim().isNotEmpty)
-        'protein': textcontrollers['protein']!.text.trim(),
-      if (textcontrollers['carbs']!.text.trim().isNotEmpty)
-        'carbs': textcontrollers['carbs']!.text.trim(),
-      if (textcontrollers['fat']!.text.trim().isNotEmpty)
-        'fat': textcontrollers['fat']!.text.trim(),
-      if (textcontrollers['sugar']!.text.trim().isNotEmpty)
-        'sugar': textcontrollers['sugar']!.text.trim(),
-      if (allergens.isNotEmpty) 'allergens': allergens.toList(),
-    };
-
-    final productData = {
-      'id': generatedId,
-      'name': {
-        'ar': nameAr,
-        'en': finalNameEn,
-      },
-      'description': {
-        'ar': descAr,
-        'en': finalDescEn,
-      },
-      'price': mainPrice,
-      'discount_price': discountPrice,
-      'image_urls': productImages,
-      'category_id': categoryId,
-      'stock_quantity': totalStock,
-      'brand': enteredBrand,
-      if (matchedBrand != null) 'brand_id': matchedBrand!.id,
-      'sku': textcontrollers['sku']!.text.trim().isNotEmpty
-          ? textcontrollers['sku']!.text.trim()
-          : null,
-      'tags': tags.toList(),
-      'nutrition_facts': nutritionFacts.isNotEmpty ? nutritionFacts : null,
-      'is_active': _isActive,
-      'featured': _isFeatured,
-      'new_arrival': _newArrival,
-      'best_seller': _bestSeller,
-      'is_background_white': _isBackgroundWhite,
-      'serving_size': textcontrollers['serving']!.text.trim().isNotEmpty
-          ? textcontrollers['serving']!.text.trim()
-          : (updatedSizes.isNotEmpty &&
-                  (updatedSizes.first.weight?.isNotEmpty ?? false)
-              ? updatedSizes.first.weight!
-              : ''),
-      'servings_per_container':
-          (int.tryParse(textcontrollers['sessions']!.text.trim()) ?? 0) > 0
-              ? int.tryParse(textcontrollers['sessions']!.text.trim())!
-              : (updatedSizes.isNotEmpty &&
-                      updatedSizes.first.servings != null
-                  ? updatedSizes.first.servings!
-                  : 0),
-      'flavors': productFlavors.toList(),
-      'product_sizes': updatedSizes
-          .map(
-            (s) => {
-              'size': s.size,
-              'price': s.price,
-              'discount_price': s.discountPrice,
-              if (s.servings != null) 'servings': s.servings,
-              if (s.servings != null) 'servings_per_container': s.servings,
-              if (s.weight != null) 'weight': s.weight,
-              if (s.weight != null) 'serving_size': s.weight,
-              if (s.stockQuantity != null) 'stock_quantity': s.stockQuantity,
-              if (s.stockQuantity != null) 'stock': s.stockQuantity,
-              if (s.flavors != null) 'flavors': s.flavors,
-            },
-          )
-          .toList(),
-      'product_variants': variants
-          .map(
-            (v) => {
-              'id': v.id,
-              'sku': v.sku,
-              'price': v.price,
-              'discount_price': v.discountPrice,
-              'effective_price': v.effectivePrice,
-              'stock_quantity': v.stockQuantity,
-              'attributes': v.attributes,
-              'is_active': v.isActive,
-            },
-          )
-          .toList(),
-    };
-
-    bool isSuccess = false;
-    if (existingProduct == null) {
-      final result = await _addProductUseCase(productData);
-      isSuccess = result.fold<bool>(
-        (failure) {
-          AppFeedback.showError(failure.toMessage());
-          return false;
-        },
-        (newProduct) {
-          products.insert(0, newProduct);
-          AppFeedback.showSuccess('تم إضافة المنتج بنجاح');
-          _applyFiltering();
-          notifyListeners();
-          return true;
-        },
-      );
-    } else {
-      final result = await _updateProductUseCase(
-        existingProduct.id,
-        productData,
-      );
-      isSuccess = result.fold<bool>(
-        (failure) {
-          AppFeedback.showError(failure.toMessage());
-          return false;
-        },
-        (updatedProduct) {
-          final index = products.indexWhere((p) => p.id == existingProduct.id);
-          if (index != -1) products[index] = updatedProduct;
-          AppFeedback.showSuccess('تم تحديث المنتج بنجاح');
-          _applyFiltering();
-          notifyListeners();
-          return true;
-        },
-      );
-    }
-
-    _isSaving = false;
-    notifyListeners();
-    return isSuccess;
   }
 
   void confirmDelete(BuildContext context, String id, String productName) {
