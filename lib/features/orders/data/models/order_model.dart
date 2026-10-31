@@ -186,8 +186,26 @@ Map<String, dynamic> _mapOrderJson(Map<String, dynamic> rawJson) {
     return DateTime.now().toIso8601String();
   }
 
-  dynamic rawAddress = json['shipping_address'] ?? json['shippingAddress'];
+  dynamic rawAddress = json['shipping_address'] ??
+      json['shippingAddress'] ??
+      json['shipping_address_snapshot'] ??
+      json['address'];
   final mappedAddress = _safeAddressMap(rawAddress);
+
+  // If address has no coordinates, attempt extraction from notes
+  if (mappedAddress != null &&
+      (mappedAddress['latitude'] == null || mappedAddress['longitude'] == null)) {
+    final notes = json['notes']?.toString() ?? '';
+    if (notes.isNotEmpty) {
+      final match = RegExp(
+        r'(-?\d{1,2}\.\d{3,})[,\s]+(-?\d{1,3}\.\d{3,})',
+      ).firstMatch(notes);
+      if (match != null) {
+        mappedAddress['latitude'] = double.tryParse(match.group(1)!);
+        mappedAddress['longitude'] = double.tryParse(match.group(2)!);
+      }
+    }
+  }
 
   final itemsList = _sanitizeItems(json['order_items'] ?? json['items']);
 
@@ -258,6 +276,48 @@ Map<String, dynamic>? _safeAddressMap(dynamic rawAddress) {
   }
   if (mapped is! Map) return null;
   final map = Map<String, dynamic>.from(mapped);
+
+  // Extract latitude and longitude flexibly from various naming formats
+  double? lat = _parseDoubleNullable(
+    map['latitude'] ??
+        map['lat'] ??
+        (map['coords'] is Map ? map['coords']['lat'] ?? map['coords']['latitude'] : null) ??
+        (map['coordinates'] is Map ? map['coordinates']['lat'] ?? map['coordinates']['latitude'] : null),
+  );
+  double? lng = _parseDoubleNullable(
+    map['longitude'] ??
+        map['lng'] ??
+        map['long'] ??
+        map['lon'] ??
+        (map['coords'] is Map ? map['coords']['lng'] ?? map['coords']['longitude'] : null) ??
+        (map['coordinates'] is Map ? map['coordinates']['lng'] ?? map['coordinates']['longitude'] : null),
+  );
+
+  // If coordinates are null, check if coordinates or google maps url are in street or rawAddress
+  if (lat == null || lng == null) {
+    final streetStr = (map['street'] ?? map['address'] ?? (rawAddress is String ? rawAddress : '')).toString();
+    // Check for @lat,lng in google maps URLs
+    final gmapsMatch = RegExp(r'@(-?\d{1,2}\.\d+),(-?\d{1,3}\.\d+)').firstMatch(streetStr);
+    if (gmapsMatch != null) {
+      lat = double.tryParse(gmapsMatch.group(1)!);
+      lng = double.tryParse(gmapsMatch.group(2)!);
+    } else {
+      // Check for ?q=lat,lng or ?query=lat,lng
+      final qMatch = RegExp(r'[?&](?:q|query)=(-?\d{1,2}\.\d+),(-?\d{1,3}\.\d+)').firstMatch(streetStr);
+      if (qMatch != null) {
+        lat = double.tryParse(qMatch.group(1)!);
+        lng = double.tryParse(qMatch.group(2)!);
+      } else {
+        // Generic lat,lng coordinate pattern
+        final coordMatch = RegExp(r'(-?\d{1,2}\.\d{3,})[,\s]+(-?\d{1,3}\.\d{3,})').firstMatch(streetStr);
+        if (coordMatch != null) {
+          lat = double.tryParse(coordMatch.group(1)!);
+          lng = double.tryParse(coordMatch.group(2)!);
+        }
+      }
+    }
+  }
+
   return {
     ...map,
     'id': _parseInt(map['id']),
@@ -267,6 +327,8 @@ Map<String, dynamic>? _safeAddressMap(dynamic rawAddress) {
     'postal_code': (map['postal_code'] ?? map['postalCode'])?.toString(),
     'country': map['country']?.toString(),
     'phone': map['phone']?.toString(),
+    'latitude': lat,
+    'longitude': lng,
   };
 }
 
@@ -328,6 +390,13 @@ double _parseDouble(dynamic value) {
   if (value is num) return value.toDouble();
   if (value is String) return double.tryParse(value) ?? 0.0;
   return 0.0;
+}
+
+double? _parseDoubleNullable(dynamic value) {
+  if (value == null) return null;
+  if (value is num) return value.toDouble();
+  if (value is String) return double.tryParse(value.trim());
+  return null;
 }
 
 int _parseInt(dynamic value) {
