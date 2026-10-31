@@ -19,6 +19,11 @@ class BrandModel {
   factory BrandModel.fromJson(Map<String, dynamic> json) {
     final nameMap = json['name'] is Map ? json['name'] as Map : null;
 
+    final rawIsActive = json['is_active'] ?? json['isActive'];
+    final bool parsedIsActive = rawIsActive is bool
+        ? rawIsActive
+        : (rawIsActive == 1 || rawIsActive == '1' || rawIsActive == null);
+
     return BrandModel(
       id: json['id']?.toString() ?? '',
       nameAr:
@@ -31,10 +36,10 @@ class BrandModel {
           nameMap?['en']?.toString() ??
           json['name']?.toString() ??
           '',
-      imageUrl: json['image_url']?.toString() ?? json['image']?.toString(),
-      isActive: json['is_active'] is bool
-          ? json['is_active'] as bool
-          : (json['is_active'] == 1 || json['is_active'] == '1'),
+      imageUrl: json['image_url']?.toString() ??
+          json['imageUrl']?.toString() ??
+          json['image']?.toString(),
+      isActive: parsedIsActive,
     );
   }
 
