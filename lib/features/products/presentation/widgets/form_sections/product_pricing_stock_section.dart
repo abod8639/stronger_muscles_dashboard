@@ -110,7 +110,7 @@ class ProductPricingStockSection extends ConsumerWidget {
                         controller.sizeServingsControllers[size.size] == null ||
                         controller.sizeWeightControllers[size.size] == null ||
                         controller.sizeStockControllers[size.size] == null) {
-                      controller.syncSizeControllers();
+                      controller.syncSizeControllers(notify: false);
                     }
 
                     final priceCtrl =
