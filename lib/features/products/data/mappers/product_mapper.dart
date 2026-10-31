@@ -64,6 +64,9 @@ extension ProductSizeMapper on ProductSize {
       size: size,
       price: price,
       discountPrice: discountPrice,
+      servings: servings,
+      weight: weight,
+      stockQuantity: stockQuantity,
     );
   }
 }
@@ -71,7 +74,15 @@ extension ProductSizeMapper on ProductSize {
 /// Extension mapper converting domain [ProductSizeEntity] to [ProductSize] DTO.
 extension ProductSizeEntityMapper on ProductSizeEntity {
   ProductSize toModel() {
-    return ProductSize(size: size, price: price, discountPrice: discountPrice);
+    final model = ProductSize(
+      size: size,
+      price: price,
+      discountPrice: discountPrice,
+    );
+    model.servings = servings;
+    model.weight = weight;
+    model.stockQuantity = stockQuantity;
+    return model;
   }
 }
 
