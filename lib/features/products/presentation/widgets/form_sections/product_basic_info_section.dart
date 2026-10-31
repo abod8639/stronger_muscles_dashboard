@@ -184,109 +184,196 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
     ColorScheme colorScheme,
     bool isDark,
   ) {
-    return Autocomplete<String>(
-      focusNode: _brandFocusNode,
-      textEditingController: ctrl.textcontrollers['brand'],
-      optionsBuilder: (TextEditingValue textEditingValue) {
-        if (textEditingValue.text.isEmpty) {
-          return const Iterable<String>.empty();
-        }
-        return ctrl.brands
-            .where(
-              (b) => b.displayName.toLowerCase().contains(
-                textEditingValue.text.toLowerCase(),
-              ),
-            )
-            .map((b) => b.displayName);
-      },
-      onSelected: (String selection) {
-        ctrl.textcontrollers['brand']?.text = selection;
-      },
-      fieldViewBuilder:
-          (context, textEditingController, focusNode, onFieldSubmitted) {
-            return TextFormField(
-              controller: textEditingController,
-              focusNode: focusNode,
-              onFieldSubmitted: (_) => onFieldSubmitted(),
-              decoration: InputDecoration(
-                labelText: 'العلامة التجارية (البراند)',
-                hintText: 'اختر أو اكتب براند جديد...',
-                prefixIcon: Icon(
-                  Icons.verified_outlined,
-                  size: 20,
-                  color: colorScheme.onSurfaceVariant,
+    return ListenableBuilder(
+      listenable: ctrl,
+      builder: (context, _) {
+        return Autocomplete<String>(
+          focusNode: _brandFocusNode,
+          textEditingController: ctrl.textcontrollers['brand'],
+          optionsBuilder: (TextEditingValue textEditingValue) {
+            final query = textEditingValue.text.trim();
+            if (query.isEmpty) {
+              return const Iterable<String>.empty();
+            }
+            final matches = ctrl.brands
+                .where(
+                  (b) =>
+                      b.displayName.toLowerCase().contains(query.toLowerCase()) ||
+                      b.nameAr.toLowerCase().contains(query.toLowerCase()) ||
+                      b.nameEn.toLowerCase().contains(query.toLowerCase()),
+                )
+                .map((b) => b.displayName)
+                .toList();
+
+            final hasExactMatch = ctrl.brands.any(
+              (b) =>
+                  b.displayName.toLowerCase() == query.toLowerCase() ||
+                  b.nameAr.toLowerCase() == query.toLowerCase() ||
+                  b.nameEn.toLowerCase() == query.toLowerCase(),
+            );
+
+            if (!hasExactMatch) {
+              matches.add('+ إضافة "$query" كعلامة تجارية جديدة');
+            }
+
+            return matches;
+          },
+          onSelected: (String selection) {
+            if (selection.startsWith('+ إضافة "')) {
+              final brandName = selection
+                  .replaceFirst('+ إضافة "', '')
+                  .replaceFirst('" كعلامة تجارية جديدة', '');
+              ctrl.quickAddBrand(brandName);
+            } else {
+              ctrl.textcontrollers['brand']?.text = selection;
+            }
+          },
+          fieldViewBuilder:
+              (context, textEditingController, focusNode, onFieldSubmitted) {
+                return ValueListenableBuilder<TextEditingValue>(
+                  valueListenable: textEditingController,
+                  builder: (context, value, _) {
+                    final currentText = value.text.trim();
+                    final isExisting = currentText.isNotEmpty &&
+                        ctrl.brands.any(
+                          (b) =>
+                              b.displayName.toLowerCase() ==
+                                  currentText.toLowerCase() ||
+                              b.nameAr.toLowerCase() ==
+                                  currentText.toLowerCase() ||
+                              b.nameEn.toLowerCase() ==
+                                  currentText.toLowerCase(),
+                        );
+                    final canAddNew = currentText.isNotEmpty && !isExisting;
+
+                    return TextFormField(
+                      controller: textEditingController,
+                      focusNode: focusNode,
+                      onFieldSubmitted: (_) {
+                        if (canAddNew) {
+                          ctrl.quickAddBrand(currentText);
+                        } else {
+                          onFieldSubmitted();
+                        }
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'العلامة التجارية (البراند)',
+                        hintText: 'اختر أو اكتب براند جديد...',
+                        prefixIcon: Icon(
+                          Icons.verified_outlined,
+                          size: 20,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        suffixIcon: ctrl.isCreatingBrand
+                            ? const Padding(
+                                padding: EdgeInsets.all(12),
+                                child: SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                ),
+                              )
+                            : canAddNew
+                                ? Tooltip(
+                                    message:
+                                        'حفظ "$currentText" في قاعدة البيانات كعلامة تجارية جديدة',
+                                    child: IconButton(
+                                      icon: const Icon(
+                                        Icons.add_circle_rounded,
+                                        color: Colors.green,
+                                        size: 22,
+                                      ),
+                                      onPressed: () =>
+                                          ctrl.quickAddBrand(currentText),
+                                    ),
+                                  )
+                                : null,
+                        filled: true,
+                        fillColor: isDark
+                            ? colorScheme.surfaceContainerLowest
+                                .withValues(alpha: 0.5)
+                            : colorScheme.surfaceContainerLow
+                                .withValues(alpha: 0.5),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: isDark
+                                ? Colors.white.withValues(alpha: 0.03)
+                                : colorScheme.outlineVariant
+                                    .withValues(alpha: 0.5),
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: isDark
+                                ? Colors.white.withValues(alpha: 0.03)
+                                : colorScheme.outlineVariant
+                                    .withValues(alpha: 0.5),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: colorScheme.primary,
+                            width: 1.4,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+          optionsViewBuilder: (context, onSelected, options) {
+            return Align(
+              alignment: Alignment.topRight,
+              child: Container(
+                width: 280,
+                margin: const EdgeInsets.only(top: 8),
+                constraints: const BoxConstraints(maxHeight: 220),
+                decoration: AppDesignTokens.softSurface(
+                  colorScheme,
+                  isDark: isDark,
+                  borderRadius: BorderRadius.circular(14),
                 ),
-                filled: true,
-                fillColor: isDark
-                    ? colorScheme.surfaceContainerLowest.withValues(alpha: 0.5)
-                    : colorScheme.surfaceContainerLow.withValues(alpha: 0.5),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.03)
-                        : colorScheme.outlineVariant.withValues(alpha: 0.5),
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.03)
-                        : colorScheme.outlineVariant.withValues(alpha: 0.5),
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: colorScheme.primary,
-                    width: 1.4,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    shrinkWrap: true,
+                    itemCount: options.length,
+                    itemBuilder: (context, index) {
+                      final option = options.elementAt(index);
+                      final isAddNew = option.startsWith('+ إضافة ');
+
+                      return ListTile(
+                        dense: true,
+                        leading: Icon(
+                          isAddNew
+                              ? Icons.add_circle_rounded
+                              : Icons.business_rounded,
+                          color: isAddNew ? Colors.green : colorScheme.primary,
+                          size: 18,
+                        ),
+                        title: Text(
+                          option,
+                          style: TextStyle(
+                            color:
+                                isAddNew ? Colors.green : colorScheme.onSurface,
+                            fontWeight: isAddNew
+                                ? FontWeight.bold
+                                : FontWeight.w600,
+                            fontSize: 13,
+                          ),
+                        ),
+                        onTap: () => onSelected(option),
+                      );
+                    },
                   ),
                 ),
               ),
             );
           },
-      optionsViewBuilder: (context, onSelected, options) {
-        return Align(
-          alignment: Alignment.topRight,
-          child: Container(
-            width: 280,
-            margin: const EdgeInsets.only(top: 8),
-            constraints: const BoxConstraints(maxHeight: 220),
-            decoration: AppDesignTokens.softSurface(
-              colorScheme,
-              isDark: isDark,
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(14),
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 6),
-                shrinkWrap: true,
-                itemCount: options.length,
-                itemBuilder: (context, index) {
-                  final option = options.elementAt(index);
-                  return ListTile(
-                    dense: true,
-                    leading: Icon(
-                      Icons.business_rounded,
-                      color: colorScheme.primary,
-                      size: 18,
-                    ),
-                    title: Text(
-                      option,
-                      style: TextStyle(
-                        color: colorScheme.onSurface,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 13,
-                      ),
-                    ),
-                    onTap: () => onSelected(option),
-                  );
-                },
-              ),
-            ),
-          ),
         );
       },
     );
