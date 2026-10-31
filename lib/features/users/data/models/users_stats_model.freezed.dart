@@ -12,8 +12,7 @@ part of 'users_stats_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 UsersStatsModel _$UsersStatsModelFromJson(Map<String, dynamic> json) {
   return _UsersStatsModel.fromJson(json);
@@ -38,16 +37,14 @@ mixin _$UsersStatsModel {
 /// @nodoc
 abstract class $UsersStatsModelCopyWith<$Res> {
   factory $UsersStatsModelCopyWith(
-    UsersStatsModel value,
-    $Res Function(UsersStatsModel) then,
-  ) = _$UsersStatsModelCopyWithImpl<$Res, UsersStatsModel>;
+          UsersStatsModel value, $Res Function(UsersStatsModel) then) =
+      _$UsersStatsModelCopyWithImpl<$Res, UsersStatsModel>;
   @useResult
-  $Res call({
-    @JsonKey(name: 'total_users') int totalUsers,
-    @JsonKey(name: 'active_users') int activeUsers,
-    @JsonKey(name: 'inactive_users') int inactiveUsers,
-    List<UserModel> users,
-  });
+  $Res call(
+      {@JsonKey(name: 'total_users') int totalUsers,
+      @JsonKey(name: 'active_users') int activeUsers,
+      @JsonKey(name: 'inactive_users') int inactiveUsers,
+      List<UserModel> users});
 }
 
 /// @nodoc
@@ -68,45 +65,40 @@ class _$UsersStatsModelCopyWithImpl<$Res, $Val extends UsersStatsModel>
     Object? inactiveUsers = null,
     Object? users = null,
   }) {
-    return _then(
-      _value.copyWith(
-            totalUsers: null == totalUsers
-                ? _value.totalUsers
-                : totalUsers // ignore: cast_nullable_to_non_nullable
-                      as int,
-            activeUsers: null == activeUsers
-                ? _value.activeUsers
-                : activeUsers // ignore: cast_nullable_to_non_nullable
-                      as int,
-            inactiveUsers: null == inactiveUsers
-                ? _value.inactiveUsers
-                : inactiveUsers // ignore: cast_nullable_to_non_nullable
-                      as int,
-            users: null == users
-                ? _value.users
-                : users // ignore: cast_nullable_to_non_nullable
-                      as List<UserModel>,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      totalUsers: null == totalUsers
+          ? _value.totalUsers
+          : totalUsers // ignore: cast_nullable_to_non_nullable
+              as int,
+      activeUsers: null == activeUsers
+          ? _value.activeUsers
+          : activeUsers // ignore: cast_nullable_to_non_nullable
+              as int,
+      inactiveUsers: null == inactiveUsers
+          ? _value.inactiveUsers
+          : inactiveUsers // ignore: cast_nullable_to_non_nullable
+              as int,
+      users: null == users
+          ? _value.users
+          : users // ignore: cast_nullable_to_non_nullable
+              as List<UserModel>,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$UsersStatsModelImplCopyWith<$Res>
     implements $UsersStatsModelCopyWith<$Res> {
-  factory _$$UsersStatsModelImplCopyWith(
-    _$UsersStatsModelImpl value,
-    $Res Function(_$UsersStatsModelImpl) then,
-  ) = __$$UsersStatsModelImplCopyWithImpl<$Res>;
+  factory _$$UsersStatsModelImplCopyWith(_$UsersStatsModelImpl value,
+          $Res Function(_$UsersStatsModelImpl) then) =
+      __$$UsersStatsModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    @JsonKey(name: 'total_users') int totalUsers,
-    @JsonKey(name: 'active_users') int activeUsers,
-    @JsonKey(name: 'inactive_users') int inactiveUsers,
-    List<UserModel> users,
-  });
+  $Res call(
+      {@JsonKey(name: 'total_users') int totalUsers,
+      @JsonKey(name: 'active_users') int activeUsers,
+      @JsonKey(name: 'inactive_users') int inactiveUsers,
+      List<UserModel> users});
 }
 
 /// @nodoc
@@ -114,9 +106,8 @@ class __$$UsersStatsModelImplCopyWithImpl<$Res>
     extends _$UsersStatsModelCopyWithImpl<$Res, _$UsersStatsModelImpl>
     implements _$$UsersStatsModelImplCopyWith<$Res> {
   __$$UsersStatsModelImplCopyWithImpl(
-    _$UsersStatsModelImpl _value,
-    $Res Function(_$UsersStatsModelImpl) _then,
-  ) : super(_value, _then);
+      _$UsersStatsModelImpl _value, $Res Function(_$UsersStatsModelImpl) _then)
+      : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
@@ -126,39 +117,37 @@ class __$$UsersStatsModelImplCopyWithImpl<$Res>
     Object? inactiveUsers = null,
     Object? users = null,
   }) {
-    return _then(
-      _$UsersStatsModelImpl(
-        totalUsers: null == totalUsers
-            ? _value.totalUsers
-            : totalUsers // ignore: cast_nullable_to_non_nullable
-                  as int,
-        activeUsers: null == activeUsers
-            ? _value.activeUsers
-            : activeUsers // ignore: cast_nullable_to_non_nullable
-                  as int,
-        inactiveUsers: null == inactiveUsers
-            ? _value.inactiveUsers
-            : inactiveUsers // ignore: cast_nullable_to_non_nullable
-                  as int,
-        users: null == users
-            ? _value._users
-            : users // ignore: cast_nullable_to_non_nullable
-                  as List<UserModel>,
-      ),
-    );
+    return _then(_$UsersStatsModelImpl(
+      totalUsers: null == totalUsers
+          ? _value.totalUsers
+          : totalUsers // ignore: cast_nullable_to_non_nullable
+              as int,
+      activeUsers: null == activeUsers
+          ? _value.activeUsers
+          : activeUsers // ignore: cast_nullable_to_non_nullable
+              as int,
+      inactiveUsers: null == inactiveUsers
+          ? _value.inactiveUsers
+          : inactiveUsers // ignore: cast_nullable_to_non_nullable
+              as int,
+      users: null == users
+          ? _value._users
+          : users // ignore: cast_nullable_to_non_nullable
+              as List<UserModel>,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$UsersStatsModelImpl extends _UsersStatsModel {
-  const _$UsersStatsModelImpl({
-    @JsonKey(name: 'total_users') required this.totalUsers,
-    @JsonKey(name: 'active_users') required this.activeUsers,
-    @JsonKey(name: 'inactive_users') required this.inactiveUsers,
-    required final List<UserModel> users,
-  }) : _users = users,
-       super._();
+  const _$UsersStatsModelImpl(
+      {@JsonKey(name: 'total_users') required this.totalUsers,
+      @JsonKey(name: 'active_users') required this.activeUsers,
+      @JsonKey(name: 'inactive_users') required this.inactiveUsers,
+      required final List<UserModel> users})
+      : _users = users,
+        super._();
 
   factory _$UsersStatsModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$UsersStatsModelImplFromJson(json);
@@ -201,36 +190,30 @@ class _$UsersStatsModelImpl extends _UsersStatsModel {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    totalUsers,
-    activeUsers,
-    inactiveUsers,
-    const DeepCollectionEquality().hash(_users),
-  );
+  int get hashCode => Object.hash(runtimeType, totalUsers, activeUsers,
+      inactiveUsers, const DeepCollectionEquality().hash(_users));
 
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$UsersStatsModelImplCopyWith<_$UsersStatsModelImpl> get copyWith =>
       __$$UsersStatsModelImplCopyWithImpl<_$UsersStatsModelImpl>(
-        this,
-        _$identity,
-      );
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$UsersStatsModelImplToJson(this);
+    return _$$UsersStatsModelImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _UsersStatsModel extends UsersStatsModel {
-  const factory _UsersStatsModel({
-    @JsonKey(name: 'total_users') required final int totalUsers,
-    @JsonKey(name: 'active_users') required final int activeUsers,
-    @JsonKey(name: 'inactive_users') required final int inactiveUsers,
-    required final List<UserModel> users,
-  }) = _$UsersStatsModelImpl;
+  const factory _UsersStatsModel(
+      {@JsonKey(name: 'total_users') required final int totalUsers,
+      @JsonKey(name: 'active_users') required final int activeUsers,
+      @JsonKey(name: 'inactive_users') required final int inactiveUsers,
+      required final List<UserModel> users}) = _$UsersStatsModelImpl;
   const _UsersStatsModel._() : super._();
 
   factory _UsersStatsModel.fromJson(Map<String, dynamic> json) =
