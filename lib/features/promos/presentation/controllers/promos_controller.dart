@@ -100,11 +100,11 @@ class PromosController extends ChangeNotifier {
     );
   }
 
-  Future<void> fetchBrands() async {
+  Future<void> fetchBrands({bool forceRefresh = true}) async {
     _isBrandsLoading = true;
     notifyListeners();
 
-    final result = await brandRepository.getBrands();
+    final result = await brandRepository.getBrands(forceRefresh: forceRefresh);
     result.fold(
       (failure) {
         debugPrint(
@@ -117,6 +117,11 @@ class PromosController extends ChangeNotifier {
     );
 
     _isBrandsLoading = false;
+    notifyListeners();
+  }
+
+  void syncBrands(List<BrandEntity> newBrands) {
+    _brands = newBrands;
     notifyListeners();
   }
 
