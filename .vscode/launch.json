@@ -1,69 +1,69 @@
-{
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "stronger_muscles_dashboard (Web Chrome WASM)",
-      "request": "launch",
-      "type": "dart",
-      "args": [
-        "-d",
-        "chrome",
-        "--wasm"
-      ]
-    },
-    {
-      "name": "stronger_muscles_dashboard (Web Chrome WASM - Profile)",
-      "request": "launch",
-      "type": "dart",
-      "flutterMode": "profile",
-      "args": [
-        "-d",
-        "chrome",
-        "--wasm"
-      ]
-    },
-    {
-      "name": "stronger_muscles_dashboard (Web Chrome WASM - Release)",
-      "request": "launch",
-      "type": "dart",
-      "flutterMode": "release",
-      "args": [
-        "-d",
-        "chrome",
-        "--wasm"
-      ]
-    },
-    {
-      "name": "stronger_muscles_dashboard (Linux)",
-      "request": "launch",
-      "type": "dart",
-      "args": ["-d", "linux"],
-      "env": {
-        "__NV_PRIME_RENDER_OFFLOAD": "1",
-        "__GLX_VENDOR_LIBRARY_NAME": "nvidia"
-      }
-    },
-    {
-      "name": "stronger_muscles_dashboard (Linux profile mode)",
-      "request": "launch",
-      "type": "dart",
-      "flutterMode": "profile",
-      "args": ["-d", "linux"],
-      "env": {
-        "__NV_PRIME_RENDER_OFFLOAD": "1",
-        "__GLX_VENDOR_LIBRARY_NAME": "nvidia"
-      }
-    },
-    {
-      "name": "stronger_muscles_dashboard (Linux release mode)",
-      "request": "launch",
-      "type": "dart",
-      "flutterMode": "release",
-      "args": ["-d", "linux"],
-      "env": {
-        "__NV_PRIME_RENDER_OFFLOAD": "1",
-        "__GLX_VENDOR_LIBRARY_NAME": "nvidia"
-      }
-    }
-  ]
-}
+// {
+//   "version": "0.2.0",
+//   "configurations": [
+//     {
+//       "name": "stronger_muscles_dashboard (Web Chrome WASM)",
+//       "request": "launch",
+//       "type": "dart",
+//       "args": [
+//         "-d",
+//         "chrome",
+//         "--wasm"
+//       ]
+//     },
+//     {
+//       "name": "stronger_muscles_dashboard (Web Chrome WASM - Profile)",
+//       "request": "launch",
+//       "type": "dart",
+//       "flutterMode": "profile",
+//       "args": [
+//         "-d",
+//         "chrome",
+//         "--wasm"
+//       ]
+//     },
+//     {
+//       "name": "stronger_muscles_dashboard (Web Chrome WASM - Release)",
+//       "request": "launch",
+//       "type": "dart",
+//       "flutterMode": "release",
+//       "args": [
+//         "-d",
+//         "chrome",
+//         "--wasm"
+//       ]
+//     },
+//     {
+//       "name": "stronger_muscles_dashboard (Linux)",
+//       "request": "launch",
+//       "type": "dart",
+//       "args": ["-d", "linux"],
+//       "env": {
+//         "__NV_PRIME_RENDER_OFFLOAD": "1",
+//         "__GLX_VENDOR_LIBRARY_NAME": "nvidia"
+//       }
+//     },
+//     {
+//       "name": "stronger_muscles_dashboard (Linux profile mode)",
+//       "request": "launch",
+//       "type": "dart",
+//       "flutterMode": "profile",
+//       "args": ["-d", "linux"],
+//       "env": {
+//         "__NV_PRIME_RENDER_OFFLOAD": "1",
+//         "__GLX_VENDOR_LIBRARY_NAME": "nvidia"
+//       }
+//     },
+//     {
+//       "name": "stronger_muscles_dashboard (Linux release mode)",
+//       "request": "launch",
+//       "type": "dart",
+//       "flutterMode": "release",
+//       "args": ["-d", "linux"],
+//       "env": {
+//         "__NV_PRIME_RENDER_OFFLOAD": "1",
+//         "__GLX_VENDOR_LIBRARY_NAME": "nvidia"
+//       }
+//     }
+//   ]
+// }

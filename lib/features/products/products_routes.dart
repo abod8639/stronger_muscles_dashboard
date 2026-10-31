@@ -2,7 +2,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/router/app_routes.dart';
 import 'domain/entities/product_entity.dart';
 import 'presentation/pages/products_screen.dart';
-import 'presentation/widgets/product_form_page.dart';
+import 'presentation/pages/product_form_page.dart';
 
 /// Modular navigation routes definition for the Products feature.
 class ProductsRoutes {

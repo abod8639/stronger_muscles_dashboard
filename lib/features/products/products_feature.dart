@@ -14,5 +14,5 @@ export 'presentation/controllers/products_notifier.dart';
 export 'presentation/controllers/products_providers.dart';
 export 'presentation/pages/products_screen.dart';
 export 'presentation/widgets/category_tree_selector.dart';
-export 'presentation/widgets/product_form_page.dart';
+export 'presentation/pages/product_form_page.dart';
 export 'products_routes.dart';
