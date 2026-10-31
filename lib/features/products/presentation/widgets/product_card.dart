@@ -42,10 +42,12 @@ class ProductCard extends ConsumerWidget {
       selected: isSelected,
       onTap: isSelectionMode ? onToggleSelect : onEdit,
       onLongPress: onLongPress,
-      padding: EdgeInsets.all(
-        isMobile ? AppDesignTokens.space12 : AppDesignTokens.space16,
+      padding: EdgeInsets.symmetric(
+        horizontal: isMobile ? AppDesignTokens.space12 : AppDesignTokens.space16,
+        vertical: isMobile ? AppDesignTokens.space10 : AppDesignTokens.space12,
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           if (isSelectionMode) ...[
             Checkbox(
@@ -55,23 +57,24 @@ class ProductCard extends ConsumerWidget {
             ),
             const SizedBox(width: AppDesignTokens.space4),
           ],
-          _ProductImage(product: product, size: isMobile ? 80 : 105),
+          _ProductImage(product: product, size: isMobile ? 80 : 96),
           SizedBox(
-            width: isMobile ? AppDesignTokens.space12 : AppDesignTokens.space20,
+            width: isMobile ? AppDesignTokens.space12 : AppDesignTokens.space16,
           ),
           Expanded(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Wrap(
-                  spacing: AppDesignTokens.space6,
-                  runSpacing: AppDesignTokens.space4,
+                Row(
                   children: [
-                    InfoPill(
-                      label: (product.brand ?? 'GENERIC').toUpperCase(),
-                      color: colorScheme.primary,
+                    Flexible(
+                      child: InfoPill(
+                        label: (product.brand ?? 'GENERIC').toUpperCase(),
+                        color: colorScheme.primary,
+                      ),
                     ),
+                    const SizedBox(width: AppDesignTokens.space6),
                     InfoPill(
                       label: product.isActive ? 'نشط' : 'معطل',
                       icon: product.isActive
@@ -83,35 +86,40 @@ class ProductCard extends ConsumerWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: AppDesignTokens.space6),
-                Text(
-                  product.nameAr,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.onSurface,
-                    fontSize: isMobile ? 15 : 17,
+                const SizedBox(height: AppDesignTokens.space4),
+                Tooltip(
+                  message: product.displayName,
+                  child: Text(
+                    product.displayName,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.onSurface,
+                      fontSize: isMobile ? 14 : 15,
+                      height: 1.25,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
                 ),
                 if (product.flavors?.isNotEmpty ?? false) ...[
-                  const SizedBox(height: AppDesignTokens.space8),
+                  const SizedBox(height: AppDesignTokens.space4),
                   _FlavorTags(
                     flavors: product.flavors!,
-                    limit: isMobile ? 1 : 3,
+                    limit: isMobile ? 1 : 2,
                   ),
                 ],
-                const SizedBox(height: AppDesignTokens.space12),
+                const SizedBox(height: AppDesignTokens.space8),
                 Wrap(
-                  spacing: AppDesignTokens.space16,
-                  runSpacing: AppDesignTokens.space8,
+                  spacing: AppDesignTokens.space10,
+                  runSpacing: AppDesignTokens.space4,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     PriceText(
                       amount: product.price,
                       currency: ref.watch(storeCurrencyProvider),
                       style: theme.textTheme.titleLarge?.copyWith(
-                        fontSize: isMobile ? 18 : 22,
+                        fontSize: isMobile ? 17 : 19,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     StockStatusBadge(quantity: product.stockQuantity),
