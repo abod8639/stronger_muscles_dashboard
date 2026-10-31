@@ -38,8 +38,12 @@ class PromoTargetSection extends StatelessWidget {
               ],
               selected: {controller.selectedTargetType},
               onSelectionChanged: (newSelection) {
-                controller.selectedTargetType = newSelection.first;
+                final targetType = newSelection.first;
+                controller.selectedTargetType = targetType;
                 controller.selectedTargetId = null;
+                if (targetType == 'brand') {
+                  controller.refreshBrands(forceRefresh: true);
+                }
               },
             ),
           ),
@@ -138,78 +142,138 @@ class PromoTargetSection extends StatelessWidget {
     }
 
     if (brands.isEmpty) {
-      return _emptyState(context, 'لا توجد ماركات مسجلة حالياً');
+      return _emptyState(
+        context,
+        'لا توجد ماركات مسجلة حالياً',
+        onRefresh: () => controller.refreshBrands(forceRefresh: true),
+      );
     }
 
-    return Container(
-      decoration: _fieldBoxDecoration(colorScheme),
-      padding: const EdgeInsets.symmetric(horizontal: 14),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          isExpanded: true,
-          value: brands.any((b) => b.id == controller.selectedTargetId)
-              ? controller.selectedTargetId
-              : null,
-          hint: Text(
-            'اختر ماركة لربط الإعلان بها...',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'العلامة التجارية المستهدفة:',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
-          dropdownColor: colorScheme.surfaceContainerHigh,
-          icon: Icon(
-            Icons.keyboard_arrow_down_rounded,
-            color: colorScheme.onSurfaceVariant,
-          ),
-          items: brands.map((b) {
-            return DropdownMenuItem<String>(
-              value: b.id,
-              child: Row(
-                children: [
-                  if (b.imageUrl != null && b.imageUrl!.isNotEmpty)
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: CachedNetworkImage(
-                        imageUrl: b.imageUrl!,
-                        width: 36,
-                        height: 36,
-                        fit: BoxFit.cover,
-                        errorWidget: (_, _, _) => Icon(
-                          Icons.category,
-                          color: colorScheme.onSurfaceVariant,
-                          size: 20,
-                        ),
-                        placeholder: (_, _) => Icon(
-                          Icons.category,
-                          color: colorScheme.onSurfaceVariant,
-                          size: 20,
-                        ),
-                      ),
-                    )
-                  else
-                    Icon(
-                      Icons.category_rounded,
-                      color: colorScheme.onSurfaceVariant,
-                      size: 28,
+            if (isFetching)
+              const SizedBox(
+                width: 14,
+                height: 14,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            else
+              Tooltip(
+                message: 'تحديث قائمة العلامات التجارية',
+                child: InkWell(
+                  onTap: () => controller.refreshBrands(forceRefresh: true),
+                  borderRadius: BorderRadius.circular(6),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
                     ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      b.displayName,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.onSurface,
-                      ),
-                      overflow: TextOverflow.ellipsis,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.refresh_rounded,
+                          size: 14,
+                          color: colorScheme.primary,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'تحديث',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colorScheme.primary,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
-            );
-          }).toList(),
-          onChanged: (val) => controller.selectedTargetId = val,
+          ],
         ),
-      ),
+        const SizedBox(height: 6),
+        Container(
+          decoration: _fieldBoxDecoration(colorScheme),
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              isExpanded: true,
+              value: brands.any((b) => b.id == controller.selectedTargetId)
+                  ? controller.selectedTargetId
+                  : null,
+              hint: Text(
+                'اختر ماركة لربط الإعلان بها...',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+              dropdownColor: colorScheme.surfaceContainerHigh,
+              icon: Icon(
+                Icons.keyboard_arrow_down_rounded,
+                color: colorScheme.onSurfaceVariant,
+              ),
+              items: brands.map((b) {
+                return DropdownMenuItem<String>(
+                  value: b.id,
+                  child: Row(
+                    children: [
+                      if (b.imageUrl != null && b.imageUrl!.isNotEmpty)
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: CachedNetworkImage(
+                            imageUrl: b.imageUrl!,
+                            width: 36,
+                            height: 36,
+                            fit: BoxFit.cover,
+                            errorWidget: (_, _, _) => Icon(
+                              Icons.category,
+                              color: colorScheme.onSurfaceVariant,
+                              size: 20,
+                            ),
+                            placeholder: (_, _) => Icon(
+                              Icons.category,
+                              color: colorScheme.onSurfaceVariant,
+                              size: 20,
+                            ),
+                          ),
+                        )
+                      else
+                        Icon(
+                          Icons.category_rounded,
+                          color: colorScheme.onSurfaceVariant,
+                          size: 28,
+                        ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          b.displayName,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: colorScheme.onSurface,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+              onChanged: (val) => controller.selectedTargetId = val,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -242,7 +306,11 @@ class PromoTargetSection extends StatelessWidget {
     );
   }
 
-  Widget _emptyState(BuildContext context, String message) {
+  Widget _emptyState(
+    BuildContext context,
+    String message, {
+    VoidCallback? onRefresh,
+  }) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -257,12 +325,20 @@ class PromoTargetSection extends StatelessWidget {
             size: 20,
           ),
           const SizedBox(width: 10),
-          Text(
-            message,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant,
+          Expanded(
+            child: Text(
+              message,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
             ),
           ),
+          if (onRefresh != null)
+            TextButton.icon(
+              onPressed: onRefresh,
+              icon: const Icon(Icons.refresh_rounded, size: 16),
+              label: const Text('تحديث'),
+            ),
         ],
       ),
     );
