@@ -119,7 +119,7 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
     CancelToken? cancelToken,
   }) async {
     try {
-      final response = await _dio.put(
+      final response = await _dio.patch(
         ApiConfig.adminOrderDetail(id),
         data: {'status': status.name},
         cancelToken: cancelToken,
