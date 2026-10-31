@@ -14,6 +14,7 @@ class SupportChatMessageEntity {
   final List<String> attachments;
   final DateTime createdAt;
   final bool isOptimistic;
+  final bool isFailed;
 
   const SupportChatMessageEntity({
     required this.id,
@@ -27,6 +28,7 @@ class SupportChatMessageEntity {
     this.attachments = const [],
     required this.createdAt,
     this.isOptimistic = false,
+    this.isFailed = false,
   });
 
   bool get isAdmin => senderType == 'admin';
@@ -45,6 +47,7 @@ class SupportChatMessageEntity {
     List<String>? attachments,
     DateTime? createdAt,
     bool? isOptimistic,
+    bool? isFailed,
   }) {
     return SupportChatMessageEntity(
       id: id ?? this.id,
@@ -58,6 +61,7 @@ class SupportChatMessageEntity {
       attachments: attachments ?? this.attachments,
       createdAt: createdAt ?? this.createdAt,
       isOptimistic: isOptimistic ?? this.isOptimistic,
+      isFailed: isFailed ?? this.isFailed,
     );
   }
 
