@@ -15,6 +15,9 @@ class SupportChatTicketEntity {
   final String category;
   final String priority; // 'low' | 'normal' | 'high' | 'urgent'
   final String status; // 'open' | 'in_progress' | 'waiting_user' | 'resolved' | 'closed'
+  final String? orderId;
+  final String? orderNumber;
+  final double? orderTotal;
   final int? assignedAdminId;
   final String? assignedAdminName;
   final int messagesCount;
@@ -35,6 +38,9 @@ class SupportChatTicketEntity {
     required this.category,
     required this.priority,
     required this.status,
+    this.orderId,
+    this.orderNumber,
+    this.orderTotal,
     this.assignedAdminId,
     this.assignedAdminName,
     this.messagesCount = 0,
@@ -92,6 +98,9 @@ class SupportChatTicketEntity {
     String? category,
     String? priority,
     String? status,
+    String? orderId,
+    String? orderNumber,
+    double? orderTotal,
     int? assignedAdminId,
     String? assignedAdminName,
     int? messagesCount,
@@ -112,6 +121,9 @@ class SupportChatTicketEntity {
       category: category ?? this.category,
       priority: priority ?? this.priority,
       status: status ?? this.status,
+      orderId: orderId ?? this.orderId,
+      orderNumber: orderNumber ?? this.orderNumber,
+      orderTotal: orderTotal ?? this.orderTotal,
       assignedAdminId: assignedAdminId ?? this.assignedAdminId,
       assignedAdminName: assignedAdminName ?? this.assignedAdminName,
       messagesCount: messagesCount ?? this.messagesCount,
