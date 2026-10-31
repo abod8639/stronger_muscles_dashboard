@@ -90,19 +90,14 @@ class SupportTicketModel {
     }
 
     SupportMessageModel? latestMsg;
-    if (json['latest_message'] is Map) {
-      latestMsg = SupportMessageModel.fromJson(
-        Map<String, dynamic>.from(json['latest_message']),
-      );
+    if (json['latest_message'] != null) {
+      latestMsg = SupportMessageModel.fromJson(json['latest_message']);
     }
 
     List<SupportMessageModel> msgs = [];
     if (json['messages'] is List) {
       msgs = (json['messages'] as List)
-          .whereType<Map>()
-          .map(
-            (m) => SupportMessageModel.fromJson(Map<String, dynamic>.from(m)),
-          )
+          .map((m) => SupportMessageModel.fromJson(m))
           .toList();
     }
 
