@@ -17,16 +17,29 @@ class SupportScreen extends ConsumerStatefulWidget {
 
 class _SupportScreenState extends ConsumerState<SupportScreen> {
   late final TextEditingController _searchController;
+  late final ScrollController _ticketsScrollController;
 
   @override
   void initState() {
     super.initState();
     final initialQuery = ref.read(supportControllerProvider).searchQuery;
     _searchController = TextEditingController(text: initialQuery);
+    _ticketsScrollController = ScrollController();
+    _ticketsScrollController.addListener(_onTicketsScroll);
+  }
+
+  void _onTicketsScroll() {
+    if (!_ticketsScrollController.hasClients) return;
+    final pos = _ticketsScrollController.position;
+    if (pos.pixels >= pos.maxScrollExtent - 200) {
+      ref.read(supportControllerProvider.notifier).loadMoreTickets();
+    }
   }
 
   @override
   void dispose() {
+    _ticketsScrollController.removeListener(_onTicketsScroll);
+    _ticketsScrollController.dispose();
     _searchController.dispose();
     super.dispose();
   }
@@ -447,10 +460,30 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
     final selectedTicketId = ref.watch(
       supportControllerProvider.select((s) => s.selectedTicket?.id),
     );
+    final hasMore = ref.watch(
+      supportControllerProvider.select((s) => s.hasMore),
+    );
 
     return ListView.builder(
-      itemCount: filteredTickets.length,
+      controller: _ticketsScrollController,
+      itemCount: filteredTickets.length + (hasMore ? 1 : 0),
       itemBuilder: (context, index) {
+        if (hasMore && index == filteredTickets.length) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ),
+          );
+        }
+
         final ticket = filteredTickets[index];
         final isSelected = selectedTicketId == ticket.id;
 
