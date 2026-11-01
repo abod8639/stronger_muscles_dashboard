@@ -8,16 +8,11 @@ import 'package:stronger_muscles_dashboard/features/products/presentation/contro
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_form_mixin.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_form_sections.dart';
 
-/// قسم في نموذج المنتج: يظهر في شريط التنقل السريع وفي التخطيط
 class _FormSection {
   final String label;
   final IconData icon;
   final GlobalKey key;
-
-  /// يُستدعى في كل بناء حتى تنعكس تغييرات الحالة (مثل القسم المختار)
   final WidgetBuilder builder;
-
-  /// يوضع في العمود الجانبي على الشاشات العريضة
   final bool isSide;
 
   _FormSection({
@@ -28,7 +23,6 @@ class _FormSection {
   }) : key = GlobalKey();
 }
 
-/// صفحة نموذج إضافة / تعديل المنتج
 class ProductFormPage extends ConsumerStatefulWidget {
   final ProductEntity? product;
   const ProductFormPage({super.key, this.product});
@@ -39,7 +33,6 @@ class ProductFormPage extends ConsumerStatefulWidget {
 
 class _ProductFormPageState extends ConsumerState<ProductFormPage>
     with ProductFormMixin {
-  /// العرض الذي يبدأ عنده تخطيط العمودين (رئيسي + جانبي)
   static const double _wideBreakpoint = 950;
   static const double _sideColumnWidth = 380;
 
@@ -98,6 +91,7 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage>
     final ctrl = controller;
     return [
       _FormSection(
+
         label: 'البيانات الأساسية',
         icon: Icons.edit_note_rounded,
         builder: (_) => ProductBasicInfoSection(controller: ctrl),
@@ -105,6 +99,7 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage>
       _FormSection(
         label: 'القسم والتصنيف',
         icon: Icons.category_rounded,
+        isSide: true,
         builder: (_) => ProductCategorySection(
           controller: ctrl,
           selectedCategoryId: _selectedCategoryId,
@@ -117,7 +112,6 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage>
       _FormSection(
         label: 'الوسائط والصور',
         icon: Icons.photo_library_outlined,
-        isSide: true,
         builder: (_) => ListenableBuilder(
           listenable: ctrl,
           builder: (context, _) => ProductMediaSection(
@@ -296,7 +290,6 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage>
     );
   }
 
-  /// شريط التنقل السريع بين أقسام النموذج
   Widget _buildSectionNav(ColorScheme colorScheme) {
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -326,7 +319,6 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage>
     );
   }
 
-  /// الشاشات العريضة: عمود رئيسي + عمود جانبي (الصور والإعدادات)
   Widget _buildWideLayout() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -350,10 +342,11 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage>
     return Column(
       children: [
         for (final section in sections) ...[
-          KeyedSubtree(key: section.key, child: section.builder(context)),
+          KeyedSubtree(
+            key: section.key, 
+            child: section.builder(context)),
           SizedBox(height: gap),
         ],
-        // مساحة إضافية فوق الشريط السفلي الثابت
         const SizedBox(height: 64),
       ],
     );
