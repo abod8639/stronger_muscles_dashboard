@@ -2,13 +2,21 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:stronger_muscles_dashboard/core/config/gemini_config.dart';
 import 'package:stronger_muscles_dashboard/features/orders/orders_feature.dart';
+import '../../domain/entities/ai_executive_briefing_entity.dart';
 import '../../domain/entities/dashboard_stats_entity.dart';
 import '../models/ai_executive_briefing_model.dart';
 
 abstract class GeminiDashboardRemoteDataSource {
   Future<AiExecutiveBriefingModel> generateBriefing(
-    DashboardStatsEntity stats,
-  );
+    DashboardStatsEntity stats, {
+    String focus = 'comprehensive',
+  });
+
+  Future<String> askBriefingQuestion({
+    required AiExecutiveBriefingEntity briefing,
+    required DashboardStatsEntity stats,
+    required String question,
+  });
 }
 
 class GeminiDashboardRemoteDataSourceImpl
@@ -19,8 +27,9 @@ class GeminiDashboardRemoteDataSourceImpl
 
   @override
   Future<AiExecutiveBriefingModel> generateBriefing(
-    DashboardStatsEntity stats,
-  ) async {
+    DashboardStatsEntity stats, {
+    String focus = 'comprehensive',
+  }) async {
     final apiKey = GeminiConfig.getApiKey();
     if (apiKey.isEmpty) {
       throw Exception(
@@ -137,9 +146,43 @@ class GeminiDashboardRemoteDataSourceImpl
         .toList()
         .join(', ');
 
+    // Determine persona and primary objective according to selected focus
+    String personaObjective;
+    switch (focus) {
+      case 'inventory':
+        personaObjective = '''
+PRIMARY FOCUS: SUPPLY CHAIN & INVENTORY OPTIMIZATION
+Role: Chief Supply Chain & Warehouse Strategist.
+Direct your entire executive briefing towards inventory health, critical stock shortages, warehouse turnover, preventing stockouts on fast-selling products, and clear strategic guidance on slow-moving/zero-sale items (reviewing pricing/marketing vs issuing orders).
+''';
+        break;
+      case 'sales':
+        personaObjective = '''
+PRIMARY FOCUS: SALES, REVENUE & COMMERCIAL ACCELERATION
+Role: Chief Commercial Officer (CCO).
+Direct your entire executive briefing towards revenue performance, sales momentum, best-selling product opportunities, basket size expansion, and commercial strategies to jumpstart products with zero orders.
+''';
+        break;
+      case 'operations':
+        personaObjective = '''
+PRIMARY FOCUS: OPERATIONS, FULFILLMENT & ORDER LIFECYCLE
+Role: Chief Operating Officer (COO).
+Direct your entire executive briefing towards the order lifecycle, resolving pending order bottlenecks (${stats.pendingOrders} pending orders), investigating root causes of cancellations (${stats.cancelledOrders} cancelled), and fulfillment SLA speed.
+''';
+        break;
+      case 'comprehensive':
+      default:
+        personaObjective = '''
+PRIMARY FOCUS: BALANCED EXECUTIVE OVERVIEW
+Role: Senior Executive Business Analyst.
+Provide a balanced, high-level executive overview covering revenue, order fulfillment velocity, and inventory health in equal measure.
+''';
+        break;
+    }
+
     final prompt = '''
-You are a Senior Executive Business Analyst & Supply Chain Strategist for "Stronger Muscles", a premier sports nutrition, fitness supplements, and bodybuilding e-commerce platform.
-Analyze the following real-time administrative dashboard metrics and generate an executive daily briefing and stock radar in fluent, professional Arabic:
+$personaObjective
+Analyze the following real-time administrative dashboard metrics for "Stronger Muscles" (sports nutrition & fitness supplements) and generate an executive briefing and stock radar in fluent, professional Arabic:
 
 === STORE OPERATIONAL METRICS ===
 - Total Revenue: ${stats.totalRevenue.toStringAsFixed(2)} IQD / Currency
@@ -186,13 +229,11 @@ CRITICAL ANTI-HALLUCINATION & FACT-CHECKING INSTRUCTIONS (STRICT COMPLIANCE REQU
      * Recommend restocking proportional to actual verified sales velocity.
 3. GROUNDED SUMMARY & INSIGHTS:
    - Base all claims and numbers strictly on the facts provided above.
-   - If pending orders are high (${stats.pendingOrders} pending), emphasize confirming and shipping them to prevent churn.
-   - If cancellations exist (${stats.cancelledOrders} cancelled), recommend investigating the causes.
-   - Never invent imaginary market trends or sales for categories that have 0 sales.
+   - Tailor your tone and priorities strictly to the stated PRIMARY FOCUS.
 
 Return ONLY a valid JSON object matching this exact schema:
 {
-  "summary": "ملخص تنفيذي عربي احترافي ومباشر يوضح حالة المبيعات والعمليات اليوم بدقة وصدق...",
+  "summary": "ملخص تنفيذي عربي احترافي ومباشر يركز على المحور المحدد...",
   "sentiment": "positive | neutral | needs_attention",
   "key_insights": [
     "مؤشر مبني على الأرقام الحقيقية فقط...",
@@ -346,10 +387,119 @@ Return ONLY a valid JSON object matching this exact schema:
     }).toList();
 
     return briefingModel.copyWith(
+      reportFocus: focus,
       stockAlerts: sanitizedAlerts,
       keyInsights: sanitizedInsights,
       actionableRecommendations: sanitizedRecommendations,
     );
+  }
+
+  @override
+  Future<String> askBriefingQuestion({
+    required AiExecutiveBriefingEntity briefing,
+    required DashboardStatsEntity stats,
+    required String question,
+  }) async {
+    final apiKey = GeminiConfig.getApiKey();
+    if (apiKey.isEmpty) {
+      throw Exception(
+        'مفتاح Gemini API Key غير مهيأ. يرجى إضافته أولاً من صفحة الإعدادات.',
+      );
+    }
+
+    final model = GeminiConfig.getModel();
+    final url =
+        'https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent?key=$apiKey';
+
+    // Calculate real sales numbers for grounding
+    final Map<String, int> productUnitsSold = {};
+    for (final order in stats.orders) {
+      if (order.status == OrderStatus.cancelled) continue;
+      for (final item in order.items) {
+        final id = item.productId.trim();
+        productUnitsSold[id] = (productUnitsSold[id] ?? 0) + item.quantity;
+      }
+    }
+
+    final criticalSamples = stats.products
+        .where((p) => p.stockQuantity <= 15)
+        .take(10)
+        .map((p) =>
+            '- ${p.displayName} (المخزون الحالي: ${p.stockQuantity} | المبيعات الفعلية: ${productUnitsSold[p.id] ?? 0})')
+        .join('\n');
+
+    final prompt = '''
+You are the Senior Executive AI Copilot for "Stronger Muscles" sports supplements e-commerce store.
+You are assisting the store administrator with a strategic, logistical, or commercial decision based on current store data.
+
+=== LIVE DASHBOARD METRICS ===
+- Total Revenue: ${stats.totalRevenue.toStringAsFixed(2)} IQD
+- Total Orders: ${stats.totalOrders} (Pending: ${stats.pendingOrders}, Processing: ${stats.processingOrders}, Shipped: ${stats.shippedOrders}, Delivered: ${stats.deliveredOrders}, Cancelled: ${stats.cancelledOrders})
+- Products Catalog: ${stats.totalProducts} (In Stock: ${stats.inStock}, Low Stock: ${stats.lowStock}, Out of Stock: ${stats.outOfStock})
+
+=== CURRENT EXECUTIVE BRIEFING ===
+- Summary: ${briefing.summary}
+- Sentiment: ${briefing.sentiment}
+- Key Insights: ${briefing.keyInsights.join(' | ')}
+- Actionable Recommendations: ${briefing.actionableRecommendations.join(' | ')}
+
+=== INVENTORY RADAR SAMPLES ===
+$criticalSamples
+
+=== ADMINISTRATOR QUESTION ===
+"$question"
+
+CRITICAL INSTRUCTIONS:
+1. Provide a direct, professional, and practical answer in Arabic using markdown formatting (bullet points, bold titles).
+2. Ground your analysis strictly on the actual numbers above.
+3. NEVER assume or claim high customer demand for any product or category if its sales are 0.
+4. Offer pragmatic next steps (e.g. reviewing marketing/pricing for unpurchased items, batching pending orders for shipping, etc.).
+''';
+
+    final body = {
+      'contents': [
+        {
+          'parts': [
+            {'text': prompt},
+          ],
+        },
+      ],
+      'generationConfig': {
+        'temperature': 0.3,
+      },
+    };
+
+    final response = await _dio.post(
+      url,
+      data: jsonEncode(body),
+      options: Options(
+        headers: {'Content-Type': 'application/json'},
+        sendTimeout: const Duration(seconds: 25),
+        receiveTimeout: const Duration(seconds: 25),
+      ),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('خطأ من خادم Gemini (${response.statusCode})');
+    }
+
+    final data = response.data;
+    if (data is! Map) {
+      throw Exception('استجابة غير صالحة من خادم Gemini');
+    }
+
+    final candidates = data['candidates'];
+    if (candidates is! List || candidates.isEmpty) {
+      throw Exception('لم يُرجع نموذج الذكاء الاصطناعي أي استجابة');
+    }
+
+    final content = candidates.first['content'];
+    final parts = content?['parts'];
+    if (parts is! List || parts.isEmpty) {
+      throw Exception('المحتوى المسترجع فارغ');
+    }
+
+    return parts.first['text']?.toString().trim() ?? 'لا توجد إجابة متاحة.';
   }
 }
 
