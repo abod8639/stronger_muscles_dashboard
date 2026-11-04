@@ -5,6 +5,7 @@ import 'package:stronger_muscles_dashboard/core/theme/responsive.dart';
 import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_providers.dart';
+import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_drafts_dialog.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_form_mixin.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_form_sections.dart';
 
@@ -179,7 +180,7 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage>
   Future<bool> _showDiscardConfirmDialog(BuildContext context) async {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final result = await showDialog<bool>(
+    final result = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Row(
@@ -190,29 +191,49 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage>
               size: 24,
             ),
             const SizedBox(width: 8),
-            const Text('تجاهل التغييرات؟'),
+            const Text('مغادرة الاستمارة؟'),
           ],
         ),
         content: const Text(
-          'هل أنت متأكد من مغادرة هذه الصفحة؟ قد تفقد كافة البيانات والتعديلات غير المحفوظة.',
+          'توجد تعديلات غير محفوظة. هل ترغب في حفظ التعديلات كمسودة للرجوع إليها لاحقاً أم تجاهلها؟',
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
+            onPressed: () => Navigator.of(ctx).pop('stay'),
             child: const Text('البقاء في الصفحة'),
           ),
-          FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: colorScheme.error,
-              foregroundColor: colorScheme.onError,
+          OutlinedButton(
+            style: OutlinedButton.styleFrom(
+              foregroundColor: colorScheme.error,
+              side: BorderSide(
+                color: colorScheme.error.withValues(alpha: 0.5),
+              ),
             ),
-            onPressed: () => Navigator.of(ctx).pop(true),
+            onPressed: () => Navigator.of(ctx).pop('discard'),
             child: const Text('مغادرة بدون حفظ'),
+          ),
+          FilledButton.icon(
+            style: FilledButton.styleFrom(
+              backgroundColor: colorScheme.primary,
+              foregroundColor: colorScheme.onPrimary,
+            ),
+            onPressed: () => Navigator.of(ctx).pop('save_draft'),
+            icon: const Icon(Icons.save_as_outlined, size: 18),
+            label: const Text('حفظ كمسودة ومغادرة'),
           ),
         ],
       ),
     );
-    return result ?? false;
+
+    if (result == 'save_draft') {
+      await controller.saveCurrentFormAsDraft(
+        existingProductId: widget.product?.id,
+      );
+      return true;
+    } else if (result == 'discard') {
+      return true;
+    }
+    return false;
   }
 
   @override
@@ -278,6 +299,60 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage>
                 ),
             ],
           ),
+          actions: [
+            ListenableBuilder(
+              listenable: ctrl,
+              builder: (context, _) {
+                final draftsCount = ctrl.drafts.length;
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.drafts_outlined),
+                        tooltip: 'المسودات المحفوظة ($draftsCount)',
+                        onPressed: () {
+                          ProductDraftsDialog.show(
+                            context: context,
+                            controller: ctrl,
+                            onDraftRestored: () {
+                              if (mounted) setState(() {});
+                            },
+                          );
+                        },
+                      ),
+                      if (draftsCount > 0)
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: colorScheme.primary,
+                              shape: BoxShape.circle,
+                            ),
+                            constraints: const BoxConstraints(
+                              minWidth: 16,
+                              minHeight: 16,
+                            ),
+                            child: Text(
+                              '$draftsCount',
+                              style: TextStyle(
+                                color: colorScheme.onPrimary,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ],
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(56),
             child: _buildSectionNav(colorScheme),
@@ -286,6 +361,9 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage>
         bottomNavigationBar: ProductStickyBottomBar(
           controller: ctrl,
           onSave: _onSave,
+          onSaveDraft: () => ctrl.saveCurrentFormAsDraft(
+            existingProductId: widget.product?.id,
+          ),
           isEditing: isEditing,
         ),
         body: Form(
