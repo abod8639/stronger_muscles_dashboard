@@ -25,6 +25,7 @@ class MockAiProductRepository implements AiProductRepository {
   @override
   Future<Either<Failure, AiProductSuggestionEntity>> generateProductDetails({
     required String productName,
+    String? manufacturerUrl,
     List<String>? availableCategories,
     List<String>? availableBrands,
     List<String>? availableFlavors,
@@ -264,6 +265,14 @@ void main() {
       expect(aiController.productFlavors.any((f) => f.startsWith('Chocolate')), isTrue);
       expect(aiController.productSizes.any((s) => s.size == '2.27kg'), isTrue);
       expect(aiController.isFormDirty, isTrue);
+
+      // Verify fetch with manufacturerUrl
+      final suggestionFromUrl = await aiController.fetchAiSuggestions(
+        '',
+        manufacturerUrl: 'https://example.com/product/whey-protein',
+      );
+      expect(suggestionFromUrl, isNotNull);
+      expect(suggestionFromUrl!.nameAr, 'واي بروتين جولد ستاندرد');
 
       aiController.dispose();
     });
