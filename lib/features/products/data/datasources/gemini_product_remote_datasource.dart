@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:stronger_muscles_dashboard/core/config/gemini_config.dart';
+import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/helpers/product_flavor_helper.dart';
 import '../models/ai_product_suggestion_model.dart';
 
 abstract class GeminiProductRemoteDataSource {
@@ -8,6 +9,7 @@ abstract class GeminiProductRemoteDataSource {
     required String productName,
     List<String>? availableCategories,
     List<String>? availableBrands,
+    List<String>? availableFlavors,
   });
 }
 
@@ -22,6 +24,7 @@ class GeminiProductRemoteDataSourceImpl
     required String productName,
     List<String>? availableCategories,
     List<String>? availableBrands,
+    List<String>? availableFlavors,
   }) async {
     final apiKey = GeminiConfig.getApiKey();
     if (apiKey.isEmpty) {
@@ -43,6 +46,11 @@ class GeminiProductRemoteDataSourceImpl
         ? 'Existing brands in database: ${availableBrands.join(', ')}.'
         : '';
 
+    final flavorsContext = availableFlavors != null &&
+            availableFlavors.isNotEmpty
+        ? 'Available store flavors to choose from: [${availableFlavors.join(', ')}].\nCRITICAL REQUIREMENT: You MUST ONLY select flavors from this exact list of available store flavors. NEVER invent or output any flavor outside this list. If the product has no flavors or is unflavored, select "No Flavor".'
+        : '';
+
     final prompt = '''
 You are an expert sports nutrition, fitness supplements, and bodybuilding product database curator.
 The user wants to catalog this product: "$productName".
@@ -50,6 +58,11 @@ The user wants to catalog this product: "$productName".
 Generate accurate, professional, and authentic product information.
 $categoriesContext
 $brandsContext
+$flavorsContext
+
+CRITICAL RULES FOR UNITS & FLAVORS:
+1. WEIGHTS & SIZES: Must ONLY use metric units: grams ('g') or kilograms ('kg') (e.g. '500g', '1kg', '2kg', '2.27kg', '4.54kg'). NEVER use pounds ('lbs' or 'lb') or ounces ('oz'). If a product is known by pounds (e.g. 5 lbs or 2 lbs), convert it strictly to metric (5 lbs -> '2.27kg', 2 lbs -> '907g', 10 lbs -> '4.54kg').
+2. FLAVORS: Pick ONLY from the available store flavors list provided. Do NOT invent new flavors.
 
 Return ONLY a valid JSON object matching this exact schema:
 {
@@ -70,10 +83,10 @@ Return ONLY a valid JSON object matching this exact schema:
   },
   "allergens": ["حليب", "صويا"],
   "tags": ["واي بروتين", "بروتين", "استشفاء عضلي", "عضلات صافية"],
-  "flavors": ["شوكولاتة دبل ريتش | Double Rich Chocolate", "فانيليا آيس كريم | Vanilla Ice Cream", "فراولة لذيذة | Strawberry"],
+  "flavors": ["Chocolate", "Vanilla"],
   "suggested_sizes": [
-    {"size": "2 Lbs", "weight": "907g", "servings": 29},
-    {"size": "5 Lbs", "weight": "2.27kg", "servings": 73}
+    {"size": "907g", "weight": "907g", "servings": 29},
+    {"size": "2.27kg", "weight": "2.27kg", "servings": 73}
   ],
   "sku_prefix": "e.g. ON-GSW"
 }
@@ -141,6 +154,18 @@ Return ONLY a valid JSON object matching this exact schema:
     if (decoded is! Map<String, dynamic>) {
       throw Exception('صيغة البيانات المسترجعة ليست JSON صالحاً');
     }
+
+    // Strictly enforce existing store flavors
+    final storeFlavors = ProductFlavorHelper.getAvailableStoreFlavors();
+    final rawFlavors = (decoded['flavors'] as List<dynamic>?)
+            ?.map((e) => e.toString())
+            .toList() ??
+        [];
+    final filteredFlavors = ProductFlavorHelper.filterOnlyExistingFlavors(
+      rawFlavors,
+      storeFlavors,
+    );
+    decoded['flavors'] = filteredFlavors;
 
     return AiProductSuggestionModel.fromJson(decoded);
   }
