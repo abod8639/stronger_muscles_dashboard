@@ -1,4 +1,7 @@
+import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:stronger_muscles_dashboard/core/config/gemini_config.dart';
 import 'package:stronger_muscles_dashboard/core/storage/app_storage.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/data/datasources/ai_dashboard_local_datasource.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/data/datasources/gemini_dashboard_remote_datasource.dart';
@@ -8,6 +11,8 @@ import 'package:stronger_muscles_dashboard/features/dashboard/domain/entities/ai
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/entities/dashboard_stats_entity.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/repositories/ai_dashboard_repository.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/usecases/get_ai_executive_briefing_usecase.dart';
+import 'package:stronger_muscles_dashboard/features/orders/orders_feature.dart';
+import 'package:stronger_muscles_dashboard/features/products/products_feature.dart';
 
 class MockGeminiDashboardRemoteDataSource
     implements GeminiDashboardRemoteDataSource {
@@ -63,6 +68,7 @@ void main() {
             productId: 'P-1',
             productName: 'واي بروتين',
             currentStock: 0,
+            unitsSold: 15,
             riskLevel: 'out_of_stock',
             suggestedAction: 'شحنة فورية',
             categoryName: 'بروتين',
@@ -83,8 +89,24 @@ void main() {
       expect(restored.actionableRecommendations, contains('مراجعة شركة الشحن'));
       expect(restored.stockAlerts.length, 1);
       expect(restored.stockAlerts.first.isOutOfStock, isTrue);
+      expect(restored.stockAlerts.first.unitsSold, 15);
+      expect(restored.stockAlerts.first.hasActualSales, isTrue);
       expect(restored.criticalAlertsCount, 1);
       expect(restored.modelUsed, 'gemini-3.5-flash');
+    });
+
+    test('StockRadarAlertEntity hasActualSales is false when unitsSold is 0', () {
+      const alert = StockRadarAlertEntity(
+        productId: 'P-2',
+        productName: 'حزمة بناء العضلات أنيمال',
+        currentStock: 5,
+        unitsSold: 0,
+        riskLevel: 'critical',
+        suggestedAction: 'مراجعة التسعير',
+      );
+      expect(alert.hasActualSales, isFalse);
+      expect(alert.isCritical, isTrue);
+      expect(alert.unitsSold, 0);
     });
   });
 
@@ -187,4 +209,184 @@ void main() {
       expect(mockRemote.callCount, 2); // Called again!
     });
   });
+
+  group('GeminiDashboardRemoteDataSourceImpl Anti-Hallucination Guardrails Tests', () {
+    late Dio dio;
+
+    setUp(() async {
+      await GetStorage.init();
+      await GeminiConfig.saveApiKey('test-api-key-12345');
+      dio = Dio();
+    });
+
+    test('sanitizes hallucinated demand for zero-sales products and preserves real sales metrics', () async {
+      // 1. Prepare products:
+      // Product A: 5 in stock, NEVER ordered (0 sales)
+      final productA = ProductEntity(
+        id: 'prod-a',
+        nameAr: 'حزمة بناء العضلات أنيمال',
+        nameEn: 'Animal Muscle Gain Stack',
+        descriptionAr: 'وصف',
+        descriptionEn: 'desc',
+        price: 50000,
+        stockQuantity: 5,
+        categoryId: 'cat-mass',
+        imageUrls: const [],
+        isActive: true,
+        isFeatured: false,
+      );
+
+      // Product B: 2 in stock, 10 units sold across delivered orders
+      final productB = ProductEntity(
+        id: 'prod-b',
+        nameAr: 'واي بروتين جولد',
+        nameEn: 'Gold Standard Whey',
+        descriptionAr: 'وصف',
+        descriptionEn: 'desc',
+        price: 80000,
+        stockQuantity: 2,
+        categoryId: 'cat-protein',
+        imageUrls: const [],
+        isActive: true,
+        isFeatured: false,
+      );
+
+      final orderDelivered = OrderEntity(
+        id: 'order-1',
+        userId: 'user-1',
+        userName: 'أحمد',
+        userEmail: 'ahmed@example.com',
+        totalAmount: 800000,
+        subtotal: 800000,
+        status: OrderStatus.delivered,
+        paymentStatus: PaymentStatus.paid,
+        paymentMethod: 'cash',
+        addressId: 'addr-1',
+        orderDate: DateTime.now(),
+        items: const [
+          OrderItemEntity(
+            id: 'item-1',
+            productId: 'prod-b',
+            productName: 'واي بروتين جولد',
+            quantity: 10,
+            unitPrice: 80000,
+            subtotal: 800000,
+          ),
+        ],
+      );
+
+      final stats = DashboardStatsEntity(
+        totalRevenue: 800000,
+        totalOrders: 1,
+        totalUsers: 1,
+        totalProducts: 2,
+        orders: [orderDelivered],
+        products: [productA, productB],
+        categories: const [],
+        pendingOrders: 0,
+        processingOrders: 0,
+        shippedOrders: 0,
+        deliveredOrders: 1,
+        cancelledOrders: 0,
+        inStock: 0,
+        lowStock: 2,
+        outOfStock: 0,
+      );
+
+      // 2. Setup mock response where LLM hallucinated demand on product A:
+      final fakeGeminiJson = {
+        'candidates': [
+          {
+            'content': {
+              'parts': [
+                {
+                  'text': jsonEncode({
+                    'summary': 'أداء مبيعات واعد مع وجود نقص في بعض الأصناف.',
+                    'sentiment': 'needs_attention',
+                    'key_insights': [
+                      'مبيعات قوية لمنتج واي بروتين جولد',
+                      'الاستفادة من الطلب على منتجات الضخامة وبناء العضلات',
+                    ],
+                    'recommendations': [
+                      'إصدار أوامر شراء فورية لـ حزمة بناء العضلات أنيمال لتجنب نفاد المخزون',
+                    ],
+                    'stock_alerts': [
+                      {
+                        'product_id': 'prod-a',
+                        'product_name': 'حزمة بناء العضلات أنيمال',
+                        'current_stock': 5,
+                        'risk_level': 'critical',
+                        'suggested_action': 'طلب توريد عاجل لـ 40 وحدة إضافية نظراً لارتفاع الطلب على فئة Mass-Gainer',
+                        'category_name': 'Mass-Gainer',
+                      },
+                      {
+                        'product_id': 'prod-b',
+                        'product_name': 'واي بروتين جولد',
+                        'current_stock': 2,
+                        'risk_level': 'critical',
+                        'suggested_action': 'إعادة طلب 20 وحدة لتغطية المبيعات المستمرة',
+                        'category_name': 'بروتينات',
+                      },
+                    ],
+                  }),
+                },
+              ],
+            },
+          },
+        ],
+      };
+
+      dio.httpClientAdapter = _MockHttpClientAdapter((options) async {
+        return ResponseBody.fromString(
+          jsonEncode(fakeGeminiJson),
+          200,
+          headers: {
+            Headers.contentTypeHeader: [Headers.jsonContentType],
+          },
+        );
+      });
+
+      final remoteDataSource = GeminiDashboardRemoteDataSourceImpl(dio: dio);
+      final briefing = await remoteDataSource.generateBriefing(stats);
+
+      // Verify Product A (0 sales):
+      final alertA = briefing.stockAlerts.firstWhere((a) => a.productId == 'prod-a');
+      expect(alertA.unitsSold, 0);
+      expect(alertA.hasActualSales, isFalse);
+      // The hallucinated demand claim must be sanitized!
+      expect(alertA.suggestedAction.contains('ارتفاع الطلب'), isFalse);
+      expect(alertA.suggestedAction.contains('طلب توريد عاجل لـ 40 وحدة'), isFalse);
+      expect(alertA.suggestedAction.contains('عدم وجود طلبات سابقة'), isTrue);
+
+      // Verify Product B (10 sales):
+      final alertB = briefing.stockAlerts.firstWhere((a) => a.productId == 'prod-b');
+      expect(alertB.unitsSold, 10);
+      expect(alertB.hasActualSales, isTrue);
+      expect(alertB.suggestedAction, 'إعادة طلب 20 وحدة لتغطية المبيعات المستمرة');
+
+      // Verify recommendation for Product A was sanitized
+      final recForA = briefing.actionableRecommendations.firstWhere(
+        (r) => r.contains('حزمة بناء العضلات أنيمال'),
+      );
+      expect(recForA.contains('أوامر شراء فورية'), isFalse);
+      expect(recForA.contains('مراجعة أسباب عدم طلب'), isTrue);
+    });
+  });
+}
+
+class _MockHttpClientAdapter implements HttpClientAdapter {
+  final Future<ResponseBody> Function(RequestOptions options) handler;
+  _MockHttpClientAdapter(this.handler);
+
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<dynamic>? requestStream,
+    Future<void>? cancelFuture,
+  ) async {
+    return handler(options);
+  }
+
+  @override
+  void close({bool force = false}) {}
 }
