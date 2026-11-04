@@ -620,7 +620,9 @@ class _AiExecutiveBriefingCardState
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
-                      '${alert.productName} (المتبقي: ${alert.currentStock}) - ${alert.suggestedAction}',
+                      alert.hasActualSales
+                          ? '${alert.productName} (المتبقي: ${alert.currentStock} | مبيعات: ${alert.unitsSold}) - ${alert.suggestedAction}'
+                          : '${alert.productName} (المتبقي: ${alert.currentStock} | لم يُطلب بعد) - ${alert.suggestedAction}',
                       style: theme.textTheme.bodySmall?.copyWith(
                         fontSize: 11.5,
                         color: colorScheme.onSurface,
