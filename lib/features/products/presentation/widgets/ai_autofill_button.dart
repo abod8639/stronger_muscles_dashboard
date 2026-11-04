@@ -8,23 +8,35 @@ import 'ai_autofill_dialog.dart';
 class AiAutofillButton extends StatelessWidget {
   final ProductsController controller;
   final String productName;
+  final String? manufacturerUrl;
   final ValueChanged<String>? onCategoryApplied;
 
   const AiAutofillButton({
     super.key,
     required this.controller,
     required this.productName,
+    this.manufacturerUrl,
     this.onCategoryApplied,
   });
 
   Future<void> _handleGenerate(BuildContext context) async {
     final query = productName.trim();
-    if (query.isEmpty) {
-      AppFeedback.showWarning('يرجى كتابة اسم المنتج أولاً لتشغيل المساعد الذكي');
+    final url = (manufacturerUrl ??
+            controller.textcontrollers['manufacturer_url']?.text ??
+            '')
+        .trim();
+
+    if (query.isEmpty && url.isEmpty) {
+      AppFeedback.showWarning(
+        'يرجى كتابة اسم المنتج أو وضع رابط الشركة المصنعة أولاً لتشغيل المساعد الذكي',
+      );
       return;
     }
 
-    final suggestion = await controller.fetchAiSuggestions(query);
+    final suggestion = await controller.fetchAiSuggestions(
+      query,
+      manufacturerUrl: url.isNotEmpty ? url : null,
+    );
     if (suggestion != null && context.mounted) {
       AiAutofillDialog.show(
         context: context,
