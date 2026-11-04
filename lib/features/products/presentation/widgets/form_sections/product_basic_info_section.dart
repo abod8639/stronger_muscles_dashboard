@@ -85,52 +85,135 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
                   : ctrl.textcontrollers['name_en']!.text;
 
               return Container(
-                margin: const EdgeInsets.only(bottom: 16),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                margin: const EdgeInsets.only(bottom: 20),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: colorScheme.primaryContainer.withValues(
                     alpha: isDark ? 0.2 : 0.35,
                   ),
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                     color: colorScheme.primary.withValues(alpha: 0.25),
                   ),
                 ),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(
-                      Icons.auto_awesome_rounded,
-                      size: 20,
-                      color: colorScheme.primary,
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'المساعد الذكي (Google Gemini)',
-                            style: theme.textTheme.labelMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: colorScheme.primary,
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final isCompact = constraints.maxWidth < 650;
+                        final headerContent = Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: colorScheme.primary.withValues(
+                                  alpha: isDark ? 0.25 : 0.15,
+                                ),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.auto_awesome_rounded,
+                                size: 20,
+                                color: colorScheme.primary,
+                              ),
                             ),
-                          ),
-                          Text(
-                            'اكتب اسم المنتج ثم اضغط لتعبئة المواصفات والقيم الغذائية تلقائياً',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                              fontSize: 11,
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'المساعد الذكي (Google Gemini)',
+                                        style: theme.textTheme.titleSmall?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: colorScheme.primary,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 6,
+                                          vertical: 2,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: colorScheme.primary.withValues(
+                                            alpha: 0.12,
+                                          ),
+                                          borderRadius: BorderRadius.circular(6),
+                                        ),
+                                        child: Text(
+                                          'AI Autofill',
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            color: colorScheme.primary,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 3),
+                                  Text(
+                                    'اكتب اسم المنتج أو ضع رابط الشركة المصنعة لملء المواصفات والقيم الغذائية بدقة عالية',
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: colorScheme.onSurfaceVariant,
+                                      fontSize: 11.5,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        );
+
+                        if (isCompact) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              headerContent,
+                              const SizedBox(height: 12),
+                              AiAutofillButton(
+                                controller: ctrl,
+                                productName: currentName.isNotEmpty
+                                    ? currentName
+                                    : fallbackName,
+                                manufacturerUrl: ctrl
+                                    .textcontrollers['manufacturer_url']?.text,
+                                onCategoryApplied: widget.onCategorySelected,
+                              ),
+                            ],
+                          );
+                        }
+
+                        return Row(
+                          children: [
+                            Expanded(child: headerContent),
+                            const SizedBox(width: 12),
+                            AiAutofillButton(
+                              controller: ctrl,
+                              productName: currentName.isNotEmpty
+                                  ? currentName
+                                  : fallbackName,
+                              manufacturerUrl: ctrl
+                                  .textcontrollers['manufacturer_url']?.text,
+                              onCategoryApplied: widget.onCategorySelected,
+                            ),
+                          ],
+                        );
+                      },
                     ),
-                    const SizedBox(width: 8),
-                    AiAutofillButton(
-                      controller: ctrl,
-                      productName:
-                          currentName.isNotEmpty ? currentName : fallbackName,
-                      onCategoryApplied: widget.onCategorySelected,
+                    const SizedBox(height: 14),
+                    ModernTextField(
+                      controller: ctrl.textcontrollers['manufacturer_url']!,
+                      label: 'رابط المنتج من الشركة المصنعة (اختياري)',
+                      hint:
+                          'مثال: https://www.optimumnutrition.com/en-us/product/...',
+                      icon: Icons.link_rounded,
+                      keyboardType: TextInputType.url,
+                      onChanged: (_) => ctrl.markFormDirty(),
                     ),
                   ],
                 ),
