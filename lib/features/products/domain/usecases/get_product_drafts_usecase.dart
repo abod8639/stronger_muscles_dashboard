@@ -12,3 +12,4 @@ class GetProductDraftsUseCase {
     return _repository.getDrafts();
   }
 }
+
