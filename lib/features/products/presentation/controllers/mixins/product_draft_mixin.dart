@@ -160,6 +160,7 @@ mixin ProductDraftMixin
     tags.clear();
     allergens.clear();
     clearSizeControllers();
+    productSizes.clear();
     clearVariants();
 
     // 1. Populate text controllers
