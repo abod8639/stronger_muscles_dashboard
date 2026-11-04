@@ -12,6 +12,7 @@ import 'package:stronger_muscles_dashboard/core/components/section_card.dart';
 import 'package:stronger_muscles_dashboard/core/theme/responsive.dart';
 import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
+import 'package:stronger_muscles_dashboard/core/config/gemini_config.dart';
 import 'package:stronger_muscles_dashboard/features/auth/auth_feature.dart';
 import 'package:stronger_muscles_dashboard/features/users/users_feature.dart';
 import '../../domain/entities/settings_entity.dart';
@@ -38,6 +39,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   late final TextEditingController _deliveryFeeController;
   late final TextEditingController _freeDeliveryController;
   late final TextEditingController _taxRateController;
+  late final TextEditingController _geminiApiKeyController;
+  late String _selectedGeminiModel;
+  bool _isVerifyingGeminiKey = false;
+  bool? _isGeminiKeyValid;
+  String? _geminiVerifyMessage;
+  bool _obscureGeminiKey = true;
 
   @override
   void initState() {
@@ -60,6 +67,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     _taxRateController = TextEditingController(
       text: _formatAmount(settings.taxRate),
     );
+    _geminiApiKeyController = TextEditingController(
+      text: GeminiConfig.getApiKey(),
+    );
+    _selectedGeminiModel = GeminiConfig.getModel();
   }
 
   @override
@@ -71,6 +82,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     _deliveryFeeController.dispose();
     _freeDeliveryController.dispose();
     _taxRateController.dispose();
+    _geminiApiKeyController.dispose();
     super.dispose();
   }
 
@@ -180,6 +192,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     _buildStoreOperationsCard(state),
                     gap,
                     _buildStoreDetailsCard(state),
+                    gap,
+                    _buildGeminiAiCard(),
                     gap,
                     _buildSystemMaintenanceCard(state),
                     gap,
@@ -356,6 +370,201 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   : const Icon(Icons.save_rounded),
               label: const Text('حفظ التعديلات'),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGeminiAiCard() {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return SectionCard(
+      title: 'إعدادات الذكاء الاصطناعي (Google Gemini AI)',
+      subtitle:
+          'تكوين مفتاح API واختيار النموذج للتعرف التلقائي وتعبئة مواصفات المنتجات',
+      icon: Icons.auto_awesome_rounded,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                flex: 3,
+                child: TextField(
+                  controller: _geminiApiKeyController,
+                  obscureText: _obscureGeminiKey,
+                  decoration: InputDecoration(
+                    labelText: 'مفتاح Google Gemini API Key',
+                    hintText: 'AIzaSy...',
+                    filled: true,
+                    fillColor: colorScheme.surfaceContainerHighest.withValues(
+                      alpha: 0.3,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    prefixIcon: const Icon(Icons.key_rounded),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureGeminiKey
+                            ? Icons.visibility_off_rounded
+                            : Icons.visibility_rounded,
+                      ),
+                      onPressed: () => setState(
+                        () => _obscureGeminiKey = !_obscureGeminiKey,
+                      ),
+                    ),
+                    helperText:
+                        'يُستخدم لملء مواصفات المنتجات والقيم الغذائية تلقائياً من اسم المنتج',
+                  ),
+                  onChanged: (_) {
+                    if (_isGeminiKeyValid != null) {
+                      setState(() {
+                        _isGeminiKeyValid = null;
+                        _geminiVerifyMessage = null;
+                      });
+                    }
+                  },
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                flex: 2,
+                child: DropdownButtonFormField<String>(
+                  initialValue: _selectedGeminiModel,
+                  decoration: InputDecoration(
+                    labelText: 'نموذج Gemini المستخدم',
+                    filled: true,
+                    fillColor: colorScheme.surfaceContainerHighest.withValues(
+                      alpha: 0.3,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    prefixIcon: const Icon(Icons.memory_rounded),
+                  ),
+                  items: GeminiConfig.availableModels.map((m) {
+                    final id = m['id']!;
+                    final badge = id == 'gemini-1.5-flash'
+                        ? 'موصى به'
+                        : id == 'gemini-2.0-flash'
+                            ? 'الأحدث'
+                            : 'متقدم';
+                    return DropdownMenuItem<String>(
+                      value: id,
+                      child: Text(
+                        '${m['name']} ($badge)',
+                        style: const TextStyle(fontSize: 13),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (v) {
+                    if (v != null) {
+                      setState(() => _selectedGeminiModel = v);
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
+          if (_geminiVerifyMessage != null) ...[
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: _isGeminiKeyValid == true
+                    ? Colors.green.withValues(alpha: isDark ? 0.2 : 0.1)
+                    : Colors.red.withValues(alpha: isDark ? 0.2 : 0.1),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: _isGeminiKeyValid == true
+                      ? Colors.green.withValues(alpha: 0.4)
+                      : Colors.red.withValues(alpha: 0.4),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    _isGeminiKeyValid == true
+                        ? Icons.check_circle_rounded
+                        : Icons.error_outline_rounded,
+                    color: _isGeminiKeyValid == true
+                        ? Colors.green
+                        : Colors.redAccent,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      _geminiVerifyMessage!,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: _isGeminiKeyValid == true
+                            ? Colors.green
+                            : Colors.redAccent,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+          const SizedBox(height: AppDesignTokens.space18),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              OutlinedButton.icon(
+                onPressed: _isVerifyingGeminiKey
+                    ? null
+                    : () async {
+                        setState(() {
+                          _isVerifyingGeminiKey = true;
+                          _geminiVerifyMessage = null;
+                        });
+
+                        final res = await GeminiConfig.verifyApiKey(
+                          _geminiApiKeyController.text,
+                          model: _selectedGeminiModel,
+                        );
+
+                        if (mounted) {
+                          setState(() {
+                            _isVerifyingGeminiKey = false;
+                            _isGeminiKeyValid = res.isValid;
+                            _geminiVerifyMessage = res.message;
+                          });
+                          if (res.isValid) {
+                            AppFeedback.showSuccess(res.message);
+                          } else {
+                            AppFeedback.showError(res.message);
+                          }
+                        }
+                      },
+                icon: _isVerifyingGeminiKey
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.verified_user_rounded, size: 18),
+                label: const Text('فحص واختبار المفتاح'),
+              ),
+              const SizedBox(width: 12),
+              FilledButton.icon(
+                onPressed: () async {
+                  final key = _geminiApiKeyController.text.trim();
+                  await GeminiConfig.saveApiKey(key);
+                  await GeminiConfig.saveModel(_selectedGeminiModel);
+                  AppFeedback.showSuccess('تم حفظ إعدادات الذكاء الاصطناعي بنجاح');
+                },
+                icon: const Icon(Icons.save_rounded, size: 18),
+                label: const Text('حفظ إعدادات الذكاء الاصطناعي'),
+              ),
+            ],
           ),
         ],
       ),
