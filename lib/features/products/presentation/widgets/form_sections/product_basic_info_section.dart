@@ -3,6 +3,7 @@ import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
 import 'package:stronger_muscles_dashboard/core/components/section_card.dart';
 import 'package:stronger_muscles_dashboard/core/components/build_modern_text_field.dart';
+import '../ai_autofill_button.dart';
 
 /// قسم البيانات الأساسية للمنتج بتصميم Neumorphism / Soft UI
 /// يتضمن مفتاح تبديل لغات ناعم، حقول إدخال مجسمة، وقائمة إكمال تلقائي ملموسة
@@ -72,6 +73,70 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // شريط المساعد الذكي Gemini AI لتعبئة الحقول بضغطة زر
+          ListenableBuilder(
+            listenable: ctrl,
+            builder: (context, _) {
+              final currentName = _selectedLang == 'ar'
+                  ? ctrl.textcontrollers['name_ar']!.text
+                  : ctrl.textcontrollers['name_en']!.text;
+              final fallbackName = ctrl.textcontrollers['name_ar']!.text.isNotEmpty
+                  ? ctrl.textcontrollers['name_ar']!.text
+                  : ctrl.textcontrollers['name_en']!.text;
+
+              return Container(
+                margin: const EdgeInsets.only(bottom: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: colorScheme.primaryContainer.withValues(
+                    alpha: isDark ? 0.2 : 0.35,
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: colorScheme.primary.withValues(alpha: 0.25),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.auto_awesome_rounded,
+                      size: 20,
+                      color: colorScheme.primary,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'المساعد الذكي (Google Gemini)',
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.primary,
+                            ),
+                          ),
+                          Text(
+                            'اكتب اسم المنتج ثم اضغط لتعبئة المواصفات والقيم الغذائية تلقائياً',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                              fontSize: 11,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    AiAutofillButton(
+                      controller: ctrl,
+                      productName:
+                          currentName.isNotEmpty ? currentName : fallbackName,
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+
           // Language-specific Name and Description (IndexedStack يحافظ على الحقول داخل شجرة الويدجت لمنع تجاوز فحص التحقق)
           IndexedStack(
             index: _selectedLang == 'ar' ? 0 : 1,
