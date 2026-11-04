@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/core/utils/weight_unit_helper.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
 import 'flavor_multi_select.dart';
 
@@ -12,17 +13,21 @@ class ProductSizeSelector extends StatelessWidget {
   final List<String> availableFlavors;
 
   final List<String> availableSizes = [
+    '250g',
     '500g',
+    '750g',
     '1kg',
+    '1.5kg',
     '2kg',
-    '4kg',
+    '2.27kg',
+    '2.5kg',
     '3kg',
+    '4kg',
+    '4.54kg',
     '5kg',
-    '2lb',
-    '5lb',
-    '10lb',
     '30 Servings',
     '60 Servings',
+    '90 Servings',
     '100 Servings',
     '120 Servings',
     '120 Caps',
@@ -258,8 +263,8 @@ class ProductSizeSelector extends StatelessWidget {
                       controller: sizeController,
                       autofocus: true,
                       decoration: const InputDecoration(
-                        hintText: "مثلاً: 1.5kg أو 180 Tabs أو 4 Lbs",
-                        labelText: "اسم الحجم المخصص",
+                        hintText: "مثال: 500g أو 2kg أو 60 Servings",
+                        labelText: "الحجم / الوزن (g - kg)",
                         prefixIcon: Icon(Icons.straighten_rounded),
                       ),
                     ),
@@ -358,7 +363,8 @@ class ProductSizeSelector extends StatelessWidget {
               ),
               FilledButton(
                 onPressed: () {
-                  final newSize = sizeController.text.trim();
+                  final rawSize = sizeController.text.trim();
+                  final newSize = WeightUnitHelper.normalizeToMetric(rawSize);
                   if (newSize.isNotEmpty &&
                       !selectedSizes.any((s) => s.size == newSize)) {
                     int? defaultServings;
