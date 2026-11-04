@@ -448,11 +448,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
                   items: GeminiConfig.availableModels.map((m) {
                     final id = m['id']!;
-                    final badge = id == 'gemini-1.5-flash'
+                    final badge = id == 'gemini-3.5-flash'
                         ? 'موصى به'
-                        : id == 'gemini-2.0-flash'
-                            ? 'الأحدث'
-                            : 'متقدم';
+                        : id == 'gemini-3.5-flash-lite'
+                            ? 'سريع جداً'
+                            : id == 'gemini-3.8-flash'
+                                ? 'الأحدث'
+                                : 'متوازن';
                     return DropdownMenuItem<String>(
                       value: id,
                       child: Text(
