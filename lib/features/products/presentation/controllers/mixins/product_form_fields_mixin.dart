@@ -38,6 +38,19 @@ mixin ProductFormFieldsMixin on ChangeNotifier {
   };
 
   // --- Form Attributes & Flags ---
+  String? _formCategoryId;
+  String? get formCategoryId => _formCategoryId;
+
+  void setFormCategoryId(String? id) {
+    final clean =
+        (id != null && id.trim().isNotEmpty && id != 'all') ? id.trim() : null;
+    if (_formCategoryId != clean) {
+      _formCategoryId = clean;
+      _isFormDirty = true;
+      notifyListeners();
+    }
+  }
+
   final List<String> productFlavors = [];
   final List<String> tags = [];
   final List<String> allergens = [];
@@ -117,6 +130,7 @@ mixin ProductFormFieldsMixin on ChangeNotifier {
     allergens.clear();
 
     if (product != null) {
+      _formCategoryId = product.categoryId;
       textcontrollers['name_ar']?.text = product.nameAr;
       textcontrollers['name_en']?.text = product.nameEn;
       textcontrollers['price']?.text = product.price.toString();
@@ -165,6 +179,7 @@ mixin ProductFormFieldsMixin on ChangeNotifier {
         productFlavors.addAll(product.flavors!);
       }
     } else {
+      _formCategoryId = null;
       for (var c in textcontrollers.values) {
         c.clear();
       }
@@ -177,6 +192,7 @@ mixin ProductFormFieldsMixin on ChangeNotifier {
 
   /// Clears all field controllers and resets all attributes
   void clearFormFields() {
+    _formCategoryId = null;
     for (var c in textcontrollers.values) {
       c.clear();
     }
