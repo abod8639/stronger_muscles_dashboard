@@ -132,6 +132,7 @@ class ProductFormPayloadBuilder {
             : 0);
 
     final skuText = textControllers['sku']?.text.trim();
+    final manufacturerUrl = textControllers['manufacturer_url']?.text.trim();
 
     return {
       'id': generatedId,
@@ -151,6 +152,8 @@ class ProductFormPayloadBuilder {
       'brand': enteredBrand,
       'brand_id': ?matchedBrandId,
       'sku': (skuText != null && skuText.isNotEmpty) ? skuText : null,
+      if (manufacturerUrl != null && manufacturerUrl.isNotEmpty)
+        'manufacturer_url': manufacturerUrl,
       'tags': tags.toList(),
       'nutrition_facts': nutritionFacts.isNotEmpty ? nutritionFacts : null,
       'is_active': isActive,
