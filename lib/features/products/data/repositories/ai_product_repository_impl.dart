@@ -13,6 +13,7 @@ class AiProductRepositoryImpl implements AiProductRepository {
   @override
   Future<Either<Failure, AiProductSuggestionEntity>> generateProductDetails({
     required String productName,
+    String? manufacturerUrl,
     List<String>? availableCategories,
     List<String>? availableBrands,
     List<String>? availableFlavors,
@@ -20,6 +21,7 @@ class AiProductRepositoryImpl implements AiProductRepository {
     try {
       final model = await _remoteDataSource.generateProductDetails(
         productName: productName,
+        manufacturerUrl: manufacturerUrl,
         availableCategories: availableCategories,
         availableBrands: availableBrands,
         availableFlavors: availableFlavors,
