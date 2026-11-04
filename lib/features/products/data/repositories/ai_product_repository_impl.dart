@@ -15,12 +15,14 @@ class AiProductRepositoryImpl implements AiProductRepository {
     required String productName,
     List<String>? availableCategories,
     List<String>? availableBrands,
+    List<String>? availableFlavors,
   }) async {
     try {
       final model = await _remoteDataSource.generateProductDetails(
         productName: productName,
         availableCategories: availableCategories,
         availableBrands: availableBrands,
+        availableFlavors: availableFlavors,
       );
       return Right(model.toEntity());
     } on DioException catch (e) {
