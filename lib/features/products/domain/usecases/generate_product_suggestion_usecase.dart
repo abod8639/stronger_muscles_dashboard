@@ -1,0 +1,24 @@
+import 'package:fpdart/fpdart.dart';
+import 'package:stronger_muscles_dashboard/core/error/failures.dart';
+import '../entities/ai_product_suggestion_entity.dart';
+import '../repositories/ai_product_repository.dart';
+
+/// UseCase to generate detailed product specifications via AI
+class GenerateProductSuggestionUseCase {
+  final AiProductRepository _repository;
+
+  const GenerateProductSuggestionUseCase(this._repository);
+
+  Future<Either<Failure, AiProductSuggestionEntity>> call({
+    required String productName,
+    List<String>? availableCategories,
+    List<String>? availableBrands,
+  }) {
+    return _repository.generateProductDetails(
+      productName: productName,
+      availableCategories: availableCategories,
+      availableBrands: availableBrands,
+    );
+  }
+}
+
