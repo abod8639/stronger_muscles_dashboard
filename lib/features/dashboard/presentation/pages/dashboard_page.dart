@@ -7,6 +7,7 @@ import 'package:stronger_muscles_dashboard/core/components/generic_empty_state.d
 import 'package:stronger_muscles_dashboard/core/components/my_refresh_indicator.dart';
 import 'package:stronger_muscles_dashboard/core/theme/responsive.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/presentation/controllers/dashboard_providers.dart';
+import '../widgets/ai_executive_briefing_card.dart';
 import '../widgets/categories_summary_section.dart';
 import '../widgets/dashboard_charts_section.dart';
 import '../widgets/dashboard_indicators_section.dart';
@@ -70,6 +71,7 @@ class DashboardPage extends ConsumerWidget {
                           icon: Icons.insights_outlined,
                         )
                       else ...[
+                        const AiExecutiveBriefingCard(),
                         const DashboardChartsSection(),
                         sectionGap,
                         const RecentOrdersSection(),
