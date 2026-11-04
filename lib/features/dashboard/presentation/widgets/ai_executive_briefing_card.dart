@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:stronger_muscles_dashboard/core/theme/responsive.dart';
 import '../../domain/entities/ai_executive_briefing_entity.dart';
 import '../controllers/dashboard_providers.dart';
+import 'ai_briefing_copilot_dialog.dart';
 import 'stock_radar_details_modal.dart';
 
 /// بطاقة التقرير التنفيذي اليومي ورادار المخزون الذكي مدعومة بـ Google Gemini AI
@@ -243,6 +244,83 @@ class _AiExecutiveBriefingCardState
               ),
             ),
 
+            // Focus Selector Bar & AI Copilot Action Row
+            if (_isExpanded)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(18, 0, 18, 10),
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  alignment: WrapAlignment.spaceBetween,
+                  children: [
+                    // Focus Chips
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _buildFocusChip(
+                            'comprehensive',
+                            'شامل 🌐',
+                            colorScheme,
+                            briefingAsync.isLoading,
+                          ),
+                          const SizedBox(width: 6),
+                          _buildFocusChip(
+                            'inventory',
+                            'المخزون 📦',
+                            colorScheme,
+                            briefingAsync.isLoading,
+                          ),
+                          const SizedBox(width: 6),
+                          _buildFocusChip(
+                            'sales',
+                            'المبيعات 📈',
+                            colorScheme,
+                            briefingAsync.isLoading,
+                          ),
+                          const SizedBox(width: 6),
+                          _buildFocusChip(
+                            'operations',
+                            'العمليات ⚡',
+                            colorScheme,
+                            briefingAsync.isLoading,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Ask Copilot Button
+                    if (briefingAsync.value != null && stats != null)
+                      FilledButton.tonalIcon(
+                        style: FilledButton.styleFrom(
+                          visualDensity: VisualDensity.compact,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                        ),
+                        onPressed: () {
+                          AiBriefingCopilotDialog.show(
+                            context: context,
+                            briefing: briefingAsync.value!,
+                            stats: stats,
+                          );
+                        },
+                        icon: const Icon(Icons.forum_outlined, size: 16),
+                        label: const Text(
+                          'اسأل الذكاء الاصطناعي',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+
             // Card Body (Collapsible)
             if (_isExpanded)
               Padding(
@@ -273,6 +351,41 @@ class _AiExecutiveBriefingCardState
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildFocusChip(
+    String id,
+    String label,
+    ColorScheme colorScheme,
+    bool isLoading,
+  ) {
+    final activeFocus =
+        ref.watch(aiExecutiveBriefingNotifierProvider.notifier).currentFocus;
+    final isSelected = activeFocus == id;
+
+    return ChoiceChip(
+      label: Text(label),
+      selected: isSelected,
+      selectedColor: colorScheme.primary,
+      labelStyle: TextStyle(
+        fontSize: 11.5,
+        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+        color: isSelected ? colorScheme.onPrimary : colorScheme.onSurface,
+      ),
+      side: BorderSide(
+        color: isSelected
+            ? colorScheme.primary
+            : colorScheme.outlineVariant.withValues(alpha: 0.3),
+      ),
+      visualDensity: VisualDensity.compact,
+      onSelected: isLoading
+          ? null
+          : (_) {
+              ref
+                  .read(aiExecutiveBriefingNotifierProvider.notifier)
+                  .changeFocus(id);
+            },
     );
   }
 
