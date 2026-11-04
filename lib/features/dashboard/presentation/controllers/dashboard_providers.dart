@@ -1,17 +1,24 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:stronger_muscles_dashboard/features/categories/categories_feature.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/data/datasources/ai_dashboard_local_datasource.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/data/datasources/dashboard_local_datasource.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/data/datasources/dashboard_remote_datasource.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/data/datasources/gemini_dashboard_remote_datasource.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/data/repositories/ai_dashboard_repository_impl.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/data/repositories/dashboard_repository_impl.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/domain/entities/ai_executive_briefing_entity.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/entities/dashboard_stats_entity.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/domain/repositories/ai_dashboard_repository.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/repositories/dashboard_repository.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/domain/usecases/get_ai_executive_briefing_usecase.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/usecases/get_dashboard_data_usecase.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/presentation/models/orders_chart_data.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/presentation/utils/dashboard_chart_calculator.dart';
 import 'package:stronger_muscles_dashboard/features/orders/orders_feature.dart';
 import 'package:stronger_muscles_dashboard/features/products/products_feature.dart';
 import 'package:stronger_muscles_dashboard/features/users/users_feature.dart';
+import 'ai_executive_briefing_notifier.dart';
 import 'dashboard_notifier.dart';
 
 // ==================== Data Layer Scoped Providers ====================
@@ -108,3 +115,36 @@ final statusTrendDataProvider =
         period,
       );
     });
+
+// ==================== Gemini AI Briefing & Stock Radar Providers ====================
+
+final geminiDashboardRemoteDataSourceProvider =
+    Provider<GeminiDashboardRemoteDataSource>((ref) {
+  final dio = ref.watch(dioProvider);
+  return GeminiDashboardRemoteDataSourceImpl(dio: dio);
+});
+
+final aiDashboardLocalDataSourceProvider =
+    Provider<AiDashboardLocalDataSource>((ref) {
+  return AiDashboardLocalDataSourceImpl();
+});
+
+final aiDashboardRepositoryProvider = Provider<AiDashboardRepository>((ref) {
+  return AiDashboardRepositoryImpl(
+    remoteDataSource: ref.watch(geminiDashboardRemoteDataSourceProvider),
+    localDataSource: ref.watch(aiDashboardLocalDataSourceProvider),
+  );
+});
+
+final getAiExecutiveBriefingUseCaseProvider =
+    Provider<GetAiExecutiveBriefingUseCase>((ref) {
+  return GetAiExecutiveBriefingUseCase(
+    ref.watch(aiDashboardRepositoryProvider),
+  );
+});
+
+/// AsyncNotifier provider managing the AI executive briefing and stock radar state
+final aiExecutiveBriefingNotifierProvider = AsyncNotifierProvider<
+    AiExecutiveBriefingNotifier, AiExecutiveBriefingEntity?>(
+  AiExecutiveBriefingNotifier.new,
+);
