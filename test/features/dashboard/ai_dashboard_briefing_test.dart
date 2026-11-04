@@ -10,6 +10,7 @@ import 'package:stronger_muscles_dashboard/features/dashboard/data/repositories/
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/entities/ai_executive_briefing_entity.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/entities/dashboard_stats_entity.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/repositories/ai_dashboard_repository.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/domain/usecases/ask_ai_executive_copilot_usecase.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/usecases/get_ai_executive_briefing_usecase.dart';
 import 'package:stronger_muscles_dashboard/features/orders/orders_feature.dart';
 import 'package:stronger_muscles_dashboard/features/products/products_feature.dart';
@@ -17,17 +18,21 @@ import 'package:stronger_muscles_dashboard/features/products/products_feature.da
 class MockGeminiDashboardRemoteDataSource
     implements GeminiDashboardRemoteDataSource {
   int callCount = 0;
+  String? lastFocus;
   AiExecutiveBriefingModel? nextModel;
 
   @override
   Future<AiExecutiveBriefingModel> generateBriefing(
-    DashboardStatsEntity stats,
-  ) async {
+    DashboardStatsEntity stats, {
+    String focus = 'comprehensive',
+  }) async {
     callCount++;
+    lastFocus = focus;
     return nextModel ??
         AiExecutiveBriefingModel(
           summary: 'أداء مبيعات ممتاز لليوم مدفوعاً بطلبات البروتين.',
           sentiment: 'positive',
+          reportFocus: focus,
           keyInsights: const [
             'نمو إجمالي الإيرادات بنسبة 18%',
             'استقرار معدل إلغاء الطلبات عند 1%',
@@ -49,6 +54,15 @@ class MockGeminiDashboardRemoteDataSource
           generatedAt: DateTime.now(),
           modelUsed: 'gemini-3.5-flash',
         );
+  }
+
+  @override
+  Future<String> askBriefingQuestion({
+    required AiExecutiveBriefingEntity briefing,
+    required DashboardStatsEntity stats,
+    required String question,
+  }) async {
+    return 'إجابة تجريبية للسؤال: $question';
   }
 }
 
@@ -162,6 +176,41 @@ void main() {
       );
       expect(cached, isNull);
     });
+
+    test('isolates cache between different focus modes', () async {
+      final compModel = AiExecutiveBriefingModel(
+        summary: 'ملخص شامل',
+        sentiment: 'positive',
+        reportFocus: 'comprehensive',
+        keyInsights: const [],
+        actionableRecommendations: const [],
+        stockAlerts: const [],
+        generatedAt: DateTime.now(),
+        modelUsed: 'gemini-3.5-flash',
+      );
+
+      final invModel = AiExecutiveBriefingModel(
+        summary: 'ملخص المخزون',
+        sentiment: 'needs_attention',
+        reportFocus: 'inventory',
+        keyInsights: const [],
+        actionableRecommendations: const [],
+        stockAlerts: const [],
+        generatedAt: DateTime.now(),
+        modelUsed: 'gemini-3.5-flash',
+      );
+
+      await localDataSource.cacheBriefing(compModel, focus: 'comprehensive');
+      await localDataSource.cacheBriefing(invModel, focus: 'inventory');
+
+      final cachedComp =
+          await localDataSource.getCachedBriefing(focus: 'comprehensive');
+      final cachedInv =
+          await localDataSource.getCachedBriefing(focus: 'inventory');
+
+      expect(cachedComp?.summary, 'ملخص شامل');
+      expect(cachedInv?.summary, 'ملخص المخزون');
+    });
   });
 
   group('AiDashboardRepositoryImpl & UseCase Tests', () {
@@ -207,6 +256,40 @@ void main() {
       final result3 = await useCase(stats: stats, forceRefresh: true);
       expect(result3.isRight(), isTrue);
       expect(mockRemote.callCount, 2); // Called again!
+    });
+
+    test('generateBriefing passes focus mode to remote and repository', () async {
+      const stats = DashboardStatsEntity.initial();
+      final result = await useCase(stats: stats, focus: 'inventory', forceRefresh: true);
+      expect(result.isRight(), isTrue);
+      expect(mockRemote.lastFocus, 'inventory');
+    });
+
+    test('AskAiExecutiveCopilotUseCase returns answer from repository', () async {
+      final copilotUseCase = AskAiExecutiveCopilotUseCase(repository);
+      const stats = DashboardStatsEntity.initial();
+      final briefing = AiExecutiveBriefingEntity(
+        summary: 'ملخص',
+        sentiment: 'positive',
+        reportFocus: 'comprehensive',
+        keyInsights: const [],
+        actionableRecommendations: const [],
+        stockAlerts: const [],
+        generatedAt: DateTime.now(),
+        modelUsed: 'gemini-3.5-flash',
+      );
+
+      final result = await copilotUseCase(
+        briefing: briefing,
+        stats: stats,
+        question: 'كيف نسرع الطلبات؟',
+      );
+
+      expect(result.isRight(), isTrue);
+      result.fold(
+        (f) => fail('Should succeed'),
+        (answer) => expect(answer, contains('إجابة تجريبية للسؤال: كيف نسرع الطلبات؟')),
+      );
     });
   });
 
