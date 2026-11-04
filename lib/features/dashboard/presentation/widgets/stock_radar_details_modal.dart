@@ -402,6 +402,35 @@ class _StockRadarDetailsModalState extends State<StockRadarDetailsModal> {
                 Row(
                   children: [
                     Icon(
+                      alert.hasActualSales
+                          ? Icons.shopping_bag_outlined
+                          : Icons.inventory_2_outlined,
+                      size: 13,
+                      color: alert.hasActualSales
+                          ? Colors.teal.shade700
+                          : colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      alert.hasActualSales
+                          ? 'المبيعات الفعلية: ${alert.unitsSold} وحدة'
+                          : 'المبيعات الفعلية: لم يُطلب بعد (0 مبيعات)',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        fontSize: 11,
+                        fontWeight: alert.hasActualSales
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                        color: alert.hasActualSales
+                            ? Colors.teal.shade700
+                            : colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Icon(
                       Icons.auto_awesome_rounded,
                       size: 13,
                       color: colorScheme.primary,
