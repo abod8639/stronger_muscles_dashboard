@@ -11,16 +11,20 @@ class GetAiExecutiveBriefingUseCase {
 
   Future<Either<Failure, AiExecutiveBriefingEntity>> call({
     required DashboardStatsEntity stats,
+    String focus = 'comprehensive',
     bool forceRefresh = false,
   }) {
     return _repository.generateBriefing(
       stats: stats,
+      focus: focus,
       forceRefresh: forceRefresh,
     );
   }
 
-  Future<Either<Failure, AiExecutiveBriefingEntity?>> getCached() {
-    return _repository.getCachedBriefing();
+  Future<Either<Failure, AiExecutiveBriefingEntity?>> getCached({
+    String focus = 'comprehensive',
+  }) {
+    return _repository.getCachedBriefing(focus: focus);
   }
 }
 
