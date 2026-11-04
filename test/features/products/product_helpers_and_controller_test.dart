@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:stronger_muscles_dashboard/core/config/gemini_config.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
+import 'package:stronger_muscles_dashboard/core/utils/weight_unit_helper.dart';
 import 'package:stronger_muscles_dashboard/features/brands/domain/entities/brand_entity.dart';
 import 'package:stronger_muscles_dashboard/features/brands/domain/repositories/brand_repository.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
@@ -17,6 +18,7 @@ import 'package:stronger_muscles_dashboard/features/products/domain/usecases/del
 import 'package:stronger_muscles_dashboard/features/products/domain/usecases/generate_product_suggestion_usecase.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/usecases/update_product_usecase.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/usecases/upload_product_image_usecase.dart';
+import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/helpers/product_flavor_helper.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_controller.dart';
 
 class MockAiProductRepository implements AiProductRepository {
@@ -25,6 +27,7 @@ class MockAiProductRepository implements AiProductRepository {
     required String productName,
     List<String>? availableCategories,
     List<String>? availableBrands,
+    List<String>? availableFlavors,
   }) async {
     return const Right(
       AiProductSuggestionEntity(
@@ -257,8 +260,8 @@ void main() {
       expect(aiController.textcontrollers['calories']?.text, '120');
       expect(aiController.textcontrollers['protein']?.text, '24g');
       expect(aiController.allergens, contains('حليب'));
-      expect(aiController.productFlavors, contains('شوكولاتة'));
-      expect(aiController.productSizes.any((s) => s.size == '5 Lbs'), isTrue);
+      expect(aiController.productFlavors.any((f) => f.startsWith('Chocolate')), isTrue);
+      expect(aiController.productSizes.any((s) => s.size == '2.27kg'), isTrue);
       expect(aiController.isFormDirty, isTrue);
 
       aiController.dispose();
@@ -308,6 +311,81 @@ void main() {
       expect(entity.servingsPerContainer, 60);
       expect(entity.tags, contains('كرياتين'));
       expect(entity.skuPrefix, 'DYM-CRE');
+    });
+
+    test('AiProductSuggestionModel normalizes imperial sizes and weights to metric', () {
+      final json = {
+        'name_ar': 'واي بروتين',
+        'name_en': 'Whey Protein',
+        'desc_ar': 'وصف',
+        'desc_en': 'Desc',
+        'suggested_sizes': [
+          {'size': '5 lbs', 'weight': '5 lbs', 'servings': 74},
+          {'size': '2 lb', 'weight': '2 lb', 'servings': 29},
+          {'size': '10 lbs', 'weight': '10 lbs', 'servings': 148},
+        ],
+      };
+
+      final model = AiProductSuggestionModel.fromJson(json);
+      expect(model.suggestedSizes[0]['size'], '2.27kg');
+      expect(model.suggestedSizes[0]['weight'], '2.27kg');
+      expect(model.suggestedSizes[1]['size'], '907g');
+      expect(model.suggestedSizes[2]['size'], '4.54kg');
+    });
+  });
+
+  group('WeightUnitHelper Tests', () {
+    test('converts common supplement pounds to exact metric values', () {
+      expect(WeightUnitHelper.normalizeToMetric('5 lbs'), '2.27kg');
+      expect(WeightUnitHelper.normalizeToMetric('5lb'), '2.27kg');
+      expect(WeightUnitHelper.normalizeToMetric('2 lbs'), '907g');
+      expect(WeightUnitHelper.normalizeToMetric('2lb'), '907g');
+      expect(WeightUnitHelper.normalizeToMetric('10 lbs'), '4.54kg');
+      expect(WeightUnitHelper.normalizeToMetric('1 lb'), '454g');
+      expect(WeightUnitHelper.normalizeToMetric('2.2 lbs'), '1kg');
+    });
+
+    test('preserves and standardizes grams and kilograms', () {
+      expect(WeightUnitHelper.normalizeToMetric('500g'), '500g');
+      expect(WeightUnitHelper.normalizeToMetric('1kg'), '1kg');
+      expect(WeightUnitHelper.normalizeToMetric('2.5kg'), '2.5kg');
+      expect(WeightUnitHelper.normalizeToMetric('1000g'), '1kg');
+    });
+  });
+
+  group('ProductFlavorHelper Tests', () {
+    test('getAvailableStoreFlavors returns predefined presets with images', () {
+      final flavors = ProductFlavorHelper.getAvailableStoreFlavors();
+      expect(flavors.any((f) => f.name == 'Chocolate'), isTrue);
+      expect(flavors.any((f) => f.name == 'Vanilla'), isTrue);
+      expect(flavors.any((f) => f.name == 'No Flavor'), isTrue);
+    });
+
+    test('matchToExistingFlavor maps Arabic and English synonyms to store presets', () {
+      final flavors = ProductFlavorHelper.getAvailableStoreFlavors();
+
+      final choco = ProductFlavorHelper.matchToExistingFlavor('شوكولاتة دبل', flavors);
+      expect(choco?.name, 'Chocolate');
+      expect(choco?.imageUrl, isNotNull);
+
+      final vanilla = ProductFlavorHelper.matchToExistingFlavor('فانيليا آيس كريم', flavors);
+      expect(vanilla?.name, 'Vanilla');
+
+      final unknown = ProductFlavorHelper.matchToExistingFlavor('UnknownAlienFruit', flavors);
+      expect(unknown, isNull);
+    });
+
+    test('filterOnlyExistingFlavors drops unknown flavors and keeps canonical store flavors', () {
+      final flavors = ProductFlavorHelper.getAvailableStoreFlavors();
+      final filtered = ProductFlavorHelper.filterOnlyExistingFlavors(
+        ['شوكولاتة', 'UnknownAlienFruit', 'Strawberry', 'فراولة'],
+        flavors,
+      );
+
+      // Drops UnknownAlienFruit and deduplicates Strawberry / فراولة
+      expect(filtered.length, 2);
+      expect(filtered.any((f) => f.startsWith('Chocolate')), isTrue);
+      expect(filtered.any((f) => f.startsWith('Strawberry')), isTrue);
     });
   });
 }
