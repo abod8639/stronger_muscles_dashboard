@@ -12,3 +12,4 @@ class SaveProductDraftUseCase {
     return _repository.saveDraft(draft);
   }
 }
+
