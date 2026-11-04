@@ -6,6 +6,7 @@ import '../entities/ai_product_suggestion_entity.dart';
 abstract class AiProductRepository {
   Future<Either<Failure, AiProductSuggestionEntity>> generateProductDetails({
     required String productName,
+    String? manufacturerUrl,
     List<String>? availableCategories,
     List<String>? availableBrands,
     List<String>? availableFlavors,
