@@ -13,11 +13,13 @@ class GenerateProductSuggestionUseCase {
     required String productName,
     List<String>? availableCategories,
     List<String>? availableBrands,
+    List<String>? availableFlavors,
   }) {
     return _repository.generateProductDetails(
       productName: productName,
       availableCategories: availableCategories,
       availableBrands: availableBrands,
+      availableFlavors: availableFlavors,
     );
   }
 }
