@@ -4,10 +4,14 @@ import '../models/ai_executive_briefing_model.dart';
 
 abstract class AiDashboardLocalDataSource {
   Future<AiExecutiveBriefingModel?> getCachedBriefing({
+    String focus = 'comprehensive',
     Duration maxAge = const Duration(hours: 2),
   });
-  Future<void> cacheBriefing(AiExecutiveBriefingModel briefing);
-  Future<void> clearCache();
+  Future<void> cacheBriefing(
+    AiExecutiveBriefingModel briefing, {
+    String focus = 'comprehensive',
+  });
+  Future<void> clearCache({String? focus});
 }
 
 class AiDashboardLocalDataSourceImpl implements AiDashboardLocalDataSource {
@@ -17,12 +21,22 @@ class AiDashboardLocalDataSourceImpl implements AiDashboardLocalDataSource {
   AiDashboardLocalDataSourceImpl({GetStorage? storage})
       : _storage = storage ?? const GetStorage();
 
+  String _getKey(String focus) => '${_storageKey}_$focus';
+
   @override
   Future<AiExecutiveBriefingModel?> getCachedBriefing({
+    String focus = 'comprehensive',
     Duration maxAge = const Duration(hours: 2),
   }) async {
     try {
-      final raw = _storage.read<dynamic>(_storageKey);
+      final key = _getKey(focus);
+      var raw = _storage.read<dynamic>(key);
+
+      // Backward compatibility fallback for default comprehensive key
+      if (raw == null && focus == 'comprehensive') {
+        raw = _storage.read<dynamic>(_storageKey);
+      }
+
       if (raw == null) return null;
 
       Map<String, dynamic> data;
@@ -47,14 +61,31 @@ class AiDashboardLocalDataSourceImpl implements AiDashboardLocalDataSource {
   }
 
   @override
-  Future<void> cacheBriefing(AiExecutiveBriefingModel briefing) async {
+  Future<void> cacheBriefing(
+    AiExecutiveBriefingModel briefing, {
+    String focus = 'comprehensive',
+  }) async {
     final encoded = jsonEncode(briefing.toJson());
-    await _storage.write(_storageKey, encoded);
+    await _storage.write(_getKey(focus), encoded);
+    if (focus == 'comprehensive') {
+      await _storage.write(_storageKey, encoded);
+    }
   }
 
   @override
-  Future<void> clearCache() async {
-    await _storage.remove(_storageKey);
+  Future<void> clearCache({String? focus}) async {
+    if (focus != null) {
+      await _storage.remove(_getKey(focus));
+      if (focus == 'comprehensive') {
+        await _storage.remove(_storageKey);
+      }
+    } else {
+      await _storage.remove(_storageKey);
+      await _storage.remove(_getKey('comprehensive'));
+      await _storage.remove(_getKey('inventory'));
+      await _storage.remove(_getKey('sales'));
+      await _storage.remove(_getKey('operations'));
+    }
   }
 }
 
