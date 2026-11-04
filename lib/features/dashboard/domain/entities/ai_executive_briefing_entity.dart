@@ -64,6 +64,7 @@ class StockRadarAlertEntity {
 class AiExecutiveBriefingEntity {
   final String summary;
   final String sentiment; // 'positive' | 'neutral' | 'needs_attention'
+  final String reportFocus; // 'comprehensive' | 'inventory' | 'sales' | 'operations'
   final List<String> keyInsights;
   final List<String> actionableRecommendations;
   final List<StockRadarAlertEntity> stockAlerts;
@@ -73,6 +74,7 @@ class AiExecutiveBriefingEntity {
   const AiExecutiveBriefingEntity({
     required this.summary,
     required this.sentiment,
+    this.reportFocus = 'comprehensive',
     required this.keyInsights,
     required this.actionableRecommendations,
     required this.stockAlerts,
@@ -86,6 +88,7 @@ class AiExecutiveBriefingEntity {
   AiExecutiveBriefingEntity copyWith({
     String? summary,
     String? sentiment,
+    String? reportFocus,
     List<String>? keyInsights,
     List<String>? actionableRecommendations,
     List<StockRadarAlertEntity>? stockAlerts,
@@ -95,6 +98,7 @@ class AiExecutiveBriefingEntity {
     return AiExecutiveBriefingEntity(
       summary: summary ?? this.summary,
       sentiment: sentiment ?? this.sentiment,
+      reportFocus: reportFocus ?? this.reportFocus,
       keyInsights: keyInsights ?? this.keyInsights,
       actionableRecommendations:
           actionableRecommendations ?? this.actionableRecommendations,
@@ -110,9 +114,11 @@ class AiExecutiveBriefingEntity {
       other is AiExecutiveBriefingEntity &&
           runtimeType == other.runtimeType &&
           summary == other.summary &&
+          reportFocus == other.reportFocus &&
           generatedAt == other.generatedAt;
 
   @override
-  int get hashCode => summary.hashCode ^ generatedAt.hashCode;
+  int get hashCode =>
+      summary.hashCode ^ reportFocus.hashCode ^ generatedAt.hashCode;
 }
 
