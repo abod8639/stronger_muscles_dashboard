@@ -5,11 +5,14 @@ import 'dashboard_providers.dart';
 
 class AiExecutiveBriefingNotifier
     extends AsyncNotifier<AiExecutiveBriefingEntity?> {
+  String _currentFocus = 'comprehensive';
+  String get currentFocus => _currentFocus;
+
   @override
   Future<AiExecutiveBriefingEntity?> build() async {
-    // 1. Try to load cached briefing first
+    // 1. Try to load cached briefing first for the initial focus
     final useCase = ref.watch(getAiExecutiveBriefingUseCaseProvider);
-    final cachedResult = await useCase.getCached();
+    final cachedResult = await useCase.getCached(focus: _currentFocus);
 
     AiExecutiveBriefingEntity? cachedEntity;
     cachedResult.fold(
@@ -18,6 +21,37 @@ class AiExecutiveBriefingNotifier
     );
 
     return cachedEntity;
+  }
+
+  /// Switches report focus ('comprehensive' | 'inventory' | 'sales' | 'operations')
+  Future<void> changeFocus(String newFocus) async {
+    if (_currentFocus == newFocus && state.value != null) return;
+    _currentFocus = newFocus;
+
+    final stats = ref.read(dashboardStatsNotifierProvider).value;
+    if (stats == null) {
+      AppFeedback.showWarning('يرجى انتظار اكتمال تحميل بيانات لوحة التحكم أولاً');
+      return;
+    }
+
+    state = const AsyncValue.loading();
+
+    final useCase = ref.read(getAiExecutiveBriefingUseCaseProvider);
+    final result = await useCase(
+      stats: stats,
+      focus: _currentFocus,
+      forceRefresh: false,
+    );
+
+    result.fold(
+      (failure) {
+        state = AsyncValue.error(failure.toMessage(), StackTrace.current);
+        AppFeedback.showError(failure.toMessage());
+      },
+      (briefing) {
+        state = AsyncValue.data(briefing);
+      },
+    );
   }
 
   /// Generates or refreshes the executive briefing and stock radar using Gemini AI
@@ -31,7 +65,11 @@ class AiExecutiveBriefingNotifier
     state = const AsyncValue.loading();
 
     final useCase = ref.read(getAiExecutiveBriefingUseCaseProvider);
-    final result = await useCase(stats: stats, forceRefresh: force);
+    final result = await useCase(
+      stats: stats,
+      focus: _currentFocus,
+      forceRefresh: force,
+    );
 
     result.fold(
       (failure) {
@@ -40,7 +78,7 @@ class AiExecutiveBriefingNotifier
       },
       (briefing) {
         state = AsyncValue.data(briefing);
-        AppFeedback.showSuccess('تم تحديث التقرير التنفيذي ورادار المخزون بنجاح');
+        AppFeedback.showSuccess('تم تحديث التقرير التنفيذي بنجاح');
       },
     );
   }
