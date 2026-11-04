@@ -15,6 +15,7 @@ import 'package:stronger_muscles_dashboard/core/theme/theme.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/controllers/products_providers.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_bulk_actions_bar.dart';
 import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_card.dart';
+import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/product_drafts_dialog.dart';
 
 /// شاشة عرض وإدارة المنتجات
 /// ترتبط بـ Riverpod [productsControllerProvider] و [productsUIControllerProvider]
@@ -49,6 +50,55 @@ class ProductsScreen extends ConsumerWidget {
         title: 'المنتجات',
         onPressed: () => _refresh(ref),
         extraActions: [
+          ListenableBuilder(
+            listenable: controller,
+            builder: (context, _) {
+              final count = controller.drafts.length;
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.drafts_outlined),
+                    tooltip: 'مسودات المنتجات ($count)',
+                    onPressed: () {
+                      ProductDraftsDialog.show(
+                        context: context,
+                        controller: controller,
+                        onDraftRestored: () {
+                          controller.showProductForm(context);
+                        },
+                      );
+                    },
+                  ),
+                  if (count > 0)
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: colorScheme.primary,
+                          shape: BoxShape.circle,
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 16,
+                          minHeight: 16,
+                        ),
+                        child: Text(
+                          '$count',
+                          style: TextStyle(
+                            color: colorScheme.onPrimary,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
           ListenableBuilder(
             listenable: controller,
             builder: (context, _) => IconButton(
