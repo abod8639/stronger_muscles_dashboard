@@ -130,6 +130,7 @@ class _ProductBasicInfoSectionState extends State<ProductBasicInfoSection> {
                       controller: ctrl,
                       productName:
                           currentName.isNotEmpty ? currentName : fallbackName,
+                      onCategoryApplied: widget.onCategorySelected,
                     ),
                   ],
                 ),
