@@ -40,6 +40,12 @@ mixin ProductFilterMixin on ChangeNotifier {
   String _selectedFlavorId = 'all';
   String get selectedFlavorId => _selectedFlavorId;
 
+  bool _isFilterDisposed = false;
+
+  void disposeFilter() {
+    _isFilterDisposed = true;
+  }
+
   /// Fetches initial category and brand lists from repositories
   Future<void> fetchData({bool forceRefresh = false}) async {
     _isLoading = true;
@@ -70,6 +76,7 @@ mixin ProductFilterMixin on ChangeNotifier {
       },
     );
 
+    if (_isFilterDisposed) return;
     applyFiltering();
     _isLoading = false;
     notifyListeners();
