@@ -5,6 +5,7 @@ import 'package:stronger_muscles_dashboard/features/products/domain/entities/pro
 import 'package:stronger_muscles_dashboard/features/products/domain/usecases/add_product_usecase.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/usecases/update_product_usecase.dart';
 import '../helpers/product_form_payload_builder.dart';
+import 'product_draft_mixin.dart';
 import 'product_filter_mixin.dart';
 import 'product_form_fields_mixin.dart';
 import 'product_media_mixin.dart';
@@ -19,7 +20,8 @@ mixin ProductSaveMixin
         ProductFormFieldsMixin,
         ProductMediaMixin,
         ProductSizesMixin,
-        ProductVariantsMixin {
+        ProductVariantsMixin,
+        ProductDraftMixin {
   AddProductUseCase get addProductUseCase;
   UpdateProductUseCase get updateProductUseCase;
 
@@ -150,6 +152,9 @@ mixin ProductSaveMixin
 
       if (isSuccess) {
         resetFormDirty();
+        if (activeDraftId != null) {
+          removeDraft(activeDraftId!);
+        }
       }
       return isSuccess;
     } catch (e, stack) {
