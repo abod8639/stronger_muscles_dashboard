@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stronger_muscles_dashboard/core/utils/weight_unit_helper.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
 import '../../domain/entities/ai_product_suggestion_entity.dart';
 
@@ -450,8 +451,15 @@ class _AiAutofillDialogState extends State<AiAutofillDialog> {
                         spacing: 8,
                         runSpacing: 8,
                         children: _flavors.map((f) {
+                          final cleanName = f.contains('|')
+                              ? f.split('|').first.trim()
+                              : f.trim();
                           return Chip(
-                            label: Text(f, style: const TextStyle(fontSize: 12)),
+                            avatar: const Icon(Icons.icecream_outlined, size: 16),
+                            label: Text(
+                              cleanName,
+                              style: const TextStyle(fontSize: 12),
+                            ),
                             onDeleted: () {
                               setState(() => _flavors.remove(f));
                             },
@@ -464,19 +472,24 @@ class _AiAutofillDialogState extends State<AiAutofillDialog> {
 
                     _buildSectionWrapper(
                       keyName: 'sizes',
-                      title: 'الأحجام والعبوات الشائعة (${_sizes.length})',
+                      title: 'الأحجام والعبوات المعتمدة بالجرام والكيلو (${_sizes.length})',
                       icon: Icons.scale_outlined,
                       child: Wrap(
                         spacing: 8,
                         runSpacing: 8,
                         children: _sizes.map((s) {
-                          final sizeName = s['size']?.toString() ?? '';
-                          final weight = s['weight']?.toString() ?? '';
+                          final rawSize = s['size']?.toString() ?? '';
+                          final sizeName =
+                              WeightUnitHelper.normalizeToMetric(rawSize);
+                          final rawWeight = s['weight']?.toString() ?? '';
+                          final weight =
+                              WeightUnitHelper.normalizeToMetric(rawWeight);
                           final servings = s['servings']?.toString() ?? '';
                           return Chip(
-                            avatar: const Icon(Icons.straighten_rounded, size: 16),
+                            avatar:
+                                const Icon(Icons.straighten_rounded, size: 16),
                             label: Text(
-                              '$sizeName ${weight.isNotEmpty ? "($weight)" : ""} ${servings.isNotEmpty ? "• $servings حصة" : ""}',
+                              '$sizeName ${weight.isNotEmpty && weight != sizeName ? "($weight)" : ""} ${servings.isNotEmpty ? "• $servings حصة" : ""}',
                               style: const TextStyle(fontSize: 12),
                             ),
                             onDeleted: () {
