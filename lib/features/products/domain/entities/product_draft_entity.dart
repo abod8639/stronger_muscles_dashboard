@@ -95,3 +95,4 @@ class ProductDraftEntity {
   @override
   int get hashCode => id.hashCode;
 }
+
