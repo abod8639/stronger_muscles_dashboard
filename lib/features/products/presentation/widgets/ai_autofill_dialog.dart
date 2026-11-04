@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stronger_muscles_dashboard/core/utils/weight_unit_helper.dart';
 import 'package:stronger_muscles_dashboard/features/categories/domain/entities/category_entity.dart';
+import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/form_sections/category_picker/category_tree_utils.dart';
 import '../../domain/entities/ai_product_suggestion_entity.dart';
 
 /// Interactive, user-friendly Preview Modal where AI-generated product fields
@@ -106,17 +107,22 @@ class _AiAutofillDialogState extends State<AiAutofillDialog> {
     _allergens = List.from(s.allergens);
     _sizes = List.from(s.suggestedSizes);
 
-    // Match suggested category with existing store categories
-    if (s.suggestedCategory != null && widget.availableCategories.isNotEmpty) {
+    // Match suggested category with existing store categories (including subcategories)
+    final flatCategories = CategoryTreeUtils.flatten(widget.availableCategories);
+    if (s.suggestedCategory != null && flatCategories.isNotEmpty) {
       final query = s.suggestedCategory!.toLowerCase().trim();
-      for (final cat in widget.availableCategories) {
+      for (final cat in flatCategories) {
         if (cat.nameAr.toLowerCase().contains(query) ||
             cat.nameEn.toLowerCase().contains(query) ||
-            query.contains(cat.nameAr.toLowerCase())) {
+            query.contains(cat.nameAr.toLowerCase()) ||
+            query.contains(cat.nameEn.toLowerCase())) {
           _selectedCategoryId = cat.id;
           break;
         }
       }
+    }
+    if (_selectedCategoryId == null && flatCategories.isNotEmpty) {
+      _selectedCategoryId = flatCategories.first.id;
     }
   }
 
@@ -328,27 +334,57 @@ class _AiAutofillDialogState extends State<AiAutofillDialog> {
                           ),
                           if (widget.availableCategories.isNotEmpty) ...[
                             const SizedBox(width: 14),
-                            Expanded(
-                              child: DropdownButtonFormField<String>(
-                                initialValue: _selectedCategoryId,
-                                decoration: InputDecoration(
-                                  labelText: 'القسم المقترح',
-                                  filled: true,
-                                  fillColor: colorScheme.surfaceContainerHighest
-                                      .withValues(alpha: 0.3),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                            Builder(
+                              builder: (context) {
+                                final flatCategories =
+                                    CategoryTreeUtils.flatten(
+                                  widget.availableCategories,
+                                );
+                                final validSelection = flatCategories.any(
+                                  (c) => c.id == _selectedCategoryId,
+                                )
+                                    ? _selectedCategoryId
+                                    : (flatCategories.isNotEmpty
+                                        ? flatCategories.first.id
+                                        : null);
+
+                                return Expanded(
+                                  child: DropdownButtonFormField<String>(
+                                    initialValue: validSelection,
+                                    decoration: InputDecoration(
+                                      labelText: 'القسم المقترح',
+                                      filled: true,
+                                      fillColor: colorScheme
+                                          .surfaceContainerHighest
+                                          .withValues(alpha: 0.3),
+                                      border: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                    items: flatCategories.map((c) {
+                                      final breadcrumbs =
+                                          CategoryTreeUtils.findBreadcrumbs(
+                                        widget.availableCategories,
+                                        c.id,
+                                      );
+                                      final label = breadcrumbs.isNotEmpty
+                                          ? breadcrumbs.join(' > ')
+                                          : c.displayName;
+                                      return DropdownMenuItem<String>(
+                                        value: c.id,
+                                        child: Text(
+                                          label,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(fontSize: 12),
+                                        ),
+                                      );
+                                    }).toList(),
+                                    onChanged: (v) =>
+                                        setState(() => _selectedCategoryId = v),
                                   ),
-                                ),
-                                items: widget.availableCategories.map((c) {
-                                  return DropdownMenuItem<String>(
-                                    value: c.id,
-                                    child: Text(c.nameAr),
-                                  );
-                                }).toList(),
-                                onChanged: (v) =>
-                                    setState(() => _selectedCategoryId = v),
-                              ),
+                                );
+                              },
                             ),
                           ],
                         ],
