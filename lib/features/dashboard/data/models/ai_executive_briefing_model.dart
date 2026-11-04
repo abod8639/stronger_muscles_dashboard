@@ -4,6 +4,7 @@ class StockRadarAlertModel {
   final String productId;
   final String productName;
   final int currentStock;
+  final int unitsSold;
   final String riskLevel;
   final String suggestedAction;
   final String? categoryName;
@@ -12,16 +13,22 @@ class StockRadarAlertModel {
     required this.productId,
     required this.productName,
     required this.currentStock,
+    this.unitsSold = 0,
     required this.riskLevel,
     required this.suggestedAction,
     this.categoryName,
   });
+
+  bool get isOutOfStock => riskLevel == 'out_of_stock' || currentStock <= 0;
+  bool get isCritical => riskLevel == 'critical' || (currentStock > 0 && currentStock <= 5);
+  bool get hasActualSales => unitsSold > 0;
 
   factory StockRadarAlertModel.fromJson(Map<String, dynamic> json) {
     return StockRadarAlertModel(
       productId: json['product_id']?.toString() ?? '',
       productName: json['product_name']?.toString() ?? 'منتج غير معروف',
       currentStock: int.tryParse(json['current_stock']?.toString() ?? '0') ?? 0,
+      unitsSold: int.tryParse(json['units_sold']?.toString() ?? '0') ?? 0,
       riskLevel: json['risk_level']?.toString() ?? 'warning',
       suggestedAction: json['suggested_action']?.toString() ?? 'مراجعة المخزون',
       categoryName: json['category_name']?.toString(),
@@ -33,9 +40,30 @@ class StockRadarAlertModel {
       productId: entity.productId,
       productName: entity.productName,
       currentStock: entity.currentStock,
+      unitsSold: entity.unitsSold,
       riskLevel: entity.riskLevel,
       suggestedAction: entity.suggestedAction,
       categoryName: entity.categoryName,
+    );
+  }
+
+  StockRadarAlertModel copyWith({
+    String? productId,
+    String? productName,
+    int? currentStock,
+    int? unitsSold,
+    String? riskLevel,
+    String? suggestedAction,
+    String? categoryName,
+  }) {
+    return StockRadarAlertModel(
+      productId: productId ?? this.productId,
+      productName: productName ?? this.productName,
+      currentStock: currentStock ?? this.currentStock,
+      unitsSold: unitsSold ?? this.unitsSold,
+      riskLevel: riskLevel ?? this.riskLevel,
+      suggestedAction: suggestedAction ?? this.suggestedAction,
+      categoryName: categoryName ?? this.categoryName,
     );
   }
 
@@ -44,6 +72,7 @@ class StockRadarAlertModel {
       'product_id': productId,
       'product_name': productName,
       'current_stock': currentStock,
+      'units_sold': unitsSold,
       'risk_level': riskLevel,
       'suggested_action': suggestedAction,
       if (categoryName != null) 'category_name': categoryName,
@@ -55,6 +84,7 @@ class StockRadarAlertModel {
       productId: productId,
       productName: productName,
       currentStock: currentStock,
+      unitsSold: unitsSold,
       riskLevel: riskLevel,
       suggestedAction: suggestedAction,
       categoryName: categoryName,
@@ -131,6 +161,27 @@ class AiExecutiveBriefingModel {
           .toList(),
       generatedAt: entity.generatedAt,
       modelUsed: entity.modelUsed,
+    );
+  }
+
+  AiExecutiveBriefingModel copyWith({
+    String? summary,
+    String? sentiment,
+    List<String>? keyInsights,
+    List<String>? actionableRecommendations,
+    List<StockRadarAlertModel>? stockAlerts,
+    DateTime? generatedAt,
+    String? modelUsed,
+  }) {
+    return AiExecutiveBriefingModel(
+      summary: summary ?? this.summary,
+      sentiment: sentiment ?? this.sentiment,
+      keyInsights: keyInsights ?? this.keyInsights,
+      actionableRecommendations:
+          actionableRecommendations ?? this.actionableRecommendations,
+      stockAlerts: stockAlerts ?? this.stockAlerts,
+      generatedAt: generatedAt ?? this.generatedAt,
+      modelUsed: modelUsed ?? this.modelUsed,
     );
   }
 
