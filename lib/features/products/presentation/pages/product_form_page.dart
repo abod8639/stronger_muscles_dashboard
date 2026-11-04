@@ -54,6 +54,7 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage>
     _selectedCategoryId = getInitialCategoryId();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       initializeProductFields();
+      controller.setFormCategoryId(_selectedCategoryId);
       controller.imageUrls
         ..clear()
         ..addAll(getInitialImageUrls());
@@ -91,10 +92,16 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage>
     final ctrl = controller;
     return [
       _FormSection(
-
         label: 'البيانات الأساسية',
         icon: Icons.edit_note_rounded,
-        builder: (_) => ProductBasicInfoSection(controller: ctrl),
+        builder: (_) => ProductBasicInfoSection(
+          controller: ctrl,
+          selectedCategoryId: _selectedCategoryId ?? ctrl.formCategoryId,
+          onCategorySelected: (id) {
+            ctrl.setFormCategoryId(id);
+            setState(() => _selectedCategoryId = id);
+          },
+        ),
       ),
       _FormSection(
         label: 'القسم والتصنيف',
@@ -102,9 +109,9 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage>
         isSide: true,
         builder: (_) => ProductCategorySection(
           controller: ctrl,
-          selectedCategoryId: _selectedCategoryId,
+          selectedCategoryId: _selectedCategoryId ?? ctrl.formCategoryId,
           onCategorySelected: (id) {
-            ctrl.markFormDirty();
+            ctrl.setFormCategoryId(id);
             setState(() => _selectedCategoryId = id);
           },
         ),
@@ -156,10 +163,12 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage>
   }
 
   void _onSave() async {
+    final effectiveCategoryId =
+        _selectedCategoryId ?? controller.formCategoryId ?? '';
     final success = await controller.saveProduct(
       existingProduct: widget.product,
       formKey: _formKey,
-      categoryId: _selectedCategoryId ?? '',
+      categoryId: effectiveCategoryId,
       productImages: controller.imageUrls.toList(),
     );
     if (success && mounted) {
@@ -209,6 +218,11 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage>
   @override
   Widget build(BuildContext context) {
     final ctrl = ref.watch(productsUIControllerProvider);
+    if (ctrl.formCategoryId != null &&
+        ctrl.formCategoryId!.isNotEmpty &&
+        _selectedCategoryId != ctrl.formCategoryId) {
+      _selectedCategoryId = ctrl.formCategoryId;
+    }
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final responsive = context.responsive;
