@@ -2,14 +2,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:stronger_muscles_dashboard/features/brands/brands_feature.dart';
 import 'package:stronger_muscles_dashboard/features/categories/categories_feature.dart';
+import '../../data/datasources/gemini_product_remote_datasource.dart';
 import '../../data/datasources/product_local_datasource.dart';
 import '../../data/datasources/product_remote_datasource.dart';
 import '../../data/models/product_model.dart';
+import '../../data/repositories/ai_product_repository_impl.dart';
 import '../../data/repositories/product_repository_impl.dart';
 import '../../domain/entities/product_entity.dart';
+import '../../domain/repositories/ai_product_repository.dart';
 import '../../domain/repositories/product_repository.dart';
 import '../../domain/usecases/add_product_usecase.dart';
 import '../../domain/usecases/delete_product_usecase.dart';
+import '../../domain/usecases/generate_product_suggestion_usecase.dart';
 import '../../domain/usecases/get_product_by_id_usecase.dart';
 import '../../domain/usecases/get_products_usecase.dart';
 import '../../domain/usecases/update_product_usecase.dart';
@@ -86,6 +90,23 @@ final uploadProductImageUseCaseProvider = Provider<UploadProductImageUseCase>((
   return UploadProductImageUseCase(ref.watch(productRepositoryProvider));
 });
 
+final geminiProductRemoteDataSourceProvider =
+    Provider<GeminiProductRemoteDataSource>((ref) {
+      final dio = ref.watch(dioProvider);
+      return GeminiProductRemoteDataSourceImpl(dio: dio);
+    });
+
+final aiProductRepositoryProvider = Provider<AiProductRepository>((ref) {
+  final remoteDataSource = ref.watch(geminiProductRemoteDataSourceProvider);
+  return AiProductRepositoryImpl(remoteDataSource);
+});
+
+final generateProductSuggestionUseCaseProvider =
+    Provider<GenerateProductSuggestionUseCase>((ref) {
+      final repository = ref.watch(aiProductRepositoryProvider);
+      return GenerateProductSuggestionUseCase(repository);
+    });
+
 // ==========================================
 // Search & Filter State Notifiers
 // ==========================================
@@ -148,6 +169,9 @@ final productsUIControllerProvider = Provider<ProductsController>((ref) {
   );
   final categoryRepository = ref.watch(categoryRepositoryProvider);
   final brandRepository = ref.watch(brandRepositoryProvider);
+  final generateProductSuggestionUseCase = ref.watch(
+    generateProductSuggestionUseCaseProvider,
+  );
 
   final controller = ProductsController(
     addProductUseCase: addProductUseCase,
@@ -156,6 +180,7 @@ final productsUIControllerProvider = Provider<ProductsController>((ref) {
     uploadProductImageUseCase: uploadProductImageUseCase,
     categoryRepository: categoryRepository,
     brandRepository: brandRepository,
+    generateProductSuggestionUseCase: generateProductSuggestionUseCase,
   );
 
   // Sync with Riverpod state updates
