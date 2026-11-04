@@ -7,6 +7,7 @@ import '../models/ai_product_suggestion_model.dart';
 abstract class GeminiProductRemoteDataSource {
   Future<AiProductSuggestionModel> generateProductDetails({
     required String productName,
+    String? manufacturerUrl,
     List<String>? availableCategories,
     List<String>? availableBrands,
     List<String>? availableFlavors,
@@ -22,6 +23,7 @@ class GeminiProductRemoteDataSourceImpl
   @override
   Future<AiProductSuggestionModel> generateProductDetails({
     required String productName,
+    String? manufacturerUrl,
     List<String>? availableCategories,
     List<String>? availableBrands,
     List<String>? availableFlavors,
@@ -51,9 +53,27 @@ class GeminiProductRemoteDataSourceImpl
         ? 'Available store flavors to choose from: [${availableFlavors.join(', ')}].\nCRITICAL REQUIREMENT: You MUST ONLY select flavors from this exact list of available store flavors. NEVER invent or output any flavor outside this list. If the product has no flavors or is unflavored, select "No Flavor".'
         : '';
 
+    final hasUrl = manufacturerUrl != null && manufacturerUrl.trim().isNotEmpty;
+    final cleanUrl = manufacturerUrl?.trim() ?? '';
+    final cleanName = productName.trim();
+
+    final urlDirective = hasUrl
+        ? '''
+Official manufacturer product reference URL: "$cleanUrl"
+CRITICAL URL INSTRUCTION: Use this official manufacturer reference URL to extract authentic product details: official name, brand, accurate nutritional facts, exact serving size, authentic flavors, sizes, and benefits.
+'''
+        : '';
+
+    final productSubject = cleanName.isNotEmpty
+        ? (hasUrl
+            ? 'The user wants to catalog this product: "$cleanName" using official manufacturer link: "$cleanUrl".'
+            : 'The user wants to catalog this product: "$cleanName".')
+        : 'The user wants to catalog the product from this official manufacturer URL: "$cleanUrl".';
+
     final prompt = '''
 You are an expert sports nutrition, fitness supplements, and bodybuilding product database curator.
-The user wants to catalog this product: "$productName".
+$productSubject
+$urlDirective
 
 Generate accurate, professional, and authentic product information.
 $categoriesContext
