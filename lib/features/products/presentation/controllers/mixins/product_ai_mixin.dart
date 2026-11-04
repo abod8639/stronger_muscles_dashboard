@@ -21,13 +21,17 @@ mixin ProductAiMixin
   bool _isAiGenerating = false;
   bool get isAiGenerating => _isAiGenerating;
 
-  /// Fetches comprehensive AI suggestions from Gemini for the given product name
+  /// Fetches comprehensive AI suggestions from Gemini for the given product name and/or manufacturer URL
   Future<AiProductSuggestionEntity?> fetchAiSuggestions(
-    String productName,
-  ) async {
+    String productName, {
+    String? manufacturerUrl,
+  }) async {
     final trimmedName = productName.trim();
-    if (trimmedName.isEmpty) {
-      AppFeedback.showWarning('يرجى كتابة اسم المنتج أولاً لاستخدام الذكاء الاصطناعي');
+    final trimmedUrl = manufacturerUrl?.trim() ?? '';
+    if (trimmedName.isEmpty && trimmedUrl.isEmpty) {
+      AppFeedback.showWarning(
+        'يرجى كتابة اسم المنتج أو وضع رابط الشركة المصنعة أولاً لاستخدام الذكاء الاصطناعي',
+      );
       return null;
     }
 
@@ -45,6 +49,7 @@ mixin ProductAiMixin
 
       final result = await generateProductSuggestionUseCase(
         productName: trimmedName,
+        manufacturerUrl: trimmedUrl.isNotEmpty ? trimmedUrl : null,
         availableCategories: availableCats,
         availableBrands: availableBrandsList,
         availableFlavors: flavorNames,
