@@ -3,6 +3,7 @@ import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
 import 'package:stronger_muscles_dashboard/core/utils/weight_unit_helper.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/entities/ai_product_suggestion_entity.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/usecases/generate_product_suggestion_usecase.dart';
+import 'package:stronger_muscles_dashboard/features/products/presentation/widgets/form_sections/category_picker/category_tree_utils.dart';
 import '../helpers/product_flavor_helper.dart';
 import 'product_filter_mixin.dart';
 import 'product_form_fields_mixin.dart';
@@ -109,17 +110,19 @@ mixin ProductAiMixin
 
     // 4. Category
     if (fields.contains('category')) {
-      if (categoryIdToSet != null && categoryIdToSet.isNotEmpty) {
-        setCategory(categoryIdToSet);
+      if (categoryIdToSet != null &&
+          categoryIdToSet.isNotEmpty &&
+          categoryIdToSet != 'all') {
+        setFormCategoryId(categoryIdToSet);
       } else if (suggestion.suggestedCategory != null) {
-        // Try to match suggestedCategory with an existing category
+        final flatCategories = CategoryTreeUtils.flatten(categories);
         final query = suggestion.suggestedCategory!.toLowerCase().trim();
-        for (final cat in categories) {
+        for (final cat in flatCategories) {
           if (cat.nameAr.toLowerCase().contains(query) ||
               cat.nameEn.toLowerCase().contains(query) ||
               query.contains(cat.nameAr.toLowerCase()) ||
               query.contains(cat.nameEn.toLowerCase())) {
-            setCategory(cat.id);
+            setFormCategoryId(cat.id);
             break;
           }
         }
