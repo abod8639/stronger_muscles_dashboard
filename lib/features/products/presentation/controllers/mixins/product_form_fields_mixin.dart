@@ -35,6 +35,7 @@ mixin ProductFormFieldsMixin on ChangeNotifier {
     'carbs': TextEditingController(),
     'fat': TextEditingController(),
     'sugar': TextEditingController(),
+    'manufacturer_url': TextEditingController(),
   };
 
   // --- Form Attributes & Flags ---
@@ -144,6 +145,7 @@ mixin ProductFormFieldsMixin on ChangeNotifier {
       textcontrollers['sessions']?.text =
           product.servingsPerContainer?.toString() ?? '';
       textcontrollers['sku']?.text = product.sku ?? '';
+      textcontrollers['manufacturer_url']?.clear();
 
       // Populate nutrition facts
       final facts = product.nutritionFacts;
