@@ -252,8 +252,9 @@ void main() {
       expect(suggestion!.nameAr, 'واي بروتين جولد ستاندرد');
       expect(suggestion.brandName, 'Optimum Nutrition');
 
-      aiController.applyAiSuggestions(suggestion);
+      aiController.applyAiSuggestions(suggestion, categoryIdToSet: 'cat_protein');
 
+      expect(aiController.formCategoryId, 'cat_protein');
       expect(aiController.textcontrollers['name_ar']?.text, 'واي بروتين جولد ستاندرد');
       expect(aiController.textcontrollers['name_en']?.text, 'Gold Standard 100% Whey');
       expect(aiController.textcontrollers['brand']?.text, 'Optimum Nutrition');
