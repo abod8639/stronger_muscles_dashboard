@@ -7,9 +7,18 @@ import '../entities/dashboard_stats_entity.dart';
 abstract class AiDashboardRepository {
   Future<Either<Failure, AiExecutiveBriefingEntity>> generateBriefing({
     required DashboardStatsEntity stats,
+    String focus = 'comprehensive',
     bool forceRefresh = false,
   });
 
-  Future<Either<Failure, AiExecutiveBriefingEntity?>> getCachedBriefing();
+  Future<Either<Failure, AiExecutiveBriefingEntity?>> getCachedBriefing({
+    String focus = 'comprehensive',
+  });
+
+  Future<Either<Failure, String>> askBriefingQuestion({
+    required AiExecutiveBriefingEntity briefing,
+    required DashboardStatsEntity stats,
+    required String question,
+  });
 }
 
