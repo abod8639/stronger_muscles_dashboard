@@ -95,6 +95,7 @@ class StockRadarAlertModel {
 class AiExecutiveBriefingModel {
   final String summary;
   final String sentiment;
+  final String reportFocus;
   final List<String> keyInsights;
   final List<String> actionableRecommendations;
   final List<StockRadarAlertModel> stockAlerts;
@@ -104,6 +105,7 @@ class AiExecutiveBriefingModel {
   const AiExecutiveBriefingModel({
     required this.summary,
     required this.sentiment,
+    this.reportFocus = 'comprehensive',
     required this.keyInsights,
     required this.actionableRecommendations,
     required this.stockAlerts,
@@ -114,6 +116,7 @@ class AiExecutiveBriefingModel {
   factory AiExecutiveBriefingModel.fromJson(
     Map<String, dynamic> json, {
     String? modelUsed,
+    String? reportFocus,
     DateTime? generatedAt,
   }) {
     final insightsRaw = json['key_insights'] ?? json['keyInsights'];
@@ -125,6 +128,7 @@ class AiExecutiveBriefingModel {
     return AiExecutiveBriefingModel(
       summary: json['summary']?.toString() ?? 'لا يوجد ملخص متاح حالياً.',
       sentiment: json['sentiment']?.toString() ?? 'neutral',
+      reportFocus: json['report_focus']?.toString() ?? reportFocus ?? 'comprehensive',
       keyInsights: (insightsRaw as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
@@ -153,6 +157,7 @@ class AiExecutiveBriefingModel {
     return AiExecutiveBriefingModel(
       summary: entity.summary,
       sentiment: entity.sentiment,
+      reportFocus: entity.reportFocus,
       keyInsights: List<String>.from(entity.keyInsights),
       actionableRecommendations:
           List<String>.from(entity.actionableRecommendations),
@@ -167,6 +172,7 @@ class AiExecutiveBriefingModel {
   AiExecutiveBriefingModel copyWith({
     String? summary,
     String? sentiment,
+    String? reportFocus,
     List<String>? keyInsights,
     List<String>? actionableRecommendations,
     List<StockRadarAlertModel>? stockAlerts,
@@ -176,6 +182,7 @@ class AiExecutiveBriefingModel {
     return AiExecutiveBriefingModel(
       summary: summary ?? this.summary,
       sentiment: sentiment ?? this.sentiment,
+      reportFocus: reportFocus ?? this.reportFocus,
       keyInsights: keyInsights ?? this.keyInsights,
       actionableRecommendations:
           actionableRecommendations ?? this.actionableRecommendations,
@@ -189,6 +196,7 @@ class AiExecutiveBriefingModel {
     return {
       'summary': summary,
       'sentiment': sentiment,
+      'report_focus': reportFocus,
       'key_insights': keyInsights,
       'recommendations': actionableRecommendations,
       'stock_alerts': stockAlerts.map((a) => a.toJson()).toList(),
@@ -201,6 +209,7 @@ class AiExecutiveBriefingModel {
     return AiExecutiveBriefingEntity(
       summary: summary,
       sentiment: sentiment,
+      reportFocus: reportFocus,
       keyInsights: keyInsights,
       actionableRecommendations: actionableRecommendations,
       stockAlerts: stockAlerts.map((a) => a.toEntity()).toList(),
