@@ -9,3 +9,4 @@ abstract class ProductDraftRepository {
   Future<Either<Failure, Unit>> deleteDraft(String draftId);
   Future<Either<Failure, Unit>> clearAllDrafts();
 }
+
