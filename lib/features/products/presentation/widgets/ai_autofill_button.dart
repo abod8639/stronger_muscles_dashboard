@@ -8,11 +8,13 @@ import 'ai_autofill_dialog.dart';
 class AiAutofillButton extends StatelessWidget {
   final ProductsController controller;
   final String productName;
+  final ValueChanged<String>? onCategoryApplied;
 
   const AiAutofillButton({
     super.key,
     required this.controller,
     required this.productName,
+    this.onCategoryApplied,
   });
 
   Future<void> _handleGenerate(BuildContext context) async {
@@ -34,6 +36,9 @@ class AiAutofillButton extends StatelessWidget {
             selectedFields: selectedSections,
             categoryIdToSet: categoryId,
           );
+          if (categoryId != null && categoryId.isNotEmpty) {
+            onCategoryApplied?.call(categoryId);
+          }
         },
       );
     }
