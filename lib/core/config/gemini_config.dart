@@ -10,23 +10,28 @@ class GeminiConfig {
   static const String storageKeyApiKey = 'gemini_api_key';
   static const String storageKeyModel = 'gemini_selected_model';
 
-  static const String defaultModel = 'gemini-1.5-flash';
+  static const String defaultModel = 'gemini-3.5-flash';
 
   static const List<Map<String, String>> availableModels = [
     {
-      'id': 'gemini-1.5-flash',
-      'name': 'Gemini 1.5 Flash',
-      'desc': 'سريع جداً ومناسب لمعظم المنتجات (موصى به)',
+      'id': 'gemini-3.5-flash',
+      'name': 'Gemini 3.5 Flash',
+      'desc': 'سريع ومستقر وموصى به للمنتجات (موصى به)',
     },
     {
-      'id': 'gemini-2.0-flash',
-      'name': 'Gemini 2.0 Flash',
-      'desc': 'الجيل الأحدث، استجابة لحظية فائقة السرعة',
+      'id': 'gemini-3.5-flash-lite',
+      'name': 'Gemini 3.5 Flash-Lite',
+      'desc': 'خفيف وفائق السرعة (< ثانية واحدة)',
     },
     {
-      'id': 'gemini-1.5-pro',
-      'name': 'Gemini 1.5 Pro',
-      'desc': 'دقة تفصيلية قصوى للتركيبات المعقدة',
+      'id': 'gemini-3.8-flash',
+      'name': 'Gemini 3.8 Flash',
+      'desc': 'الجيل الأحدث مع تحليلات متقدمة',
+    },
+    {
+      'id': 'gemini-3.7-flash',
+      'name': 'Gemini 3.7 Flash',
+      'desc': 'دقيق ومتوازن',
     },
   ];
 
@@ -51,7 +56,10 @@ class GeminiConfig {
     final storage = const GetStorage();
     final storedModel = storage.read<String>(storageKeyModel);
     if (storedModel != null && storedModel.trim().isNotEmpty) {
-      return storedModel.trim();
+      final model = storedModel.trim();
+      if (availableModels.any((m) => m['id'] == model)) {
+        return model;
+      }
     }
     return defaultModel;
   }
@@ -79,8 +87,8 @@ class GeminiConfig {
     try {
       final dio = Dio(
         BaseOptions(
-          connectTimeout: const Duration(seconds: 12),
-          receiveTimeout: const Duration(seconds: 12),
+          connectTimeout: const Duration(seconds: 20),
+          receiveTimeout: const Duration(seconds: 20),
           headers: {'Content-Type': 'application/json'},
         ),
       );
@@ -120,10 +128,20 @@ class GeminiConfig {
             isValid: false,
             message: 'مفتاح API غير صالح أو منتهي الصلاحية: $serverMsg',
           );
+        } else if (statusCode == 404) {
+          return (
+            isValid: false,
+            message: 'النموذج المحدد ($targetModel) غير متوفر في حسابك أو تقاعد من Google: $serverMsg',
+          );
         } else if (statusCode == 429) {
           return (
             isValid: false,
             message: 'تم تجاوز حصة الاستخدام المتاحة لهذا المفتاح (Rate Limit)',
+          );
+        } else if (statusCode == 503) {
+          return (
+            isValid: false,
+            message: 'خادم النموذج ($targetModel) يواجه ضغطاً مؤقتاً (503). جرب نموذج Gemini 3.5 Flash-Lite أو أعد المحاولة.',
           );
         }
         return (
