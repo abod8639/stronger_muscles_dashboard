@@ -11,12 +11,14 @@ class GenerateProductSuggestionUseCase {
 
   Future<Either<Failure, AiProductSuggestionEntity>> call({
     required String productName,
+    String? manufacturerUrl,
     List<String>? availableCategories,
     List<String>? availableBrands,
     List<String>? availableFlavors,
   }) {
     return _repository.generateProductDetails(
       productName: productName,
+      manufacturerUrl: manufacturerUrl,
       availableCategories: availableCategories,
       availableBrands: availableBrands,
       availableFlavors: availableFlavors,
