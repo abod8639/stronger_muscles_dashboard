@@ -11,6 +11,7 @@ import 'package:stronger_muscles_dashboard/features/dashboard/domain/entities/ai
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/entities/dashboard_stats_entity.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/repositories/ai_dashboard_repository.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/repositories/dashboard_repository.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/domain/usecases/ask_ai_executive_copilot_usecase.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/usecases/get_ai_executive_briefing_usecase.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/usecases/get_dashboard_data_usecase.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/presentation/models/orders_chart_data.dart';
@@ -139,6 +140,13 @@ final aiDashboardRepositoryProvider = Provider<AiDashboardRepository>((ref) {
 final getAiExecutiveBriefingUseCaseProvider =
     Provider<GetAiExecutiveBriefingUseCase>((ref) {
   return GetAiExecutiveBriefingUseCase(
+    ref.watch(aiDashboardRepositoryProvider),
+  );
+});
+
+final askAiExecutiveCopilotUseCaseProvider =
+    Provider<AskAiExecutiveCopilotUseCase>((ref) {
+  return AskAiExecutiveCopilotUseCase(
     ref.watch(aiDashboardRepositoryProvider),
   );
 });
