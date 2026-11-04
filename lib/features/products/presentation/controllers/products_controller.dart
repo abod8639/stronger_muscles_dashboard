@@ -6,16 +6,22 @@ import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
 import 'package:stronger_muscles_dashboard/features/brands/brands_feature.dart';
 import 'package:stronger_muscles_dashboard/features/categories/categories_feature.dart';
 import 'package:stronger_muscles_dashboard/features/products/data/datasources/gemini_product_remote_datasource.dart';
+import 'package:stronger_muscles_dashboard/features/products/data/datasources/product_draft_local_datasource.dart';
 import 'package:stronger_muscles_dashboard/features/products/data/repositories/ai_product_repository_impl.dart';
+import 'package:stronger_muscles_dashboard/features/products/data/repositories/product_draft_repository_impl.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/entities/product_entity.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/usecases/add_product_usecase.dart';
+import 'package:stronger_muscles_dashboard/features/products/domain/usecases/delete_product_draft_usecase.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/usecases/delete_product_usecase.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/usecases/generate_product_suggestion_usecase.dart';
+import 'package:stronger_muscles_dashboard/features/products/domain/usecases/get_product_drafts_usecase.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/usecases/get_products_usecase.dart';
+import 'package:stronger_muscles_dashboard/features/products/domain/usecases/save_product_draft_usecase.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/usecases/update_product_usecase.dart';
 import 'package:stronger_muscles_dashboard/features/products/domain/usecases/upload_product_image_usecase.dart';
 import 'helpers/product_sku_generator.dart';
 import 'mixins/product_ai_mixin.dart';
+import 'mixins/product_draft_mixin.dart';
 import 'mixins/product_filter_mixin.dart';
 import 'mixins/product_form_fields_mixin.dart';
 import 'mixins/product_media_mixin.dart';
@@ -27,6 +33,7 @@ import 'mixins/product_variants_mixin.dart';
 export 'helpers/product_form_payload_builder.dart';
 export 'helpers/product_sku_generator.dart';
 export 'mixins/product_ai_mixin.dart';
+export 'mixins/product_draft_mixin.dart';
 export 'mixins/product_filter_mixin.dart';
 export 'mixins/product_form_fields_mixin.dart';
 export 'mixins/product_media_mixin.dart';
@@ -45,6 +52,7 @@ class ProductsController extends ChangeNotifier
         ProductMediaMixin,
         ProductSizesMixin,
         ProductVariantsMixin,
+        ProductDraftMixin,
         ProductSaveMixin,
         ProductAiMixin {
   final AddProductUseCase _addProductUseCase;
@@ -54,6 +62,9 @@ class ProductsController extends ChangeNotifier
   final CategoryRepository _categoryRepository;
   final BrandRepository _brandRepository;
   final GenerateProductSuggestionUseCase? _generateProductSuggestionUseCase;
+  final GetProductDraftsUseCase? _getProductDraftsUseCase;
+  final SaveProductDraftUseCase? _saveProductDraftUseCase;
+  final DeleteProductDraftUseCase? _deleteProductDraftUseCase;
 
   ProductsController({
     GetProductsUseCase? getProductsUseCase,
@@ -64,14 +75,21 @@ class ProductsController extends ChangeNotifier
     required CategoryRepository categoryRepository,
     required BrandRepository brandRepository,
     GenerateProductSuggestionUseCase? generateProductSuggestionUseCase,
+    GetProductDraftsUseCase? getProductDraftsUseCase,
+    SaveProductDraftUseCase? saveProductDraftUseCase,
+    DeleteProductDraftUseCase? deleteProductDraftUseCase,
   }) : _addProductUseCase = addProductUseCase,
        _updateProductUseCase = updateProductUseCase,
        _deleteProductUseCase = deleteProductUseCase,
        _uploadProductImageUseCase = uploadProductImageUseCase,
        _categoryRepository = categoryRepository,
        _brandRepository = brandRepository,
-       _generateProductSuggestionUseCase = generateProductSuggestionUseCase {
+       _generateProductSuggestionUseCase = generateProductSuggestionUseCase,
+       _getProductDraftsUseCase = getProductDraftsUseCase,
+       _saveProductDraftUseCase = saveProductDraftUseCase,
+       _deleteProductDraftUseCase = deleteProductDraftUseCase {
     fetchData();
+    loadDrafts();
   }
 
   // --- Contract Implementations for Mixins ---
@@ -101,8 +119,30 @@ class ProductsController extends ChangeNotifier
         AiProductRepositoryImpl(GeminiProductRemoteDataSourceImpl()),
       );
 
+  @override
+  GetProductDraftsUseCase get getProductDraftsUseCase =>
+      _getProductDraftsUseCase ??
+      GetProductDraftsUseCase(
+        ProductDraftRepositoryImpl(ProductDraftLocalDataSourceImpl()),
+      );
+
+  @override
+  SaveProductDraftUseCase get saveProductDraftUseCase =>
+      _saveProductDraftUseCase ??
+      SaveProductDraftUseCase(
+        ProductDraftRepositoryImpl(ProductDraftLocalDataSourceImpl()),
+      );
+
+  @override
+  DeleteProductDraftUseCase get deleteProductDraftUseCase =>
+      _deleteProductDraftUseCase ??
+      DeleteProductDraftUseCase(
+        ProductDraftRepositoryImpl(ProductDraftLocalDataSourceImpl()),
+      );
+
   // --- Form Initialization & Lifecycle ---
   void initForForm({ProductEntity? product}) {
+    resetActiveDraft();
     resetFormDirty();
     initFormFields(product);
     initMediaForProduct(product);
@@ -114,10 +154,12 @@ class ProductsController extends ChangeNotifier
 
   /// Completely resets all form controllers, media, sizes, and variants
   void clearForm() {
+    resetActiveDraft();
     resetFormDirty();
     clearFormFields();
     clearMedia();
     clearSizeControllers();
+    productSizes.clear();
     clearVariants();
     selectedSizeIndex = -1;
     notifyListeners();
