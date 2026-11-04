@@ -1,3 +1,4 @@
+import 'package:stronger_muscles_dashboard/core/utils/weight_unit_helper.dart';
 import '../../domain/entities/ai_product_suggestion_entity.dart';
 
 /// Data model representing AI-generated product specifications from Gemini JSON.
@@ -55,10 +56,18 @@ class AiProductSuggestionModel {
 
     List<Map<String, dynamic>> parseSizesList(dynamic value) {
       if (value is List) {
-        return value
-            .whereType<Map>()
-            .map((e) => Map<String, dynamic>.from(e))
-            .toList();
+        return value.whereType<Map>().map((e) {
+          final map = Map<String, dynamic>.from(e);
+          if (map['size'] != null) {
+            map['size'] =
+                WeightUnitHelper.normalizeToMetric(map['size'].toString());
+          }
+          if (map['weight'] != null) {
+            map['weight'] =
+                WeightUnitHelper.normalizeToMetric(map['weight'].toString());
+          }
+          return map;
+        }).toList();
       }
       return [];
     }
@@ -67,6 +76,11 @@ class AiProductSuggestionModel {
         ? json['nutrition_facts'] as Map<String, dynamic>
         : <String, dynamic>{};
 
+    final rawServingSize = json['serving_size']?.toString().trim();
+    final normalizedServingSize = (rawServingSize != null && rawServingSize.isNotEmpty)
+        ? WeightUnitHelper.normalizeToMetric(rawServingSize)
+        : null;
+
     return AiProductSuggestionModel(
       nameAr: json['name_ar']?.toString().trim() ?? '',
       nameEn: json['name_en']?.toString().trim() ?? '',
@@ -74,7 +88,7 @@ class AiProductSuggestionModel {
       descEn: json['desc_en']?.toString().trim() ?? '',
       brandName: json['brand']?.toString().trim(),
       suggestedCategory: json['suggested_category']?.toString().trim(),
-      servingSize: json['serving_size']?.toString().trim(),
+      servingSize: normalizedServingSize,
       servingsPerContainer:
           int.tryParse(json['servings_per_container']?.toString() ?? ''),
       calories:
