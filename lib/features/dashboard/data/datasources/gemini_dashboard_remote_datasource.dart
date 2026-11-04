@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:stronger_muscles_dashboard/core/config/gemini_config.dart';
+import 'package:stronger_muscles_dashboard/features/orders/orders_feature.dart';
 import '../../domain/entities/dashboard_stats_entity.dart';
 import '../models/ai_executive_briefing_model.dart';
 
@@ -31,19 +32,105 @@ class GeminiDashboardRemoteDataSourceImpl
     final url =
         'https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent?key=$apiKey';
 
-    // 1. Compile low stock products for the radar
+    // 1. Calculate actual customer sales per product from valid orders (non-cancelled)
+    final Map<String, int> productUnitsSold = {};
+    final Map<String, int> productOrdersCount = {};
+    final Map<String, double> productRevenueMap = {};
+
+    for (final order in stats.orders) {
+      if (order.status == OrderStatus.cancelled) continue;
+      for (final item in order.items) {
+        final id = item.productId.trim();
+        final name = item.productName.trim().toLowerCase();
+
+        productUnitsSold[id] = (productUnitsSold[id] ?? 0) + item.quantity;
+        productOrdersCount[id] = (productOrdersCount[id] ?? 0) + 1;
+        productRevenueMap[id] = (productRevenueMap[id] ?? 0.0) + item.subtotal;
+
+        if (name.isNotEmpty) {
+          productUnitsSold['name:$name'] =
+              (productUnitsSold['name:$name'] ?? 0) + item.quantity;
+          productOrdersCount['name:$name'] =
+              (productOrdersCount['name:$name'] ?? 0) + 1;
+        }
+      }
+    }
+
+    // 2. Map category names and calculate category actual sales
+    final Map<String, String> categoryNameMap = {
+      for (final c in stats.categories) c.id: c.displayName,
+    };
+
+    final Map<String, int> categoryUnitsSold = {};
+    for (final product in stats.products) {
+      final sold = productUnitsSold[product.id] ??
+          productUnitsSold['name:${product.displayName.trim().toLowerCase()}'] ??
+          0;
+      if (sold > 0 && product.categoryId.isNotEmpty) {
+        final catName = categoryNameMap[product.categoryId] ?? product.categoryId;
+        categoryUnitsSold[catName] = (categoryUnitsSold[catName] ?? 0) + sold;
+      }
+    }
+
+    // 3. Separate products with actual customer sales from zero-sales products
+    final totalCatalogProducts = stats.products.length;
+    final soldProductsList = <Map<String, dynamic>>[];
+    int zeroSalesProductsCount = 0;
+
+    for (final p in stats.products) {
+      final unitsSold = productUnitsSold[p.id] ??
+          productUnitsSold['name:${p.displayName.trim().toLowerCase()}'] ??
+          0;
+      final ordersCount = productOrdersCount[p.id] ??
+          productOrdersCount['name:${p.displayName.trim().toLowerCase()}'] ??
+          0;
+      final revenue = productRevenueMap[p.id] ?? 0.0;
+
+      if (unitsSold > 0) {
+        soldProductsList.add({
+          'name': p.displayName,
+          'units_sold': unitsSold,
+          'orders_count': ordersCount,
+          'revenue': revenue,
+          'current_stock': p.stockQuantity,
+        });
+      } else {
+        zeroSalesProductsCount++;
+      }
+    }
+    soldProductsList.sort(
+      (a, b) => (b['units_sold'] as int).compareTo(a['units_sold'] as int),
+    );
+
+    // 4. Compile low stock products for the radar with verified sales metrics
     final criticalProducts = stats.products
         .where((p) => p.stockQuantity <= 15)
         .take(15)
-        .map((p) => {
-              'id': p.id,
-              'name': p.displayName,
-              'stock': p.stockQuantity,
-              'category': p.categoryId,
-            })
+        .map((p) {
+          final unitsSold = productUnitsSold[p.id] ??
+              productUnitsSold['name:${p.displayName.trim().toLowerCase()}'] ??
+              0;
+          final ordersCount = productOrdersCount[p.id] ??
+              productOrdersCount['name:${p.displayName.trim().toLowerCase()}'] ??
+              0;
+          final catName = categoryNameMap[p.categoryId] ?? p.categoryId;
+
+          return {
+            'id': p.id,
+            'name': p.displayName,
+            'current_stock': p.stockQuantity,
+            'category': catName,
+            'units_sold': unitsSold,
+            'orders_count': ordersCount,
+            'has_been_ordered_by_customers': unitsSold > 0,
+            'reality_note': unitsSold > 0
+                ? 'تم بيع $unitsSold وحدة عبر $ordersCount طلب فعلي'
+                : 'صفر مبيعات (لم يسبق لأي عميل طلب هذا المنتج إطلاقاً. المخزون منخفض فقط بسبب كمية الإدخال المبدئية في النظام وليس بسبب المبيعات)',
+          };
+        })
         .toList();
 
-    // 2. Build Category summaries if available
+    // 5. Build Category summaries
     final categoriesSummary = stats.categories
         .take(6)
         .map((c) => c.displayName)
@@ -51,7 +138,7 @@ class GeminiDashboardRemoteDataSourceImpl
         .join(', ');
 
     final prompt = '''
-You are a Senior Executive Business Analyst & Supply Chain Strategist for "Stronger Muscles", a premier sports nutrition, fitness supplements, and bodybuilding e-commerce company.
+You are a Senior Executive Business Analyst & Supply Chain Strategist for "Stronger Muscles", a premier sports nutrition, fitness supplements, and bodybuilding e-commerce platform.
 Analyze the following real-time administrative dashboard metrics and generate an executive daily briefing and stock radar in fluent, professional Arabic:
 
 === STORE OPERATIONAL METRICS ===
@@ -72,38 +159,57 @@ Analyze the following real-time administrative dashboard metrics and generate an
 - Products with Low Stock: ${stats.lowStock}
 - Out of Stock Products: ${stats.outOfStock}
 
-=== CRITICAL INVENTORY RADAR SAMPLES ===
+=== REAL VERIFIED SALES & CUSTOMER DEMAND (GROUND TRUTH) ===
+- Best-Selling Products (Actually ordered by customers):
+${soldProductsList.isEmpty ? "لا توجد أي مبيعات فعلية لأي منتج حتى الآن (جميع المنتجات مبيعاتها صفر)." : jsonEncode(soldProductsList.take(6).toList())}
+- Products with Zero Orders (لم يطلبها أي عميل إطلاقاً): $zeroSalesProductsCount من أصل $totalCatalogProducts منتج.
+- Verified Sales by Category:
+${categoryUnitsSold.isEmpty ? "لا توجد مبيعات لأي قسم حتى الآن." : jsonEncode(categoryUnitsSold)}
+
+=== CRITICAL INVENTORY RADAR SAMPLES (WITH SALES TRUTH) ===
 ${jsonEncode(criticalProducts)}
 
-=== ACTIVE CATEGORIES ===
+=== ACTIVE CATEGORIES IN STORE ===
 $categoriesSummary
 
-CRITICAL INSTRUCTIONS:
-1. Provide a sharp, professional executive summary in Arabic (2-3 sentences) evaluating today's overall commercial performance and logistics efficiency.
-2. Determine business sentiment: "positive" (if revenue and fulfillment are healthy), "neutral" (steady operations), or "needs_attention" (high pending/cancelled orders or critical inventory shortages).
-3. Formulate 2-3 key quantitative insights in Arabic.
-4. Formulate 2-3 specific, actionable operational recommendations in Arabic for the store manager.
-5. In "stock_alerts", analyze the critical inventory list and flag items that are out of stock or low with precise suggested restocking actions.
+CRITICAL ANTI-HALLUCINATION & FACT-CHECKING INSTRUCTIONS (STRICT COMPLIANCE REQUIRED):
+1. ABSOLUTE PROHIBITION ON FABRICATING DEMAND:
+   - YOU MUST NEVER state, imply, or assume that a product or category has "high demand" ("ارتفاع الطلب"), "popularity" ("إقبال كبير"), or is "fast selling" ("سريع البيع"), UNLESS its "units_sold" in the data above is strictly GREATER THAN ZERO (> 0)!
+   - If a product has "units_sold": 0 or "has_been_ordered_by_customers": false, it means NOT A SINGLE CUSTOMER HAS EVER PURCHASED IT!
+   - You are STRICTLY FORBIDDEN from stating or assuming that its low stock is due to sales, popularity, or customer demand.
+   - For items with 0 sales, the low stock is purely due to low initial stock quantity or unstocked inventory. State this fact truthfully.
+2. RESTOCKING RECOMMENDATION LOGIC:
+   - For products with units_sold == 0:
+     * NEVER recommend urgent bulk replenishment ("لا توصِ بطلب توريد عاجل بكميات كبيرة").
+     * Instead, recommend evaluating customer interest, reviewing product pricing, marketing, or waiting for actual customer orders before tying up capital in inventory.
+   - For products with units_sold > 0:
+     * Recommend restocking proportional to actual verified sales velocity.
+3. GROUNDED SUMMARY & INSIGHTS:
+   - Base all claims and numbers strictly on the facts provided above.
+   - If pending orders are high (${stats.pendingOrders} pending), emphasize confirming and shipping them to prevent churn.
+   - If cancellations exist (${stats.cancelledOrders} cancelled), recommend investigating the causes.
+   - Never invent imaginary market trends or sales for categories that have 0 sales.
 
 Return ONLY a valid JSON object matching this exact schema:
 {
-  "summary": "ملخص تنفيذي عربي احترافي ومباشر يوضح حالة المبيعات والعمليات اليوم...",
-  "sentiment": "positive",
+  "summary": "ملخص تنفيذي عربي احترافي ومباشر يوضح حالة المبيعات والعمليات اليوم بدقة وصدق...",
+  "sentiment": "positive | neutral | needs_attention",
   "key_insights": [
-    "نمو إيجابي في حجم المبيعات الإجمالي مع استقرار الطلبات المكتملة",
-    "تراكم 5 طلبات معلقة تتطلب التدخل السريع لمنع تأخر الشحن"
+    "مؤشر مبني على الأرقام الحقيقية فقط...",
+    "مؤشر آخر واقعي..."
   ],
   "recommendations": [
-    "تأكيد وشحن الطلبات المعلقة فوراً لرفع نسبة رضا العملاء",
-    "إصدار أمر توريد عاجل لمنتجات البروتين والكرياتين التي قارب مخزونها على النفاد"
+    "توصية تشغيلية قابلة للتنفيذ...",
+    "توصية واقعية أخرى..."
   ],
   "stock_alerts": [
     {
       "product_id": "PROD-...",
       "product_name": "اسم المنتج",
       "current_stock": 2,
+      "units_sold": 0,
       "risk_level": "critical",
-      "suggested_action": "طلب توريد 30 عبوة بشكل عاجل",
+      "suggested_action": "توصية واقعية خالية من ادعاء وجود طلب إذا كانت المبيعات 0",
       "category_name": "بروتينات"
     }
   ]
@@ -120,7 +226,7 @@ Return ONLY a valid JSON object matching this exact schema:
       ],
       'generationConfig': {
         'response_mime_type': 'application/json',
-        'temperature': 0.25,
+        'temperature': 0.2,
       },
     };
 
@@ -172,10 +278,77 @@ Return ONLY a valid JSON object matching this exact schema:
       throw Exception('صيغة البيانات المسترجعة ليست JSON صالحاً');
     }
 
-    return AiExecutiveBriefingModel.fromJson(
+    final briefingModel = AiExecutiveBriefingModel.fromJson(
       decoded,
       modelUsed: model,
       generatedAt: DateTime.now(),
+    );
+
+    // 6. Post-processing & hallucination protection:
+    // Ensure that for any alert with 0 sales, suggestedAction does NOT claim high demand or urge bulk buying
+    final sanitizedAlerts = briefingModel.stockAlerts.map((alert) {
+      final realUnitsSold = productUnitsSold[alert.productId] ??
+          productUnitsSold['name:${alert.productName.trim().toLowerCase()}'] ??
+          alert.unitsSold;
+
+      var action = alert.suggestedAction;
+      if (realUnitsSold == 0) {
+        final hallucinatedDemand = action.contains('ارتفاع الطلب') ||
+            action.contains('إقبال') ||
+            action.contains('طلب متزايد') ||
+            action.contains('الطلب على') ||
+            action.contains('شعبية') ||
+            action.contains('سريع البيع') ||
+            action.contains('طلب عاجل لـ') ||
+            action.contains('طلب توريد عاجل');
+
+        if (hallucinatedDemand) {
+          action = alert.currentStock <= 0
+              ? 'المنتج نفد تماماً بالمخزون ولم يسجل أي مبيعات سابقة. يوصى بدراسة اهتمام العملاء قبل طلب شحنة جديدة.'
+              : 'المخزون منخفض (المتبقي: ${alert.currentStock}) مع عدم وجود طلبات سابقة من أي عميل. يوصى بمراجعة التسعير والتسويق قبل زيادة المخزون.';
+        }
+      }
+
+      return alert.copyWith(
+        unitsSold: realUnitsSold,
+        suggestedAction: action,
+      );
+    }).toList();
+
+    // Sanitize key insights if any insight claims high demand on unsold categories or products
+    final sanitizedInsights = briefingModel.keyInsights.map((insight) {
+      if (soldProductsList.isEmpty) {
+        if (insight.contains('الطلب على منتجات') ||
+            insight.contains('الاستفادة من الطلب') ||
+            insight.contains('ارتفاع الطلب')) {
+          return 'عدم وجود مبيعات سابقة يتطلب تركيز الجهود على تسويق المنتجات والتحقق من الأسعار قبل إعادة التوريد.';
+        }
+      }
+      return insight;
+    }).toList();
+
+    // Sanitize recommendations
+    final sanitizedRecommendations =
+        briefingModel.actionableRecommendations.map((rec) {
+      for (final p in stats.products) {
+        final sold = productUnitsSold[p.id] ?? 0;
+        if (sold == 0 &&
+            (rec.contains(p.displayName) ||
+                (p.nameEn.isNotEmpty && rec.contains(p.nameEn)))) {
+          if (rec.contains('أوامر شراء فورية') ||
+              rec.contains('طلب توريد عاجل') ||
+              rec.contains('لتجنب نفاد')) {
+            return 'مراجعة أسباب عدم طلب ${p.displayName} قبل إصدار أوامر شراء جديدة له.';
+          }
+        }
+      }
+      return rec;
+    }).toList();
+
+    return briefingModel.copyWith(
+      stockAlerts: sanitizedAlerts,
+      keyInsights: sanitizedInsights,
+      actionableRecommendations: sanitizedRecommendations,
     );
   }
 }
