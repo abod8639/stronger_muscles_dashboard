@@ -8,6 +8,7 @@ abstract class AiProductRepository {
     required String productName,
     List<String>? availableCategories,
     List<String>? availableBrands,
+    List<String>? availableFlavors,
   });
 }
 
