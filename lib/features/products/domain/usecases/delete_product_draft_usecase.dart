@@ -11,3 +11,4 @@ class DeleteProductDraftUseCase {
     return _repository.deleteDraft(draftId);
   }
 }
+
