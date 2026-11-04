@@ -267,10 +267,10 @@ void main() {
 
   group('Gemini & AI Models Tests', () {
     test('GeminiConfig returns valid default model and available models list', () {
-      expect(GeminiConfig.defaultModel, 'gemini-1.5-flash');
-      expect(GeminiConfig.availableModels.length, 3);
+      expect(GeminiConfig.defaultModel, 'gemini-3.5-flash');
+      expect(GeminiConfig.availableModels.length, 4);
       expect(
-        GeminiConfig.availableModels.any((m) => m['id'] == 'gemini-1.5-flash'),
+        GeminiConfig.availableModels.any((m) => m['id'] == 'gemini-3.5-flash'),
         isTrue,
       );
     });
