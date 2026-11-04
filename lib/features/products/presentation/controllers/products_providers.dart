@@ -3,19 +3,25 @@ import 'package:hive_ce/hive.dart';
 import 'package:stronger_muscles_dashboard/features/brands/brands_feature.dart';
 import 'package:stronger_muscles_dashboard/features/categories/categories_feature.dart';
 import '../../data/datasources/gemini_product_remote_datasource.dart';
+import '../../data/datasources/product_draft_local_datasource.dart';
 import '../../data/datasources/product_local_datasource.dart';
 import '../../data/datasources/product_remote_datasource.dart';
 import '../../data/models/product_model.dart';
 import '../../data/repositories/ai_product_repository_impl.dart';
+import '../../data/repositories/product_draft_repository_impl.dart';
 import '../../data/repositories/product_repository_impl.dart';
 import '../../domain/entities/product_entity.dart';
 import '../../domain/repositories/ai_product_repository.dart';
+import '../../domain/repositories/product_draft_repository.dart';
 import '../../domain/repositories/product_repository.dart';
 import '../../domain/usecases/add_product_usecase.dart';
+import '../../domain/usecases/delete_product_draft_usecase.dart';
 import '../../domain/usecases/delete_product_usecase.dart';
 import '../../domain/usecases/generate_product_suggestion_usecase.dart';
 import '../../domain/usecases/get_product_by_id_usecase.dart';
+import '../../domain/usecases/get_product_drafts_usecase.dart';
 import '../../domain/usecases/get_products_usecase.dart';
+import '../../domain/usecases/save_product_draft_usecase.dart';
 import '../../domain/usecases/update_product_usecase.dart';
 import '../../domain/usecases/upload_product_image_usecase.dart';
 import 'products_controller.dart';
@@ -108,6 +114,36 @@ final generateProductSuggestionUseCaseProvider =
     });
 
 // ==========================================
+// Drafts Providers (Local Offline Cache)
+// ==========================================
+
+final productDraftLocalDataSourceProvider =
+    Provider<ProductDraftLocalDataSource>((ref) {
+  return ProductDraftLocalDataSourceImpl();
+});
+
+final productDraftRepositoryProvider =
+    Provider<ProductDraftRepository>((ref) {
+  final local = ref.watch(productDraftLocalDataSourceProvider);
+  return ProductDraftRepositoryImpl(local);
+});
+
+final getProductDraftsUseCaseProvider =
+    Provider<GetProductDraftsUseCase>((ref) {
+  return GetProductDraftsUseCase(ref.watch(productDraftRepositoryProvider));
+});
+
+final saveProductDraftUseCaseProvider =
+    Provider<SaveProductDraftUseCase>((ref) {
+  return SaveProductDraftUseCase(ref.watch(productDraftRepositoryProvider));
+});
+
+final deleteProductDraftUseCaseProvider =
+    Provider<DeleteProductDraftUseCase>((ref) {
+  return DeleteProductDraftUseCase(ref.watch(productDraftRepositoryProvider));
+});
+
+// ==========================================
 // Search & Filter State Notifiers
 // ==========================================
 
@@ -172,6 +208,15 @@ final productsUIControllerProvider = Provider<ProductsController>((ref) {
   final generateProductSuggestionUseCase = ref.watch(
     generateProductSuggestionUseCaseProvider,
   );
+  final getProductDraftsUseCase = ref.watch(
+    getProductDraftsUseCaseProvider,
+  );
+  final saveProductDraftUseCase = ref.watch(
+    saveProductDraftUseCaseProvider,
+  );
+  final deleteProductDraftUseCase = ref.watch(
+    deleteProductDraftUseCaseProvider,
+  );
 
   final controller = ProductsController(
     addProductUseCase: addProductUseCase,
@@ -181,6 +226,9 @@ final productsUIControllerProvider = Provider<ProductsController>((ref) {
     categoryRepository: categoryRepository,
     brandRepository: brandRepository,
     generateProductSuggestionUseCase: generateProductSuggestionUseCase,
+    getProductDraftsUseCase: getProductDraftsUseCase,
+    saveProductDraftUseCase: saveProductDraftUseCase,
+    deleteProductDraftUseCase: deleteProductDraftUseCase,
   );
 
   // Sync with Riverpod state updates
