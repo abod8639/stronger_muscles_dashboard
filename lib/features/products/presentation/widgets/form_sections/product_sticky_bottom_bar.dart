@@ -6,12 +6,14 @@ import 'package:stronger_muscles_dashboard/features/products/presentation/contro
 class ProductStickyBottomBar extends StatelessWidget {
   final ProductsController controller;
   final VoidCallback onSave;
+  final VoidCallback? onSaveDraft;
   final bool isEditing;
 
   const ProductStickyBottomBar({
     super.key,
     required this.controller,
     required this.onSave,
+    this.onSaveDraft,
     required this.isEditing,
   });
 
@@ -145,7 +147,29 @@ class ProductStickyBottomBar extends StatelessWidget {
                 onPressed: () => Navigator.of(context).maybePop(),
                 child: const Text('إلغاء'),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
+
+              // Save as Draft Button
+              OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: colorScheme.primary,
+                  side: BorderSide(
+                    color: colorScheme.primary.withValues(
+                      alpha: isDark ? 0.35 : 0.45,
+                    ),
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                onPressed: isLoading || isSaving
+                    ? null
+                    : (onSaveDraft ??
+                        () => controller.saveCurrentFormAsDraft()),
+                icon: const Icon(Icons.save_as_outlined, size: 18),
+                label: const Text('حفظ كمسودة'),
+              ),
+              const SizedBox(width: 10),
 
               // Save FilledButton
               FilledButton.icon(
