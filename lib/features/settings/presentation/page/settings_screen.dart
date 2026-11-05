@@ -42,6 +42,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   late final TextEditingController _geminiApiKeyController;
   late String _selectedGeminiModel;
   bool _isVerifyingGeminiKey = false;
+  bool _isSavingAiConfig = false;
   bool? _isGeminiKeyValid;
   String? _geminiVerifyMessage;
   bool _obscureGeminiKey = true;
@@ -67,10 +68,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     _taxRateController = TextEditingController(
       text: _formatAmount(settings.taxRate),
     );
-    _geminiApiKeyController = TextEditingController(
-      text: GeminiConfig.getApiKey(),
-    );
-    _selectedGeminiModel = GeminiConfig.getModel();
+    final authUser = ref.read(authControllerProvider).user;
+    final initialKey = GeminiConfig.getApiKey().isNotEmpty
+        ? GeminiConfig.getApiKey()
+        : (authUser?.geminiApiKey ?? '');
+    _geminiApiKeyController = TextEditingController(text: initialKey);
+    _selectedGeminiModel = (authUser?.geminiModel?.isNotEmpty ?? false)
+        ? authUser!.geminiModel!
+        : GeminiConfig.getModel();
   }
 
   @override
@@ -557,14 +562,50 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
               const SizedBox(width: 12),
               FilledButton.icon(
-                onPressed: () async {
-                  final key = _geminiApiKeyController.text.trim();
-                  await GeminiConfig.saveApiKey(key);
-                  await GeminiConfig.saveModel(_selectedGeminiModel);
-                  AppFeedback.showSuccess('تم حفظ إعدادات الذكاء الاصطناعي بنجاح');
-                },
-                icon: const Icon(Icons.save_rounded, size: 18),
-                label: const Text('حفظ إعدادات الذكاء الاصطناعي'),
+                onPressed: _isSavingAiConfig
+                    ? null
+                    : () async {
+                        final key = _geminiApiKeyController.text.trim();
+                        setState(() => _isSavingAiConfig = true);
+
+                        final success = await ref
+                            .read(authControllerProvider.notifier)
+                            .updateAiConfig(
+                              apiKey: key,
+                              model: _selectedGeminiModel,
+                            );
+
+                        await GeminiConfig.saveApiKey(key);
+                        await GeminiConfig.saveModel(_selectedGeminiModel);
+
+                        if (mounted) {
+                          setState(() => _isSavingAiConfig = false);
+                          if (success) {
+                            AppFeedback.showSuccess(
+                              'تم حفظ مفتاح الذكاء الاصطناعي في قاعدة البيانات وحساب المشرف بنجاح',
+                            );
+                          } else {
+                            AppFeedback.showSuccess(
+                              'تم حفظ الإعدادات محلياً (تعذر الاتصال بالخادم لحفظها في قاعدة البيانات)',
+                            );
+                          }
+                        }
+                      },
+                icon: _isSavingAiConfig
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Icon(Icons.cloud_upload_rounded, size: 18),
+                label: Text(
+                  _isSavingAiConfig
+                      ? 'جارٍ الحفظ في قاعدة البيانات...'
+                      : 'حفظ في حساب المشرف وقاعدة البيانات',
+                ),
               ),
             ],
           ),
