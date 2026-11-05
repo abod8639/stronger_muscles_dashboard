@@ -59,3 +59,4 @@ class AiCopilotAnswerEntity {
   @override
   int get hashCode => directAnswer.hashCode;
 }
+
