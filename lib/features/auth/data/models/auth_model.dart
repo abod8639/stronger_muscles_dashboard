@@ -7,6 +7,8 @@ class AuthModel {
   final String role;
   final String? token;
   final String? profileImage;
+  final String? geminiApiKey;
+  final String? geminiModel;
 
   const AuthModel({
     required this.id,
@@ -15,6 +17,8 @@ class AuthModel {
     this.role = 'admin',
     this.token,
     this.profileImage,
+    this.geminiApiKey,
+    this.geminiModel,
   });
 
   /// Resilient parsing safe against nested structures, type mismatches, and nulls
@@ -37,6 +41,18 @@ class AuthModel {
             user['avatar'] ??
             json['profile_image'] ??
             user['photo_url'],
+      ),
+      geminiApiKey: _safeNullableString(
+        user['gemini_api_key'] ??
+            json['gemini_api_key'] ??
+            user['ai_config']?['gemini_api_key'] ??
+            json['data']?['gemini_api_key'],
+      ),
+      geminiModel: _safeNullableString(
+        user['gemini_model'] ??
+            json['gemini_model'] ??
+            user['ai_config']?['gemini_model'] ??
+            json['data']?['gemini_model'],
       ),
     );
   }
@@ -74,6 +90,8 @@ class AuthModel {
       'role': role,
       'token': token,
       'profile_image': profileImage,
+      'gemini_api_key': geminiApiKey,
+      'gemini_model': geminiModel,
     };
   }
 
@@ -87,7 +105,9 @@ class AuthModel {
           email == other.email &&
           role == other.role &&
           token == other.token &&
-          profileImage == other.profileImage;
+          profileImage == other.profileImage &&
+          geminiApiKey == other.geminiApiKey &&
+          geminiModel == other.geminiModel;
 
   @override
   int get hashCode =>
@@ -96,5 +116,7 @@ class AuthModel {
       email.hashCode ^
       role.hashCode ^
       token.hashCode ^
-      profileImage.hashCode;
+      profileImage.hashCode ^
+      geminiApiKey.hashCode ^
+      geminiModel.hashCode;
 }
