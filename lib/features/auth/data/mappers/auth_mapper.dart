@@ -12,6 +12,8 @@ extension AuthModelX on AuthModel {
       role: role,
       token: token,
       profileImage: profileImage,
+      geminiApiKey: geminiApiKey,
+      geminiModel: geminiModel,
     );
   }
 }
@@ -25,6 +27,8 @@ extension AuthEntityX on AuthEntity {
       role: role,
       token: token,
       profileImage: profileImage,
+      geminiApiKey: geminiApiKey,
+      geminiModel: geminiModel,
     );
   }
 }
