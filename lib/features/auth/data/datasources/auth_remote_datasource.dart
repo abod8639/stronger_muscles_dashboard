@@ -12,6 +12,13 @@ abstract class AuthRemoteDataSource {
     required String email,
     required String password,
   });
+
+  Future<Map<String, dynamic>> updateAiConfig({
+    required String apiKey,
+    required String model,
+  });
+
+  Future<Map<String, dynamic>> getAiConfig();
 }
 
 /// Production implementation of [AuthRemoteDataSource] using [Dio].
@@ -98,6 +105,81 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     } catch (e) {
       throw ParsingException(
         message: 'خطأ أثناء تحليل بيانات إنشاء الحساب: $e',
+        originalError: e,
+      );
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> updateAiConfig({
+    required String apiKey,
+    required String model,
+  }) async {
+    try {
+      final response = await _dio.put(
+        ApiConfig.adminAiConfig,
+        data: {
+          'gemini_api_key': apiKey,
+          'gemini_model': model,
+        },
+        options: Options(
+          sendTimeout: _defaultTimeout,
+          receiveTimeout: _defaultTimeout,
+          headers: {'Accept': 'application/json'},
+        ),
+      );
+
+      final data = response.data;
+      if (response.statusCode == 200 && data is Map<String, dynamic>) {
+        return data;
+      }
+
+      throw ServerException(
+        message: data is Map
+            ? (data['message']?.toString() ?? 'فشل في حفظ إعدادات الذكاء الاصطناعي')
+            : 'فشل في حفظ إعدادات الذكاء الاصطناعي',
+        statusCode: response.statusCode,
+      );
+    } on DioException {
+      rethrow;
+    } on AppException {
+      rethrow;
+    } catch (e) {
+      throw ParsingException(
+        message: 'خطأ أثناء حفظ إعدادات الذكاء الاصطناعي في الخادم: $e',
+        originalError: e,
+      );
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> getAiConfig() async {
+    try {
+      final response = await _dio.get(
+        ApiConfig.adminAiConfig,
+        options: Options(
+          sendTimeout: _defaultTimeout,
+          receiveTimeout: _defaultTimeout,
+          headers: {'Accept': 'application/json'},
+        ),
+      );
+
+      final data = response.data;
+      if (response.statusCode == 200 && data is Map<String, dynamic>) {
+        return data;
+      }
+
+      throw ServerException(
+        message: 'فشل في جلب إعدادات الذكاء الاصطناعي من الخادم',
+        statusCode: response.statusCode,
+      );
+    } on DioException {
+      rethrow;
+    } on AppException {
+      rethrow;
+    } catch (e) {
+      throw ParsingException(
+        message: 'خطأ أثناء جلب إعدادات الذكاء الاصطناعي: $e',
         originalError: e,
       );
     }
