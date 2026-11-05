@@ -61,6 +61,7 @@ class ApiConfig {
 
   // Store & Dashboard Settings
   static const String adminSettings = '/admin/settings';
+  static const String adminAiConfig = '/admin/profile/ai-config';
 
   // Image Uploads
   static const String adminUploadProductImage = '/admin/upload/product-image';
