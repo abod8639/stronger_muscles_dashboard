@@ -7,6 +7,8 @@ class AuthEntity {
   final String role;
   final String? token;
   final String? profileImage;
+  final String? geminiApiKey;
+  final String? geminiModel;
 
   const AuthEntity({
     required this.id,
@@ -15,6 +17,8 @@ class AuthEntity {
     this.role = 'admin',
     this.token,
     this.profileImage,
+    this.geminiApiKey,
+    this.geminiModel,
   });
 
   /// Domain authorization rules
@@ -31,6 +35,8 @@ class AuthEntity {
     String? role,
     String? token,
     String? profileImage,
+    String? geminiApiKey,
+    String? geminiModel,
   }) {
     return AuthEntity(
       id: id ?? this.id,
@@ -39,6 +45,8 @@ class AuthEntity {
       role: role ?? this.role,
       token: token ?? this.token,
       profileImage: profileImage ?? this.profileImage,
+      geminiApiKey: geminiApiKey ?? this.geminiApiKey,
+      geminiModel: geminiModel ?? this.geminiModel,
     );
   }
 
@@ -52,7 +60,9 @@ class AuthEntity {
           email == other.email &&
           role == other.role &&
           token == other.token &&
-          profileImage == other.profileImage;
+          profileImage == other.profileImage &&
+          geminiApiKey == other.geminiApiKey &&
+          geminiModel == other.geminiModel;
 
   @override
   int get hashCode =>
@@ -61,9 +71,11 @@ class AuthEntity {
       email.hashCode ^
       role.hashCode ^
       token.hashCode ^
-      profileImage.hashCode;
+      profileImage.hashCode ^
+      geminiApiKey.hashCode ^
+      geminiModel.hashCode;
 
   @override
   String toString() =>
-      'AuthEntity(id: $id, name: $name, email: $email, role: $role, hasToken: ${token != null})';
+      'AuthEntity(id: $id, name: $name, email: $email, role: $role, hasToken: ${token != null}, hasGeminiKey: ${geminiApiKey != null})';
 }
