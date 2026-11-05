@@ -6,6 +6,7 @@ import '../../domain/usecases/get_current_user_usecase.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/logout_usecase.dart';
 import '../../domain/usecases/signup_usecase.dart';
+import '../../domain/usecases/update_admin_ai_config_usecase.dart';
 import 'auth_state.dart';
 
 /// Presentation Controller managing authentication state.
@@ -17,6 +18,7 @@ class AuthController extends Notifier<AuthState> {
   final LogoutUseCase? _injectedLogoutUseCase;
   final GetCurrentUserUseCase? _injectedGetCurrentUserUseCase;
   final CheckAuthStatusUseCase? _injectedCheckAuthStatusUseCase;
+  final UpdateAdminAiConfigUseCase? _injectedUpdateAdminAiConfigUseCase;
 
   AuthController({
     LoginUseCase? loginUseCase,
@@ -24,11 +26,13 @@ class AuthController extends Notifier<AuthState> {
     LogoutUseCase? logoutUseCase,
     GetCurrentUserUseCase? getCurrentUserUseCase,
     CheckAuthStatusUseCase? checkAuthStatusUseCase,
+    UpdateAdminAiConfigUseCase? updateAdminAiConfigUseCase,
   }) : _injectedLoginUseCase = loginUseCase,
        _injectedSignupUseCase = signupUseCase,
        _injectedLogoutUseCase = logoutUseCase,
        _injectedGetCurrentUserUseCase = getCurrentUserUseCase,
-       _injectedCheckAuthStatusUseCase = checkAuthStatusUseCase;
+       _injectedCheckAuthStatusUseCase = checkAuthStatusUseCase,
+       _injectedUpdateAdminAiConfigUseCase = updateAdminAiConfigUseCase;
 
   LoginUseCase get _loginUseCase =>
       _injectedLoginUseCase ?? ref.read(loginUseCaseProvider);
@@ -45,6 +49,10 @@ class AuthController extends Notifier<AuthState> {
   CheckAuthStatusUseCase get _checkAuthStatusUseCase =>
       _injectedCheckAuthStatusUseCase ??
       ref.read(checkAuthStatusUseCaseProvider);
+
+  UpdateAdminAiConfigUseCase get _updateAdminAiConfigUseCase =>
+      _injectedUpdateAdminAiConfigUseCase ??
+      ref.read(updateAdminAiConfigUseCaseProvider);
 
   @override
   AuthState build() {
@@ -148,5 +156,26 @@ class AuthController extends Notifier<AuthState> {
   /// Directly sets the authenticated user if needed
   void setAuthenticatedUser(AuthEntity user) {
     state = AuthState.authenticated(user);
+  }
+
+  /// Updates the administrator's Gemini AI configuration in the remote database and local storage.
+  Future<bool> updateAiConfig({
+    required String apiKey,
+    required String model,
+  }) async {
+    final result = await _updateAdminAiConfigUseCase(
+      apiKey: apiKey,
+      model: model,
+    );
+
+    return result.fold(
+      (failure) {
+        return false;
+      },
+      (updatedUser) {
+        state = AuthState.authenticated(updatedUser);
+        return true;
+      },
+    );
   }
 }
