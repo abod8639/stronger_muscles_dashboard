@@ -1,4 +1,5 @@
 import 'package:fpdart/fpdart.dart';
+import 'package:stronger_muscles_dashboard/core/config/gemini_config.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
 import 'package:stronger_muscles_dashboard/core/error/network_error_handler.dart';
 import '../../domain/entities/auth_entity.dart';
@@ -38,6 +39,16 @@ class AuthRepositoryImpl implements AuthRepository {
       }
       await _localDataSource.saveUser(authModel.toJson());
 
+      // Sync Gemini credentials from database to local config
+      if (authModel.geminiApiKey != null &&
+          authModel.geminiApiKey!.trim().isNotEmpty) {
+        await GeminiConfig.saveApiKey(authModel.geminiApiKey!);
+      }
+      if (authModel.geminiModel != null &&
+          authModel.geminiModel!.trim().isNotEmpty) {
+        await GeminiConfig.saveModel(authModel.geminiModel!);
+      }
+
       return Right(authModel.toEntity());
     } catch (e, stackTrace) {
       final failure = NetworkErrorHandler.handleException(e, stackTrace);
@@ -63,6 +74,16 @@ class AuthRepositoryImpl implements AuthRepository {
         await _localDataSource.saveToken(authModel.token!);
       }
       await _localDataSource.saveUser(authModel.toJson());
+
+      // Sync Gemini credentials from database to local config
+      if (authModel.geminiApiKey != null &&
+          authModel.geminiApiKey!.trim().isNotEmpty) {
+        await GeminiConfig.saveApiKey(authModel.geminiApiKey!);
+      }
+      if (authModel.geminiModel != null &&
+          authModel.geminiModel!.trim().isNotEmpty) {
+        await GeminiConfig.saveModel(authModel.geminiModel!);
+      }
 
       return Right(authModel.toEntity());
     } catch (e, stackTrace) {
@@ -99,9 +120,66 @@ class AuthRepositoryImpl implements AuthRepository {
       final userMap = await _localDataSource.getUser();
       if (userMap != null) {
         final authModel = AuthModel.fromJson(userMap);
+        if (authModel.geminiApiKey != null &&
+            authModel.geminiApiKey!.trim().isNotEmpty) {
+          await GeminiConfig.saveApiKey(authModel.geminiApiKey!);
+        }
+        if (authModel.geminiModel != null &&
+            authModel.geminiModel!.trim().isNotEmpty) {
+          await GeminiConfig.saveModel(authModel.geminiModel!);
+        }
         return Right(authModel.toEntity());
       }
       return const Right(null);
+    } catch (e, stackTrace) {
+      final failure = NetworkErrorHandler.handleException(e, stackTrace);
+      return Left(failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, AuthEntity>> updateAiConfig({
+    required String apiKey,
+    required String model,
+  }) async {
+    try {
+      await _remoteDataSource.updateAiConfig(
+        apiKey: apiKey.trim(),
+        model: model.trim(),
+      );
+
+      // Persist locally in GeminiConfig
+      await GeminiConfig.saveApiKey(apiKey);
+      await GeminiConfig.saveModel(model);
+
+      // Update cached user
+      final userMap = await _localDataSource.getUser();
+      AuthEntity updatedEntity;
+      if (userMap != null) {
+        final currentModel = AuthModel.fromJson(userMap);
+        final newModel = AuthModel(
+          id: currentModel.id,
+          name: currentModel.name,
+          email: currentModel.email,
+          role: currentModel.role,
+          token: currentModel.token,
+          profileImage: currentModel.profileImage,
+          geminiApiKey: apiKey.trim().isEmpty ? null : apiKey.trim(),
+          geminiModel: model.trim().isEmpty ? null : model.trim(),
+        );
+        await _localDataSource.saveUser(newModel.toJson());
+        updatedEntity = newModel.toEntity();
+      } else {
+        updatedEntity = AuthEntity(
+          id: '0',
+          name: 'المشرف',
+          email: '',
+          geminiApiKey: apiKey.trim().isEmpty ? null : apiKey.trim(),
+          geminiModel: model.trim().isEmpty ? null : model.trim(),
+        );
+      }
+
+      return Right(updatedEntity);
     } catch (e, stackTrace) {
       final failure = NetworkErrorHandler.handleException(e, stackTrace);
       return Left(failure);
