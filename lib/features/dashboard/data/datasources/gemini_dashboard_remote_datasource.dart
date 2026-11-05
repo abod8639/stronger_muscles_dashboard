@@ -4,6 +4,7 @@ import 'package:stronger_muscles_dashboard/core/config/gemini_config.dart';
 import 'package:stronger_muscles_dashboard/features/orders/orders_feature.dart';
 import '../../domain/entities/ai_executive_briefing_entity.dart';
 import '../../domain/entities/dashboard_stats_entity.dart';
+import '../models/ai_copilot_answer_model.dart';
 import '../models/ai_executive_briefing_model.dart';
 
 abstract class GeminiDashboardRemoteDataSource {
@@ -12,7 +13,7 @@ abstract class GeminiDashboardRemoteDataSource {
     String focus = 'comprehensive',
   });
 
-  Future<String> askBriefingQuestion({
+  Future<AiCopilotAnswerModel> askBriefingQuestion({
     required AiExecutiveBriefingEntity briefing,
     required DashboardStatsEntity stats,
     required String question,
@@ -386,16 +387,28 @@ Return ONLY a valid JSON object matching this exact schema:
       return rec;
     }).toList();
 
+    // Sanitize any remaining asterisks or markdown symbols from briefings
+    final cleanedSummary = _cleanText(briefingModel.summary);
+    final cleanedInsights = sanitizedInsights.map(_cleanText).toList();
+    final cleanedRecommendations =
+        sanitizedRecommendations.map(_cleanText).toList();
+    final cleanedStockAlerts = sanitizedAlerts.map((a) {
+      return a.copyWith(
+        suggestedAction: _cleanText(a.suggestedAction),
+      );
+    }).toList();
+
     return briefingModel.copyWith(
+      summary: cleanedSummary,
       reportFocus: focus,
-      stockAlerts: sanitizedAlerts,
-      keyInsights: sanitizedInsights,
-      actionableRecommendations: sanitizedRecommendations,
+      stockAlerts: cleanedStockAlerts,
+      keyInsights: cleanedInsights,
+      actionableRecommendations: cleanedRecommendations,
     );
   }
 
   @override
-  Future<String> askBriefingQuestion({
+  Future<AiCopilotAnswerModel> askBriefingQuestion({
     required AiExecutiveBriefingEntity briefing,
     required DashboardStatsEntity stats,
     required String question,
@@ -429,8 +442,8 @@ Return ONLY a valid JSON object matching this exact schema:
         .join('\n');
 
     final prompt = '''
-You are the Senior Executive AI Copilot for "Stronger Muscles" sports supplements e-commerce store.
-You are assisting the store administrator with a strategic, logistical, or commercial decision based on current store data.
+You are the Senior Executive AI Copilot for "Stronger Muscles" sports supplements store.
+Answer the store administrator's question in a structured, crystal-clear, highly readable executive format for humans.
 
 === LIVE DASHBOARD METRICS ===
 - Total Revenue: ${stats.totalRevenue.toStringAsFixed(2)} IQD
@@ -441,7 +454,7 @@ You are assisting the store administrator with a strategic, logistical, or comme
 - Summary: ${briefing.summary}
 - Sentiment: ${briefing.sentiment}
 - Key Insights: ${briefing.keyInsights.join(' | ')}
-- Actionable Recommendations: ${briefing.actionableRecommendations.join(' | ')}
+- Recommendations: ${briefing.actionableRecommendations.join(' | ')}
 
 === INVENTORY RADAR SAMPLES ===
 $criticalSamples
@@ -449,11 +462,37 @@ $criticalSamples
 === ADMINISTRATOR QUESTION ===
 "$question"
 
-CRITICAL INSTRUCTIONS:
-1. Provide a direct, professional, and practical answer in Arabic using markdown formatting (bullet points, bold titles).
-2. Ground your analysis strictly on the actual numbers above.
-3. NEVER assume or claim high customer demand for any product or category if its sales are 0.
-4. Offer pragmatic next steps (e.g. reviewing marketing/pricing for unpurchased items, batching pending orders for shipping, etc.).
+CRITICAL FORMATTING & HUMAN-READABILITY RULES (STRICT):
+1. Return ONLY a valid JSON object matching the exact schema below.
+2. ABSOLUTELY NO raw markdown formatting symbols: DO NOT use asterisks (* or **), hashes (###), dashes (---), or raw brackets!
+3. All text MUST be pure, clean, natural Arabic that is pleasant and easy for humans to read.
+4. "direct_answer": Start directly with the answer in 1-2 sharp sentences. DO NOT include greetings ("أهلاً بك") or intro filler ("بصفتي مساعدك").
+5. "sections": Group the insights into 2 or 3 well-defined, organized sections (e.g. "مؤشرات ونسب الأداء الحالية", "خطوات عملية مقترحة للتنفيذ").
+6. "points": In each section, provide 2 to 4 concise, factual bullet points without any asterisks.
+7. Grounding: Ground all numbers strictly on the live metrics. Never invent demand for 0-sales items.
+
+Return ONLY a valid JSON object matching this schema:
+{
+  "direct_answer": "إجابة مباشرة وواضحة للسؤال بدون مقدمات وبدون أي نجوم أو رموز...",
+  "sections": [
+    {
+      "title": "مؤشرات ونسب الأداء",
+      "icon": "analytics",
+      "points": [
+        "نقطة رقمية واضحة ومقروءة بدون أي رموز أو نجوم",
+        "نقطة أخرى توضح نسبة أو رقم دقيق"
+      ]
+    },
+    {
+      "title": "خطوات عملية مقترحة للتنفيذ",
+      "icon": "action",
+      "points": [
+        "خطوة تنفيذية واضحة للمدير",
+        "خطوة أخرى عملية"
+      ]
+    }
+  ]
+}
 ''';
 
     final body = {
@@ -465,7 +504,8 @@ CRITICAL INSTRUCTIONS:
         },
       ],
       'generationConfig': {
-        'temperature': 0.3,
+        'response_mime_type': 'application/json',
+        'temperature': 0.2,
       },
     };
 
@@ -499,7 +539,41 @@ CRITICAL INSTRUCTIONS:
       throw Exception('المحتوى المسترجع فارغ');
     }
 
-    return parts.first['text']?.toString().trim() ?? 'لا توجد إجابة متاحة.';
+    String rawText = parts.first['text']?.toString() ?? '';
+    rawText = rawText.trim();
+
+    if (rawText.startsWith('```json')) {
+      rawText = rawText.substring(7);
+    } else if (rawText.startsWith('```')) {
+      rawText = rawText.substring(3);
+    }
+    if (rawText.endsWith('```')) {
+      rawText = rawText.substring(0, rawText.length - 3);
+    }
+    rawText = rawText.trim();
+
+    try {
+      final decoded = jsonDecode(rawText);
+      if (decoded is Map<String, dynamic>) {
+        return AiCopilotAnswerModel.fromJson(decoded);
+      }
+    } catch (_) {}
+
+    // Fallback parser that cleans all markdown and asterisks
+    return AiCopilotAnswerModel.fromRawText(rawText);
   }
+}
+
+String _cleanText(String text) {
+  return text
+      .replaceAll('***', '')
+      .replaceAll('**', '')
+      .replaceAll('*', '')
+      .replaceAll('###', '')
+      .replaceAll('##', '')
+      .replaceAll('#', '')
+      .replaceAll('---', '')
+      .replaceAll('___', '')
+      .trim();
 }
 
