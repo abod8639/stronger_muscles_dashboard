@@ -101,6 +101,8 @@ void main() {
         role: 'inventory_manager',
         token: 'token-xyz',
         profileImage: 'avatar.png',
+        geminiApiKey: 'AIzaSyDatabaseKey',
+        geminiModel: 'gemini-3.5-flash',
       );
 
       final json = model.toJson();
@@ -111,6 +113,26 @@ void main() {
       expect(json['role'], 'inventory_manager');
       expect(json['token'], 'token-xyz');
       expect(json['profile_image'], 'avatar.png');
+      expect(json['gemini_api_key'], 'AIzaSyDatabaseKey');
+      expect(json['gemini_model'], 'gemini-3.5-flash');
+    });
+
+    test('fromJson correctly parses gemini_api_key and gemini_model', () {
+      final json = {
+        'id': '10',
+        'name': 'AI Admin',
+        'email': 'ai@test.com',
+        'gemini_api_key': 'AIzaSySecretGeminiKeyInDatabase',
+        'gemini_model': 'gemini-3.5-flash-lite',
+      };
+
+      final model = AuthModel.fromJson(json);
+      expect(model.geminiApiKey, 'AIzaSySecretGeminiKeyInDatabase');
+      expect(model.geminiModel, 'gemini-3.5-flash-lite');
+
+      final entity = model.toEntity();
+      expect(entity.geminiApiKey, 'AIzaSySecretGeminiKeyInDatabase');
+      expect(entity.geminiModel, 'gemini-3.5-flash-lite');
     });
 
     test('roundtrip mapping preserves all entity and model properties', () {
@@ -121,6 +143,8 @@ void main() {
         role: 'super_admin',
         token: 'auth-jwt-token',
         profileImage: 'photo.jpg',
+        geminiApiKey: 'AIzaSyPersistentKey',
+        geminiModel: 'gemini-3.8-flash',
       );
 
       final model = originalEntity.toModel();
