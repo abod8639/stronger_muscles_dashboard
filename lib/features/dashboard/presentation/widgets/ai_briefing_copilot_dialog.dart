@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stronger_muscles_dashboard/core/utils/ui_feedback.dart';
+import '../../domain/entities/ai_copilot_answer_entity.dart';
 import '../../domain/entities/ai_executive_briefing_entity.dart';
 import '../../domain/entities/dashboard_stats_entity.dart';
 import '../controllers/dashboard_providers.dart';
@@ -43,7 +44,7 @@ class _AiBriefingCopilotDialogState
 
   bool _isLoading = false;
   String? _lastQuestion;
-  String? _answer;
+  AiCopilotAnswerEntity? _answer;
   String? _errorMessage;
 
   static const List<String> _suggestedPrompts = [
@@ -320,16 +321,16 @@ class _AiBriefingCopilotDialogState
                         ),
                       ),
                     ] else if (_answer != null) ...[
+                      // 1. Direct Executive Answer Card
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: colorScheme.surfaceContainerHighest.withValues(
-                            alpha: isDark ? 0.3 : 0.45,
+                          color: colorScheme.primaryContainer.withValues(
+                            alpha: isDark ? 0.22 : 0.35,
                           ),
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: colorScheme.outlineVariant
-                                .withValues(alpha: 0.4),
+                            color: colorScheme.primary.withValues(alpha: 0.35),
                           ),
                         ),
                         child: Column(
@@ -340,11 +341,11 @@ class _AiBriefingCopilotDialogState
                                 Icon(
                                   Icons.lightbulb_rounded,
                                   color: Colors.amber.shade700,
-                                  size: 18,
+                                  size: 20,
                                 ),
-                                const SizedBox(width: 6),
+                                const SizedBox(width: 8),
                                 Text(
-                                  'توصية وتحليل المساعد التنفيذي:',
+                                  'الإجابة والتحليل التنفيذي المباشر:',
                                   style: theme.textTheme.labelMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: colorScheme.onSurface,
@@ -353,14 +354,14 @@ class _AiBriefingCopilotDialogState
                                 const Spacer(),
                                 IconButton(
                                   icon: const Icon(Icons.copy_rounded, size: 16),
-                                  tooltip: 'نسخ الإجابة',
+                                  tooltip: 'نسخ الإجابة كاملة',
                                   visualDensity: VisualDensity.compact,
                                   onPressed: () {
                                     Clipboard.setData(
-                                      ClipboardData(text: _answer!),
+                                      ClipboardData(text: _answer!.toPlainText()),
                                     );
                                     AppFeedback.showSuccess(
-                                      'تم نسخ الإجابة إلى الحافظة',
+                                      'تم نسخ الإجابة المنظمة إلى الحافظة',
                                     );
                                   },
                                 ),
@@ -368,15 +369,97 @@ class _AiBriefingCopilotDialogState
                             ),
                             const SizedBox(height: 8),
                             SelectableText(
-                              _answer!,
+                              _answer!.directAnswer,
                               style: theme.textTheme.bodyMedium?.copyWith(
                                 height: 1.6,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
                                 color: colorScheme.onSurface,
                               ),
                             ),
                           ],
                         ),
                       ),
+
+                      // 2. Structured Section Cards
+                      for (final section in _answer!.sections)
+                        Container(
+                          margin: const EdgeInsets.only(top: 12),
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: colorScheme.surfaceContainerHighest.withValues(
+                              alpha: isDark ? 0.3 : 0.45,
+                            ),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: colorScheme.outlineVariant
+                                  .withValues(alpha: 0.35),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Section Header
+                              Row(
+                                children: [
+                                  _buildSectionIcon(section.icon, colorScheme),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      section.title,
+                                      style: theme.textTheme.titleSmall?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: colorScheme.onSurface,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+
+                              // Bullet Points
+                              for (var i = 0; i < section.points.length; i++)
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        margin: const EdgeInsets.only(top: 4),
+                                        padding: const EdgeInsets.all(4),
+                                        decoration: BoxDecoration(
+                                          color: _getPointColor(
+                                            section.icon,
+                                            colorScheme,
+                                          ).withValues(alpha: 0.15),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Icon(
+                                          _getPointIcon(section.icon),
+                                          size: 10,
+                                          color: _getPointColor(
+                                            section.icon,
+                                            colorScheme,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: SelectableText(
+                                          section.points[i],
+                                          style: theme.textTheme.bodySmall?.copyWith(
+                                            fontSize: 12.5,
+                                            height: 1.55,
+                                            color: colorScheme.onSurface,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
                     ],
                   ],
                 ),
@@ -454,6 +537,65 @@ class _AiBriefingCopilotDialogState
         ),
       ),
     );
+  }
+
+  Widget _buildSectionIcon(String iconType, ColorScheme colorScheme) {
+    IconData icon;
+    Color color;
+    switch (iconType) {
+      case 'analytics':
+        icon = Icons.analytics_outlined;
+        color = Colors.blue.shade700;
+        break;
+      case 'action':
+        icon = Icons.task_alt_rounded;
+        color = Colors.teal.shade700;
+        break;
+      case 'warning':
+        icon = Icons.warning_amber_rounded;
+        color = Colors.orange.shade800;
+        break;
+      case 'info':
+      default:
+        icon = Icons.info_outline_rounded;
+        color = colorScheme.primary;
+        break;
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        shape: BoxShape.circle,
+      ),
+      child: Icon(icon, size: 16, color: color),
+    );
+  }
+
+  IconData _getPointIcon(String iconType) {
+    switch (iconType) {
+      case 'analytics':
+        return Icons.insights_rounded;
+      case 'action':
+        return Icons.arrow_forward_rounded;
+      case 'warning':
+        return Icons.priority_high_rounded;
+      default:
+        return Icons.circle;
+    }
+  }
+
+  Color _getPointColor(String iconType, ColorScheme colorScheme) {
+    switch (iconType) {
+      case 'analytics':
+        return Colors.blue.shade700;
+      case 'action':
+        return Colors.teal.shade700;
+      case 'warning':
+        return Colors.orange.shade800;
+      default:
+        return colorScheme.primary;
+    }
   }
 }
 
