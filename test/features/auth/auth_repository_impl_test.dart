@@ -29,6 +29,33 @@ class MockRemoteDataSource implements AuthRemoteDataSource {
     if (exceptionToThrow != null) throw exceptionToThrow!;
     return mockModel!;
   }
+
+  @override
+  Future<Map<String, dynamic>> updateAiConfig({
+    required String apiKey,
+    required String model,
+  }) async {
+    if (exceptionToThrow != null) throw exceptionToThrow!;
+    return {
+      'status': 'success',
+      'data': {
+        'gemini_api_key': apiKey,
+        'gemini_model': model,
+      },
+    };
+  }
+
+  @override
+  Future<Map<String, dynamic>> getAiConfig() async {
+    if (exceptionToThrow != null) throw exceptionToThrow!;
+    return {
+      'status': 'success',
+      'data': {
+        'gemini_api_key': 'test-key',
+        'gemini_model': 'gemini-3.5-flash',
+      },
+    };
+  }
 }
 
 class MockLocalDataSource implements AuthLocalDataSource {
@@ -159,6 +186,33 @@ void main() {
       expect(result.isRight(), true);
       expect(result.getRight().toNullable(), equals(unit));
       expect(localDataSource.cleared, true);
+    });
+  });
+
+  group('AuthRepositoryImpl.updateAiConfig', () {
+    test('updates remote AI config and syncs locally', () async {
+      localDataSource.userJson = {
+        'id': '1',
+        'name': 'Admin',
+        'email': 'admin@test.com',
+        'role': 'admin',
+      };
+
+      final result = await repository.updateAiConfig(
+        apiKey: 'AIzaSyRemoteKey123',
+        model: 'gemini-3.5-flash-lite',
+      );
+
+      expect(result.isRight(), true);
+      result.fold(
+        (failure) => fail('Expected Right'),
+        (entity) {
+          expect(entity.geminiApiKey, 'AIzaSyRemoteKey123');
+          expect(entity.geminiModel, 'gemini-3.5-flash-lite');
+        },
+      );
+      expect(localDataSource.userJson?['gemini_api_key'], 'AIzaSyRemoteKey123');
+      expect(localDataSource.userJson?['gemini_model'], 'gemini-3.5-flash-lite');
     });
   });
 }
