@@ -95,7 +95,7 @@ class FlavorItem {
     FlavorItem(
       name: 'Lemon',
       imageUrl:
-          'https://i.pinimg.com/736x/00/6e/de/006edeee57d453cef689c246f2dbd14c.jpg',
+          'https://i.pinimg.com/736x/e7/33/46/e7334665a8bff0916d55db8533f18455.jpg',
     ),
     FlavorItem(name: 'No Flavor'),
   ];
