@@ -10,6 +10,7 @@ import '../../domain/usecases/get_current_user_usecase.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/logout_usecase.dart';
 import '../../domain/usecases/signup_usecase.dart';
+import '../../domain/usecases/update_admin_ai_config_usecase.dart';
 import 'auth_controller.dart';
 import 'auth_state.dart';
 import 'login_form_controller.dart';
@@ -63,6 +64,10 @@ final checkAuthStatusUseCaseProvider = Provider<CheckAuthStatusUseCase>((ref) {
 
 final getCurrentUserUseCaseProvider = Provider<GetCurrentUserUseCase>((ref) {
   return GetCurrentUserUseCase(ref.watch(authRepositoryProvider));
+});
+
+final updateAdminAiConfigUseCaseProvider = Provider<UpdateAdminAiConfigUseCase>((ref) {
+  return UpdateAdminAiConfigUseCase(repository: ref.watch(authRepositoryProvider));
 });
 
 /// ============================================================================
