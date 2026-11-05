@@ -1,5 +1,6 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
+import '../entities/ai_copilot_answer_entity.dart';
 import '../entities/ai_executive_briefing_entity.dart';
 import '../entities/dashboard_stats_entity.dart';
 
@@ -15,7 +16,7 @@ abstract class AiDashboardRepository {
     String focus = 'comprehensive',
   });
 
-  Future<Either<Failure, String>> askBriefingQuestion({
+  Future<Either<Failure, AiCopilotAnswerEntity>> askBriefingQuestion({
     required AiExecutiveBriefingEntity briefing,
     required DashboardStatsEntity stats,
     required String question,
