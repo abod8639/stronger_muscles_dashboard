@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:stronger_muscles_dashboard/core/error/failures.dart';
+import '../../domain/entities/ai_copilot_answer_entity.dart';
 import '../../domain/entities/ai_executive_briefing_entity.dart';
 import '../../domain/entities/dashboard_stats_entity.dart';
 import '../../domain/repositories/ai_dashboard_repository.dart';
@@ -75,18 +76,18 @@ class AiDashboardRepositoryImpl implements AiDashboardRepository {
   }
 
   @override
-  Future<Either<Failure, String>> askBriefingQuestion({
+  Future<Either<Failure, AiCopilotAnswerEntity>> askBriefingQuestion({
     required AiExecutiveBriefingEntity briefing,
     required DashboardStatsEntity stats,
     required String question,
   }) async {
     try {
-      final answer = await _remoteDataSource.askBriefingQuestion(
+      final model = await _remoteDataSource.askBriefingQuestion(
         briefing: briefing,
         stats: stats,
         question: question,
       );
-      return Right(answer);
+      return Right(model.toEntity());
     } on DioException catch (e) {
       if (e.response != null) {
         final code = e.response?.statusCode;
