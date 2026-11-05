@@ -5,6 +5,7 @@ import 'package:stronger_muscles_dashboard/core/config/gemini_config.dart';
 import 'package:stronger_muscles_dashboard/core/storage/app_storage.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/data/datasources/ai_dashboard_local_datasource.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/data/datasources/gemini_dashboard_remote_datasource.dart';
+import 'package:stronger_muscles_dashboard/features/dashboard/data/models/ai_copilot_answer_model.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/data/models/ai_executive_briefing_model.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/data/repositories/ai_dashboard_repository_impl.dart';
 import 'package:stronger_muscles_dashboard/features/dashboard/domain/entities/ai_executive_briefing_entity.dart';
@@ -57,12 +58,21 @@ class MockGeminiDashboardRemoteDataSource
   }
 
   @override
-  Future<String> askBriefingQuestion({
+  Future<AiCopilotAnswerModel> askBriefingQuestion({
     required AiExecutiveBriefingEntity briefing,
     required DashboardStatsEntity stats,
     required String question,
   }) async {
-    return 'إجابة تجريبية للسؤال: $question';
+    return AiCopilotAnswerModel(
+      directAnswer: 'إجابة تجريبية للسؤال: $question',
+      sections: const [
+        AiCopilotSectionModel(
+          title: 'مؤشرات الأداء',
+          icon: 'analytics',
+          points: ['نقطة تجريبية 1', 'نقطة تجريبية 2'],
+        ),
+      ],
+    );
   }
 }
 
@@ -288,8 +298,52 @@ void main() {
       expect(result.isRight(), isTrue);
       result.fold(
         (f) => fail('Should succeed'),
-        (answer) => expect(answer, contains('إجابة تجريبية للسؤال: كيف نسرع الطلبات؟')),
+        (answer) {
+          expect(
+            answer.directAnswer,
+            contains('إجابة تجريبية للسؤال: كيف نسرع الطلبات؟'),
+          );
+          expect(answer.sections.length, 1);
+          expect(answer.sections.first.points.length, 2);
+          expect(answer.sections.first.title, 'مؤشرات الأداء');
+          expect(answer.toPlainText(), contains('■ مؤشرات الأداء:'));
+        },
       );
+    });
+
+    test('AiCopilotAnswerModel.fromRawText cleans raw asterisks, headers, and greetings', () {
+      const rawText = '''
+أهلاً بك، بصفتي مساعدك التنفيذي الذكي لمتجر Stronger Muscles
+### 📊 نسب توزيع ومؤشرات المبيعات والطلبات الحالية:
+* **52.6%** من إجمالي الطلبات (10 طلبات معلقة)**
+* **15.7%** نسبة الطلبات الملغاة**
+---
+### 🚀 خطوات عملية مقترحة للمعالجة:
+1. **تسريع معالجة الطلبات المعلقة فوراً**
+2. **مراجعة المنتجات الراكدة**
+''';
+
+      final model = AiCopilotAnswerModel.fromRawText(rawText);
+      final entity = model.toEntity();
+
+      // Ensure no raw asterisks or headers remain in the direct answer or points
+      expect(entity.directAnswer.contains('*'), isFalse);
+      expect(entity.directAnswer.contains('###'), isFalse);
+      expect(entity.sections.length, greaterThanOrEqualTo(2));
+
+      for (final sec in entity.sections) {
+        expect(sec.title.contains('*'), isFalse);
+        expect(sec.title.contains('#'), isFalse);
+        for (final pt in sec.points) {
+          expect(pt.contains('**'), isFalse);
+          expect(pt.contains('*'), isFalse);
+        }
+      }
+
+      // Check toPlainText has clean formatting without markdown asterisks
+      final plain = entity.toPlainText();
+      expect(plain.contains('**'), isFalse);
+      expect(plain.contains('###'), isFalse);
     });
   });
 
