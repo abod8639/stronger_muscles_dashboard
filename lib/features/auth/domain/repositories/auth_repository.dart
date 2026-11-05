@@ -27,4 +27,10 @@ abstract class AuthRepository {
 
   /// Retrieves the currently cached administrator profile if available.
   Future<Either<Failure, AuthEntity?>> getCurrentUser();
+
+  /// Updates the Gemini AI configuration in the database for the authenticated administrator.
+  Future<Either<Failure, AuthEntity>> updateAiConfig({
+    required String apiKey,
+    required String model,
+  });
 }
